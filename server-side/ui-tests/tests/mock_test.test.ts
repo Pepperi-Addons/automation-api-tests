@@ -63,7 +63,7 @@ export async function MockTest(email: string, password: string, client: Client) 
     describe('Resource List Test Suite', () => {
         describe('API Creation of UDCs', () => {
             /********************  RL Data Prep  ********************/
-            it('Creating UDC of Contained Resource with API', async () => {
+            it('Creating UDC of Scheme Only with API', async () => {
                 const bodyOfCollection = udcService.prepareDataForUdcCreation({
                     nameOfCollection: 'SchemeOnlyObject',
                     descriptionOfCollection: 'Created with Automation',
@@ -156,24 +156,28 @@ export async function MockTest(email: string, password: string, client: Client) 
             });
 
             // Collection: ==========>   ContainedArray   <==========   //
-            // it('Adding Values to Collection: ContainedArray', async () => {
-            //     const collectionName = 'ContainedArray';
-            //     const upsertingValues_Response = await udcService.upsertValuesToCollection(
-            //         {
-            //             numbers: [1, 2, 3, 4],
-            //             names: ['Happy', 'New', 'Year', '!!!'],
-            //             reals: [0.1, 0.2, 0.3, 0.4],
-            //         },
-            //         collectionName,
-            //     );
-            //     console.info(
-            //         `Response of POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName} :\n`,
-            //         `${JSON.stringify(upsertingValues_Response, null, 2)}`,
-            //     );
-            //     expect(upsertingValues_Response.Ok).to.be.true;
-            //     expect(upsertingValues_Response.Status).to.equal(200);
-            //     expect(upsertingValues_Response.Error).to.eql({});
-            // });
+            it('Adding Values to Collection: ContainedArray', async () => {
+                const collectionName = 'ContainedArray';
+                const upsertingValues_Response = await udcService.listingsInsertionToCollection(
+                    {
+                        title: 'Happy',
+                        contained_scheme_only_name_age: [
+                            { name: 'Mitzi', age: 1 },
+                            { name: 'Pitzi', age: 2 },
+                            { name: 'Eitzi', age: 3 },
+                            { name: 'Flitzi', age: 4 },
+                        ],
+                    },
+                    collectionName,
+                );
+                console.info(
+                    `Response of POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName} :\n`,
+                    `${JSON.stringify(upsertingValues_Response, null, 2)}`,
+                );
+                expect(upsertingValues_Response.Ok).to.be.true;
+                expect(upsertingValues_Response.Status).to.equal(200);
+                expect(upsertingValues_Response.Error).to.eql({});
+            });
 
             // it('Creating UDC of Arrays of Primiteve Types Fields with API', async () => {
             //     //  Strings Array  |  Integers Array  |  Doubles Array  //
@@ -237,24 +241,24 @@ export async function MockTest(email: string, password: string, client: Client) 
             // });
 
             // Collection: ==========>   ArraysOfPrimitivesAuto   <==========   //
-            it('Adding Values to Collection: ArraysOfPrimitivesAuto', async () => {
-                const collectionName = 'ArraysOfPrimitivesAuto';
-                const upsertingValues_Response = await udcService.upsertValuesToCollection(
-                    {
-                        numbers: [1, 2, 3, 4],
-                        names: ['Happy', 'New', 'Year', '!!!'],
-                        reals: [0.1, 0.2, 0.3, 0.4],
-                    },
-                    collectionName,
-                );
-                console.info(
-                    `Response of POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName} :\n`,
-                    `${JSON.stringify(upsertingValues_Response, null, 2)}`,
-                );
-                expect(upsertingValues_Response.Ok).to.be.true;
-                expect(upsertingValues_Response.Status).to.equal(200);
-                expect(upsertingValues_Response.Error).to.eql({});
-            });
+            // it('Adding Values to Collection: ArraysOfPrimitivesAuto', async () => {
+            //     const collectionName = 'ArraysOfPrimitivesAuto';
+            //     const upsertingValues_Response = await udcService.upsertValuesToCollection(
+            //         {
+            //             numbers: [1, 2, 3, 4],
+            //             names: ['Happy', 'New', 'Year', '!!!'],
+            //             reals: [0.1, 0.2, 0.3, 0.4],
+            //         },
+            //         collectionName,
+            //     );
+            //     console.info(
+            //         `Response of POST /addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName} :\n`,
+            //         `${JSON.stringify(upsertingValues_Response, null, 2)}`,
+            //     );
+            //     expect(upsertingValues_Response.Ok).to.be.true;
+            //     expect(upsertingValues_Response.Status).to.equal(200);
+            //     expect(upsertingValues_Response.Error).to.eql({});
+            // });
             // it('1. Creating a UDC of "Big Data Reference Account" with API', async () => {
             //     // Collection:  ====>   BigDataReferenceAccountAuto   <====        //
             //     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -663,68 +667,68 @@ export async function MockTest(email: string, password: string, client: Client) 
             //     expect(upsertResponse.Status).to.equal(200);
             //     expect(upsertResponse.Error).to.eql({});
             // });
-            it('2. Adding Values to Collection: "ReferenceAccountAuto"', async () => {
-                // Collection:  ====>   ReferenceAccountAuto   <====        //
-                const acc01UUID = '90d1edc2-688e-4ddb-aeac-a4b69b1f6d63'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
-                const acc02UUID = '9d63ec3a-73bd-494a-8841-33abb1a50fc5'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
-                const acc03UUID = '58ca0ee3-1343-4c2e-bd37-9770432ac8d9'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
-                const dataReferenceAccountAuto = [
-                    { of_account: acc03UUID, best_seller_item: 'Daisy', max_quantity: 1500 },
-                    {
-                        of_account: '',
-                        best_seller_item: '',
-                        max_quantity: 100000,
-                        discount_rate: 0.1,
-                        offered_discount_location: [],
-                    },
-                    {
-                        of_account: acc02UUID,
-                        best_seller_item: 'Lily',
-                        max_quantity: 1,
-                        discount_rate: 0.1,
-                        offered_discount_location: ['rep'],
-                    },
-                    {
-                        of_account: acc01UUID,
-                        best_seller_item: 'Rose',
-                        max_quantity: 0,
-                        discount_rate: 0.4,
-                        offered_discount_location: ['store', 'on-line', 'rep'],
-                    },
-                    {
-                        of_account: acc02UUID,
-                        best_seller_item: 'Iris',
-                        max_quantity: 40000,
-                        discount_rate: 0.15,
-                        offered_discount_location: ['store', 'on-line'],
-                    },
-                    { of_account: acc03UUID, max_quantity: 600, discount_rate: 0.1, offered_discount_location: [] },
-                    { of_account: acc01UUID, best_seller_item: '', max_quantity: 55, discount_rate: 0.22 },
-                    {
-                        of_account: acc03UUID,
-                        best_seller_item: 'Tulip',
-                        discount_rate: 0.3,
-                        offered_discount_location: ['store'],
-                    },
-                    {
-                        best_seller_item: 'NO Account',
-                        max_quantity: 111,
-                        discount_rate: 0.35,
-                        offered_discount_location: ['on-line'],
-                    },
-                ];
-                const upsertingValues_Responses = await Promise.all(
-                    dataReferenceAccountAuto.map(async (listing) => {
-                        return await udcService.upsertValuesToCollection(listing, 'ReferenceAccountAuto');
-                    }),
-                );
-                upsertingValues_Responses.forEach((upsertingValues_Response) => {
-                    console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                });
-            });
+            // it('2. Adding Values to Collection: "ReferenceAccountAuto"', async () => {
+            //     // Collection:  ====>   ReferenceAccountAuto   <====        //
+            //     const acc01UUID = '90d1edc2-688e-4ddb-aeac-a4b69b1f6d63'; // Prod: '5737a507-fa00-4c32-a26a-8bc32572e24d' , Stage: '3889ed1c-8d10-4042-8209-ac4cbf32299d', EU: '9d315555-dbb4-4390-8b67-5fc1a9304514'
+            //     const acc02UUID = '9d63ec3a-73bd-494a-8841-33abb1a50fc5'; // Prod: '56363496-f8ce-42e8-9305-de5d28737e66' , Stage: '375fbb0f-5dfa-4b49-ac5e-bf3a5328d868', EU: '28290d15-bf25-43a2-a71a-2c8514188d07'
+            //     const acc03UUID = '58ca0ee3-1343-4c2e-bd37-9770432ac8d9'; // Prod: '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb' , Stage: '3d119d7d-cb3b-41d1-805d-bc5d8cc5be7e', EU: '58e20103-3550-4943-b63b-05d3e0914b66'
+            //     const dataReferenceAccountAuto = [
+            //         { of_account: acc03UUID, best_seller_item: 'Daisy', max_quantity: 1500 },
+            //         {
+            //             of_account: '',
+            //             best_seller_item: '',
+            //             max_quantity: 100000,
+            //             discount_rate: 0.1,
+            //             offered_discount_location: [],
+            //         },
+            //         {
+            //             of_account: acc02UUID,
+            //             best_seller_item: 'Lily',
+            //             max_quantity: 1,
+            //             discount_rate: 0.1,
+            //             offered_discount_location: ['rep'],
+            //         },
+            //         {
+            //             of_account: acc01UUID,
+            //             best_seller_item: 'Rose',
+            //             max_quantity: 0,
+            //             discount_rate: 0.4,
+            //             offered_discount_location: ['store', 'on-line', 'rep'],
+            //         },
+            //         {
+            //             of_account: acc02UUID,
+            //             best_seller_item: 'Iris',
+            //             max_quantity: 40000,
+            //             discount_rate: 0.15,
+            //             offered_discount_location: ['store', 'on-line'],
+            //         },
+            //         { of_account: acc03UUID, max_quantity: 600, discount_rate: 0.1, offered_discount_location: [] },
+            //         { of_account: acc01UUID, best_seller_item: '', max_quantity: 55, discount_rate: 0.22 },
+            //         {
+            //             of_account: acc03UUID,
+            //             best_seller_item: 'Tulip',
+            //             discount_rate: 0.3,
+            //             offered_discount_location: ['store'],
+            //         },
+            //         {
+            //             best_seller_item: 'NO Account',
+            //             max_quantity: 111,
+            //             discount_rate: 0.35,
+            //             offered_discount_location: ['on-line'],
+            //         },
+            //     ];
+            //     const upsertingValues_Responses = await Promise.all(
+            //         dataReferenceAccountAuto.map(async (listing) => {
+            //             return await udcService.upsertValuesToCollection(listing, 'ReferenceAccountAuto');
+            //         }),
+            //     );
+            //     upsertingValues_Responses.forEach((upsertingValues_Response) => {
+            //         console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+            //         expect(upsertingValues_Response.Ok).to.be.true;
+            //         expect(upsertingValues_Response.Status).to.equal(200);
+            //         expect(upsertingValues_Response.Error).to.eql({});
+            //     });
+            // });
 
             // it('3. Creating a UDC of "Name Age" with API', async () => {
             //     // Collection:  ====>   NameAgeAuto   <====        //

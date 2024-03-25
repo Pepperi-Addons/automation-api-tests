@@ -729,6 +729,16 @@ export class UDCService {
         );
     }
 
+    async listingsInsertionToCollection(valuesObj: { [fieldName: string]: any }, collectionName: string) {
+        return await this.generalService.fetchStatus(
+            `/addons/api/122c0e9d-c240-4865-b446-f37ece866c22/api/create?collection_name=${collectionName}`,
+            {
+                method: 'POST',
+                body: JSON.stringify(valuesObj),
+            },
+        );
+    }
+
     prepareDataForUdcCreation(collectionData: CollectionDefinition) {
         const collectionFields = {};
         const udcListViewFields = collectionData.fieldsOfCollection.map((scheme) => {
@@ -812,9 +822,9 @@ export class UDCService {
             collectionData.nameOfCollection,
             collectionFields,
             udcListView,
-            collectionData.descriptionOfCollection ? collectionData.descriptionOfCollection : undefined,
-            collectionData.syncDefinitionOfCollection ? collectionData.syncDefinitionOfCollection : undefined,
-            collectionData.typeOfCollection ? collectionData.typeOfCollection : undefined,
+            collectionData.descriptionOfCollection,
+            collectionData.syncDefinitionOfCollection,
+            collectionData.typeOfCollection,
         );
 
         return bodyOfCollectionWithFields;

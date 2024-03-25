@@ -76,6 +76,7 @@ import {
     StorybookTextboxTests,
     NeltPerformanceTests,
     ListsAbiTests,
+    CustomCollectionsUpsert,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -141,6 +142,9 @@ const passCreate = process.env.npm_config_pass_create as string;
 const whichEnvToRun = process.env.npm_config_envs as string;
 const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 const XForSyncTimes = Number(process.env.npm_config_x as any);
+const acc01UUID = process.env.npm_config_acc1 as string;
+const acc02UUID = process.env.npm_config_acc2 as string;
+const acc03UUID = process.env.npm_config_acc3 as string;
 // const neltTestParams = process.env.npm_config_nelt_test_params as string;
 const burgerMenuVisitFlowName = process.env.npm_config_nelt_burger_vf_name as string;
 const divisionName = process.env.npm_config_nelt_division_name as string;
@@ -485,6 +489,12 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     if (tests === 'Create_SYSTEM') {
         await CreateDistributorSystemTests(generalService, varPass, varPassEU, userNameCreate, passCreate);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'UdcsToUser') {
+        await CustomCollectionsUpsert(email, client, acc01UUID, acc02UUID, acc03UUID);
         run();
         return;
     }
