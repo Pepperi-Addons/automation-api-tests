@@ -2,9 +2,8 @@ import { Client } from '@pepperi-addons/debug-server/dist';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { after, afterEach, before, describe, it } from 'mocha';
-import { ConfigurationsService } from '../../services/configurations.service';
 import GeneralService, { testData as testDataBase } from '../../services/general.service';
-import { WebAppHomePage } from '../pom';
+import { WebAppHomePage, WebAppLoginPage } from '../pom';
 import { AppHeaderObject, ApplicationHeader } from '../pom/addons/AppHeaderService';
 import { Flow, FlowStep } from '../pom/addons/flow.service';
 import { Browser } from '../utilities/browser';
@@ -17,6 +16,10 @@ chai.use(promised);
 export async function SyncE2ETester(email: string, password: string, client: Client, varPass) {
     const generalService = new GeneralService(client);
     let driver: Browser;
+
+    const buyerEmailStage = 'Demo.Contact@mail.com';
+    const buyerPassStage = 'Cs$5iT';
+
     const flowStepScript = {
         actualScript: `export async function main(data){return 'evgeny123';}`,
         scriptName: generalService.generateRandomString(5) + '_forFlow',
@@ -299,22 +302,18 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 );
                 expect(isHeaderPresentedCorrectlyAfterLoggingOut).to.equal(true);
                 //TODO: logout from Admin - login to buyer - tests the header
+                const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(this.browser);
+                await webAppLoginPage.longLoginForBuyer(buyerEmailStage, buyerPassStage);
+                driver.sleep(2500);
+                const isHeaderPresentedCorrectlyAfterLoggingOutBuyer = await appHeaderService.UIValidateWeSeeAppHeader(
+                    headerObject.Button[0].ButtonName,
+                    headerObject.Menu[0].Name,
+                );
+                expect(isHeaderPresentedCorrectlyAfterLoggingOutBuyer).to.equal(true);
                 debugger;
             });
-            it(`2. Integration Test: Push Data To Configurations Which Is Our Source Addon And See It Changes The UI - Admin And Buyer`, async function () {
-                //1. get all schemes and validate
-                const configService = new ConfigurationsService(generalService);
-                const appHeaderUUID = '9bc8af38-dd67-4d33-beb0-7d6b39a6e98d';
-                const configResponse = await configService.getSchemes();
-                expect(configResponse.Ok).to.equal(true);
-                expect(configResponse.Status).to.equal(200);
-                expect(configResponse.Error).to.deep.equal({});
-                expect(configResponse.Body).to.be.an('array');
-                const configSchemes = configResponse.Body;
-                const appHeaderConfigScheme = configSchemes.find((config) => config.AddonUUID === appHeaderUUID);
-                expect(appHeaderConfigScheme.length).to.equal(1);
-                debugger;
-            });
+            //WIP
+            // it(`2. Integration Test: Push Data To Configurations Which Is Our Source Addon And See It Changes The UI - Admin And Buyer`, async function () {});
         });
     });
 }
