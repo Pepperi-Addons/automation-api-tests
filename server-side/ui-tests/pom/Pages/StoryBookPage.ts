@@ -15,7 +15,7 @@ export class StoryBookPage extends Page {
     public LatestBuildDropDownOption: By = By.xpath(
         `(//span[@role='presentation']//span[contains(text(),'Build')])[1]`,
     );
-    public ViewStoryBookButton: By = By.xpath(`//span[contains(text(),'View Storybook')]`);
+    public ViewStoryBookButton: By = By.xpath(`//a[contains(@title,'View Storybook')]`);
     public SidebarComponentsHeader: By = By.xpath(`//button[text()="Components"]`);
     public SidebarServicesHeader: By = By.xpath(`//button[text()="Services"]`);
     public SidebarExampleHeader: By = By.xpath(`//button[text()="Example"]`);
