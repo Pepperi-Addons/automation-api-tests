@@ -272,6 +272,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 //logout & login again - see header is still presented
                 const e2eUiService = new E2EUtils(this.browser);
                 await e2eUiService.logOutLogIn_Web18(email, password);
+                debugger;
                 const isHeaderPresentedCorrectlyAfterLoggingOut = await appHeaderService.UIValidateWeSeeAppHeader(
                     headerObject.Button[0].ButtonName,
                     headerObject.Menu[0].Name,
