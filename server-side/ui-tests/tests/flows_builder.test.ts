@@ -115,7 +115,7 @@ export async function FlowTests(email: string, password: string, client: Client,
         Value: 10,
     };
     const expectedResult = 'evgenyosXXX';
-    await generalService.baseAddonVersionsInstallationNewSync(varKey);
+    await generalService.baseAddonVersionsInstallationNewSyncNoNebula(varKey);
     // #region Upgrade survey dependencies
 
     const testData = {

@@ -45,6 +45,12 @@ export class ApplicationHeader extends AddonPage {
     public SaveSlugs: By = By.css(`[data-qa="Save"]`);
     public CancelButtonSlugs: By = By.css(`[data-qa="Cancel"]`);
     public CloseModalButton: By = By.xpath('//mat-dialog-container//button');
+    //homepage header
+    public NotificationButton: By = By.xpath(`//pep-button[@data-qa='|PLACEHOLDER|']`);
+    public MenuButton: By = By.xpath(`//pep-button//button[@data-qa='|PLACEHOLDER|']`);
+    public MenuButtonText: By = By.xpath(
+        `//pep-button//button[@data-qa='|PLACEHOLDER|']//span[@title='|PLACEHOLDER|']`,
+    );
 
     public async enterApplicationHeaderPage(): Promise<boolean> {
         const webAppHeader = new WebAppHeader(this.browser);
@@ -166,12 +172,13 @@ export class ApplicationHeader extends AddonPage {
                 Type: button.ButtonName,
             });
         }
+        const menuKey = uuidv4();
         for (let index = 0; index < appHeaderObject.Menu.length; index++) {
             const menu = appHeaderObject.Menu[index];
             menuArray.push({
                 Title: menu.Name,
                 HierarchyLevel: 0,
-                Key: uuidv4(),
+                Key: menuKey,
                 Visible: true,
                 Enabled: true,
                 Type: null,
@@ -199,7 +206,7 @@ export class ApplicationHeader extends AddonPage {
                 body: JSON.stringify(objectToSend),
             },
         );
-        return applicationResponse;
+        return [applicationResponse, menuKey];
     }
 
     async enterHeaderBySearching(flowName: string) {
@@ -234,6 +241,23 @@ export class ApplicationHeader extends AddonPage {
             await this.browser.click(this.CancelButtonSlugs);
             this.browser.sleep(1500);
         }
+    }
+
+    async UIValidateWeSeeAppHeader(notificationsButtonName, menuButtonName) {
+        //EVGENY^^^
+        const notificationsButtonHeader: string = this.NotificationButton.valueOf()['value'].replace(
+            '|PLACEHOLDER|',
+            notificationsButtonName,
+        );
+        const isNotificationsVisibale = await this.browser.isElementVisible(By.xpath(notificationsButtonHeader));
+        const menuButtonHeader: string = this.MenuButton.valueOf()['value'].replace('|PLACEHOLDER|', menuButtonName);
+        const isMenuVisibale = await this.browser.isElementVisible(By.xpath(menuButtonHeader));
+        const mennuButtonTextElement = this.MenuButtonText.valueOf()['value'].replaceAll(
+            '|PLACEHOLDER|',
+            menuButtonName,
+        );
+        const textOfMenuButton = await (await this.browser.findElement(By.xpath(mennuButtonTextElement))).getText();
+        return isNotificationsVisibale && isMenuVisibale && textOfMenuButton === menuButtonName;
     }
 
     async mapASlugToAppHeader(

@@ -21,7 +21,6 @@ export class OpenSyncService {
             ModificationDateTime: modificationDateTime, //'1970-11-23T14:39:50.781Z',
             Format: 'JSON',
         };
-        debugger;
         const openSyncResponse = await this.generalService.fetchStatus(
             '/addons/api/5122dc6d-745b-4f46-bb8e-bd25225d350a/open-sync/sync',
             {
