@@ -52,8 +52,8 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
     const headerObject: AppHeaderObject = {
         Name: 'test_header_' + generalService.generateRandomString(5),
         Description: 'test',
-        Button: [{ ButtonName: 'evgeny_test_button', ButtonKey: 'Notification' }],
-        Menu: [{ FlowKey: '', Name: 'evgeny_test_menu', FlowName: '' }], //
+        Button: [{ ButtonName: `button_${generalService.generateRandomString(5)}`, ButtonKey: 'Notification' }],
+        Menu: [{ FlowKey: '', Name: `menu_${generalService.generateRandomString(5)}`, FlowName: '' }], //
     };
     // #region Upgrade open sync dependencies
     await generalService.baseAddonVersionsInstallation(varPass, testDataBase);
@@ -257,32 +257,40 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(headersButton.Title).to.equal(headerObject.Button[0].ButtonName);
                 expect(headersButton.Key).to.equal(headerObject.Button[0].ButtonKey);
                 expect(headersButton.Visible).to.equal(true);
-                // const sourcesForSchemes = [
-                //     { AddonUUID: 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', LastSyncDateTime: '1970-02-18T08:48:44.880Z' },
-                // ];
-                // const openSyncResponseSchemes = await openSyncService.getSyncedConfigurationObjectBasedOnResource(
-                //     sourcesForSchemes,
-                //     '1970-11-23T14:39:50.781Z',
-                // );
-                // debugger;
-                // const syncSchemesObject = openSyncResponseSchemes.Body.Resources.Data.find(
-                //     (data) => data.Schema.Name === 'schemes',
-                // );
-                // debugger;
+                const sourcesForSchemes = [
+                    { AddonUUID: 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', LastSyncDateTime: '1970-02-18T08:48:44.880Z' },
+                ];
+                const openSyncResponseSchemes = await openSyncService.getSyncedConfigurationObjectBasedOnResource(
+                    sourcesForSchemes,
+                    '1970-11-23T14:39:50.781Z',
+                );
+                const syncSchemesObject = openSyncResponseSchemes.Body.Resources.Data.find(
+                    (data) => data.Schema.Name === 'schemes',
+                );
+                const spesificHeaderWeJustCreatedFromSchemes = syncSchemesObject.Objects.filter(
+                    (obj) => obj.Name === 'synced_configuration_objects',
+                );
+                expect(spesificHeaderWeJustCreatedFromSchemes.length).to.equal(1);
+                const headerElementFromSchemes = spesificHeaderWeJustCreatedFromSchemes[0];
+                expect(headerElementFromSchemes.AddonUUID).to.equal('84c999c3-84b7-454e-9a86-71b7abc96554');
+                expect(headerElementFromSchemes.Key).to.include('84c999c3-84b7-454e-9a86-71b7abc96554');
+                expect(headerElementFromSchemes.Key).to.include('synced_configuration_objects');
+                expect(headerElementFromSchemes.SyncData.Sync).to.equal(true);
+                expect(headerElementFromSchemes.Fields).to.not.be.undefined;
                 //8. goto slugs and set Application_Header to use just created header
                 await appHeaderService.deleteAppHeaderSlug();
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
                 //9. re-sync
                 await webAppHomePage.reSyncApp();
                 driver.sleep(1500);
-                //TODO: test that the button + menu are there on the header
+                //test that the button + menu are there on the header
                 const isHeaderPresentedCorrectly = await appHeaderService.UIValidateWeSeeAppHeader(
                     headerObject.Button[0].ButtonName,
                     headerObject.Menu[0].Name,
                 );
                 expect(isHeaderPresentedCorrectly).to.equal(true);
                 //logout & login again - see header is still presented
-                const e2eUiService = new E2EUtils(this.browser);
+                const e2eUiService = new E2EUtils(driver);
                 await e2eUiService.logOutLogIn_Web18(email, password);
                 debugger;
                 const isHeaderPresentedCorrectlyAfterLoggingOut = await appHeaderService.UIValidateWeSeeAppHeader(
