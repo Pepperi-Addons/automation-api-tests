@@ -28,7 +28,7 @@ import { Slugs } from '../pom/addons/Slugs';
 
 chai.use(promised);
 
-export async function ResourceListTests(email: string, password: string, varPass: string, client: Client) {
+export async function ResourceListTests(email: string, password: string, client: Client) {
     const date = new Date();
     const generalService = new GeneralService(client);
     // const dataViewsService = new DataViewsService(generalService.papiClient);
