@@ -1228,6 +1228,7 @@ export default class GeneralService {
                 version === '' ? '%' : version
             }' AND Available Like 1 AND Phased Like 1`;
             if (
+                addonName == 'Cross Platform Engine Data' ||
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
                 addonName == 'API Testing Framework' ||

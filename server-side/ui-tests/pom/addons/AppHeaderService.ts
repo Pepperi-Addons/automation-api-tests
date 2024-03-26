@@ -138,6 +138,7 @@ export class ApplicationHeader extends AddonPage {
         if (appHeader.Button.length > 0 || appHeader.Menu.length > 0) {
             await this.publiushHeader();
         }
+        this.browser.sleep(1500);
         await this.goBackFromHeaderToMainPage();
         //5. read button name & button key
         return appHeader.Menu.length > 0
