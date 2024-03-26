@@ -12,7 +12,7 @@ export class WebAppHeader extends Page {
     public CompanyLogo: By = By.css('[data-qa="orgLogo"]'); //'app-root header pepperi-header #header'
     public Settings: By = By.css('[data-qa="systemSettings"]');
     public Help: By = By.css('[data-qa="systemSuppot"]');
-    public UserBtn: By = By.css('[data-qa="systemAvatar"]');
+    public UserBtn: By = By.xpath('//*[contains(@data-qa,"Avatar")]');
     public Home: By = By.css('[data-qa="systemHome"]');
 
     // User Details Popup
