@@ -1862,53 +1862,53 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                 addonVersionSbEx = addonVersionSb;
                 break;
             }
-            case 'CPI DATA':
-            case 'ADDONS-CPI-DATA':
-            case 'CPI-DATA': {
-                addonUUID = 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b';
-                const buildToken = 'CPIDATAApprovmentTests';
-                const jobPathPROD =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Production%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
-                const jobPathEU =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20EU%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
-                const jobPathSB =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Staging%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
-                const {
-                    JenkinsBuildResultsAllEnvs,
-                    latestRunProd,
-                    latestRunEU,
-                    latestRunSB,
-                    addonEntryUUIDProd,
-                    addonEntryUUIDEu,
-                    addonEntryUUIDSb,
-                    addonVersionProd,
-                    addonVersionEU,
-                    addonVersionSb,
-                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
-                    addonName,
-                    addonUUID,
-                    jobPathPROD,
-                    jobPathEU,
-                    jobPathSB,
-                    buildToken,
-                );
-                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
-                latestRunProdEx = latestRunProd;
-                latestRunEUEx = latestRunEU;
-                latestRunSBEx = latestRunSB;
-                pathProdEx = jobPathPROD;
-                pathEUEx = jobPathEU;
-                pathSBEx = jobPathSB;
-                addonEntryUUIDProdEx = addonEntryUUIDProd;
-                addonEntryUUIDEuEx = addonEntryUUIDEu;
-                addonEntryUUIDSbEx = addonEntryUUIDSb;
-                addonVersionProdEx = addonVersionProd;
-                addonVersionEUEx = addonVersionEU;
-                addonVersionSbEx = addonVersionSb;
-                break;
-            }
+            // case 'CPI DATA':
+            // case 'ADDONS-CPI-DATA':
+            // case 'CPI-DATA': {
+            //     addonUUID = 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b';
+            //     const buildToken = 'CPIDATAApprovmentTests';
+            //     const jobPathPROD =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Production%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
+            //     const jobPathEU =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20EU%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
+            //     const jobPathSB =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Staging%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
+            //     const {
+            //         JenkinsBuildResultsAllEnvs,
+            //         latestRunProd,
+            //         latestRunEU,
+            //         latestRunSB,
+            //         addonEntryUUIDProd,
+            //         addonEntryUUIDEu,
+            //         addonEntryUUIDSb,
+            //         addonVersionProd,
+            //         addonVersionEU,
+            //         addonVersionSb,
+            //     } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
+            //         email,
+            //         pass,
+            //         addonName,
+            //         addonUUID,
+            //         jobPathPROD,
+            //         jobPathEU,
+            //         jobPathSB,
+            //         buildToken,
+            //     );
+            //     JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
+            //     latestRunProdEx = latestRunProd;
+            //     latestRunEUEx = latestRunEU;
+            //     latestRunSBEx = latestRunSB;
+            //     pathProdEx = jobPathPROD;
+            //     pathEUEx = jobPathEU;
+            //     pathSBEx = jobPathSB;
+            //     addonEntryUUIDProdEx = addonEntryUUIDProd;
+            //     addonEntryUUIDEuEx = addonEntryUUIDEu;
+            //     addonEntryUUIDSbEx = addonEntryUUIDSb;
+            //     addonVersionProdEx = addonVersionProd;
+            //     addonVersionEUEx = addonVersionEU;
+            //     addonVersionSbEx = addonVersionSb;
+            // //     break;
+            // }
             case 'PNS': {
                 addonUUID = '00000000-0000-0000-0000-000000040fa9';
                 const buildToken = 'PNSApprovmentTests';
