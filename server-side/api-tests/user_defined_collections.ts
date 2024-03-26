@@ -25,7 +25,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
     await generalService.baseAddonVersionsInstallation(varKey);
     //#region Upgrade UDC
     const testData = {
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
+        Crawler: ['f489d076-381f-4cf7-aa63-33c6489eb017', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
@@ -107,6 +109,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             const parsedToken = jwt_decode(generalService.papiClient['options'].token);
             const userName = parsedToken.email;
             it(`Positive Test: testing DI-22319: mark 'scheme only' schemes with 'sync=true'`, async () => {
+                debugger;
                 const allUdcs = await udcService.getSchemes({ page_size: -1 });
                 const filteredUdcs = allUdcs.filter((collection) => collection.Type === 'contained');
                 const isError = filteredUdcs.filter((collection) => collection.SyncData?.Sync !== true);
