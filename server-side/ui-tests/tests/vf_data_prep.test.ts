@@ -155,7 +155,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.4.19'], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
-        // 'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.15'], // CPI_Node_data current phased version 0.6.14 | dependency > 0.6.11
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // CPI_Node_data current phased version 0.6.14 | dependency > 0.6.11
         // 'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.6.52'], // current phased version 0.6.48 | dependency > 0.6.41
         // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.%'], // current phased version 0.6.41 | dependency > 0.6.35
         // 'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''], // current phased version 0.6.2 | dependency > 0.6.2

@@ -111,6 +111,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.0.%'], // to prevent open sync from being installed (2.0.%)
         // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
