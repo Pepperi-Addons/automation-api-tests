@@ -535,7 +535,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
 
     if (tests === 'ResourceList') {
         // await RLdataPrep(client);
-        await ResourceListTests(email, pass, varPass, client);
+        await ResourceListTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
