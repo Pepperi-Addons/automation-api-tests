@@ -65,9 +65,10 @@ export const testDataForNebulaDists = {
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.20'], // evgeny - 24/3/24; new CPI Data addon versions
-    'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //1.4.22 in the interim 1.4.X PFS version
+    'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.4.%'], //1.4.22 in the interim 1.4.X PFS version
     'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''],
-    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.39'], //locked for survey
+    'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.%'], //locked for survey
     sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.0.%'], //sync is now public
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.0.%'],
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', ''],
@@ -1156,7 +1157,6 @@ export default class GeneralService {
                             .install();
                     }
                 }
-                debugger;
                 const auditLogResponse = await this.getAuditLogResultObjectIfValid(installResponse.URI, 40);
                 if (auditLogResponse.Status && auditLogResponse.Status.ID != 1) {
                     if (!auditLogResponse.AuditInfo.ErrorMessage.includes('Addon already installed'))
