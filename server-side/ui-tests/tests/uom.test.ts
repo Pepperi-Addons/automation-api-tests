@@ -196,7 +196,7 @@ export async function UomTests(email: string, password: string, varPass: string,
             });
 
             it('Login', async function () {
-                await webAppLoginPage.loginWithImage(email, password);
+                await webAppLoginPage.login(email, password);
                 const base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Logged in`,
