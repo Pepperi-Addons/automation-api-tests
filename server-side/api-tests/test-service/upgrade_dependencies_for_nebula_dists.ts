@@ -16,7 +16,7 @@ export async function UpgradeDependenciesForNebulaTests(
     } else {
         varKey = request.body.varKeyPro;
     }
-    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testDataForNebulaDists, true);
+    const chnageVersionResponseArr = await generalService.changeVersion(varKey, testDataForNebulaDists, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testDataForNebulaDists);
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
