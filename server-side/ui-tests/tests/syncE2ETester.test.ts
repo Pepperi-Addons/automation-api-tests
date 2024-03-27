@@ -9,7 +9,7 @@ import { Flow, FlowService, FlowStep } from '../pom/addons/flow.service';
 import { Browser } from '../utilities/browser';
 import { createFlowUsingE2E } from './flows_builder.test';
 import { OpenSyncService } from '../../services/open-sync.service';
-// import E2EUtils from '../utilities/e2e_utils';
+import E2EUtils from '../utilities/e2e_utils';
 
 chai.use(promised);
 
@@ -18,8 +18,8 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
     let driver: Browser;
 
     let APP_HEADER_OBJECT_FROM_CONFIG;
-    const buyerEmailStage = 'Demo.Contact@mail.com';
-    const buyerPassStage = 'Cs$5iT';
+    const buyerEmailStage = 'UITesterForHeaderOpenSyncBuyer@pepperitest.com';
+    const buyerPassStage = '@UE3mn';
 
     const flowStepScript = {
         actualScript: `export async function main(data){return 'evgeny123';}`,
@@ -74,7 +74,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], //webapp b2b
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.7.%'], //cpi - data
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], //udc
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
@@ -286,7 +286,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 //8. goto slugs and set Application_Header to use just created header
                 await appHeaderService.deleteAppHeaderSlug();
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
-                //9. re-sync
+                //9. re-sync -- sync? refresh?
                 await webAppHomePage.reSyncApp();
                 driver.sleep(1500);
                 //test that the button + menu are there on the header
@@ -295,18 +295,17 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                     headerObject.Menu[0].Name,
                 );
                 expect(isHeaderPresentedCorrectly).to.equal(true);
-                // DOESNT WORK VVVVVV
-                //logout & login again - see header is still presented
-                // const e2eUiService = new E2EUtils(driver);
-                // await e2eUiService.logOutLogIn_Web18(email, password);
-                // debugger;
-                // const isHeaderPresentedCorrectlyAfterLoggingOut = await appHeaderService.UIValidateWeSeeAppHeader(
-                //     headerObject.Button[0].ButtonName,
-                //     headerObject.Menu[0].Name,
-                // );
-                // expect(isHeaderPresentedCorrectlyAfterLoggingOut).to.equal(true);
-                //logout from Admin - login to buyer - tests the header
-                const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(this.browser);
+                // logout & login again - see header is still presented
+                const e2eUiService = new E2EUtils(driver);
+                await e2eUiService.logOutLogIn_Web18(email, password);
+                const isHeaderPresentedCorrectlyAfterLoggingOut = await appHeaderService.UIValidateWeSeeAppHeader(
+                    headerObject.Button[0].ButtonName,
+                    headerObject.Menu[0].Name,
+                );
+                expect(isHeaderPresentedCorrectlyAfterLoggingOut).to.equal(true);
+                // logout from Admin - login to buyer - tests the header
+                debugger;
+                const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.longLoginForBuyer(buyerEmailStage, buyerPassStage);
                 driver.sleep(2500);
                 const isHeaderPresentedCorrectlyAfterLoggingOutBuyer = await appHeaderService.UIValidateWeSeeAppHeader(
@@ -319,6 +318,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
             it(`2. Data Cleansing After UI Was Created - To Nullify The Header`, async function () {
                 //1. scripts
                 //get all ->
+                debugger;
                 const allScripts = await generalService.fetchStatus(
                     '/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',
                     {
