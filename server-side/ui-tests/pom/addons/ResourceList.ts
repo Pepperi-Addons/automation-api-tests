@@ -46,6 +46,10 @@ export class ResourceList extends AddonPage {
     public LineMenu_Tab: By = this.getSelectorOfResourceListSettingsTab('Line Menu');
     public SmartSearch_Tab: By = this.getSelectorOfResourceListSettingsTab('Smart Search');
     public Search_Tab: By = this.getSelectorOfResourceListSettingsTab('Search');
+    public SearchBox: By = By.xpath('//div[contains(@class,"pep-search-input")]//input[contains(@id,"mat-input")]');
+    public SearchMagnifierIcon: By = By.xpath(
+        '//div[contains(@class,"pep-search-input")]//pep-icon[@name="system_search"]/parent::mat-icon',
+    );
     // List
     public GenericList_Content: By = By.xpath('//pep-generic-list/pep-page-layout/div[@class="pep-page-main-layout"]');
     public GenericList_Title: By = By.xpath(
@@ -136,6 +140,10 @@ export class ResourceList extends AddonPage {
 
     public getSelectorOfRowInListByName(name: string) {
         return By.xpath(`//span[@id="Name"][@title="${name}"]/ancestor::pep-textbox/ancestor::pep-form`);
+    }
+
+    public getSelectorOfRadioButtonInListByName(name: string) {
+        return By.xpath(`${this.getSelectorOfRowInListByName(name).value}/ancestor::fieldset/mat-radio-button`);
     }
 
     public getSelectorOfRowInListByPartialName(name: string) {
@@ -287,8 +295,13 @@ export class ResourceList extends AddonPage {
         await this.selectFromList(selector, name);
     }
 
+    public async singleSelectFromListByName(name: string) {
+        const selector: By = this.getSelectorOfRadioButtonInListByName(name);
+        await this.selectFromList(selector, name);
+    }
+
     public async selectFromListByPartialName(name: string) {
-        const selector: By = this.getSelectorOfRowInListByName(name);
+        const selector: By = this.getSelectorOfRowInListByPartialName(name);
         await this.selectFromList(selector, name);
     }
 
@@ -324,7 +337,7 @@ export class ResourceList extends AddonPage {
     }
 
     public async gotoEditPage(name: string) {
-        await this.selectFromListByName(name);
+        await this.singleSelectFromListByName(name);
         this.pause(0.5 * 1000);
         await this.openPencilMenu();
         this.pause(0.5 * 1000);
@@ -360,8 +373,20 @@ export class ResourceViews extends ResourceList {
         await this.selectDropBoxByString(dropdownElement, editorName);
     }
 
+    public async searchForViewByName(name: string) {
+        await this.insertTextToInputElement(name, this.SearchBox);
+        this.browser.sleep(0.1 * 1000);
+        await this.browser.click(this.SearchMagnifierIcon);
+        this.browser.sleep(0.5 * 1000);
+    }
+
     public async gotoEditPageOfView(viewName: string) {
-        await this.gotoEditPage(viewName);
+        await this.singleSelectFromListByName(viewName);
+        this.pause(0.5 * 1000);
+        await this.openPencilMenu();
+        this.pause(0.5 * 1000);
+        await this.selectUnderPencil('Edit');
+        this.pause(0.5 * 1000);
         await this.verifyViewEditPageOpen(viewName);
         this.pause(2 * 1000);
     }
@@ -602,8 +627,20 @@ export class ResourceEditors extends ResourceList {
         // await this.click(this.EditPage_BackToList_Button);
     }
 
+    public async searchForEditorByName(name: string) {
+        await this.insertTextToInputElement(name, this.SearchBox);
+        this.browser.sleep(0.1 * 1000);
+        await this.browser.click(this.SearchMagnifierIcon);
+        this.browser.sleep(0.5 * 1000);
+    }
+
     public async gotoEditPageOfEditor(editorName: string) {
-        await this.gotoEditPage(editorName);
+        await this.selectFromListByName(editorName);
+        this.pause(0.5 * 1000);
+        await this.openPencilMenu();
+        this.pause(0.5 * 1000);
+        await this.selectUnderPencil('Edit');
+        this.pause(0.5 * 1000);
         await this.verifyEditorEditPageOpen(editorName);
         this.pause(2 * 1000);
     }

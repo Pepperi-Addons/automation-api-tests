@@ -45,6 +45,10 @@ export default class E2EUtils extends BasePomObject {
                     const resourceList: ResourceList = new ResourceList(this.browser);
                     await settingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
                     this.browser.sleep(0.2 * 1000);
+                    if (await this.browser.isElementVisible(resourceList.EditPage_BackToList_Button)) {
+                        await this.browser.click(resourceList.EditPage_BackToList_Button);
+                        await resourceList.isSpinnerDone();
+                    }
                     await this.browser.refresh();
                     await resourceList.waitTillVisible(resourceList.PepTopArea_title, 30000);
                     break;
@@ -53,6 +57,8 @@ export default class E2EUtils extends BasePomObject {
                     break;
                 case 'Page Builder':
                     await settingsSidePanel.clickSettingsSubCategory('pages', 'Pages');
+                    await this.browser.refresh();
+                    await header.isSpinnerDone();
                     break;
                 default:
                     throw new Error('Incorrect Path Chosen!');
@@ -155,12 +161,14 @@ export default class E2EUtils extends BasePomObject {
         const resourceEditors: ResourceEditors = new ResourceEditors(this.browser);
         await this.navigateTo('Resource Views');
         await resourceEditors.clickTab('Editors_Tab');
+        await resourceEditors.searchForEditorByName(editorName);
         await resourceEditors.gotoEditPageOfEditor(editorName);
     }
 
     public async gotoEditPageOfSelectedViewByName(viewName: string) {
         const resourceViews: ResourceViews = new ResourceViews(this.browser);
         await this.navigateTo('Resource Views');
+        await resourceViews.searchForViewByName(viewName);
         await resourceViews.gotoEditPageOfView(viewName);
     }
 
