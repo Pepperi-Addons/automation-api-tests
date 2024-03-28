@@ -65,7 +65,7 @@ export class ResourceList extends AddonPage {
     public FirstRadioButtonInList: By = By.xpath('//virtual-scroller/div[2]/div/fieldset/mat-radio-button');
     public SelectedRadioButton: By = By.xpath('//mat-radio-button[contains(@class, "checked")]');
     public ResultsDiv: By = By.xpath(
-        '//*[contains(@id,"mat-tab-content")]/div/app-table/pep-page-layout/div[4]/div[2]/pep-generic-list/pep-page-layout/div[4]/div[1]/pep-top-bar/div/div/div/div/div[1]/div[5]/pep-list-total/div/div',
+        '//*[contains(@id,"mat-tab-content")]//pep-generic-list/pep-page-layout//pep-top-bar//pep-list-total/div/div',
     );
     public NumberOfItemsInList: By = By.xpath(
         '//div[contains(text(), "result")]/span[contains(@class, "bold number")]',
@@ -86,7 +86,7 @@ export class ResourceList extends AddonPage {
     public AddPopup_Resource: By = By.xpath('//*[contains(@id,"mat-select-value")]/span/span');
     public AddPopupResourceDropdown: By = By.id('Resource-panel');
     public AddPopupResourceDropdownSingleOption: By = By.xpath(
-        '//*[contains(@id,"mat-dialog")]/app-add-form/pep-dialog/div[2]/pep-generic-form/pep-page-layout/div[4]/div[2]/div/div/pep-form/fieldset/mat-grid-list/div/mat-grid-tile[3]/div/pep-field-generator/pep-select/mat-form-field/div/div[1]',
+        '//*[contains(@id,"mat-dialog")]/app-add-form/pep-dialog//pep-form/fieldset/mat-grid-list//pep-select/mat-form-field/div/div[1]',
     );
     // Edit page
     public EditPage_Title: By = By.xpath('//pep-top-bar/div/div/div/div/div/div[2]/span');
