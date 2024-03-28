@@ -246,6 +246,7 @@ export class ApplicationHeader extends AddonPage {
 
     async UIValidateWeSeeAppHeader(notificationsButtonName, menuButtonName) {
         //EVGENY^^^
+        let textOfMenuButton = '';
         const notificationsButtonHeader: string = this.NotificationButton.valueOf()['value'].replace(
             '|PLACEHOLDER|',
             notificationsButtonName,
@@ -253,11 +254,13 @@ export class ApplicationHeader extends AddonPage {
         const isNotificationsVisibale = await this.browser.isElementVisible(By.xpath(notificationsButtonHeader));
         const menuButtonHeader: string = this.MenuButton.valueOf()['value'].replace('|PLACEHOLDER|', menuButtonName);
         const isMenuVisibale = await this.browser.isElementVisible(By.xpath(menuButtonHeader));
-        const mennuButtonTextElement = this.MenuButtonText.valueOf()['value'].replaceAll(
-            '|PLACEHOLDER|',
-            menuButtonName,
-        );
-        const textOfMenuButton = await (await this.browser.findElement(By.xpath(mennuButtonTextElement))).getText();
+        if (isMenuVisibale) {
+            const mennuButtonTextElement = this.MenuButtonText.valueOf()['value'].replaceAll(
+                '|PLACEHOLDER|',
+                menuButtonName,
+            );
+            textOfMenuButton = await (await this.browser.findElement(By.xpath(mennuButtonTextElement))).getText();
+        }
         return isNotificationsVisibale && isMenuVisibale && textOfMenuButton === menuButtonName;
     }
 
