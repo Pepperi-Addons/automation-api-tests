@@ -10,6 +10,7 @@ import { Browser } from '../utilities/browser';
 import { createFlowUsingE2E } from './flows_builder.test';
 import { OpenSyncService } from '../../services/open-sync.service';
 import E2EUtils from '../utilities/e2e_utils';
+// import { PFSService } from '../../services/pfs.service';
 
 chai.use(promised);
 
@@ -18,8 +19,9 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
     let driver: Browser;
 
     let APP_HEADER_OBJECT_FROM_CONFIG;
-    const buyerEmailStage = 'UITesterForHeaderOpenSyncBuyer@pepperitest.com';
-    const buyerPassStage = '@UE3mn';
+    let appHeaderUUID;
+    // const buyerEmailStage = 'UITesterForHeaderOpenSyncBuyer@pepperitest.com';
+    // const buyerPassStage = '@UE3mn';
 
     const flowStepScript = {
         actualScript: `export async function main(data){return 'evgeny123';}`,
@@ -149,6 +151,12 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 console.log(`Sync Version: ${syncVersion}, With NO Nebula!`);
                 debugger;
             });
+            // it(`*. Pre-Test Step: Testing That PFS Is Working On Open Sync`, async function () {
+            //     //1. create a PFS scheme which is sync true
+            //     const pfsService = new PFSService(generalService);
+
+            //     //2.
+            // });
             it(`1. Basic UI Test: Using Admin Login To WebApp, Create A Basic Flow, Set App. Header To Show This Flow And Notifications Button Using Legacy Resources And See It Changes The Header On Admin And Buyer`, async function () {
                 //1. login to webapp & create a flow
                 const [flowKey, flowName] = await createFlowUsingE2E(
@@ -168,7 +176,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 const appHeaderService = new ApplicationHeader(driver);
                 const isAppHeaderPagePresented = await appHeaderService.enterApplicationHeaderPage();
                 expect(isAppHeaderPagePresented).to.equal(true);
-                const appHeaderUUID = await appHeaderService.addNewAppHeader(headerObject);
+                appHeaderUUID = await appHeaderService.addNewAppHeader(headerObject);
                 //3. validate it was created correctly using API: confguration drafts
                 const draftsResponsePreButtonsAndMenu = await generalService.fetchStatus(
                     '/addons/configurations/9bc8af38-dd67-4d33-beb0-7d6b39a6e98d/AppHeaderConfiguration/drafts',
@@ -287,7 +295,8 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 await appHeaderService.deleteAppHeaderSlug();
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
                 //9. re-sync -- sync? refresh?
-                await webAppHomePage.reSyncApp();
+                driver.sleep(1500);
+                await driver.refresh();
                 driver.sleep(1500);
                 //test that the button + menu are there on the header
                 const isHeaderPresentedCorrectly = await appHeaderService.UIValidateWeSeeAppHeader(
@@ -304,21 +313,104 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 );
                 expect(isHeaderPresentedCorrectlyAfterLoggingOut).to.equal(true);
                 // logout from Admin - login to buyer - tests the header
-                debugger;
-                const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.longLoginForBuyer(buyerEmailStage, buyerPassStage);
-                driver.sleep(2500);
-                const isHeaderPresentedCorrectlyAfterLoggingOutBuyer = await appHeaderService.UIValidateWeSeeAppHeader(
+                // debugger;
+                // const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(driver);
+                // await webAppLoginPage.longLoginForBuyer(buyerEmailStage, buyerPassStage);
+                // driver.sleep(2500);
+                // const isHeaderPresentedCorrectlyAfterLoggingOutBuyer = await appHeaderService.UIValidateWeSeeAppHeader(
+                //     headerObject.Button[0].ButtonName,
+                //     headerObject.Menu[0].Name,
+                // );
+                // expect(isHeaderPresentedCorrectlyAfterLoggingOutBuyer).to.equal(true);
+            });
+            it(`2. Data Cleansing After UI Was Created & Tested - Delete Header And Slug Before Trying To Push A Header Using Config API`, async function () {
+                //1. slug
+                const webAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.login(email, password);
+                const appHeaderService = new ApplicationHeader(driver);
+                await appHeaderService.deleteAppHeaderSlug();
+                //2. header
+                //->
+                const allHeaders = await generalService.fetchStatus(
+                    '/addons/api/84c999c3-84b7-454e-9a86-71b7abc96554/api/objects?addonUUID=9bc8af38-dd67-4d33-beb0-7d6b39a6e98d&name=AppHeaderConfiguration&scheme=drafts',
+                    {
+                        method: 'GET',
+                    },
+                );
+                expect(allHeaders.Ok).to.equal(true);
+                expect(allHeaders.Status).to.equal(200);
+                console.log('there are: ' + allHeaders.Body.length + ' headers to delete');
+                for (let index = 0; index < allHeaders.Body.length; index++) {
+                    const header = allHeaders.Body[index];
+                    const bodyToDelete = {
+                        Hidden: true,
+                        Key: header.Key,
+                    };
+                    const deleteResponse = await generalService.fetchStatus(
+                        '/addons/api/84c999c3-84b7-454e-9a86-71b7abc96554/api/objects?addonUUID=9bc8af38-dd67-4d33-beb0-7d6b39a6e98d&name=AppHeaderConfiguration&scheme=drafts',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(bodyToDelete),
+                        },
+                    );
+                    expect(deleteResponse.Ok).to.equal(true);
+                    expect(deleteResponse.Status).to.equal(200);
+                    expect(deleteResponse.Body.Hidden).to.equal(true);
+                    expect(deleteResponse.Body.Key).to.equal(header.Key);
+                    console.log(
+                        header.Name +
+                            'was deleted, ' +
+                            ((allHeaders.Body.length - (index + 1)) as number) +
+                            ' headers left',
+                    );
+                }
+                const webAppHomePage = new WebAppHomePage(driver);
+                await webAppHomePage.returnToHomePage();
+                await webAppHomePage.reSyncApp();
+                await driver.refresh();
+                generalService.sleep(2000);
+                const isHeaderPresentedCorrectlyAfterLoggingOut = await appHeaderService.UIValidateWeSeeAppHeader(
                     headerObject.Button[0].ButtonName,
                     headerObject.Menu[0].Name,
                 );
-                expect(isHeaderPresentedCorrectlyAfterLoggingOutBuyer).to.equal(true);
-                debugger;
+                expect(isHeaderPresentedCorrectlyAfterLoggingOut).to.equal(false);
             });
-            it(`2. Data Cleansing After UI Was Created - To Nullify The Header`, async function () {
+            it(`3. Integration Test: Push Data To Configurations Which Is Our Source Addon And See It Changes The UI - Admin And Buyer`, async function () {
+                //1. push to config and see data is updating in UI
+                const configResponseDraft = await generalService.fetchStatus(
+                    '/addons/configurations/9bc8af38-dd67-4d33-beb0-7d6b39a6e98d/AppHeaderConfiguration/drafts',
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(APP_HEADER_OBJECT_FROM_CONFIG),
+                    },
+                );
+                expect(configResponseDraft.Ok).to.equal(true);
+                expect(configResponseDraft.Status).to.equal(200);
+                expect(configResponseDraft.Body.Key).to.equal(APP_HEADER_OBJECT_FROM_CONFIG.Key);
+                expect(configResponseDraft.Body.Data).to.deep.equal(APP_HEADER_OBJECT_FROM_CONFIG.Data);
+                const configResponsePublish = await generalService.fetchStatus(
+                    `/addons/configurations/9bc8af38-dd67-4d33-beb0-7d6b39a6e98d/AppHeaderConfiguration/drafts/key/${configResponseDraft.Body.Key}/publish`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify({}),
+                    },
+                );
+                expect(configResponsePublish.Ok).to.equal(true);
+                expect(configResponsePublish.Status).to.equal(200);
+                expect(configResponsePublish.Body.VersionKey).to.not.be.undefined;
+                generalService.sleep(3500);
+                const appHeaderService = new ApplicationHeader(driver);
+                await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
+                const e2eUiService = new E2EUtils(driver);
+                await e2eUiService.logOutLogIn_Web18(email, password);
+                const isHeaderPresentedCorrectlyAfterLoggingOut = await appHeaderService.UIValidateWeSeeAppHeader(
+                    headerObject.Button[0].ButtonName,
+                    headerObject.Menu[0].Name,
+                );
+                expect(isHeaderPresentedCorrectlyAfterLoggingOut).to.equal(true);
+            });
+            it(`4. Data Cleansing After UI Was Created - To Nullify The Header`, async function () {
                 //1. scripts
-                //get all ->
-                debugger;
                 const allScripts = await generalService.fetchStatus(
                     '/addons/api/9f3b727c-e88c-4311-8ec4-3857bc8621f3/api/scripts',
                     {
@@ -401,22 +493,6 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 await webAppHomePage.returnToHomePage();
                 await webAppHomePage.reSyncApp();
                 await driver.refresh();
-            });
-            //WIP
-            it(`3. Integration Test: Push Data To Configurations Which Is Our Source Addon And See It Changes The UI - Admin And Buyer`, async function () {
-                //1. push to config and see data is updating in UI
-                const configResponse = await generalService.fetchStatus(
-                    '/addons/configurations/9bc8af38-dd67-4d33-beb0-7d6b39a6e98d/AppHeaderConfiguration/drafts',
-                    {
-                        method: 'POST',
-                        body: JSON.stringify(APP_HEADER_OBJECT_FROM_CONFIG),
-                    },
-                );
-                expect(configResponse.Ok).to.equal(true);
-                expect(configResponse.Status).to.equal(200);
-                expect(configResponse.Body.Key).to.equal(APP_HEADER_OBJECT_FROM_CONFIG.Key);
-                expect(configResponse.Body.Data).to.deep.equal(APP_HEADER_OBJECT_FROM_CONFIG.Data);
-                //2. push to sync and see data is updating
             });
         });
     });

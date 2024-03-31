@@ -186,12 +186,9 @@ export class DevTest {
         //3. install dependencys
         if (addonDep !== undefined && addonDep.length !== 0) {
             if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5') {
-                //OFS
-                const depObjNebula = {};
-                depObjNebula['Nebula'] = ['00000000-0000-0000-0000-000000006a91', ''];
+                //PFS
                 const depObjSync = {};
                 depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''];
-                addonDep.push(depObjNebula);
                 addonDep.push(depObjSync);
             }
             if (
