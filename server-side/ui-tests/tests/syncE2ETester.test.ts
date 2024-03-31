@@ -314,6 +314,8 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(isHeaderPresentedCorrectlyAfterLoggingOut).to.equal(true);
                 // logout from Admin - login to buyer - tests the header
                 const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.logout();
+                driver.sleep(2500);
                 await webAppLoginPage.longLoginForBuyer(buyerEmailStage, buyerPassStage);
                 driver.sleep(2500);
                 const isHeaderPresentedCorrectlyAfterLoggingOutBuyer = await appHeaderService.UIValidateWeSeeAppHeader(

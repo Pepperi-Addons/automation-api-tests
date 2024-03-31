@@ -1291,6 +1291,13 @@ export class DevTest {
                     'UserDefinedBlocksEUApp5@pepperitest.com',
                     'UserDefinedBlocksSBApp2@pepperitest.com',
                 ];
+            case 'SUPPORT-TOOLS':
+            case 'SUPPORT TOOLS':
+                return [
+                    'SupportToolsEU@pepperitest.com',
+                    'SupportToolsProd@pepperitest.com',
+                    'SupportToolsSB@pepperitest.com',
+                ];
             case 'JOURNEY-TRACKER':
             case 'JOURNEY':
                 return [
