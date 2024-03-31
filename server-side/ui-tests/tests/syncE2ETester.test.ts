@@ -335,6 +335,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                     headerObject.Menu[0].Name,
                 );
                 expect(isHeaderPresentedCorrectlyAfterLoggingOutBuyer).to.equal(true);
+                await webAppLoginPage.logout_Web18();
             });
             it(`2. Data Cleansing After UI Was Created & Tested - Delete Header And Slug Before Trying To Push A Header Using Config API`, async function () {
                 //1. slug
