@@ -20,8 +20,8 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
 
     let APP_HEADER_OBJECT_FROM_CONFIG;
     let appHeaderUUID;
-    // const buyerEmailStage = 'UITesterForHeaderOpenSyncBuyer@pepperitest.com';
-    // const buyerPassStage = '@UE3mn';
+    const buyerEmailStage = 'UITesterForHeaderOpenSyncBuyer@pepperitest.com';
+    const buyerPassStage = '@UE3mn';
 
     const flowStepScript = {
         actualScript: `export async function main(data){return 'evgeny123';}`,
@@ -313,15 +313,14 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 );
                 expect(isHeaderPresentedCorrectlyAfterLoggingOut).to.equal(true);
                 // logout from Admin - login to buyer - tests the header
-                // debugger;
-                // const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(driver);
-                // await webAppLoginPage.longLoginForBuyer(buyerEmailStage, buyerPassStage);
-                // driver.sleep(2500);
-                // const isHeaderPresentedCorrectlyAfterLoggingOutBuyer = await appHeaderService.UIValidateWeSeeAppHeader(
-                //     headerObject.Button[0].ButtonName,
-                //     headerObject.Menu[0].Name,
-                // );
-                // expect(isHeaderPresentedCorrectlyAfterLoggingOutBuyer).to.equal(true);
+                const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(driver);
+                await webAppLoginPage.longLoginForBuyer(buyerEmailStage, buyerPassStage);
+                driver.sleep(2500);
+                const isHeaderPresentedCorrectlyAfterLoggingOutBuyer = await appHeaderService.UIValidateWeSeeAppHeader(
+                    headerObject.Button[0].ButtonName,
+                    headerObject.Menu[0].Name,
+                );
+                expect(isHeaderPresentedCorrectlyAfterLoggingOutBuyer).to.equal(true);
             });
             it(`2. Data Cleansing After UI Was Created & Tested - Delete Header And Slug Before Trying To Push A Header Using Config API`, async function () {
                 //1. slug
