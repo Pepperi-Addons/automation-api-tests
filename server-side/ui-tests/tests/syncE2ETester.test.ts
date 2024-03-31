@@ -326,8 +326,10 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 driver.sleep(2500);
                 await webAppLoginPage.longLoginForBuyer(buyerEmailStage, buyerPassStage);
                 driver.sleep(2500);
+                await webAppHomePage.reSyncApp();
+                driver.sleep(1500);
                 await driver.refresh();
-                driver.sleep(2500);
+                generalService.sleep(2000);
                 const isHeaderPresentedCorrectlyAfterLoggingOutBuyer = await appHeaderService.UIValidateWeSeeAppHeader(
                     headerObject.Button[0].ButtonName,
                     headerObject.Menu[0].Name,
