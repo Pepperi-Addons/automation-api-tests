@@ -321,9 +321,12 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 // logout from Admin - login to buyer - tests the header
                 console.log('UI Test Step --> 7. Test The Header Is Shown - BUYER');
                 const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(driver);
-                await webAppLoginPage.logout();
+                debugger;
+                await webAppLoginPage.logout_Web18();
                 driver.sleep(2500);
                 await webAppLoginPage.longLoginForBuyer(buyerEmailStage, buyerPassStage);
+                driver.sleep(2500);
+                await driver.refresh();
                 driver.sleep(2500);
                 const isHeaderPresentedCorrectlyAfterLoggingOutBuyer = await appHeaderService.UIValidateWeSeeAppHeader(
                     headerObject.Button[0].ButtonName,
