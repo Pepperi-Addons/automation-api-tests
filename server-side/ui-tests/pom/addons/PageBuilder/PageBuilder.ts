@@ -16,6 +16,10 @@ export class PageBuilder extends AddonPage {
     // Add a new Page
     public SelectPage_Title: By = By.xpath('//span[@title="Select a Page"]');
     public BlankTemplatePage: By = By.xpath('//*[text()="Blank"]/parent::div[contains(@class,"page-cube-inner")]');
+    // Page Saved and Published
+    public PageSavedAndPublished_Popup: By = By.xpath(
+        '//div[contains(@class,"snack-bar-container")]//label[contains(text(),"Page Saved and Published")]',
+    );
     // List
     public PagesList_Title: By = By.xpath(
         '//pep-generic-list//div[contains(@class,"header-content")]//div[contains(@class,"left-container")]//div[contains(@class,"title")]//span',
@@ -109,6 +113,8 @@ export class PageBuilder extends AddonPage {
         // await this.waitTillVisible(this.Section_Frame, 5000);
         await this.waitTillVisible(this.InnerPageBuilder, 5000);
         await this.clickElement('EditPage_EditMenu_Button_Publish');
+        await this.isSpinnerDone();
+        await this.browser.untilIsVisible(this.PageSavedAndPublished_Popup);
         this.pause(1500);
     }
 

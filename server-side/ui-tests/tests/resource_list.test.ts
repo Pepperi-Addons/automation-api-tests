@@ -273,6 +273,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 await resourceListUtils.navigateTo('Resource Views');
                 await resourceList.isSpinnerDone();
                 await resourceEditors.clickTab('Editors_Tab');
+                await resourceEditors.isSpinnerDone();
                 await resourceEditors.validateEditorsListPageIsLoaded();
                 await resourceEditors.addToResourceList(editorName, editor_decsription, resource_name);
                 await resourceEditors.verifyEditorEditPageOpen(editorName);
@@ -615,7 +616,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
                 it('Create Page', async function () {
                     await resourceListUtils.navigateTo('Page Builder');
-                    await driver.refresh();
+                    // await driver.refresh();
                     await resourceList.isSpinnerDone();
                     await pageBuilder.validatePageBuilderIsLoaded();
                     pageName = `${resource} Page Auto_(${random_name})`;
