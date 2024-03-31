@@ -63,6 +63,9 @@ export class DevTest {
 
     convertNameToUUIDForDevTests(addonName: string) {
         switch (addonName) {
+            case 'SUPPORT-TOOLS':
+            case 'SUPPORT TOOLS':
+                return '76fe8cf0-da3f-44d3-accf-e661cdaea235';
             case 'GENERIC-RESOURCE':
             case 'GENERIC RESOURCE':
                 return 'df90dba6-e7cc-477b-95cf-2c70114e44e0';
