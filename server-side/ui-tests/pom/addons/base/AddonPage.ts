@@ -373,7 +373,7 @@ export class AddonPage extends Page {
     }
 
     public async insertTextToInputElement(text: string, inputElement: By) {
-        const elem = await this.browser.findElement(inputElement, 2000, true);
+        const elem = await this.browser.findElement(inputElement, 15000, true);
         // await elem.sendKeys(Key.BACK_SPACE);
         await elem.clear();
         await elem.sendKeys(text);

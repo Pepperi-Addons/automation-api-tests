@@ -57,8 +57,11 @@ export default class E2EUtils extends BasePomObject {
                     break;
                 case 'Page Builder':
                     await settingsSidePanel.clickSettingsSubCategory('pages', 'Pages');
+                    await header.isSpinnerDone();
+                    this.browser.sleep(0.2 * 1000);
                     await this.browser.refresh();
                     await header.isSpinnerDone();
+                    this.browser.sleep(0.2 * 1000);
                     break;
                 default:
                     throw new Error('Incorrect Path Chosen!');

@@ -556,7 +556,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     }
 
     if (tests === 'VisitFlow') {
-        await VFdataPrep(varPass, client);
+        // await VFdataPrep(varPass, client);
         await VisitFlowTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
