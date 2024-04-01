@@ -20,8 +20,8 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
 
     let APP_HEADER_OBJECT_FROM_CONFIG;
     let appHeaderUUID;
-    // const buyerEmailStage = 'UITesterForHeaderOpenSyncBuyer@pepperitest.com';
-    // const buyerPassStage = '@UE3mn';
+    const buyerEmailStage = 'UITesterForHeaderOpenSyncBuyer@pepperitest.com';
+    const buyerPassStage = '@UE3mn';
 
     const flowStepScript = {
         actualScript: `export async function main(data){return 'evgeny123';}`,
@@ -159,6 +159,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
             // });
             it(`1. Basic UI Test: Using Admin Login To WebApp, Create A Basic Flow, Set App. Header To Show This Flow And Notifications Button Using Legacy Resources And See It Changes The Header On Admin And Buyer`, async function () {
                 //1. login to webapp & create a flow
+                console.log('UI Test Step --> 1. Creating A Flow To Use In Header');
                 const [flowKey, flowName] = await createFlowUsingE2E(
                     driver,
                     generalService,
@@ -173,6 +174,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.returnToHomePage();
                 //2. add new naked header
+                console.log('UI Test Step --> 2. Creating A The Header');
                 const appHeaderService = new ApplicationHeader(driver);
                 const isAppHeaderPagePresented = await appHeaderService.enterApplicationHeaderPage();
                 expect(isAppHeaderPagePresented).to.equal(true);
@@ -197,6 +199,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(newlyCreatedHeader.Data.Published).to.equal(true);
                 expect(newlyCreatedHeader.Data.Draft).to.equal(true);
                 //5. adding button and menu using API (d&d)
+                console.log('UI Test Step --> 3. Adding Buttons And Menu For Header');
                 const [headerCreationRespone, menuKey] = await appHeaderService.configureMenuAndButtonViaAPI(
                     generalService,
                     headerObject,
@@ -292,6 +295,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 expect(headerElementFromSchemes.SyncData.Sync).to.equal(true);
                 expect(headerElementFromSchemes.Fields).to.not.be.undefined;
                 //8. goto slugs and set Application_Header to use just created header
+                console.log('UI Test Step --> 4. Set A Slug To Show The Header');
                 await appHeaderService.deleteAppHeaderSlug();
                 await appHeaderService.mapASlugToAppHeader(email, password, generalService, appHeaderUUID);
                 //9. re-sync -- sync? refresh?
@@ -299,12 +303,14 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 await driver.refresh();
                 driver.sleep(1500);
                 //test that the button + menu are there on the header
+                console.log('UI Test Step --> 5. Test The Header Is Shown - Admin');
                 const isHeaderPresentedCorrectly = await appHeaderService.UIValidateWeSeeAppHeader(
                     headerObject.Button[0].ButtonName,
                     headerObject.Menu[0].Name,
                 );
                 expect(isHeaderPresentedCorrectly).to.equal(true);
                 // logout & login again - see header is still presented
+                console.log('UI Test Step --> 6. Test The Header Is Shown, After Logout & Login - Admin');
                 const e2eUiService = new E2EUtils(driver);
                 await e2eUiService.logOutLogIn_Web18(email, password);
                 const isHeaderPresentedCorrectlyAfterLoggingOut = await appHeaderService.UIValidateWeSeeAppHeader(
@@ -313,15 +319,23 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 );
                 expect(isHeaderPresentedCorrectlyAfterLoggingOut).to.equal(true);
                 // logout from Admin - login to buyer - tests the header
-                // debugger;
-                // const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(driver);
-                // await webAppLoginPage.longLoginForBuyer(buyerEmailStage, buyerPassStage);
-                // driver.sleep(2500);
-                // const isHeaderPresentedCorrectlyAfterLoggingOutBuyer = await appHeaderService.UIValidateWeSeeAppHeader(
-                //     headerObject.Button[0].ButtonName,
-                //     headerObject.Menu[0].Name,
-                // );
-                // expect(isHeaderPresentedCorrectlyAfterLoggingOutBuyer).to.equal(true);
+                console.log('UI Test Step --> 7. Test The Header Is Shown - BUYER');
+                const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(driver);
+                debugger;
+                await webAppLoginPage.logout_Web18();
+                driver.sleep(2500);
+                await webAppLoginPage.longLoginForBuyer(buyerEmailStage, buyerPassStage);
+                driver.sleep(2500);
+                await webAppHomePage.reSyncApp();
+                driver.sleep(1500);
+                await driver.refresh();
+                generalService.sleep(2000);
+                const isHeaderPresentedCorrectlyAfterLoggingOutBuyer = await appHeaderService.UIValidateWeSeeAppHeader(
+                    headerObject.Button[0].ButtonName,
+                    headerObject.Menu[0].Name,
+                );
+                expect(isHeaderPresentedCorrectlyAfterLoggingOutBuyer).to.equal(true);
+                await webAppLoginPage.logout_Web18();
             });
             it(`2. Data Cleansing After UI Was Created & Tested - Delete Header And Slug Before Trying To Push A Header Using Config API`, async function () {
                 //1. slug

@@ -2345,6 +2345,9 @@ export async function handleTeamsURL(addonName, service, email, pass) {
     switch (addonName) {
         case 'QA':
             return await service.getSecretfromKMS(email, pass, 'QAWebHook');
+        case 'SUPPORT-TOOLS':
+        case 'SUPPORT TOOLS':
+            return await service.getSecretfromKMS(email, pass, 'SupportToolsWebHook');
         case 'PAPI-DATA-INDEX':
         case 'PAPI INDEX': //evgeny todo
             return await service.getSecretfromKMS(email, pass, 'PapiDataIndexWebHook');
