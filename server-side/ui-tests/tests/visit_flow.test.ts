@@ -270,6 +270,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
                 it('Verifying Page was created successfully', async function () {
                     await e2eUtils.navigateTo('Page Builder');
+                    pageBuilder.pause(0.2 * 1000);
                     await pageBuilder.searchForPageByName(pageName);
                     await visitFlow.isSpinnerDone();
                     pageBuilder.pause(0.2 * 1000);
@@ -662,7 +663,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 it('Configuring Survey', async () => {
                     surveyTemplateName = `VF_Survey_${randomString}`;
                     surveyTemplateDesc = 'Survey in Visit Flow Automated Test';
-                    await surveyService.enterSurveyBuilderSettingsPage('Webapp17');
+                    await surveyService.enterSurveyBuilderSettingsPage();
                     await surveyService.enterSurveyBuilderActualBuilder();
                     surveyUUID = await surveyService.configureTheSurveyTemplate(
                         surveyTemplateName,
