@@ -135,7 +135,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
         // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.34'], // PAPI
         // 'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.41'], // CPAPI
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.20.10'], // CPAS
-        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''], // CPAS
+        // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''], // CPAS
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''], // CPAS
         // 'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.16.137'],
         // 'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.6.369'],
@@ -153,14 +153,14 @@ export async function VFdataPrep(varPass: string, client: Client) {
         // 'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', '6.3.77'],
         // 'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', '6.4.64'],
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.4.19'], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
+        // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], // CPI_Node current phased version 1.1.92 | dependency > 1.1.85
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // CPI_Node_data current phased version 0.6.14 | dependency > 0.6.11
         // 'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', '0.6.52'], // current phased version 0.6.48 | dependency > 0.6.41
         // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.%'], // current phased version 0.6.41 | dependency > 0.6.35
         // 'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''], // current phased version 0.6.2 | dependency > 0.6.2
         // 'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // current phased version 0.7.112 | dependency > 0.7.104
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.0.43'],
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
