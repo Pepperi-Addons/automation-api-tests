@@ -177,7 +177,9 @@ export class ResourceList extends AddonPage {
     public async clickTab(tabName: 'Views_Tab' | 'Editors_Tab' | 'General_Tab' | 'Form_Tab') {
         if (this[tabName]) {
             try {
+                this.browser.sleep(0.5 * 1000);
                 await this.browser.click(this[tabName]);
+                await this.isSpinnerDone();
                 const tabSelected = await (await this.browser.findElement(this[tabName])).getAttribute('aria-selected');
                 expect(Boolean(tabSelected)).to.be.true;
             } catch (error) {
@@ -579,6 +581,26 @@ export class ResourceViews extends ResourceList {
         );
         return deleteViewResponse;
     }
+
+    public async deleteViewViaAPI(resourceUUID: string, client: Client) {
+        const generalService = new GeneralService(client);
+        const body = { Key: resourceUUID, Hidden: true };
+        const deleteResourceRLResponse = await generalService.fetchStatus(
+            `/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views`,
+            {
+                method: 'POST',
+                body: JSON.stringify(body),
+            },
+        );
+        return deleteResourceRLResponse;
+    }
+
+    public async getAllViews(client: Client) {
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus(
+            '/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/views?include_deleted=false&where=Hidden=false',
+        );
+    }
 }
 
 export class ResourceEditors extends ResourceList {
@@ -713,5 +735,12 @@ export class ResourceEditors extends ResourceList {
             },
         );
         return deleteResourceRLResponse;
+    }
+
+    public async getAllEditors(client: Client) {
+        const generalService = new GeneralService(client);
+        return await generalService.fetchStatus(
+            '/addons/api/0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3/api/editors?include_deleted=false&where=Hidden=false',
+        );
     }
 }

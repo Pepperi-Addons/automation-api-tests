@@ -40,6 +40,12 @@ export abstract class Page extends BasePomObject {
         );
     }
 
+    public getSelectorOfItemConfiguredToCardDeleteButtonByPartialTextAtCardEdit(text: string) {
+        return By.xpath(
+            `//div[text()="Layout"]/following-sibling::ul//div[contains(@title,"${text}")]/ancestor::li//span[contains(@class,"trashCanIcon")]`,
+        );
+    }
+
     public getSelectorOfFooterButtonByText(text: string) {
         return By.xpath(`//div[contains(@class,"footer-buttons")]//div[contains(text(),"${text}")]`);
     }

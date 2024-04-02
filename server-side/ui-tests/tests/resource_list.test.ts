@@ -2,27 +2,17 @@ import addContext from 'mochawesome/addContext';
 import { Browser } from '../utilities/browser';
 import { describe, it, afterEach, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
-import GeneralService from '../../services/general.service';
-// import { DataViewsService } from '../../services/data-views.service';
+import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import E2EUtils from '../utilities/e2e_utils';
-import {
-    BaseFormDataViewField,
-    DataViewFieldType,
-    // MenuDataViewField
-} from '@pepperi-addons/papi-sdk';
+import { BaseFormDataViewField, DataViewFieldType } from '@pepperi-addons/papi-sdk';
 import { v4 as uuidv4 } from 'uuid';
-// import { UpsertFieldsToMappedSlugs } from '../blueprints/DataViewBlueprints';
 
-import {
-    BasePageLayoutSectionColumn,
-    ResourceViewEditorBlock,
-    // ResourceListBasicViewerEditorBlocksStructurePage
-} from '../blueprints/PageBlocksBlueprints';
+import { BasePageLayoutSectionColumn, ResourceViewEditorBlock } from '../blueprints/PageBlocksBlueprints';
 import { ResourceListBlock } from '../pom/ResourceList.block';
 import { Slugs } from '../pom/addons/Slugs';
 
@@ -31,7 +21,6 @@ chai.use(promised);
 export async function ResourceListTests(email: string, password: string, client: Client) {
     const date = new Date();
     const generalService = new GeneralService(client);
-    // const dataViewsService = new DataViewsService(generalService.papiClient);
     // const papi_resources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
 
     const installedResourceListVersion = (await generalService.getInstalledAddons()).find(
@@ -42,8 +31,6 @@ export async function ResourceListTests(email: string, password: string, client:
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
-    // let webAppList: WebAppList;
-    // let webAppDialog: WebAppDialog;
     let resourceList: ResourceList;
     let resourceEditors: ResourceEditors;
     let resourceViews: ResourceViews;
@@ -51,7 +38,6 @@ export async function ResourceListTests(email: string, password: string, client:
     let slugs: Slugs;
     let resourceListUtils: E2EUtils;
     let resourceListBlock: ResourceListBlock;
-    // let brandedApp: BrandedApp;
 
     let random_name: string;
     const test_generic_decsription = 'for RL automated testing';
@@ -68,8 +54,6 @@ export async function ResourceListTests(email: string, password: string, client:
     let pageKey: string;
     let createdPage;
     let deletePageResponse;
-    // let createdPage: { page: any; name: string };
-    // let resource_at_block: string;
 
     const detailsByResource = {
         accounts: {
@@ -198,15 +182,12 @@ export async function ResourceListTests(email: string, password: string, client:
             webAppLoginPage = new WebAppLoginPage(driver);
             webAppHomePage = new WebAppHomePage(driver);
             webAppHeader = new WebAppHeader(driver);
-            // webAppList = new WebAppList(driver);
-            // webAppDialog = new WebAppDialog(driver);
             resourceList = new ResourceList(driver);
             resourceEditors = new ResourceEditors(driver);
             resourceViews = new ResourceViews(driver);
             pageBuilder = new PageBuilder(driver);
             slugs = new Slugs(driver);
             resourceListUtils = new E2EUtils(driver);
-            // brandedApp = new BrandedApp(driver);
             random_name = generalService.generateRandomString(5);
         });
 
@@ -281,6 +262,9 @@ export async function ResourceListTests(email: string, password: string, client:
                 await resourceEditors.clickTab('Editors_Tab');
                 await resourceEditors.deleteFromListByName(editorName);
             });
+            it('Perform Manual Sync', async function () {
+                await resourceListUtils.performManualSync(client);
+            });
         });
 
         // describe('Pre-clean', async function () {
@@ -308,7 +292,6 @@ export async function ResourceListTests(email: string, password: string, client:
             // conditions for this section: tested user must have UDC = NameAgeAuto
             before(function () {
                 resource_name = 'NameAgeAuto';
-                // random_name = generalService.generateRandomString(5);
             });
             afterEach(async function () {
                 driver.sleep(500);
@@ -505,6 +488,17 @@ export async function ResourceListTests(email: string, password: string, client:
                     title: `After Assertions`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
+            });
+            it('Editing checks at Block', async function () {
+                // TODO
+                driver.sleep(0.5 * 1000);
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Assertions`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Return to Home Page', async function () {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
             });
@@ -717,228 +711,164 @@ export async function ResourceListTests(email: string, password: string, client:
             });
         });
 
-        // describe('E2E Method', async function () {
-        //     beforeEach(async function () {
-        //         random_name = generalService.generateRandomString(5);
-        //     });
-        //     afterEach(async function () {
-        //         driver.sleep(500);
-        //         await webAppHomePage.collectEndTestData(this);
-        //     });
-
-        //     it('Full Flow for resource: accounts', async function () {
-        //         await resourceListUtils.createBlock('accounts', random_name);
-        //     });
-        // });
-
-        // describe('Blocks', async function () {
-        //     beforeEach(async function () {
-        //         await driver.navigate(`https://app.pepperi.com/HomePage`);
-        //         await webAppHomePage.isSpinnerDone();
-        //     });
-        //     describe('PAPI Resources', async function () {
-        //         before(function () {
-        //             slugDisplayName = 'Auto Test';
-        //             slug_path = 'auto_test';
-        //             resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
-        //         });
-        //         afterEach(async function () {
-        //             driver.sleep(500);
-        //             await webAppHomePage.collectEndTestData(this);
-        //         });
-
-        //         it(`accounts`, async function () {
-        //             resource_at_block = 'accounts';
-        //             pageName = `${resource_at_block} Page`;
-        //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
-        //             await webAppHeader.goHome();
-        //             await webAppHomePage.isSpinnerDone();
-        //             await resourceListUtils.logOutLogIn(email, password);
-        //             await webAppHomePage.isSpinnerDone();
-        //             await webAppHomePage.clickOnBtn(slugDisplayName);
-        //             await resourceListBlock.isSpinnerDone();
-        //             await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-        //             driver.sleep(5 * 1000);
-        //             const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-        //             expect(columnsTitles.length).to.equal(
-        //                 detailsByResource[resource_at_block].view_fields_names.length,
-        //             );
-        //             columnsTitles.forEach(async (columnTitlfunction e) {
-        //                 const columnTitleText = await columnTitle.getText();
-        //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
-        //             });
-        //             driver.sleep(10 * 1000);
-        //         });
-        //         it('users', async function () {
-        //             resource_at_block = 'users';
-        //             pageName = `${resource_at_block} Page`;
-        //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
-        //             await webAppHeader.goHome();
-        //             await webAppHomePage.isSpinnerDone();
-        //             await resourceListUtils.logOutLogIn(email, password);
-        //             await webAppHomePage.isSpinnerDone();
-        //             await resourceListBlock.navigate();
-        //             await resourceListBlock.isSpinnerDone();
-        //             await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-        //             driver.sleep(5 * 1000);
-        //             const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-        //             expect(columnsTitles.length).to.equal(
-        //                 detailsByResource[resource_at_block].view_fields_names.length,
-        //             );
-        //             columnsTitles.forEach(async (columnTitlfunction e) {
-        //                 const columnTitleText = await columnTitle.getText();
-        //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
-        //             });
-        //             driver.sleep(10 * 1000);
-        //         });
-        //         it('items', async function () {
-        //             resource_at_block = 'items';
-        //             pageName = `${resource_at_block} Page`;
-        //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
-        //             await webAppHeader.goHome();
-        //             await webAppHomePage.isSpinnerDone();
-        //             await resourceListUtils.logOutLogIn(email, password);
-        //             await webAppHomePage.isSpinnerDone();
-        //             await webAppHomePage.clickOnBtn(slugDisplayName);
-        //             await resourceListBlock.isSpinnerDone();
-        //             await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-        //             driver.sleep(5 * 1000);
-        //             const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-        //             expect(columnsTitles.length).to.equal(
-        //                 detailsByResource[resource_at_block].view_fields_names.length,
-        //             );
-        //             columnsTitles.forEach(async (columnTitlfunction e) {
-        //                 const columnTitleText = await columnTitle.getText();
-        //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
-        //             });
-        //             driver.sleep(10 * 1000);
-        //         });
-        //     });
-        //     describe('Arrays Block', async function () {
-        //         before(function () {
-        //             slugDisplayName = 'Arrays';
-        //             slug_path = 'arrays';
-        //             resource_at_block = 'OfflineArraysToOnline';
-        //             pageName = `${resource_at_block} Page`;
-        //             resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
-        //         });
-        //         afterEach(async function () {
-        //             driver.sleep(500);
-        //             await webAppHomePage.collectEndTestData(this);
-        //         });
-
-        //         it('Arrays Block is Shown in Table', async function () {
-        //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
-        //             await webAppHeader.goHome();
-        //             await webAppHomePage.isSpinnerDone();
-        //             await resourceListUtils.logOutLogIn(email, password);
-        //             await webAppHomePage.isSpinnerDone();
-        //             await resourceListBlock.navigate();
-        //             await resourceListBlock.isSpinnerDone();
-        //             await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-        //             driver.sleep(5 * 1000);
-        //             const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-        //             expect(columnsTitles.length).to.equal(
-        //                 detailsByResource[resource_at_block].view_fields_names.length,
-        //             );
-        //             columnsTitles.forEach(async (columnTitlfunction e) {
-        //                 const columnTitleText = await columnTitle.getText();
-        //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
-        //             });
-        //             driver.sleep(10 * 1000);
-        //         });
-        //     });
-        //     describe('Simple Collection Block', async function () {
-        //         before(function () {
-        //             slugDisplayName = 'Manual Tests';
-        //             slug_path = 'manual_tests';
-        //             resource_at_block = 'NameAge';
-        //             pageName = `${resource_at_block} Page`;
-        //             resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
-        //         });
-        //         afterEach(async function () {
-        //             driver.sleep(500);
-        //             await webAppHomePage.collectEndTestData(this);
-        //         });
-
-        //         it(`Mapping Page to Slug`, async function () {
-        //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
-        //             await webAppHeader.goHome();
-        //             await webAppHomePage.isSpinnerDone();
-        //             await resourceListUtils.logOutLogIn(email, password);
-        //             await webAppHomePage.isSpinnerDone();
-        //             // expect(await webAppHeader.safeUntilIsVisible(webAppHeader.UserBtn)).eventually.to.be.true;
-        //         });
-        //         it('Navigating to Slug via Deeplink', async function () {
-        //             // Check Data Viewer Block Table Appears
-        //             await resourceListBlock.navigate();
-        //             await resourceListBlock.isSpinnerDone();
-        //         });
-        //         it('NameAge Block is Shown in Table', async function () {
-        //             await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-        //             driver.sleep(5 * 1000);
-        //             const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-        //             expect(columnsTitles.length).to.equal(
-        //                 detailsByResource[resource_at_block].view_fields_names.length,
-        //             );
-        //             columnsTitles.forEach(async (columnTitlfunction e) {
-        //                 const columnTitleText = await columnTitle.getText();
-        //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
-        //             });
-        //             driver.sleep(10 * 1000);
-        //         });
-        //     });
-        //     describe('NoScheme Block', async function () {
-        //         before(function () {
-        //             slugDisplayName = 'Manual Tests';
-        //             slug_path = 'manual_tests';
-        //             resource_at_block = 'Dataless';
-        //             pageName = `${resource_at_block} (yitjj)`;
-        //             resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
-        //         });
-        //         afterEach(async function () {
-        //             driver.sleep(500);
-        //             await webAppHomePage.collectEndTestData(this);
-        //         });
-
-        //         it(`Mapping Page to Slug`, async function () {
-        //             await resourceListUtils.mappingSlugWithPage(slug_path, pageName);
-        //             await webAppHeader.goHome();
-        //             await webAppHomePage.isSpinnerDone();
-        //             await resourceListUtils.logOutLogIn(email, password);
-        //             await webAppHomePage.isSpinnerDone();
-        //             // expect(await webAppHeader.safeUntilIsVisible(webAppHeader.UserBtn)).eventually.to.be.true;
-        //         });
-        //         it('Click Button from Homepage', async function () {
-        //             // Check Data Viewer Block Table Appears
-        //             await webAppHeader.goHome();
-        //             await webAppHomePage.isSpinnerDone();
-        //             await webAppHomePage.clickOnBtn(slugDisplayName);
-        //             await resourceListBlock.isSpinnerDone();
-        //             await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-        //             driver.sleep(5 * 1000);
-        //             await webAppHeader.goHome();
-        //             await webAppHomePage.isSpinnerDone();
-        //         });
-        //         it('Navigating to Slug via Deeplink', async function () {
-        //             // Check Data Viewer Block Table Appears
-        //             await resourceListBlock.navigate();
-        //             await resourceListBlock.isSpinnerDone();
-        //         });
-        //         it('Dataless Block is Shown in Table', async function () {
-        //             await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-        //             driver.sleep(5 * 1000);
-        //             const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-        //             expect(columnsTitles.length).to.equal(
-        //                 detailsByResource[resource_at_block].view_fields_names.length,
-        //             );
-        //             columnsTitles.forEach(async (columnTitlfunction e) {
-        //                 const columnTitleText = await columnTitle.getText();
-        //                 expect(columnTitleText).to.be.oneOf(detailsByResource[resource_at_block].view_fields_names);
-        //             });
-        //             driver.sleep(10 * 1000);
-        //         });
-        //     });
-        // });
+        describe('Cleanup', () => {
+            it('Editors Leftovers Cleanup (containing "RL_Editors_")', async () => {
+                const allEditors = await resourceEditors.getAllEditors(client);
+                const editorsOfAutoTest = allEditors?.Body.filter((editor) => {
+                    if (editor.Name.includes('RL_Editors_')) {
+                        return editor.Key;
+                    }
+                });
+                console.info(`allEditors: ${JSON.stringify(allEditors.Body, null, 4)}`);
+                console.info(`editorsOfAutoTest: ${JSON.stringify(editorsOfAutoTest, null, 4)}`);
+                const deleteAutoEditorsResponse: FetchStatusResponse[] = await Promise.all(
+                    editorsOfAutoTest.map(async (autoEditor) => {
+                        const deleteAutoEditorResponse = await resourceEditors.deleteEditorViaAPI(
+                            autoEditor.Key,
+                            client,
+                        );
+                        // console.info(`deleteAutoEditorResponse: ${JSON.stringify(deleteAutoEditorResponse, null, 4)}`);
+                        return deleteAutoEditorResponse;
+                    }),
+                );
+                console.info(`deleteAutoEditorsResponse: ${JSON.stringify(deleteAutoEditorsResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allEditorsAfterCleanup = await resourceEditors.getAllEditors(client);
+                const findAutoEditorAfterCleanup = allEditorsAfterCleanup?.Body.find((editor) =>
+                    editor.Name.includes('RL_Editors_'),
+                );
+                console.info(`findAutoEditorAfterCleanup: ${JSON.stringify(findAutoEditorAfterCleanup, null, 4)}`);
+                expect(findAutoEditorAfterCleanup).to.be.undefined;
+            });
+            it('Editors Leftovers Cleanup (containing " Editor _(")', async () => {
+                const allEditors = await resourceEditors.getAllEditors(client);
+                const editorsOfAutoTest = allEditors?.Body.filter((editor) => {
+                    if (editor.Name.includes(' Editor _(')) {
+                        return editor.Key;
+                    }
+                });
+                console.info(`allEditors: ${JSON.stringify(allEditors.Body, null, 4)}`);
+                console.info(`editorsOfAutoTest: ${JSON.stringify(editorsOfAutoTest, null, 4)}`);
+                const deleteAutoEditorsResponse: FetchStatusResponse[] = await Promise.all(
+                    editorsOfAutoTest.map(async (autoEditor) => {
+                        const deleteAutoEditorResponse = await resourceEditors.deleteEditorViaAPI(
+                            autoEditor.Key,
+                            client,
+                        );
+                        // console.info(`deleteAutoEditorResponse: ${JSON.stringify(deleteAutoEditorResponse, null, 4)}`);
+                        return deleteAutoEditorResponse;
+                    }),
+                );
+                console.info(`deleteAutoEditorsResponse: ${JSON.stringify(deleteAutoEditorsResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allEditorsAfterCleanup = await resourceEditors.getAllEditors(client);
+                const findAutoEditorAfterCleanup = allEditorsAfterCleanup?.Body.find((editor) =>
+                    editor.Name.includes(' Editor _('),
+                );
+                console.info(`findAutoEditorAfterCleanup: ${JSON.stringify(findAutoEditorAfterCleanup, null, 4)}`);
+                expect(findAutoEditorAfterCleanup).to.be.undefined;
+            });
+            it('Views Leftovers Cleanup (containing " View _(")', async () => {
+                const allViews = await resourceViews.getAllViews(client);
+                const viewsOfAutoTest = allViews?.Body.filter((view) => {
+                    if (view.Name.includes(' View _(')) {
+                        return view.Key;
+                    }
+                });
+                console.info(`allViews Length: ${allViews.Body.length}`);
+                console.info(`viewsOfAutoTest Length: ${viewsOfAutoTest.length}`);
+                console.info(`allViews: ${JSON.stringify(allViews.Body, null, 4)}`);
+                console.info(`viewsOfAutoTest: ${JSON.stringify(viewsOfAutoTest, null, 4)}`);
+                const deleteAutoViewsResponse: FetchStatusResponse[] = await Promise.all(
+                    viewsOfAutoTest.map(async (autoView) => {
+                        const deleteAutoViewResponse = await resourceViews.deleteViewViaAPI(autoView.Key, client);
+                        // console.info(`deleteAutoViewResponse: ${JSON.stringify(deleteAutoViewResponse, null, 4)}`);
+                        return deleteAutoViewResponse;
+                    }),
+                );
+                console.info(`deleteAutoViewResponse Length: ${deleteAutoViewsResponse.length}`);
+                console.info(`deleteAutoViewsResponse: ${JSON.stringify(deleteAutoViewsResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allViewsAfterCleanup = await resourceViews.getAllViews(client);
+                const findAutoViewAfterCleanup = allViewsAfterCleanup?.Body.find((view) =>
+                    view.Name.includes(' View _('),
+                );
+                console.info(`findAutoViewAfterCleanup: ${JSON.stringify(findAutoViewAfterCleanup, null, 4)}`);
+                expect(findAutoViewAfterCleanup).to.be.undefined;
+            });
+            it('Pages Leftovers Cleanup (containing " Page Auto_(")', async () => {
+                const allPages = await pageBuilder.getAllPages(client);
+                const pagesOfAutoTest = allPages?.Body.filter((page) => {
+                    if (page.Name.includes(' Page Auto_(')) {
+                        return page.Key;
+                    }
+                });
+                console.info(`allPages: ${JSON.stringify(allPages.Body, null, 4)}`);
+                console.info(`pagesOfAutoTest: ${JSON.stringify(pagesOfAutoTest, null, 4)}`);
+                const deleteAutoPagesResponse: FetchStatusResponse[] = await Promise.all(
+                    pagesOfAutoTest.map(async (autoPage) => {
+                        const deleteAutoPageResponse = await pageBuilder.removePageByUUID(autoPage.Key, client);
+                        console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                        return deleteAutoPageResponse;
+                    }),
+                );
+                console.info(`deleteAutoPagesResponse: ${JSON.stringify(deleteAutoPagesResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allPagesAfterCleanup = await pageBuilder.getAllPages(client);
+                const findAutoPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) =>
+                    page.Name.includes(' Page Auto_('),
+                );
+                console.info(`findAutoPageAfterCleanup: ${JSON.stringify(findAutoPageAfterCleanup, null, 4)}`);
+                expect(findAutoPageAfterCleanup).to.be.undefined;
+            });
+            it('Pages Leftovers Cleanup (starting with "Blank Page")', async () => {
+                const allPages = await pageBuilder.getDraftPages(client);
+                console.info(
+                    `allPages.Body.length (looking for Blank Page): ${JSON.stringify(allPages.Body.length, null, 4)}`,
+                );
+                const blankPages = allPages?.Body.filter((page) => {
+                    if (page.Name.includes('Blank Page ')) {
+                        return page.Key;
+                    }
+                });
+                console.info(`allPages: ${JSON.stringify(allPages.Body, null, 4)}`);
+                console.info(`blankPages: ${JSON.stringify(blankPages, null, 4)}`);
+                const deleteBlankPagesResponse: FetchStatusResponse[] = await Promise.all(
+                    blankPages.map(async (blankPage) => {
+                        const deleteAutoPageResponse = await pageBuilder.removePageByUUID(blankPage.Key, client);
+                        console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                        return deleteAutoPageResponse;
+                    }),
+                );
+                console.info(`deleteBlankPagesResponse: ${JSON.stringify(deleteBlankPagesResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allPagesAfterCleanup = await pageBuilder.getDraftPages(client);
+                const findBlankPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) =>
+                    page.Name.includes('Blank Page'),
+                );
+                console.info(`findBlankPageAfterCleanup: ${JSON.stringify(findBlankPageAfterCleanup, null, 4)}`);
+                expect(findBlankPageAfterCleanup).to.be.undefined;
+            });
+            it('Remove Leftovers Buttons from home screen', async function () {
+                await webAppHeader.goHome();
+                await webAppHeader.openSettings();
+                await webAppHomePage.isSpinnerDone();
+                driver.sleep(0.5 * 1000);
+                await resourceListUtils.removeHomePageButtonsLeftoversByProfile(`${resource_name} `, 'Rep');
+                await webAppHomePage.manualResync(client);
+                const leftoversButtonsOnHomeScreen = await webAppHomePage.buttonsApearingOnHomeScreenByPartialText(
+                    `${resource_name} `,
+                );
+                expect(leftoversButtonsOnHomeScreen).to.equal(false);
+            });
+            it('Print Screen', async function () {
+                driver.sleep(0.5 * 1000);
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Buttons Removal`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+        });
     });
 }
