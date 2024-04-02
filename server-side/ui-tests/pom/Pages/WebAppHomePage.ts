@@ -246,10 +246,19 @@ export class WebAppHomePage extends WebAppPage {
     }
 
     public async buttonsApearingOnHomeScreenByPartialText(text: string): Promise<boolean> {
-        const buttonsByPartialText = await this.browser.findElements(
-            this.getSelectorOfHomeScreenButtonByPartialText(text),
-        );
-        return buttonsByPartialText.length > 0 ? true : false;
+        try {
+            const buttonsByPartialText = await this.browser.findElements(
+                this.getSelectorOfHomeScreenButtonByPartialText(text),
+            );
+            return buttonsByPartialText.length > 0 ? true : false;
+        } catch (error) {
+            console.error(error);
+            addContext(this, {
+                title: `Buttons Containing "${text}" are not found`,
+                value: error,
+            });
+        }
+        return false;
     }
 
     public async returnToHomePage(): Promise<void> {
