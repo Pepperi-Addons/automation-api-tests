@@ -248,7 +248,7 @@ export async function ResourceListTests(email: string, password: string, client:
 
         describe('Operations (e.g Addition, Deletion)', async function () {
             it('Neviagte to Editors, Add Editor and Delete it', async function () {
-                resource_name = 'SchemeOnlyObject';
+                resource_name = 'SchemeOnlyObjectAuto';
                 editorName = `RL_Editors_${resource_name}_Test_${random_name}`;
                 editor_decsription = `Editor ${resource_name} ${test_generic_decsription}`;
                 await resourceListUtils.navigateTo('Resource Views');
