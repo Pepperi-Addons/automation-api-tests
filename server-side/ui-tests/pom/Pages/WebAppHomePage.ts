@@ -25,6 +25,10 @@ export class WebAppHomePage extends WebAppPage {
     public SupportMenuPopup_Refresh: By = By.xpath('//a[@data-toggle="dropdown"][contains(text(),"Refresh")]');
     public SupportMenuPopup_RefreshData: By = By.xpath('//a[text()="Refresh Data"]');
 
+    public getSelectorOfHomeScreenButtonByPartialText(text: string) {
+        return By.xpath(`//button[contains(@title,"${text}")]`);
+    }
+
     public async clickOnBtn(btnTxt: string): Promise<void> {
         await this.browser.ClickByText(this.HomeScreenButtonArr, btnTxt);
         return;
@@ -239,6 +243,13 @@ export class WebAppHomePage extends WebAppPage {
             isFound = false;
         }
         return !isFound;
+    }
+
+    public async buttonsApearingOnHomeScreenByPartialText(text: string): Promise<boolean> {
+        const buttonsByPartialText = await this.browser.findElements(
+            this.getSelectorOfHomeScreenButtonByPartialText(text),
+        );
+        return buttonsByPartialText.length > 0 ? true : false;
     }
 
     public async returnToHomePage(): Promise<void> {

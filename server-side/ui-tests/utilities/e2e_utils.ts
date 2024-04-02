@@ -698,4 +698,39 @@ export default class E2EUtils extends BasePomObject {
         await webAppHomePage.returnToHomePage();
         return;
     }
+
+    public async removeHomePageButtonsLeftoversByProfile(
+        stringOfLeftoversToRemove: string,
+        profile: 'Admin' | 'Rep' | 'Buyer' = 'Rep',
+    ): Promise<void> {
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        const brandedApp: BrandedApp = new BrandedApp(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
+        await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
+
+        try {
+            await brandedApp.isSpinnerDone();
+            await this.browser.switchTo(brandedApp.AddonContainerIframe);
+            await brandedApp.isAddonFullyLoaded(AddonLoadCondition.Content);
+        } catch (error) {
+            this.browser.refresh();
+            this.browser.sleep(6500);
+            await brandedApp.isSpinnerDone();
+            await this.browser.switchTo(brandedApp.AddonContainerIframe);
+            await brandedApp.isAddonFullyLoaded(AddonLoadCondition.Content);
+        }
+
+        await this.browser.click(brandedApp.getSelectorOfEditCardByProfile(profile));
+        const leftoversToRemove = await this.browser.findElements(
+            brandedApp.getSelectorOfItemConfiguredToCardDeleteButtonByPartialTextAtCardEdit(stringOfLeftoversToRemove),
+        );
+        leftoversToRemove.forEach(async (toBeRemovedItem) => {
+            await toBeRemovedItem.click();
+        });
+        await this.browser.click(brandedApp.getSelectorOfFooterButtonByText('Save'));
+
+        await webAppHomePage.returnToHomePage();
+        return;
+    }
 }
