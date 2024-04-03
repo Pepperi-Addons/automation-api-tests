@@ -1,3 +1,4 @@
+import addContext from 'mochawesome/addContext';
 import { Browser } from './browser';
 import { WebAppHeader } from '../pom/WebAppHeader';
 import { BrandedApp, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
@@ -57,8 +58,11 @@ export default class E2EUtils extends BasePomObject {
                     break;
                 case 'Page Builder':
                     await settingsSidePanel.clickSettingsSubCategory('pages', 'Pages');
+                    await header.isSpinnerDone();
+                    this.browser.sleep(0.2 * 1000);
                     await this.browser.refresh();
                     await header.isSpinnerDone();
+                    this.browser.sleep(0.2 * 1000);
                     break;
                 default:
                     throw new Error('Incorrect Path Chosen!');
@@ -690,6 +694,51 @@ export default class E2EUtils extends BasePomObject {
         await this.browser.click(
             brandedApp.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(nameOfItemToRemove),
         );
+        await this.browser.click(brandedApp.getSelectorOfFooterButtonByText('Save'));
+
+        await webAppHomePage.returnToHomePage();
+        return;
+    }
+
+    public async removeHomePageButtonsLeftoversByProfile(
+        stringOfLeftoversToRemove: string,
+        profile: 'Admin' | 'Rep' | 'Buyer' = 'Rep',
+    ): Promise<void> {
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        const brandedApp: BrandedApp = new BrandedApp(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
+        await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
+
+        try {
+            await brandedApp.isSpinnerDone();
+            await this.browser.switchTo(brandedApp.AddonContainerIframe);
+            await brandedApp.isAddonFullyLoaded(AddonLoadCondition.Content);
+        } catch (error) {
+            this.browser.refresh();
+            this.browser.sleep(6500);
+            await brandedApp.isSpinnerDone();
+            await this.browser.switchTo(brandedApp.AddonContainerIframe);
+            await brandedApp.isAddonFullyLoaded(AddonLoadCondition.Content);
+        }
+
+        await this.browser.click(brandedApp.getSelectorOfEditCardByProfile(profile));
+        try {
+            const leftoversToRemove = await this.browser.findElements(
+                brandedApp.getSelectorOfItemConfiguredToCardDeleteButtonByPartialTextAtCardEdit(
+                    stringOfLeftoversToRemove,
+                ),
+            );
+            leftoversToRemove.forEach(async (toBeRemovedItem) => {
+                await toBeRemovedItem.click();
+            });
+        } catch (error) {
+            console.error(error);
+            addContext(this, {
+                title: `Buttons Containing "${stringOfLeftoversToRemove}" are not found`,
+                value: error,
+            });
+        }
         await this.browser.click(brandedApp.getSelectorOfFooterButtonByText('Save'));
 
         await webAppHomePage.returnToHomePage();
