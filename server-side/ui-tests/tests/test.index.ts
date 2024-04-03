@@ -1560,7 +1560,23 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         const service = new GeneralService(client);
-        const devTest = new DevTest(addonName, varPass, varPassEU, varPassSB, generalService, email, pass); // adding new addons tests should be done using this 'DevTest' class
+        const initialAddonUUID = DevTest.convertNameToUUIDForDevTests(addonName);
+        let versionOfAddon = '';
+        if (initialAddonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+            versionOfAddon = (
+                await service.getAddonLatestAvailableVersion('5122dc6d-745b-4f46-bb8e-bd25225d350a', varPass)
+            ).latestVersion;
+        }
+        const devTest = new DevTest(
+            addonName,
+            varPass,
+            varPassEU,
+            varPassSB,
+            generalService,
+            email,
+            pass,
+            versionOfAddon,
+        ); // adding new addons tests should be done using this 'DevTest' class
         let testsList: any;
         if (devTest.addonUUID === 'none') {
             //if we cant find the addon uuid - it means we dont have *DEV* tests for it (might have approvement)

@@ -39,6 +39,8 @@ export class DevTest {
     public euUser;
     public prodUser;
     public sbUser;
+    public version: string | undefined;
+    public isSyncNebulaDist: boolean;
 
     constructor(
         addonName: string,
@@ -48,9 +50,10 @@ export class DevTest {
         adminBaseUserGeneralService: GeneralService,
         adminBaseUserEmail,
         adminBaseUserPass,
+        version: string,
     ) {
         this.addonName = addonName;
-        this.addonUUID = this.convertNameToUUIDForDevTests(addonName.toUpperCase());
+        this.addonUUID = DevTest.convertNameToUUIDForDevTests(addonName.toUpperCase());
         this.addonTestsURL = `/addons/api/async/${this.addonUUID}/tests/tests`;
         this.channelToReportURL = '';
         this.varPass = varPass;
@@ -59,9 +62,14 @@ export class DevTest {
         this.adminBaseUserGeneralService = adminBaseUserGeneralService;
         this.adminBaseUserEmail = adminBaseUserEmail;
         this.adminBaseUserPass = adminBaseUserPass;
+        if (this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a' && version.includes('1.')) {
+            this.isSyncNebulaDist = true;
+        } else {
+            this.isSyncNebulaDist = false;
+        }
     }
 
-    convertNameToUUIDForDevTests(addonName: string) {
+    static convertNameToUUIDForDevTests(addonName: string) {
         switch (addonName) {
             case 'SUPPORT-TOOLS':
             case 'SUPPORT TOOLS':
@@ -1245,15 +1253,21 @@ export class DevTest {
 
     async resolveUserPerTest2(): Promise<DevTestUser[]> {
         const usreEmailList = this.resolveUserPerTest();
+        debugger;
         const userListToReturn: DevTestUser[] = [];
         for (let index = 0; index < usreEmailList.length; index++) {
             const userEmail = usreEmailList[index];
             const userPass = 'Aa123456';
-            const userEnv = userEmail.toLocaleUpperCase().includes('EU')
-                ? 'EU'
-                : userEmail.toLocaleUpperCase().includes('SB')
-                ? 'stage'
-                : 'PROD';
+            let userEnv;
+            if (userEmail.toLocaleUpperCase().includes('EU')) {
+                userEnv = 'EU';
+            } else if (userEmail.toLocaleUpperCase().includes('SB')) {
+                userEnv = 'stage';
+            } else if (userEmail.toLocaleUpperCase().includes('STAGE')) {
+                userEnv = 'stage';
+            } else {
+                userEnv = 'PROD';
+            }
             const client = await initiateTester(userEmail, userPass, userEnv);
             const service = new GeneralService(client);
             const devUser: DevTestUser = new DevTestUser(userEmail, userPass, userEnv, service);
@@ -1276,7 +1290,20 @@ export class DevTest {
             case 'ADAL':
                 return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
             case 'SYNC':
-                return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com'];
+                debugger;
+                if (this.isSyncNebulaDist) {
+                    return [
+                        'NotOpenSyncTesterEU@pepperitest.com',
+                        'NotOpenSyncTesterProd@pepperitest.com',
+                        'NotOpenSyncTesterStage@pepperitest.com',
+                    ];
+                } else {
+                    return [
+                        'syncNeo4JEU@pepperitest.com',
+                        'syncNeo4JProd@pepperitest.com',
+                        'syncNeo4JSB@pepperitest.com',
+                    ];
+                }
             case 'CORE':
             case 'CORE-GENERIC-RESOURCES':
                 return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
