@@ -858,12 +858,13 @@ export class DevTest {
                   this.failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>') +
                   '<br>'
         }`;
+        const teamsURL = await this.handleTeamsURL(this.addonName);
         const bodyToSend = {
             Name: `The Results Of Intergration Tests Written By Developer For ${this.addonName} - (${this.addonUUID}), Version: ${this.addonVersion}`,
             Description: message,
             Status: this.devPassingEnvs.length < 3 ? 'FAILED' : 'PASSED',
             Message: failedTestsDesc === '' ? '√' : failedTestsDesc,
-            UserWebhook: await this.handleTeamsURL(this.addonName),
+            UserWebhook: teamsURL,
         };
         console.log(
             `####################### Dev Tests Results: ${this.addonName}, On Version ${this.addonVersion} Has ${bodyToSend.Status} #######################`,
@@ -883,6 +884,11 @@ export class DevTest {
             },
         );
         if (monitoringResponse.Ok !== true) {
+            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Message} </br> <b> Message: </b> ${bodyToSend.Message}`;
+            await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
+                method: 'POST',
+                body: JSON.stringify({ Text: body }),
+            });
             throw new Error(
                 `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
                     monitoringResponse,
@@ -1030,12 +1036,13 @@ export class DevTest {
         debugger;
         await this.reportBuildEnded();
         const message = `${error}`;
+        const teamsURL = await this.handleTeamsURL(this.addonName);
         const bodyToSend = {
             Name: `${this.addonName} Approvment Tests Status: Failed Due CI/CD Process Exception`,
             Description: `${this.addonName} - (${this.addonUUID}), Version:${this.addonVersion}, Failed!`,
             Status: 'ERROR',
             Message: message,
-            UserWebhook: await this.handleTeamsURL(this.addonName),
+            UserWebhook: teamsURL,
         };
         const testAddonSecretKey = await this.adminBaseUserGeneralService.getSecret()[1];
         const testAddonUUID = await this.adminBaseUserGeneralService.getSecret()[0];
@@ -1053,6 +1060,11 @@ export class DevTest {
         );
         debugger;
         if (monitoringResponse.Ok !== true) {
+            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Message} </br> <b> Message: </b> ${bodyToSend.Message}`;
+            await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
+                method: 'POST',
+                body: JSON.stringify({ Text: body }),
+            });
             throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
         }
         if (monitoringResponse.Status !== 200) {
@@ -1253,7 +1265,6 @@ export class DevTest {
 
     async resolveUserPerTest2(): Promise<DevTestUser[]> {
         const usreEmailList = this.resolveUserPerTest();
-        debugger;
         const userListToReturn: DevTestUser[] = [];
         for (let index = 0; index < usreEmailList.length; index++) {
             const userEmail = usreEmailList[index];
