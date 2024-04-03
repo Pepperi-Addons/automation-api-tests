@@ -1,3 +1,4 @@
+import addContext from 'mochawesome/addContext';
 import { Browser } from './browser';
 import { WebAppHeader } from '../pom/WebAppHeader';
 import { BrandedApp, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
@@ -722,12 +723,22 @@ export default class E2EUtils extends BasePomObject {
         }
 
         await this.browser.click(brandedApp.getSelectorOfEditCardByProfile(profile));
-        const leftoversToRemove = await this.browser.findElements(
-            brandedApp.getSelectorOfItemConfiguredToCardDeleteButtonByPartialTextAtCardEdit(stringOfLeftoversToRemove),
-        );
-        leftoversToRemove.forEach(async (toBeRemovedItem) => {
-            await toBeRemovedItem.click();
-        });
+        try {
+            const leftoversToRemove = await this.browser.findElements(
+                brandedApp.getSelectorOfItemConfiguredToCardDeleteButtonByPartialTextAtCardEdit(
+                    stringOfLeftoversToRemove,
+                ),
+            );
+            leftoversToRemove.forEach(async (toBeRemovedItem) => {
+                await toBeRemovedItem.click();
+            });
+        } catch (error) {
+            console.error(error);
+            addContext(this, {
+                title: `Buttons Containing "${stringOfLeftoversToRemove}" are not found`,
+                value: error,
+            });
+        }
         await this.browser.click(brandedApp.getSelectorOfFooterButtonByText('Save'));
 
         await webAppHomePage.returnToHomePage();
