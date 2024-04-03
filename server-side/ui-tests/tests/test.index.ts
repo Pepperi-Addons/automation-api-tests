@@ -1596,7 +1596,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
             debugger;
             // 3. install all dependencys of tested addon latest available version on testing users then finaly install tested addon
-            // await devTest.installDependencies();
+            await devTest.installDependencies();
             await devTest.valdateTestedAddonLatestVersionIsInstalled();
             console.log(
                 `####################### Finished Installing: ${devTest.addonName} - (${devTest.addonUUID}), version: ${
