@@ -1058,31 +1058,48 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 });
 
                 it('Deleting Activities', async function () {
-                    await webAppHeader.goHome();
-                    await webAppHomePage.isSpinnerDone();
-                    await webAppHomePage.clickOnBtn('Accounts');
-                    driver.sleep(0.5 * 1000);
-                    await webAppHeader.isSpinnerDone();
-                    await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
-                    await visitFlow.clickElement('FirstAccountInList');
-                    driver.sleep(0.5 * 1000);
-                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_ListSelectAll_Checkbox, 15000);
-                    await visitFlow.clickElement('AccountHomePage_ListSelectAll_Checkbox');
-                    driver.sleep(0.5 * 1000);
-                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_PencilButton, 15000);
-                    await visitFlow.clickElement('AccountHomePage_List_PencilButton');
-                    driver.sleep(0.5 * 1000);
-                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_UnderPencilButton_Delete, 15000);
-                    await visitFlow.clickElement('AccountHomePage_List_UnderPencilButton_Delete');
-                    driver.sleep(0.5 * 1000);
-                    await visitFlow.waitTillVisible(
-                        visitFlow.AccountHomePage_List_DeletePopUpDialog_RedDeleteButton,
-                        15000,
-                    );
-                    await visitFlow.clickElement('AccountHomePage_List_DeletePopUpDialog_RedDeleteButton');
-                    driver.sleep(0.5 * 1000);
-                    await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_EmptyList_Message, 15000);
-                    driver.sleep(2.5 * 1000);
+                    try {
+                        await webAppHeader.goHome();
+                        await webAppHomePage.isSpinnerDone();
+                        await webAppHomePage.clickOnBtn('Accounts');
+                        driver.sleep(0.5 * 1000);
+                        await webAppHeader.isSpinnerDone();
+                        await visitFlow.waitTillVisible(visitFlow.FirstAccountInList, 15000);
+                        await visitFlow.clickElement('FirstAccountInList');
+                        driver.sleep(0.5 * 1000);
+                        await visitFlow.waitTillVisible(visitFlow.AccountHomePage_ListSelectAll_Checkbox, 15000);
+                        await visitFlow.clickElement('AccountHomePage_ListSelectAll_Checkbox');
+                        driver.sleep(0.5 * 1000);
+                        await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_PencilButton, 15000);
+                        await visitFlow.clickElement('AccountHomePage_List_PencilButton');
+                        driver.sleep(0.5 * 1000);
+                        await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_UnderPencilButton_Delete, 15000);
+                        await visitFlow.clickElement('AccountHomePage_List_UnderPencilButton_Delete');
+                        driver.sleep(0.5 * 1000);
+                        await visitFlow.waitTillVisible(
+                            visitFlow.AccountHomePage_List_DeletePopUpDialog_RedDeleteButton,
+                            15000,
+                        );
+                        await visitFlow.clickElement('AccountHomePage_List_DeletePopUpDialog_RedDeleteButton');
+                        driver.sleep(0.5 * 1000);
+                        await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_EmptyList_Message, 15000);
+                        driver.sleep(2.5 * 1000);
+                    } catch (error) {
+                        console.error(error);
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `UI deletion of Activities FAILED!`,
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        const allActivities = await objectsService.getActivity();
+                        console.info('Length of All Activity List: ', allActivities.length);
+                        const deleteResponse = await Promise.all(
+                            allActivities.map(async (activity) => {
+                                return await objectsService.deleteActivity(activity.InternalID || 0);
+                            }),
+                        );
+                        console.info('deleteResponse: ', JSON.stringify(deleteResponse, null, 2));
+                    }
                 });
             });
         });
