@@ -156,6 +156,8 @@ export const testDataWithNewSyncAndNebula = {
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
 };
 
+const testDataNewSyncNoNebula= testData;
+testDataNewSyncNoNebula['sync'] =  ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.0.%'];
 export const testDataWithNewSyncNoNebula = {
     ...testData, // already has sync
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
