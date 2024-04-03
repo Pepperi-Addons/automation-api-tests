@@ -1,4 +1,4 @@
-import GeneralService, { initiateTester } from '../../services/general.service';
+import GeneralService, { initiateTester, testDataNoSyncNoNebula } from '../../services/general.service';
 
 class DevTestUser {
     email: string;
@@ -173,7 +173,7 @@ export class DevTest {
         } Env, User: ${userName}, Addon: ${this.addonName}, UUID: ${this.addonUUID}, Version: ${this.addonVersion}`;
         service.PrintStartOfInstallation('Start', testName);
         //1. upgrade dependencys - basic: correct for all addons
-        await service.baseAddonVersionsInstallation(varPass);
+        await service.baseAddonVersionsInstallation(varPass, testDataNoSyncNoNebula);
         //1.1 install addon-testing-framework - Chasky's addon which we need
         const templateAddonResponse = await service.installLatestAvalibaleVersionOfAddon(varPass, {
             automation_template_addon: ['d541b959-87af-4d18-9215-1b30dbe1bcf4', ''],
@@ -188,6 +188,17 @@ export class DevTest {
         const addonDep = await this.getDependenciesOfAddon(service, this.addonUUID, varPass);
         //3. install dependencys
         if (addonDep !== undefined && addonDep.length !== 0) {
+            if (this.addonUUID === 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b') {
+                //cpi - data
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.sync) {
+                        debugger;
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.0.%'];
+                    }
+                }
+                debugger;
+            }
             if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5') {
                 //PFS
                 const depObjSync = {};
