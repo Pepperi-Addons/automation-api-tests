@@ -202,7 +202,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.0.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
                     }
                 }
                 debugger;
@@ -213,7 +213,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.0.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
                     }
                 }
                 debugger;
