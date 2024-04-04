@@ -18,7 +18,7 @@ export class WebAppLoginPage extends Page {
     public Next: By = By.css('#nextBtn');
     public LoginBtn: By = By.css('#loginBtn');
     public UserBtn_Web18: By = By.css('[data-qa="SystemAvatar"]');
-    public UserBtn: By = By.css('[data-qa="systemAvatar"]');
+    public UserBtn: By = By.xpath('//*[contains(@data-qa,"Avatar")]');
     public signOutBtn: By = By.id('btnSignOut');
 
     /**
