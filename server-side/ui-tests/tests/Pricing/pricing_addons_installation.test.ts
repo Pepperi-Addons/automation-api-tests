@@ -19,7 +19,7 @@ export async function PricingAddonsUpsert(varPass: string, client: Client, prcVe
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.0.%'], // dependency > 1.0.42 | Nelt: 0.7.79
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // current phased version 0.5.10 | dependency > 0.5.7
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''], // current phased version 0.6.26 | dependency > 0.6.3
-        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.16.%'],
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
         // 'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.31'], // CPAPI | dependency > 9.6.43
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.30.7'], //CPAS | dependency > 17.3
         'WebApp API Framework': [
