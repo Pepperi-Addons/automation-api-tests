@@ -39,6 +39,8 @@ export class DevTest {
     public euUser;
     public prodUser;
     public sbUser;
+    public version: string | undefined;
+    public isSyncNebulaDist: boolean;
 
     constructor(
         addonName: string,
@@ -48,9 +50,10 @@ export class DevTest {
         adminBaseUserGeneralService: GeneralService,
         adminBaseUserEmail,
         adminBaseUserPass,
+        version: string,
     ) {
         this.addonName = addonName;
-        this.addonUUID = this.convertNameToUUIDForDevTests(addonName.toUpperCase());
+        this.addonUUID = DevTest.convertNameToUUIDForDevTests(addonName.toUpperCase());
         this.addonTestsURL = `/addons/api/async/${this.addonUUID}/tests/tests`;
         this.channelToReportURL = '';
         this.varPass = varPass;
@@ -59,9 +62,14 @@ export class DevTest {
         this.adminBaseUserGeneralService = adminBaseUserGeneralService;
         this.adminBaseUserEmail = adminBaseUserEmail;
         this.adminBaseUserPass = adminBaseUserPass;
+        if (this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a' && version.includes('1.')) {
+            this.isSyncNebulaDist = true;
+        } else {
+            this.isSyncNebulaDist = false;
+        }
     }
 
-    convertNameToUUIDForDevTests(addonName: string) {
+    static convertNameToUUIDForDevTests(addonName: string) {
         switch (addonName) {
             case 'SUPPORT-TOOLS':
             case 'SUPPORT TOOLS':
@@ -194,7 +202,18 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.0.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                    }
+                }
+                debugger;
+            }
+            if (this.addonUUID === 'fbbac53c-c350-42c9-b9ad-17c238e55b42') {
+                //trnaslations
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.sync) {
+                        debugger;
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
                     }
                 }
                 debugger;
@@ -850,12 +869,13 @@ export class DevTest {
                   this.failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>') +
                   '<br>'
         }`;
+        const teamsURL = await this.handleTeamsURL(this.addonName);
         const bodyToSend = {
             Name: `The Results Of Intergration Tests Written By Developer For ${this.addonName} - (${this.addonUUID}), Version: ${this.addonVersion}`,
             Description: message,
             Status: this.devPassingEnvs.length < 3 ? 'FAILED' : 'PASSED',
             Message: failedTestsDesc === '' ? '√' : failedTestsDesc,
-            UserWebhook: await this.handleTeamsURL(this.addonName),
+            UserWebhook: teamsURL,
         };
         console.log(
             `####################### Dev Tests Results: ${this.addonName}, On Version ${this.addonVersion} Has ${bodyToSend.Status} #######################`,
@@ -875,6 +895,11 @@ export class DevTest {
             },
         );
         if (monitoringResponse.Ok !== true) {
+            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Message} </br> <b> Message: </b> ${bodyToSend.Message}`;
+            await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
+                method: 'POST',
+                body: JSON.stringify({ Text: body }),
+            });
             throw new Error(
                 `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
                     monitoringResponse,
@@ -1022,12 +1047,13 @@ export class DevTest {
         debugger;
         await this.reportBuildEnded();
         const message = `${error}`;
+        const teamsURL = await this.handleTeamsURL(this.addonName);
         const bodyToSend = {
             Name: `${this.addonName} Approvment Tests Status: Failed Due CI/CD Process Exception`,
             Description: `${this.addonName} - (${this.addonUUID}), Version:${this.addonVersion}, Failed!`,
             Status: 'ERROR',
             Message: message,
-            UserWebhook: await this.handleTeamsURL(this.addonName),
+            UserWebhook: teamsURL,
         };
         const testAddonSecretKey = await this.adminBaseUserGeneralService.getSecret()[1];
         const testAddonUUID = await this.adminBaseUserGeneralService.getSecret()[0];
@@ -1045,6 +1071,11 @@ export class DevTest {
         );
         debugger;
         if (monitoringResponse.Ok !== true) {
+            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Message} </br> <b> Message: </b> ${bodyToSend.Message}`;
+            await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
+                method: 'POST',
+                body: JSON.stringify({ Text: body }),
+            });
             throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
         }
         if (monitoringResponse.Status !== 200) {
@@ -1249,11 +1280,16 @@ export class DevTest {
         for (let index = 0; index < usreEmailList.length; index++) {
             const userEmail = usreEmailList[index];
             const userPass = 'Aa123456';
-            const userEnv = userEmail.toLocaleUpperCase().includes('EU')
-                ? 'EU'
-                : userEmail.toLocaleUpperCase().includes('SB')
-                ? 'stage'
-                : 'PROD';
+            let userEnv;
+            if (userEmail.toLocaleUpperCase().includes('EU')) {
+                userEnv = 'EU';
+            } else if (userEmail.toLocaleUpperCase().includes('SB')) {
+                userEnv = 'stage';
+            } else if (userEmail.toLocaleUpperCase().includes('STAGE')) {
+                userEnv = 'stage';
+            } else {
+                userEnv = 'PROD';
+            }
             const client = await initiateTester(userEmail, userPass, userEnv);
             const service = new GeneralService(client);
             const devUser: DevTestUser = new DevTestUser(userEmail, userPass, userEnv, service);
@@ -1276,7 +1312,20 @@ export class DevTest {
             case 'ADAL':
                 return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
             case 'SYNC':
-                return ['syncNeo4JEU@pepperitest.com', 'syncNeo4JProd@pepperitest.com', 'syncNeo4JSB@pepperitest.com'];
+                debugger;
+                if (this.isSyncNebulaDist) {
+                    return [
+                        'NotOpenSyncTesterEU@pepperitest.com',
+                        'NotOpenSyncTesterProd@pepperitest.com',
+                        'NotOpenSyncTesterStage@pepperitest.com',
+                    ];
+                } else {
+                    return [
+                        'syncNeo4JEU@pepperitest.com',
+                        'syncNeo4JProd@pepperitest.com',
+                        'syncNeo4JSB@pepperitest.com',
+                    ];
+                }
             case 'CORE':
             case 'CORE-GENERIC-RESOURCES':
                 return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];

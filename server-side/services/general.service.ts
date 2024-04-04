@@ -34,7 +34,7 @@ export const testData = {
     'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''],
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], //sync is now public
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'], //sync is now public
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.0.%'],
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', ''],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
@@ -156,6 +156,8 @@ export const testDataWithNewSyncAndNebula = {
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
 };
 
+const testDataNewSyncNoNebula = testData;
+testDataNewSyncNoNebula['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.0.%'];
 export const testDataWithNewSyncNoNebula = {
     ...testData, // already has sync
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
