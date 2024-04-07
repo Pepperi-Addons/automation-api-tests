@@ -1084,6 +1084,9 @@ export class DevTest {
         const testAddonSecretKey = await this.adminBaseUserGeneralService.getSecret()[1];
         const testAddonUUID = await this.adminBaseUserGeneralService.getSecret()[0];
         debugger;
+        console.log(
+            `\n====> About To Send This Message To '/system_health/notifications':\n ${JSON.stringify(bodyToSend)}\n`,
+        );
         const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus(
             'https://papi.pepperi.com/v1.0/system_health/notifications',
             {
