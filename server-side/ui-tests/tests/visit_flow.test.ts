@@ -1099,6 +1099,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                             }),
                         );
                         console.info('deleteResponse: ', JSON.stringify(deleteResponse, null, 2));
+                        expect('UI deletion of Activities FAILED!').to.equal('API deletion was performed');
                     }
                 });
             });
