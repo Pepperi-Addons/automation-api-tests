@@ -196,6 +196,17 @@ export class DevTest {
         const addonDep = await this.getDependenciesOfAddon(service, this.addonUUID, varPass);
         //3. install dependencys
         if (addonDep !== undefined && addonDep.length !== 0) {
+            if (this.addonUUID === '84c999c3-84b7-454e-9a86-71b7abc96554') {
+                //config
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.sync) {
+                        debugger;
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                    }
+                }
+                debugger;
+            }
             if (this.addonUUID === 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b') {
                 //cpi - data
                 for (let index = 0; index < addonDep.length; index++) {
@@ -883,6 +894,9 @@ export class DevTest {
         if (bodyToSend.Message !== '~') {
             console.log(`####################### FAILED TESTS:\n ${bodyToSend.Message}`);
         }
+        console.log(
+            `\n====> About To Send This Message To '/system_health/notifications': ${JSON.stringify(bodyToSend)}\n`,
+        );
         const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus(
             'https://papi.pepperi.com/v1.0/system_health/notifications',
             {
