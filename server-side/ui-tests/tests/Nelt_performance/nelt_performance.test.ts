@@ -1897,7 +1897,7 @@ export async function NeltPerformanceTests(
                 const Open_promotions_bundles_opening = new Date().getTime();
                 await driver.click(
                     neltPerformanceSelectors.getSelectorOfOrderCenterItemOrderButtonGridLineViewByText(
-                        testParameters.nonBundlePromotion,
+                        testParameters.bundlePromotion,
                     ),
                 );
                 await neltPerformanceSelectors.isSpinnerDone();
