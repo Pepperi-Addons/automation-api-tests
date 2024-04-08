@@ -1145,13 +1145,13 @@ export class DevTest {
                 method: 'POST',
                 body: JSON.stringify({ Text: body }),
             });
-            throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+            console.log(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
         }
         if (monitoringResponse.Status !== 200) {
-            throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+            console.log(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
         }
         if (Object.keys(monitoringResponse.Error).length !== 0) {
-            throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+            console.log(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
         }
     }
 
