@@ -1117,13 +1117,17 @@ export class DevTest {
 
     async reportBuildEnded() {
         const message = `${this.addonName} - (${this.addonUUID}), Version:${this.addonVersion}, Ended Testing`;
+        const teamsURL = await this.handleTeamsURL('QA');
         const bodyToSend = {
             Name: `${this.addonName}, ${this.addonUUID}, ${this.addonVersion}`,
             Description: message,
             Status: 'INFO',
             Message: message,
-            UserWebhook: await this.handleTeamsURL('QA'),
+            UserWebhook: teamsURL,
         };
+        console.log(
+            `\n====> About To Send This Message To '/system_health/notifications':\n ${JSON.stringify(bodyToSend)}\n`,
+        );
         const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus(
             'https://papi.pepperi.com/v1.0/system_health/notifications',
             {
@@ -1136,6 +1140,11 @@ export class DevTest {
             },
         );
         if (monitoringResponse.Ok !== true) {
+            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Message} </br> <b> Message: </b> ${bodyToSend.Message}`;
+            await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
+                method: 'POST',
+                body: JSON.stringify({ Text: body }),
+            });
             throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
         }
         if (monitoringResponse.Status !== 200) {
