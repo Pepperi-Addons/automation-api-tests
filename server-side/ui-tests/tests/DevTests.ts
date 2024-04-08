@@ -195,7 +195,30 @@ export class DevTest {
         debugger;
         const addonDep = await this.getDependenciesOfAddon(service, this.addonUUID, varPass);
         //3. install dependencys
+        //=>76fe8cf0-da3f-44d3-accf-e661cdaea235
         if (addonDep !== undefined && addonDep.length !== 0) {
+            if (this.addonUUID === '84c999c3-84b7-454e-9a86-71b7abc96554') {
+                //config
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.sync) {
+                        debugger;
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                    }
+                }
+                debugger;
+            }
+            if (this.addonUUID === '76fe8cf0-da3f-44d3-accf-e661cdaea235') {
+                //support tools
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.sync) {
+                        debugger;
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                    }
+                }
+                debugger;
+            }
             if (this.addonUUID === 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b') {
                 //cpi - data
                 for (let index = 0; index < addonDep.length; index++) {
@@ -883,6 +906,9 @@ export class DevTest {
         if (bodyToSend.Message !== '~') {
             console.log(`####################### FAILED TESTS:\n ${bodyToSend.Message}`);
         }
+        console.log(
+            `\n====> About To Send This Message To '/system_health/notifications':\n ${JSON.stringify(bodyToSend)}\n`,
+        );
         const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus(
             'https://papi.pepperi.com/v1.0/system_health/notifications',
             {
@@ -1058,6 +1084,9 @@ export class DevTest {
         const testAddonSecretKey = await this.adminBaseUserGeneralService.getSecret()[1];
         const testAddonUUID = await this.adminBaseUserGeneralService.getSecret()[0];
         debugger;
+        console.log(
+            `\n====> About To Send This Message To '/system_health/notifications':\n ${JSON.stringify(bodyToSend)}\n`,
+        );
         const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus(
             'https://papi.pepperi.com/v1.0/system_health/notifications',
             {
@@ -1120,6 +1149,13 @@ export class DevTest {
     async handleTeamsURL(addonName: string) {
         //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
         switch (addonName) {
+            case 'SUPPORT-TOOLS':
+            case 'SUPPORT TOOLS':
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'SupportToolsWebHook',
+                );
             case 'QA':
                 return await this.adminBaseUserGeneralService.getSecretfromKMS(
                     this.adminBaseUserEmail,

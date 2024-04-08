@@ -2838,6 +2838,9 @@ export async function reportToTeams(
         Message: message2 === '' ? '~' : message2.trim(),
         UserWebhook: teamsURL,
     };
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications': ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await generalService.fetchStatus(
         'https://papi.pepperi.com/v1.0/system_health/notifications',
         {
@@ -2883,6 +2886,9 @@ export async function genericReportToTeams(addonName, env, uuid, message, user, 
         Message: message,
         UserWebhook: teamsURL,
     };
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications':\n ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await generalService.fetchStatus(
         'https://papi.pepperi.com/v1.0/system_health/notifications',
         {
@@ -2970,6 +2976,9 @@ export async function reportToTeamsNeptune(
         Message: message2 === '' ? '~' : message2,
         UserWebhook: teamsURL,
     };
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications': ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await generalService.fetchStatus(
         'https://papi.pepperi.com/v1.0/system_health/notifications',
         {
@@ -3019,6 +3028,9 @@ export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, e
     };
     const testAddonSecretKey = await service.getSecret()[1];
     const testAddonUUID = await service.getSecret()[0];
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications':\n ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
         headers: {
@@ -3054,6 +3066,9 @@ export async function reportToTeamsMessageNeptune(addonName, addonUUID, addonVer
     const testAddonSecretKey = await service.getSecret()[1];
     const testAddonUUID = await service.getSecret()[0];
     debugger;
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications': ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
         headers: {
@@ -3086,6 +3101,9 @@ export async function reportBuildStarted(addonName, addonUUID, addonVersion, ser
         Message: message,
         UserWebhook: teamsURL,
     };
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications': ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
         headers: {
@@ -3109,13 +3127,17 @@ export async function reportBuildStarted(addonName, addonUUID, addonVersion, ser
 
 export async function reportBuildEnded(addonName, addonUUID, addonVersion, service: GeneralService) {
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Ended Testing`;
+    const teamsURL = await handleTeamsURL('QA', service, email, pass);
     const bodyToSend = {
         Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
         Description: message,
         Status: 'INFO',
         Message: message,
-        UserWebhook: await handleTeamsURL('QA', service, email, pass),
+        UserWebhook: teamsURL,
     };
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications': ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
         headers: {
@@ -3125,6 +3147,8 @@ export async function reportBuildEnded(addonName, addonUUID, addonVersion, servi
         body: JSON.stringify(bodyToSend),
     });
     if (monitoringResponse.Ok !== true) {
+        const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Message} </br> <b> Message: </b> ${bodyToSend.Message}`;
+        await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
         throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
     }
     if (monitoringResponse.Status !== 200) {
