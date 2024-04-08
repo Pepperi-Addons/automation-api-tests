@@ -208,6 +208,17 @@ export class DevTest {
                 }
                 debugger;
             }
+            if (this.addonUUID === 'fbbac53c-c350-42c9-b9ad-17c238e55b42') {
+                //translation
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.sync) {
+                        debugger;
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                    }
+                }
+                debugger;
+            }
             if (this.addonUUID === '76fe8cf0-da3f-44d3-accf-e661cdaea235') {
                 //support tools
                 for (let index = 0; index < addonDep.length; index++) {
