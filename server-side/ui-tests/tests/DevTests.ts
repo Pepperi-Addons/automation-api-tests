@@ -241,17 +241,6 @@ export class DevTest {
                 }
                 debugger;
             }
-            if (this.addonUUID === 'fbbac53c-c350-42c9-b9ad-17c238e55b42') {
-                //trnaslations
-                for (let index = 0; index < addonDep.length; index++) {
-                    const dep = addonDep[index];
-                    if (dep.sync) {
-                        debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
-                    }
-                }
-                debugger;
-            }
             if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5') {
                 //PFS
                 const depObjSync = {};
