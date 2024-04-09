@@ -577,18 +577,22 @@ export async function CustomCollectionsUpsert(
                     { name: 'Alex', age: 33 },
                     { name: 'Chocky', age: 4 },
                     { name: 'Shin', age: 82 },
-                    { name: 'Bibi', age: 47 },
+                    { name: 'Bini', age: 47 },
                     { name: 'Amsalem', age: 99 },
                     { name: 'Uri', age: 19 },
                     { name: 'Motty', age: 18 },
                     { name: 'David', age: 17 },
                     { name: 'Eli', age: 16 },
                     { name: 'Franc', age: 15 },
-                    { name: 'Hagit', age: 14 },
+                    { name: 'Hagay', age: 14 },
                     { name: 'Iris', age: 13 },
                     { name: 'Penny', age: 12 },
                     { name: 'Zux', age: 11 },
                     { name: 'Iris', age: 10 },
+                    { name: 'Gili', age: 30 },
+                    { name: 'Kevin', age: 50 },
+                    { name: 'Ross', age: 70 },
+                    { name: 'Martin', age: 90 },
                 ];
                 const upsertingValues_Responses = await Promise.all(
                     dataNameAgeAuto.map(async (listing) => {
@@ -617,7 +621,7 @@ export async function CustomCollectionsUpsert(
                     { name: 'Alex', age: 1 },
                     { name: 'Chocky', age: 5 },
                     { name: 'Shin', age: 100 },
-                    { name: 'Bibi', age: 20 },
+                    { name: 'Bibi', age: 80 },
                 ];
                 const upsertingValues_Responses = await Promise.all(
                     dataIndexedNameAgeAuto.map(async (listing) => {
