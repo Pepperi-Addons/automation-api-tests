@@ -41,6 +41,7 @@ export class DevTest {
     public sbUser;
     public version: string | undefined;
     public isSyncNebulaDist: boolean;
+    public isPFSNebulaDist: boolean;
 
     constructor(
         addonName: string,
@@ -63,9 +64,16 @@ export class DevTest {
         this.adminBaseUserEmail = adminBaseUserEmail;
         this.adminBaseUserPass = adminBaseUserPass;
         if (this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a' && version.includes('1.')) {
+            //sync
             this.isSyncNebulaDist = true;
         } else {
             this.isSyncNebulaDist = false;
+        }
+        if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5' && version.includes('1.3')) {
+            //PFS
+            this.isPFSNebulaDist = true;
+        } else {
+            this.isPFSNebulaDist = false;
         }
     }
 
@@ -244,7 +252,13 @@ export class DevTest {
             if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5') {
                 //PFS
                 const depObjSync = {};
-                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''];
+                if (this.isPFSNebulaDist) {
+                    depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
+                    depObjSync['Nebula'] = ['00000000-0000-0000-0000-000000006a91', ''];
+                } else {
+                    depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                }
+
                 addonDep.push(depObjSync);
             }
             if (
@@ -1376,11 +1390,19 @@ export class DevTest {
                 return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
             case 'PEPPERI-FILE-STORAGE':
             case 'PFS':
-                return [
-                    'PfsCpiTestEU@pepperitest.com',
-                    'PfsCpiTestProd@pepperitest.com',
-                    'PfsCpiTestSB@pepperitest.com',
-                ];
+                if (this.isPFSNebulaDist) {
+                    return [
+                        'syncNeo4JEU@pepperitest.com',
+                        'syncNeo4JProd@pepperitest.com',
+                        'syncNeo4JSB@pepperitest.com',
+                    ];
+                } else {
+                    return [
+                        'PFSNonOpenSyncTesterEU@pepperitest.com',
+                        'PFSNonSyncTesterPROD@pepperitest.com',
+                        'PFSNonOpenSyncTesterSB@pepperitest.com',
+                    ];
+                }
             case 'CONFIGURATIONS':
                 return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
             case 'RELATED-ITEMS':
