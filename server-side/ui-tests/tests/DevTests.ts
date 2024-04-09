@@ -258,7 +258,6 @@ export class DevTest {
                 } else {
                     depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
                 }
-
                 addonDep.push(depObjSync);
             }
             if (
