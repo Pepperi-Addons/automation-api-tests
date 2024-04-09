@@ -253,12 +253,18 @@ export class DevTest {
                 //PFS
                 const depObjSync = {};
                 if (this.isPFSNebulaDist) {
+                    for (let index = 0; index < addonDep.length; index++) {
+                        const dep = addonDep[index];
+                        if (dep.cpi_data) {
+                            debugger;
+                            addonDep[index].cpi_data = ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'];
+                        }
+                    }
                     depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
                     depObjSync['Nebula'] = ['00000000-0000-0000-0000-000000006a91', ''];
                 } else {
                     depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
                 }
-
                 addonDep.push(depObjSync);
             }
             if (

@@ -2240,38 +2240,34 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                 const jobPathSB =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20D1%20Stage%20-%20PFS';
                 const buildToken = 'PFSApprovmentTests';
-                const jobPathPROD2 =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20D2%20Production%20-%20CPI%20PFS';
                 const {
+                    JenkinsBuildResultsAllEnvs,
+                    latestRunProd,
+                    latestRunEU,
+                    latestRunSB,
                     addonEntryUUIDProd,
                     addonEntryUUIDEu,
                     addonEntryUUIDSb,
-                    latestRunProdReturn,
-                    latestRunEUReturn,
-                    latestRunSBReturn,
-                    JenkinsBuildResultsAllEnvsToReturn,
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                    jobPathToReturnProd,
-                    jobPathToReturnSB,
-                    jobPathToReturnEU,
-                } = await appTestsRunnnerService.jenkinsDoubleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
+                    email,
+                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
                     jobPathEU,
                     jobPathSB,
                     buildToken,
-                    jobPathPROD2,
                 );
-                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvsToReturn;
-                latestRunProdEx = latestRunProdReturn;
-                latestRunEUEx = latestRunEUReturn;
-                latestRunSBEx = latestRunSBReturn;
-                pathProdEx = jobPathToReturnProd;
-                pathEUEx = jobPathToReturnEU;
-                pathSBEx = jobPathToReturnSB;
+                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
+                latestRunProdEx = latestRunProd;
+                latestRunEUEx = latestRunEU;
+                latestRunSBEx = latestRunSB;
+                pathProdEx = jobPathPROD;
+                pathEUEx = jobPathEU;
+                pathSBEx = jobPathSB;
                 addonEntryUUIDProdEx = addonEntryUUIDProd;
                 addonEntryUUIDEuEx = addonEntryUUIDEu;
                 addonEntryUUIDSbEx = addonEntryUUIDSb;
