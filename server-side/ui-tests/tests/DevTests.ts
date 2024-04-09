@@ -41,6 +41,7 @@ export class DevTest {
     public sbUser;
     public version: string | undefined;
     public isSyncNebulaDist: boolean;
+    public isPFSNebulaDist: boolean;
 
     constructor(
         addonName: string,
@@ -63,9 +64,16 @@ export class DevTest {
         this.adminBaseUserEmail = adminBaseUserEmail;
         this.adminBaseUserPass = adminBaseUserPass;
         if (this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a' && version.includes('1.')) {
+            //sync
             this.isSyncNebulaDist = true;
         } else {
             this.isSyncNebulaDist = false;
+        }
+        if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5' && version.includes('1.3')) {
+            //PFS
+            this.isPFSNebulaDist = true;
+        } else {
+            this.isPFSNebulaDist = false;
         }
     }
 
@@ -208,6 +216,17 @@ export class DevTest {
                 }
                 debugger;
             }
+            if (this.addonUUID === 'fbbac53c-c350-42c9-b9ad-17c238e55b42') {
+                //translation
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.sync) {
+                        debugger;
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                    }
+                }
+                debugger;
+            }
             if (this.addonUUID === '76fe8cf0-da3f-44d3-accf-e661cdaea235') {
                 //support tools
                 for (let index = 0; index < addonDep.length; index++) {
@@ -230,21 +249,22 @@ export class DevTest {
                 }
                 debugger;
             }
-            if (this.addonUUID === 'fbbac53c-c350-42c9-b9ad-17c238e55b42') {
-                //trnaslations
-                for (let index = 0; index < addonDep.length; index++) {
-                    const dep = addonDep[index];
-                    if (dep.sync) {
-                        debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
-                    }
-                }
-                debugger;
-            }
             if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5') {
                 //PFS
                 const depObjSync = {};
-                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''];
+                if (this.isPFSNebulaDist) {
+                    for (let index = 0; index < addonDep.length; index++) {
+                        const dep = addonDep[index];
+                        if (dep.cpi_data) {
+                            debugger;
+                            addonDep[index].cpi_data = ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'];
+                        }
+                    }
+                    depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
+                    depObjSync['Nebula'] = ['00000000-0000-0000-0000-000000006a91', ''];
+                } else {
+                    depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                }
                 addonDep.push(depObjSync);
             }
             if (
@@ -1117,13 +1137,17 @@ export class DevTest {
 
     async reportBuildEnded() {
         const message = `${this.addonName} - (${this.addonUUID}), Version:${this.addonVersion}, Ended Testing`;
+        const teamsURL = await this.handleTeamsURL('QA');
         const bodyToSend = {
             Name: `${this.addonName}, ${this.addonUUID}, ${this.addonVersion}`,
             Description: message,
             Status: 'INFO',
             Message: message,
-            UserWebhook: await this.handleTeamsURL('QA'),
+            UserWebhook: teamsURL,
         };
+        console.log(
+            `\n====> About To Send This Message To '/system_health/notifications':\n ${JSON.stringify(bodyToSend)}\n`,
+        );
         const monitoringResponse = await this.adminBaseUserGeneralService.fetchStatus(
             'https://papi.pepperi.com/v1.0/system_health/notifications',
             {
@@ -1136,13 +1160,18 @@ export class DevTest {
             },
         );
         if (monitoringResponse.Ok !== true) {
-            throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Message} </br> <b> Message: </b> ${bodyToSend.Message}`;
+            await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
+                method: 'POST',
+                body: JSON.stringify({ Text: body }),
+            });
+            console.log(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
         }
         if (monitoringResponse.Status !== 200) {
-            throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+            console.log(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
         }
         if (Object.keys(monitoringResponse.Error).length !== 0) {
-            throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+            console.log(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
         }
     }
 
@@ -1367,11 +1396,19 @@ export class DevTest {
                 return ['CoreAppEU@pepperitest.com', 'CoreAppProd@pepperitest.com', 'CoreAppSB@pepperitest.com'];
             case 'PEPPERI-FILE-STORAGE':
             case 'PFS':
-                return [
-                    'PfsCpiTestEU@pepperitest.com',
-                    'PfsCpiTestProd@pepperitest.com',
-                    'PfsCpiTestSB@pepperitest.com',
-                ];
+                if (this.isPFSNebulaDist) {
+                    return [
+                        'syncNeo4JEU@pepperitest.com',
+                        'syncNeo4JProd@pepperitest.com',
+                        'syncNeo4JSB@pepperitest.com',
+                    ];
+                } else {
+                    return [
+                        'PFSNonOpenSyncTesterEU@pepperitest.com',
+                        'PFSNonSyncTesterPROD@pepperitest.com',
+                        'PFSNonOpenSyncTesterSB@pepperitest.com',
+                    ];
+                }
             case 'CONFIGURATIONS':
                 return ['configEU@pepperitest.com', 'configProd@pepperitest.com', 'configSB@pepperitest.com'];
             case 'RELATED-ITEMS':

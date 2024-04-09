@@ -125,6 +125,7 @@ export const testDataForNebulaDists = {
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''],
     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
+    'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
 };
 
 //this is done because sync installations are using "phased=false"
@@ -157,7 +158,7 @@ export const testDataWithNewSyncAndNebula = {
 };
 
 const testDataNewSyncNoNebula = testData;
-testDataNewSyncNoNebula['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.0.%'];
+testDataNewSyncNoNebula['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
 export const testDataWithNewSyncNoNebula = {
     ...testData, // already has sync
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
