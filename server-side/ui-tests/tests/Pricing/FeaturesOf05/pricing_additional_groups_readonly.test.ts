@@ -1117,6 +1117,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                 title: `At Cart`,
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
+                            await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
                             await driver.click(orderPage.Cart_ContinueOrdering_Button);
                             await orderPage.isSpinnerDone();
                             base64ImageComponent = await driver.saveScreenshots();
