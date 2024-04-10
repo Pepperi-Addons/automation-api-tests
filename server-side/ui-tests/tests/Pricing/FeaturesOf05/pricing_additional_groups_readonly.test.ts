@@ -754,7 +754,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                         });
                     });
                     describe('Transaction ID', () => {
-                        it('getting the transaction ID through the UI', async () => {
+                        it('getting the transaction ID through the UI', async function () {
                             await driver.refresh();
                             await orderPage.isSpinnerDone();
                             transactionID = Number(
@@ -768,7 +768,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                         });
                     });
                     describe('Transition and Validation', () => {
-                        it('exiting the transaction without submission', async () => {
+                        it('exiting the transaction without submission', async function () {
                             await webAppHeader.goHome();
                             await webAppHomePage.isSpinnerDone();
                             await driver.untilIsVisible(webAppHomePage.MainHomePageBtn);
@@ -798,7 +798,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                         });
                         it(`navigating to the account "${
                             account == 'Acc01' ? 'My Store' : 'Account for order scenarios'
-                        }"`, async () => {
+                        }"`, async function () {
                             await webAppHomePage.clickOnBtn('Accounts');
                             await webAppHeader.isSpinnerDone();
                             driver.sleep(0.1 * 1000);
@@ -1111,7 +1111,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                 expect(ToBr55_freeItem_numberOfAOQM).equals(1);
                             });
                         }
-                        it('Click "Continue ordering" button + switch to "Line View"', async () => {
+                        it('Click "Continue ordering" button + switch to "Line View"', async function () {
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Cart`,
