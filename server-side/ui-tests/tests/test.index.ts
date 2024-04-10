@@ -900,7 +900,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
             // nonPromotionItemsQuantities,
             // nonBundlePromotionItemsIndices,
         );
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions, { IsAllAddons: false, IsUUID: false });
         run();
         return;
     }
