@@ -74,6 +74,8 @@ import {
     StorybookSliderTests,
     StorybookTextareaTests,
     StorybookTextboxTests,
+    StorybookQueryBuilderTests,
+    StorybookSmartFiltersTests,
     NeltPerformanceTests,
     ListsAbiTests,
     CustomCollectionsUpsert,
@@ -859,6 +861,18 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         return;
     }
 
+    if (tests === 'StorybookQueryBuilder') {
+        await StorybookQueryBuilderTests();
+        run();
+        return;
+    }
+
+    if (tests === 'StorybookSmartFilters') {
+        await StorybookSmartFiltersTests();
+        run();
+        return;
+    }
+
     if (tests === 'NeltPerformance') {
         // await NeltPerformanceTests(email, pass);
         await NeltPerformanceTests(
@@ -886,7 +900,10 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
             // nonPromotionItemsQuantities,
             // nonBundlePromotionItemsIndices,
         );
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions, {
+            IsAllAddons: false,
+            IsUUID: false,
+        });
         run();
         return;
     }

@@ -50,6 +50,8 @@ import { StorybookSkeletonLoaderTests } from './storybook/storybook_skeleton_loa
 import { StorybookSliderTests } from './storybook/storybook_slider.test';
 import { StorybookTextareaTests } from './storybook/storybook_textarea.test';
 import { StorybookTextboxTests } from './storybook/storybook_textbox.test';
+import { StorybookQueryBuilderTests } from './storybook/storybook_query_builder.test';
+import { StorybookSmartFiltersTests } from './storybook/storybook_smart_filters.test';
 import { NeltPerformanceTests } from './Nelt_performance/nelt_performance.test';
 import { PricingPartialValueTests } from './Pricing/FeaturesOf06/pricing_partial_value.test';
 import { PricingExclusionTests } from './Pricing/FeaturesOf06/pricing_exclusion.test';
@@ -120,6 +122,8 @@ export {
     StorybookSliderTests,
     StorybookTextareaTests,
     StorybookTextboxTests,
+    StorybookQueryBuilderTests,
+    StorybookSmartFiltersTests,
     NeltPerformanceTests,
     CustomCollectionsUpsert,
 };
