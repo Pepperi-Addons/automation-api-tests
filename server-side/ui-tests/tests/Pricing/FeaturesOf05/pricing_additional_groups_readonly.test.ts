@@ -1112,6 +1112,11 @@ export async function PricingAdditionalGroupsReadonlyTests(
                             });
                         }
                         it('Click "Continue ordering" button + switch to "Line View"', async () => {
+                            base64ImageComponent = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At Cart`,
+                                value: 'data:image/png;base64,' + base64ImageComponent,
+                            });
                             await driver.click(orderPage.Cart_ContinueOrdering_Button);
                             await orderPage.isSpinnerDone();
                             base64ImageComponent = await driver.saveScreenshots();
