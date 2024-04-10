@@ -1193,6 +1193,12 @@ export class DevTest {
                     this.adminBaseUserPass,
                     'SupportToolsWebHook',
                 );
+            case 'KMS':
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'KMSTeamsWebHook',
+                );
             case 'QA':
                 return await this.adminBaseUserGeneralService.getSecretfromKMS(
                     this.adminBaseUserEmail,
