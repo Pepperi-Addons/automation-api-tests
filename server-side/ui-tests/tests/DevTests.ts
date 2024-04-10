@@ -79,6 +79,8 @@ export class DevTest {
 
     static convertNameToUUIDForDevTests(addonName: string) {
         switch (addonName) {
+            case 'KMS':
+                return '8b4a1bd8-a2eb-4241-85ac-89c9e724e900';
             case 'SUPPORT-TOOLS':
             case 'SUPPORT TOOLS':
                 return '76fe8cf0-da3f-44d3-accf-e661cdaea235';
@@ -205,6 +207,12 @@ export class DevTest {
         //3. install dependencys
         //=>76fe8cf0-da3f-44d3-accf-e661cdaea235
         if (addonDep !== undefined && addonDep.length !== 0) {
+            if (this.addonUUID === '8b4a1bd8-a2eb-4241-85ac-89c9e724e900') {
+                //KMS
+                const depObjSync = {};
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                addonDep.push(depObjSync);
+            }
             if (this.addonUUID === '84c999c3-84b7-454e-9a86-71b7abc96554') {
                 //config
                 for (let index = 0; index < addonDep.length; index++) {
@@ -1374,6 +1382,8 @@ export class DevTest {
                 return ['neo4JSyncEU@pepperitest.com', 'Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //
             case 'FEBULA':
                 return ['febulaEU@pepperitest.com', 'febulaProd@pepperitest.com', 'febulaSB@pepperitest.com']; //
+            case 'KMS':
+                return ['KmsTesterEU@pepperitest.com', 'KmsTesterProd@pepperitest.com', 'KmsTesterSB@pepperitest.com']; //
             case 'ADAL':
                 return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
             case 'SYNC':
