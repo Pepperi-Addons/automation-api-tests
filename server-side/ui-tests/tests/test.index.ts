@@ -74,6 +74,8 @@ import {
     StorybookSliderTests,
     StorybookTextareaTests,
     StorybookTextboxTests,
+    StorybookQueryBuilderTests,
+    StorybookSmartFiltersTests,
     NeltPerformanceTests,
     ListsAbiTests,
     CustomCollectionsUpsert,
@@ -855,6 +857,18 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
 
     if (tests === 'StorybookTextbox') {
         await StorybookTextboxTests();
+        run();
+        return;
+    }
+
+    if (tests === 'StorybookQueryBuilder') {
+        await StorybookQueryBuilderTests();
+        run();
+        return;
+    }
+
+    if (tests === 'StorybookSmartFilters') {
+        await StorybookSmartFiltersTests();
         run();
         return;
     }
