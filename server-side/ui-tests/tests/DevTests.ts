@@ -941,7 +941,7 @@ export class DevTest {
             },
         );
         if (monitoringResponse.Ok !== true) {
-            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Message} </br> <b> Message: </b> ${bodyToSend.Message}`;
+            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
             await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
                 method: 'POST',
                 body: JSON.stringify({ Text: body }),
@@ -1120,7 +1120,7 @@ export class DevTest {
         );
         debugger;
         if (monitoringResponse.Ok !== true) {
-            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Message} </br> <b> Message: </b> ${bodyToSend.Message}`;
+            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
             await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
                 method: 'POST',
                 body: JSON.stringify({ Text: body }),
@@ -1160,7 +1160,7 @@ export class DevTest {
             },
         );
         if (monitoringResponse.Ok !== true) {
-            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Message} </br> <b> Message: </b> ${bodyToSend.Message}`;
+            const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
             await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
                 method: 'POST',
                 body: JSON.stringify({ Text: body }),
