@@ -83,8 +83,8 @@ export async function TestDataTestsNewSync(
                 installedAddons['Nebula'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'febula')
                 installedAddons['febula'] = installedAddonsArr[index].Version;
-            if (installedAddonsArr[index].Addon.Name == 'sync')
-                installedAddons['sync'] = installedAddonsArr[index].Version;
+            if (installedAddonsArr[index].Addon.Name == 'Sync' || installedAddonsArr[index].Addon.Name == 'sync')
+                installedAddons['Sync'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Audit Log')
                 installedAddons['Audit Log'] = installedAddonsArr[index].Version;
             if (installedAddonsArr[index].Addon.Name == 'Generic Resource')
@@ -201,9 +201,9 @@ export async function TestDataTestsNewSync(
                 const regexMatched = installedAddons['febula'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
-            it(`Sync | Version: ${installedAddons['sync']}`, () => {
+            it(`Sync | Version: ${installedAddons['Sync']}`, () => {
                 //EVGENY
-                const regexMatched = installedAddons['sync'].replace(regex, '');
+                const regexMatched = installedAddons['Sync'].replace(regex, '');
                 expect(regexMatched.length).to.be.above(2);
             });
             it(`Generic Resource | Version: ${installedAddons['Generic Resource']}`, () => {
