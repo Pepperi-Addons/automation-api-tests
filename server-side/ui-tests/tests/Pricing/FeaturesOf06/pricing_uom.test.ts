@@ -63,7 +63,7 @@ _________________
     const pricingRules = new PricingRules();
 
     const installedPricingVersion = (await generalService.getInstalledAddons()).find(
-        (addon) => addon.Addon.Name == 'pricing',
+        (addon) => addon.Addon.Name == 'Pricing',
     )?.Version;
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));

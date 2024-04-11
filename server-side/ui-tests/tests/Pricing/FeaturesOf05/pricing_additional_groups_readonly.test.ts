@@ -34,7 +34,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
-        (addon) => addon.Addon.Name == 'pricing',
+        (addon) => addon.Addon.Name == 'Pricing',
     )?.Version;
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
@@ -1112,6 +1112,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                             });
                         }
                         it('Click "Continue ordering" button + switch to "Line View"', async function () {
+                            driver.sleep(0.5 * 1000);
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Cart`,

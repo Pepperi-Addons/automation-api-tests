@@ -41,7 +41,7 @@ export async function PricingAddonsUpsert(varPass: string, client: Client, prcVe
     // const isInstalledArr = await generalService.areAddonsInstalled(testData);
     // console.info('Installed Addons: ', JSON.stringify(await generalService.getInstalledAddons(), null, 2));
     // installedPricingVersion = (await generalService.getInstalledAddons())
-    //     .find((addon) => addon.Addon.Name == 'pricing')
+    //     .find((addon) => addon.Addon.Name == 'Pricing')
     //     ?.Version?.split('.')[1];
     // console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
 
@@ -69,7 +69,7 @@ export async function PricingAddonsUpsert(varPass: string, client: Client, prcVe
                         .eventually.to.have.property('Version')
                         .a('string')
                         .that.is.equal(varLatestVersion);
-                    if (addonName === 'pricing') {
+                    if (addonName === 'Pricing') {
                         installedPricingVersion = varLatestVersion.split('.')[1];
                         console.info(
                             'Installed Pricing Latest Version: ',
