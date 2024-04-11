@@ -52,6 +52,7 @@ export default class E2EUtils extends BasePomObject {
                     }
                     await this.browser.refresh();
                     await resourceList.waitTillVisible(resourceList.PepTopArea_title, 30000);
+                    await resourceList.waitTillVisible(resourceList.Views_Tab_selected, 3000);
                     break;
                 case 'Slugs':
                     await settingsSidePanel.clickSettingsSubCategory('slugs', 'Pages');
