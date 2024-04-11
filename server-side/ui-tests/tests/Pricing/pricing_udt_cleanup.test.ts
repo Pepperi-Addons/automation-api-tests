@@ -15,7 +15,7 @@ export async function PricingUdtCleanup(client: Client, specificVersion: 'versio
     const objectsService = new ObjectsService(generalService);
     const pricingRules = new PricingRules();
     const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
-    const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'pricing')?.Version;
+    const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'Pricing')?.Version;
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     const dateTime = new Date();
     let ppmVluesEnd: UserDefinedTableRow[];

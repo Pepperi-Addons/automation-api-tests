@@ -117,7 +117,7 @@ ________________________________________________________________________________
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const installedPricingVersion = (await generalService.getInstalledAddons()).find(
-        (addon) => addon.Addon.Name == 'pricing',
+        (addon) => addon.Addon.Name == 'Pricing',
     )?.Version;
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
