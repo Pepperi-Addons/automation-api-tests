@@ -2373,7 +2373,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                             } catch (error) {
                                 const caughtError: any = error;
                                 expect(caughtError.message).to.equal(
-                                    `After wait time of: 15000, for selector of '//button[@data-qa="Continue ordering"]', The test must end, The element is: undefined`,
+                                    `After wait time of: 15000, for selector of '//pep-top-bar//button[@data-qa="Continue ordering"]/parent::pep-button', The test must end, The element is: undefined`,
                                 );
                             }
                             driver.sleep(0.1 * 1000);
