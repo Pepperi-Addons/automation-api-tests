@@ -1326,6 +1326,7 @@ export default class GeneralService {
                 addonName == 'Core Data Source Interface' || //new sync addons
                 addonName == 'Core Resources' || //new sync addons
                 addonName == 'Nebula' || //new sync addons
+                addonName == 'configurations' || //new sync addons
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
