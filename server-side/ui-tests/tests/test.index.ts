@@ -115,7 +115,8 @@ import { ConfigurationTests } from './configurations.dev.test';
 import { SyncTests as SyncDevTests } from './sync.dev.test';
 import { DevTestReporter } from './dev.test.repoerter';
 import { SyncE2ETester } from './syncE2ETester.test';
-import { TestDataTestsNewSyncNoNebula } from '../../api-tests/test-service/test_data_new_syn_no_nebula';
+// import { TestDataTestsNewSyncNoNebula } from '../../api-tests/test-service/test_data_new_syn_no_nebula';
+// import { UDCLimitationTestser } from '../../api-tests/user_defined_collections_limitations_data_creator';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -293,10 +294,26 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                 varKeyEU: varPassEU,
             },
         });
-        await TestDataTestsNewSyncNoNebula(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
     }
+
+    // if (tests === 'UDC_limitation') {
+    //     await UDCLimitationTestser(
+    //         generalService,
+    //         {
+    //             body: {
+    //                 varKeyStage: varPass,
+    //                 varKeyPro: varPass,
+    //                 varKeyEU: varPassEU,
+    //             },
+    //         },
+    //         { describe, expect, it } as TesterFunctions,
+    //     );
+    //     await TestDataTestsNewSyncNoNebula(generalService, { describe, expect, it } as TesterFunctions);
+    //     run();
+    //     return;
+    // }
 
     // if (tests.includes('evgeny')) {
     //     await XXXTestser(generalService, {
