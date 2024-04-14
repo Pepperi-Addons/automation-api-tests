@@ -721,6 +721,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expect(listAbiErrorDescription.trim()).to.contain(errorText);
         }
         const listAbiResultsNumber = await (await driver.findElement(resourceListABI.ListAbi_results_number)).getText();
+        addContext(this, {
+            title: `Number of Results`,
+            value: 'Actual: ' + listAbiResultsNumber + ' | Expected: ' + expectedNumOfResults,
+        });
         expect(Number(listAbiResultsNumber.trim())).to.equal(expectedNumOfResults);
         base64ImageBuild = await driver.saveScreenshots();
         addContext(this, {
