@@ -39,6 +39,9 @@ export class ResourceList extends AddonPage {
         '//div[contains(@class,"mat-tab-labels")]/div[@role="tab"][@aria-selected="true"]/div',
     );
     public Views_Tab: By = this.getSelectorOfResourceListSettingsTab('Views');
+    public Views_Tab_selected: By = By.xpath(
+        `${this.getSelectorOfResourceListSettingsTab('Views').value}[@aria-selected="true"]`,
+    );
     public Editors_Tab: By = this.getSelectorOfResourceListSettingsTab('Editors');
     public General_Tab: By = this.getSelectorOfResourceListSettingsTab('General');
     public Form_Tab: By = this.getSelectorOfResourceListSettingsTab('Form');
