@@ -21,7 +21,7 @@ export class WebAppHomePage extends WebAppPage {
     public HomeScreenSpesificButton: By = By.xpath(`//button[@title='|textToFill|']`);
 
     // supportmenu popup
-    public SupportMenuPopup_Container: By = By.xpath('//div[contains(@class,"supportMenu")]');
+    public SupportMenuPopup_Container: By = By.xpath('//div[contains(@class,"supportMenu")]'); //nav[@role="navigation"]
     public SupportMenuPopup_Refresh: By = By.xpath('//a[@data-toggle="dropdown"][contains(text(),"Refresh")]');
     public SupportMenuPopup_RefreshData: By = By.xpath('//a[text()="Refresh Data"]');
 

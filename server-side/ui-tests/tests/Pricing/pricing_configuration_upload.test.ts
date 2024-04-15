@@ -3,10 +3,11 @@ import promised from 'chai-as-promised';
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../utilities/browser';
-import { WebAppLoginPage, WebAppHomePage } from '../../pom';
+import { WebAppLoginPage } from '../../pom';
 import addContext from 'mochawesome/addContext';
 import GeneralService from '../../../services/general.service';
 import PricingConfiguration from '../../pom/addons/PricingConfiguration';
+import E2EUtils from '../../utilities/e2e_utils';
 
 chai.use(promised);
 
@@ -22,8 +23,8 @@ export async function PricingConfigUpload(
     const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'Pricing')?.Version;
     const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     let driver: Browser;
+    let e2eUtils: E2EUtils;
     let webAppLoginPage: WebAppLoginPage;
-    let webAppHomePage: WebAppHomePage;
     let base64ImageComponent;
     let pricingConfig;
 
@@ -33,7 +34,7 @@ export async function PricingConfigUpload(
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
-            webAppHomePage = new WebAppHomePage(driver);
+            e2eUtils = new E2EUtils(driver);
         });
 
         after(async function () {
@@ -51,10 +52,14 @@ export async function PricingConfigUpload(
                         console.info('AT installedPricingVersion CASE 6');
                         pricingConfig = pricingConfiguration.version06;
                         break;
+                    case '7':
+                        console.info('AT installedPricingVersion CASE 7');
+                        pricingConfig = pricingConfiguration.version07;
+                        break;
 
                     default:
                         console.info('AT installedPricingVersion Default');
-                        pricingConfig = pricingConfiguration.version07;
+                        pricingConfig = pricingConfiguration.version08;
                         break;
                 }
                 await uploadConfiguration(pricingConfig);
@@ -84,8 +89,8 @@ export async function PricingConfigUpload(
                 });
             });
 
-            it('Manual Sync', async () => {
-                await webAppHomePage.manualResync(client);
+            it('Manual Resync', async () => {
+                await e2eUtils.performManualResync(client);
             });
 
             it('Logout', async function () {
