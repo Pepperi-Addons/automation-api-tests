@@ -55,7 +55,7 @@ export class PageBuilder extends AddonPage {
     // Add Section
     public EditSideBar_AddSection_Button: By = this.getSelectorOfButtonAtEditPageByDataQa('Add Section'); //By.xpath('//button[@data-qa="Add Section"]');
     public Section_Frame: By = By.xpath('//div[contains(@id,"_column_")]');
-    public InnerPageBuilder: By = By.xpath('//page-builder-internal/div');
+    public InnerPageBuilder: By = By.xpath('//page-builder-internal//div[contains(@class, "sections-container")]');
     // Notice Popup
     public NoticePopup_Title: By = By.xpath('//span[contains(@class,"dialog-title")][contains(text(), "Notice")]');
     public NoticePopup_LeavePage_Button: By = By.xpath(
