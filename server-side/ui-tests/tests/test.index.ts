@@ -555,7 +555,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
 
     if (tests === 'ResourceList') {
         // await RLdataPrep(client);
-        await ResourceListTests(email, pass, client);
+        await ResourceListTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -635,6 +635,10 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     }
 
     if (tests === 'Pricing06Features') {
+        await PricingUdtCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingConfigUpload(client, email, pass);
+        await PricingUdtInsertion(client);
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingExclusionTests(email, pass, client);

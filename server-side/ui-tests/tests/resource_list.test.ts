@@ -18,10 +18,25 @@ import { Slugs } from '../pom/addons/Slugs';
 
 chai.use(promised);
 
-export async function ResourceListTests(email: string, password: string, client: Client) {
+export async function ResourceListTests(email: string, password: string, client: Client, varPass: string) {
     const date = new Date();
     const generalService = new GeneralService(client);
     // const papi_resources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
+
+    await generalService.baseAddonVersionsInstallation(varPass);
+
+    const testData = {
+        'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
+        ResourceListABI_Addon: ['cd3ba412-66a4-42f4-8abc-65768c5dc606', ''],
+        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.0.%'], // to prevent open sync from being installed (2.0.%)
+        // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'], // CPI_Node
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'],
+    };
+
+    const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
 
     const installedResourceListVersion = (await generalService.getInstalledAddons()).find(
         (addon) => addon.Addon.Name == 'Resource List',
@@ -199,6 +214,10 @@ export async function ResourceListTests(email: string, password: string, client:
             await webAppLoginPage.login(email, password);
         });
 
+        it('Manual Resync', async () => {
+            await resourceListUtils.performManualResync(client);
+        });
+
         describe('Views & Editors Full Functionality test', async function () {
             afterEach(async function () {
                 driver.sleep(500);
@@ -262,6 +281,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 await resourceEditors.clickTab('Editors_Tab');
                 await resourceEditors.deleteFromListByName(editorName);
             });
+
             it('Perform Manual Sync', async function () {
                 await resourceListUtils.performManualSync(client);
             });
@@ -341,6 +361,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
                 resourceEditors.pause(0.5 * 1000);
             });
+
             it('Add & Configure View', async function () {
                 // Add View
                 viewName = `${resource_name} View _(${random_name})`;
@@ -385,6 +406,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
                 resourceViews.pause(0.5 * 1000);
             });
+
             it('Create Page', async function () {
                 await resourceListUtils.navigateTo('Page Builder');
                 // debugger
@@ -437,11 +459,13 @@ export async function ResourceListTests(email: string, password: string, client:
                 pageBuilder.pause(1 * 1000);
                 await webAppHeader.goHome();
             });
+
             it('Create & Map Slug', async function () {
                 slugDisplayName = `${resource_name} ${random_name}`;
                 slug_path = `${resource_name.toLowerCase()}_${random_name}`;
                 await resourceListUtils.createSlug(slugDisplayName, slug_path, pageKey, email, password, client);
             });
+
             it(`Create A Button On Homepage`, async function () {
                 await webAppHeader.openSettings();
                 await webAppHeader.isSpinnerDone();
@@ -459,6 +483,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
+
             it('Go to Block and perform checks', async function () {
                 resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
                 await webAppHomePage.isSpinnerDone();
@@ -489,6 +514,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
+
             it('Editing checks at Block', async function () {
                 // TODO
                 driver.sleep(0.5 * 1000);
@@ -498,6 +524,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
+
             it('Return to Home Page', async function () {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
@@ -509,15 +536,18 @@ export async function ResourceListTests(email: string, password: string, client:
                 driver.sleep(500);
                 await webAppHomePage.collectEndTestData(this);
             });
+
             it('Delete Page', async function () {
                 deletePageResponse = await pageBuilder.removePageByUUID(pageKey, client);
             });
+
             it('Delete Slug', async function () {
                 const deleteSlugResponse = await slugs.deleteSlugByName(slug_path, client);
                 expect(deleteSlugResponse.Ok).to.equal(true);
                 expect(deleteSlugResponse.Status).to.equal(200);
                 expect(deleteSlugResponse.Body.success).to.equal(true);
             });
+
             it('Delete Editor Via API', async function () {
                 const deleteEditorResponse = await resourceEditors.deleteEditorViaAPI(editorKey, client);
                 expect(deleteEditorResponse.Ok).to.equal(true);
@@ -525,6 +555,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 expect(deleteEditorResponse.Body.Name).to.equal(editorName);
                 expect(deleteEditorResponse.Body.Hidden).to.equal(true);
             });
+
             it('Delete View Via API', async function () {
                 const deleteViewResponse = await resourceViews.deleteViewViaApiByUUID(viewKey, client);
                 expect(deleteViewResponse.Ok).to.equal(true);
@@ -532,6 +563,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 expect(deleteViewResponse.Body.Name).to.equal(viewName);
                 expect(deleteViewResponse.Body.Hidden).to.equal(true);
             });
+
             it('Remove button from home screen', async function () {
                 await webAppHeader.goHome();
                 await webAppHeader.openSettings();
@@ -542,6 +574,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugDisplayName);
                 expect(isNotFound).to.equal(true);
             });
+
             it('Validating Deletion of Page', async function () {
                 console.info(`deletePageResponse: ${JSON.stringify(deletePageResponse, null, 2)}`);
                 driver.sleep(0.5 * 1000);
@@ -561,6 +594,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     slug_path = 'auto_test';
                     resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
                 });
+
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
@@ -605,9 +639,11 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                     resourceViews.pause(0.5 * 1000);
                 });
+
                 it('Perform Manual Sync', async function () {
                     await resourceListUtils.performManualSync(client);
                 });
+
                 it('Create Page', async function () {
                     await resourceListUtils.navigateTo('Page Builder');
                     // await driver.refresh();
@@ -651,9 +687,11 @@ export async function ResourceListTests(email: string, password: string, client:
                     pageBuilder.pause(1 * 1000);
                     await webAppHeader.goHome();
                 });
+
                 it('Perform Manual Sync', async function () {
                     await resourceListUtils.performManualSync(client);
                 });
+
                 it('Map the Slug with the Page', async function () {
                     const mapPage = await resourceListUtils.changePageAtMappedSlugs(
                         [{ slug_path: slug_path, pageUUID: pageKey }],
@@ -661,9 +699,11 @@ export async function ResourceListTests(email: string, password: string, client:
                     );
                     console.info(`Map Page To Slug: ${JSON.stringify(mapPage, null, 2)}`);
                 });
+
                 it('Logout & Login', async function () {
                     await resourceListUtils.logOutLogIn(email, password);
                 });
+
                 it('Block Tests', async function () {
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn(slugDisplayName);
@@ -692,6 +732,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                 });
+
                 it('Delete Page', async function () {
                     deletePageResponse = await pageBuilder.removePageByUUID(pageKey, client);
                     console.info(`deletePageResponse: ${JSON.stringify(deletePageResponse, null, 2)}`);
@@ -701,6 +742,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     expect(deletePageResponse.Body.Hidden).to.equal(true);
                     expect(deletePageResponse.Body.Name).to.equal(pageName);
                 });
+
                 it('Delete View Via API', async function () {
                     const deleteViewResponse = await resourceViews.deleteViewViaApiByUUID(viewKey, client);
                     expect(deleteViewResponse.Ok).to.equal(true);
@@ -740,6 +782,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 console.info(`findAutoEditorAfterCleanup: ${JSON.stringify(findAutoEditorAfterCleanup, null, 4)}`);
                 expect(findAutoEditorAfterCleanup).to.be.undefined;
             });
+
             it('Editors Leftovers Cleanup (containing " Editor _(")', async () => {
                 const allEditors = await resourceEditors.getAllEditors(client);
                 const editorsOfAutoTest = allEditors?.Body.filter((editor) => {
@@ -768,6 +811,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 console.info(`findAutoEditorAfterCleanup: ${JSON.stringify(findAutoEditorAfterCleanup, null, 4)}`);
                 expect(findAutoEditorAfterCleanup).to.be.undefined;
             });
+
             it('Views Leftovers Cleanup (containing " View _(")', async () => {
                 const allViews = await resourceViews.getAllViews(client);
                 const viewsOfAutoTest = allViews?.Body.filter((view) => {
@@ -796,6 +840,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 console.info(`findAutoViewAfterCleanup: ${JSON.stringify(findAutoViewAfterCleanup, null, 4)}`);
                 expect(findAutoViewAfterCleanup).to.be.undefined;
             });
+
             it('Pages Leftovers Cleanup (containing " Page Auto_(")', async () => {
                 const allPages = await pageBuilder.getAllPages(client);
                 const pagesOfAutoTest = allPages?.Body.filter((page) => {
@@ -821,6 +866,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 console.info(`findAutoPageAfterCleanup: ${JSON.stringify(findAutoPageAfterCleanup, null, 4)}`);
                 expect(findAutoPageAfterCleanup).to.be.undefined;
             });
+
             it('Pages Leftovers Cleanup (starting with "Blank Page")', async () => {
                 const allPages = await pageBuilder.getDraftPages(client);
                 console.info(
@@ -849,6 +895,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 console.info(`findBlankPageAfterCleanup: ${JSON.stringify(findBlankPageAfterCleanup, null, 4)}`);
                 expect(findBlankPageAfterCleanup).to.be.undefined;
             });
+
             it('Remove Leftovers Buttons from home screen', async function () {
                 await webAppHeader.goHome();
                 await webAppHeader.openSettings();
@@ -861,6 +908,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 );
                 expect(leftoversButtonsOnHomeScreen).to.equal(false);
             });
+
             it('Print Screen', async function () {
                 driver.sleep(0.5 * 1000);
                 const base64ImageComponent = await driver.saveScreenshots();
@@ -869,6 +917,43 @@ export async function ResourceListTests(email: string, password: string, client:
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
+        });
+
+        describe(`Prerequisites Addons for Resource List Tests - ${
+            client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
+        } | Tested user: ${email} | Date Time: ${date}`, () => {
+            // const addonsLatestVersionList = Object.keys(testData);
+
+            // isInstalledArr.forEach((isInstalled, index) => {
+            //     it(`Validate That The Needed Addon: ${addonsLatestVersionList[index]} - Is Installed.`, () => {
+            //         expect(isInstalled).to.be.true;
+            //     });
+            // });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const currentAddonChnageVersionResponse = chnageVersionResponseArr[addonName];
+                const varLatestVersion = currentAddonChnageVersionResponse[2];
+                const changeType = currentAddonChnageVersionResponse[3];
+                const status = currentAddonChnageVersionResponse[4];
+                const note = currentAddonChnageVersionResponse[5];
+
+                describe(`"${addonName}"`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (status == 'Failure') {
+                            expect(note).to.include('is already working on version');
+                        } else {
+                            expect(status).to.include('Success');
+                        }
+                    });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
         });
     });
 }
