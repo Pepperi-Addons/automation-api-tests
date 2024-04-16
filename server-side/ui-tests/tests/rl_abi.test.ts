@@ -12,6 +12,7 @@ import { OpenCatalogService } from '../../services/open-catalog.service';
 import { UDCService } from '../../services/user-defined-collections.service';
 import { ListAbiTestData } from '../pom/addons/ListAbiTestData';
 import addContext from 'mochawesome/addContext';
+import E2EUtils from '../utilities/e2e_utils';
 
 chai.use(promised);
 
@@ -119,96 +120,6 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     // const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
-    describe(`Prerequisites Addons for Resource List Tests - ${
-        client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-    } | Tested user: ${email} | Date Time: ${dateTime}`, () => {
-        // const addonsLatestVersionList = Object.keys(testData);
-
-        // isInstalledArr.forEach((isInstalled, index) => {
-        //     it(`Validate That The Needed Addon: ${addonsLatestVersionList[index]} - Is Installed.`, () => {
-        //         expect(isInstalled).to.be.true;
-        //     });
-        // });
-        for (const addonName in testData) {
-            const addonUUID = testData[addonName][0];
-            const version = testData[addonName][1];
-            const currentAddonChnageVersionResponse = chnageVersionResponseArr[addonName];
-            const varLatestVersion = currentAddonChnageVersionResponse[2];
-            const changeType = currentAddonChnageVersionResponse[3];
-            const status = currentAddonChnageVersionResponse[4];
-            const note = currentAddonChnageVersionResponse[5];
-
-            describe(`"${addonName}"`, () => {
-                it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-                    if (status == 'Failure') {
-                        expect(note).to.include('is already working on version');
-                    } else {
-                        expect(status).to.include('Success');
-                    }
-                });
-                it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                    await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                        .eventually.to.have.property('Version')
-                        .a('string')
-                        .that.is.equal(varLatestVersion);
-                });
-            });
-        }
-        // TO USE FOR PHASED LEVELING:
-        // for (const addonName in areAddonsPhased) {
-        //     if (!Object.keys(testData).includes(addonName)) {
-        //         const currentAddonChnageVersionResponse = areAddonsPhased[addonName];
-        //         const addonUUID = currentAddonChnageVersionResponse[0];
-        //         const latestPhasedVersion = currentAddonChnageVersionResponse[2];
-        //         const changeType = currentAddonChnageVersionResponse[3];
-        //         const status = currentAddonChnageVersionResponse[4];
-        //         const note = currentAddonChnageVersionResponse[5] || '';
-
-        //         describe(`"${addonName}"`, () => {
-        //             it(`${changeType} To Latest PHASED Version`, () => {
-        //                 if (status == 'Failure') {
-        //                     expect(note).to.include('is already working on version');
-        //                 } else {
-        //                     expect(status).to.include('Success');
-        //                 }
-        //             });
-        //             it(`Latest Phased Version Is Installed ${latestPhasedVersion}`, async () => {
-        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-        //                     .eventually.to.have.property('Version')
-        //                     .a('string')
-        //                     .that.is.equal(latestPhasedVersion);
-        //             });
-        //         });
-        //     }
-        // }
-        // for (const addonName in areBaseAddonsPhased) {
-        //     if (!Object.keys(testData).includes(addonName) && !Object.keys(areAddonsPhased).includes(addonName)) {
-        //         const currentAddonChnageVersionResponse = areBaseAddonsPhased[addonName];
-        //         const addonUUID = currentAddonChnageVersionResponse[0];
-        //         const latestPhasedVersion = currentAddonChnageVersionResponse[2];
-        //         const changeType = currentAddonChnageVersionResponse[3];
-        //         const status = currentAddonChnageVersionResponse[4];
-        //         const note = currentAddonChnageVersionResponse[5] || '';
-
-        //         describe(`"${addonName}"`, () => {
-        //             it(`${changeType} To Latest PHASED Version`, () => {
-        //                 if (status == 'Failure') {
-        //                     expect(note).to.include('is already working on version');
-        //                 } else {
-        //                     expect(status).to.include('Success');
-        //                 }
-        //             });
-        //             it(`Latest Phased Version Is Installed ${latestPhasedVersion}`, async () => {
-        //                 await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-        //                     .eventually.to.have.property('Version')
-        //                     .a('string')
-        //                     .that.is.equal(latestPhasedVersion);
-        //             });
-        //         });
-        //     }
-        // }
-    });
-
     const installedResourceListVersion = (await generalService.getInstalledAddons()).find(
         (addon) => addon.Addon.Name == 'Resource List',
     )?.Version;
@@ -266,6 +177,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     let webAppHeader: WebAppHeader;
     let webAppList: WebAppList;
     let resourceListABI: ResourceListABI;
+    let e2eUtils: E2EUtils;
     let enteredAbiSlug = true;
 
     describe(`Resource List ABI Test Suite | Ver: ${installedResourceListVersion}`, async () => {
@@ -321,6 +233,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 webAppHeader = new WebAppHeader(driver);
                 webAppList = new WebAppList(driver);
                 resourceListABI = new ResourceListABI(driver);
+                e2eUtils = new E2EUtils(driver);
             });
 
             after(async function () {
@@ -331,8 +244,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 await webAppLoginPage.login(email, password);
             });
 
-            it('Manual Sync', async () => {
-                await webAppHomePage.manualResync(client);
+            it('Manual Resync', async () => {
+                await e2eUtils.performManualResync(client);
             });
 
             it('Entering Resource List ABI tests Addon', async () => {
@@ -662,6 +575,38 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                     await resourceListABI.clickElement('ListAbi_dialogButton_done');
                                 });
                             }
+                        });
+                    });
+                }
+            });
+
+            describe(`Prerequisites Addons for Resource List Tests - ${
+                client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
+            } | Tested user: ${email} | Date Time: ${dateTime}`, () => {
+                for (const addonName in testData) {
+                    const addonUUID = testData[addonName][0];
+                    const version = testData[addonName][1];
+                    const currentAddonChnageVersionResponse = chnageVersionResponseArr[addonName];
+                    const varLatestVersion = currentAddonChnageVersionResponse[2];
+                    const changeType = currentAddonChnageVersionResponse[3];
+                    const status = currentAddonChnageVersionResponse[4];
+                    const note = currentAddonChnageVersionResponse[5];
+
+                    describe(`"${addonName}"`, () => {
+                        it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                            if (status == 'Failure') {
+                                expect(note).to.include('is already working on version');
+                            } else {
+                                expect(status).to.include('Success');
+                            }
+                        });
+                        it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                            await expect(
+                                generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get(),
+                            )
+                                .eventually.to.have.property('Version')
+                                .a('string')
+                                .that.is.equal(varLatestVersion);
                         });
                     });
                 }
