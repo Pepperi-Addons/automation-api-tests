@@ -42,6 +42,36 @@ export class WebAppAPI extends Page {
         return syncStatusReposnse;
     }
 
+    async pollForResyncResponse(accessToken: string, loopsAmount = 30) {
+        // Hagit, 14/4/24
+        const generalService = new GeneralService(this._CLIENT);
+        let resyncReposnse;
+        const URL = `${await this.getBaseURL()}/Service1.svc/v1/GetSyncStatus`;
+        do {
+            resyncReposnse = await generalService.fetchStatus(URL, {
+                method: 'GET',
+                headers: {
+                    PepperiSessionToken: accessToken,
+                    'Content-Type': 'application/json',
+                },
+            });
+            //This case is used when Resync was not created at all
+            resyncReposnse = resyncReposnse.Body;
+            if (resyncReposnse === null) {
+                this.browser.sleep(5000);
+                console.log(`Resync response not found (returned 'null'), Retry For ${loopsAmount} Times.`);
+            }
+            //This case will only retry the get call again as many times as the "loopsAmount"
+            else if (resyncReposnse.Status == 'Processing') {
+                await this.browser.sleep(5000);
+                console.log(`Resync response is 'Processing': Retry ${loopsAmount} Times.`);
+            }
+            console.info('Resync status response: ', resyncReposnse, ' Index: ', loopsAmount);
+            loopsAmount--;
+        } while ((!resyncReposnse.Success || resyncReposnse.Status != 'UpToDate') && loopsAmount > 0);
+        return resyncReposnse;
+    }
+
     async initSync(accessToken: string) {
         const generalService = new GeneralService(this._CLIENT);
         //webapi.sandbox.pepperi.com/16.60.82/webapi/Service1.svc/v1/HomePage

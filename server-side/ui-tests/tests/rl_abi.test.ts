@@ -236,7 +236,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const referenceAccountAuto = await udcService.getAllObjectFromCollectionCount('ReferenceAccountAuto');
     const filtersAccRefAuto = await udcService.getAllObjectFromCollectionCount('FiltersAccRefAuto');
     const arraysOfPrimitivesAuto = await udcService.getAllObjectFromCollectionCount('ArraysOfPrimitivesAuto');
-    const containedArray = await udcService.getAllObjectFromCollectionCount('ContainedArray');
+    const containedArrayAuto = await udcService.getAllObjectFromCollectionCount('ContainedArrayAuto');
 
     const numOfListingsIn_items: number = items?.length;
     const numOfListingsIn_accounts: number = accounts?.length;
@@ -246,7 +246,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const numOfListingsIn_ReferenceAccountAuto: number = referenceAccountAuto?.objects?.length;
     const numOfListingsIn_FiltersAccRefAuto: number = filtersAccRefAuto?.objects?.length;
     const numOfListingsIn_ArraysOfPrimitivesAuto: number = arraysOfPrimitivesAuto?.objects?.length;
-    const numOfListingsIn_ContainedArray: number = containedArray?.objects?.length;
+    const numOfListingsIn_ContainedArray: number = containedArrayAuto?.objects?.length;
 
     const lists: ListAbiTestData = new ListAbiTestData(
         numOfListingsIn_items,
@@ -721,6 +721,10 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expect(listAbiErrorDescription.trim()).to.contain(errorText);
         }
         const listAbiResultsNumber = await (await driver.findElement(resourceListABI.ListAbi_results_number)).getText();
+        addContext(this, {
+            title: `Number of Results`,
+            value: 'Actual: ' + listAbiResultsNumber + ' | Expected: ' + expectedNumOfResults,
+        });
         expect(Number(listAbiResultsNumber.trim())).to.equal(expectedNumOfResults);
         base64ImageBuild = await driver.saveScreenshots();
         addContext(this, {

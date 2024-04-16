@@ -1,7 +1,7 @@
 import addContext from 'mochawesome/addContext';
 import { Browser } from './browser';
 import { WebAppHeader } from '../pom/WebAppHeader';
-import { BrandedApp, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
+import { BrandedApp, WebAppAPI, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews, ViewConfiguration } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
@@ -367,34 +367,33 @@ export default class E2EUtils extends BasePomObject {
         await webAppHeader.goHome();
         await webAppHomePage.manualResync(client);
         await webAppList.isSpinnerDone(); // just for the use of webAppList so that fix-lint won't get angry
-        // for (let index = 0; index < 4; index++) {
-        //     await webAppHeader.goHome();
-        //     await webAppHomePage.isSpinnerDone();
-        //     await webAppHomePage.clickOnBtn('Accounts');
-        //     await webAppList.isSpinnerDone();
-        //     await webAppList.validateListRowElements();
-        // }
-        // await webAppHeader.goHome();
-        // await webAppHomePage.isSpinnerDone();
     }
 
-    public async performManualResync() {
+    public async performManualResync(client: Client) {
         const webAppHeader: WebAppHeader = new WebAppHeader(this.browser);
         const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
+        const webAppAPI: WebAppAPI = new WebAppAPI(this.browser, client);
+        const accessToken = await webAppAPI.getAccessToken();
         await webAppHeader.goHome();
         await webAppHomePage.isSpinnerDone();
-        await this.browser.navigate(`${await this.browser.getCurrentUrl()}/supportmenu`);
+        const homePageURL = await this.browser.getCurrentUrl();
+        await this.browser.navigate(`${homePageURL}/supportmenu`);
         await this.browser.untilIsVisible(webAppHomePage.SupportMenuPopup_Container);
         await this.browser.click(webAppHomePage.SupportMenuPopup_Refresh);
         await this.browser.untilIsVisible(webAppHomePage.SupportMenuPopup_RefreshData);
+        this.browser.sleep(0.25 * 1000);
         await this.browser.click(webAppHomePage.SupportMenuPopup_RefreshData);
-        this.browser.sleep(5 * 60 * 1000);
-        let spinnerDone = await webAppHomePage.isSpinnerDone();
+        await webAppAPI.pollForResyncResponse(accessToken, 100);
+        let spinnerDone = false;
         do {
-            await webAppHomePage.isDialogOnHomePAge('Error');
             spinnerDone = await webAppHomePage.isSpinnerDone();
+            try {
+                await webAppHomePage.isDialogOnHomePAge('Error');
+            } catch (error) {
+                console.error(error);
+            }
         } while (!spinnerDone);
-        await webAppHeader.goHome();
+        await this.browser.navigate(homePageURL);
     }
 
     public async logOutLogIn(email: string, password: string) {
