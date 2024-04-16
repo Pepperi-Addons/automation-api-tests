@@ -44,8 +44,8 @@ export async function UDCTestsPermission(generalService: GeneralService, request
     const buyerEmailProd = '⁠udcPRODBuyerPermissions@pepperitest.com';
     const buyerPassProd = '*8sGs7';
 
-    const buyerEmailStage = 'surveyNeo4jSBBuyer@pepperitest.com';
-    const buyerPassStage = '4iuWd*';
+    const buyerEmailStage = '⁠udcSBBuyerPermissions@pepperitest.com';
+    const buyerPassStage = 'n5#QDM';
 
     const buyerEmailEU = '⁠udcEUBuyerPermissions@pepperitest.com';
     const buyerPassEU = '5&t3b#tG';
