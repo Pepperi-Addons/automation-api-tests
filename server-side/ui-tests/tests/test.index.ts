@@ -117,6 +117,7 @@ import { DevTestReporter } from './dev.test.repoerter';
 import { SyncE2ETester } from './syncE2ETester.test';
 import { TestDataTestsNewSyncNoNebula } from '../../api-tests/test-service/test_data_new_syn_no_nebula';
 import { UDCLimitationTestser } from '../../api-tests/user_defined_collections_limitations_data_creator';
+import { UDCTestserPermission } from '../../api-tests/user_defined_collections_buyer_permission';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -995,6 +996,23 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
 
     if (tests === 'ApiUDC') {
         await UDCTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'PermissionsApiUDC') {
+        await UDCTestserPermission(
             generalService,
             {
                 body: {

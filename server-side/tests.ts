@@ -99,6 +99,8 @@ import { UpgradeDependenciesTestsWithNewSync } from './api-tests/test-service/up
 import { SchedulerTests_Part2 } from './api-tests/code-jobs/scheduler_DI_23872';
 import { UpgradeDependenciesTestsWithNewSyncNoNebula } from './api-tests/test-service/upgrade_dependencies_with_new_sync_no_nebula';
 import { UpgradeDependenciesForNebulaTests } from './api-tests/test-service/upgrade_dependencies_for_nebula_dists';
+import { UpgradeDependenciesNoSyncNoNebula } from './api-tests/test-service/upgrade_dependencies_no_sync_no_nebula';
+import { TestDataTestsNoSyncNoNebula } from './api-tests/test-service/test_data_no_sync_no_nebula';
 // import { PapiClient } from '@pepperi-addons/papi-sdk'; WIP - dev tests
 // import { checkVersionsTest } from './api-tests/check_versions';
 
@@ -142,6 +144,21 @@ export async function upgrade_dependencies_for_nebula_dists(
     testerFunctions = service.initiateTesterFunctions(client, testName);
     await UpgradeDependenciesForNebulaTests(service, request, testerFunctions);
     await test_data(client, testerFunctions);
+    service.PrintMemoryUseToLog('End', testName);
+    return await testerFunctions.run();
+}
+
+export async function upgrade_dependencies_no_sync_no_nebula(
+    client: Client,
+    request: Request,
+    testerFunctions: TesterFunctions,
+) {
+    const service = new GeneralService(client);
+    testName = 'Upgrade_Dependencies';
+    service.PrintMemoryUseToLog('Start', testName);
+    testerFunctions = service.initiateTesterFunctions(client, testName);
+    await UpgradeDependenciesNoSyncNoNebula(service, request, testerFunctions);
+    await TestDataTestsNoSyncNoNebula(service, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();
 }
