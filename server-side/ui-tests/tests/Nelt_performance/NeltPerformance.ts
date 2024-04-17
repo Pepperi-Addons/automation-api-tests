@@ -97,12 +97,18 @@ export class NeltPerformance extends AddonPage {
     public PepDialog_buttonsContainer: By = By.xpath(
         `${this.PepDialog.value}//div[contains(@class,"mat-dialog-actions")]/div`,
     );
-    public PepDialog_Cancel_button: By = By.xpath(
-        '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Cancel")]/parent::button',
-    );
-    public PepDialog_Continue_button: By = By.xpath(
-        '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Continue")]/parent::button',
-    );
+    public PepDialog_Cancel_button: By = this.getPepDialogButtonByText('Cancel');
+    //By.xpath(
+    // '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Cancel")]/parent::button',
+    // );
+    public PepDialog_Continue_button: By = this.getPepDialogButtonByText('Continue');
+    // By.xpath(
+    //     '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Continue")]/parent::button',
+    // );
+    public PepDialog_OK_button: By = this.getPepDialogButtonByText('OK');
+    // By.xpath(
+    //     '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"OK")]/parent::button',
+    // );
 
     // Specific selectors for Nelt //
     public NeltLogo_Home: By = By.xpath('//pepperi-header//nav//a[@id="navImgLogo"]');
@@ -116,6 +122,10 @@ export class NeltPerformance extends AddonPage {
     public Broj_dana_trajanja_ekstenzije_Field: By = By.xpath(
         '//mat-label[contains(@title,"Broj ")]/ancestor::pep-textbox//mat-form-field//input',
     );
+    public Razlog_za_van_rute_selectButton: By = By.xpath(
+        '//span[@title="Razlog za van rute"]/ancestor::pep-select/div',
+    );
+    public Valuta_placanja_selectButton: By = By.xpath('//span[@title="Valuta placanja"]/ancestor::pep-select/div');
     public Razlog_povrata_selectButton: By = By.xpath('//span[@id="TSAReturnReasonSelector"]/ancestor::pep-select/div');
     public Razlog_povecanja_DropdownOptionsField: By = By.xpath('//mat-select[@id="TSAReason"]');
 
