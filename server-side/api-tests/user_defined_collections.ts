@@ -22,25 +22,25 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
         varKey = request.body.varKeyPro;
     }
 
-    await generalService.baseAddonVersionsInstallation(varKey);
+    // await generalService.baseAddonVersionsInstallation(varKey);
     //#region Upgrade UDC
     const testData = {
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'],
-        'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
-        Crawler: ['f489d076-381f-4cf7-aa63-33c6489eb017', ''],
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
-        'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-        ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-        'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-        'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
-        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
-        Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
-        'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
-        'User Defined Collections': [UserDefinedCollectionsUUID, ''],
-        'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
-        'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+        // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'],
+        // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
+        // Crawler: ['f489d076-381f-4cf7-aa63-33c6489eb017', ''],
+        // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+        // 'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+        // 'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
+        // 'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+        // ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+        // 'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+        // 'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+        // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        // Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
+        // 'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
+        // 'User Defined Collections': [UserDefinedCollectionsUUID, ''],
+        // 'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+        // 'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     };
 
     //For local run that run on Jenkins this is needed since Jenkins dont inject SK to the test execution folder
@@ -164,7 +164,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const documents = await udcService.getSchemes();
                 expect(documents.length).to.equal(numOfInitialCollections);
             });
-            it('Positive Test: creating an empty UDC with no fields configured', async () => {
+            it('Positive Test: creating an empty UDC with no fields configured + SEE: it got correct DataSourceData IndexName + see that DataImportResource relation was created', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 basicCollectionName = 'BasicTestingEmpty' + generalService.generateRandomString(15);
                 const response = await udcService.createUDCWithFields(
@@ -177,6 +177,28 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 generalService.sleep(5000);
                 const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
+                const newCollection = documents.filter((doc) => doc.Name === basicCollectionName)[0];
+                expect(newCollection.DataSourceData.IndexName).to.equal('122c0e9d-c240-4865-b446-f37ece866c22_data');
+                const allDataImportResourceRelations = await generalService.fetchStatus(
+                    `/addons/data/relations?where=RelationName='DataImportResource'&page_size=-1`,
+                );
+                const relationWhichHasCollectionName = allDataImportResourceRelations.Body.filter(
+                    (relation) => relation.Name === basicCollectionName,
+                );
+                expect(relationWhichHasCollectionName.length).to.be.above(0);
+                const latestCollectionRelation = relationWhichHasCollectionName[0];
+                expect(latestCollectionRelation.Name).to.equal(basicCollectionName);
+                expect(latestCollectionRelation.RelationName).to.equal('DataImportResource');
+                expect(latestCollectionRelation.Type).to.equal('AddonAPI');
+                expect(latestCollectionRelation.Key).to.equal(
+                    `${basicCollectionName}_${UserDefinedCollectionsUUID}_DataImportResource`,
+                );
+                expect(latestCollectionRelation.InitRelationDataRelativeURL).to.equal(
+                    `/api/init_import_data_source?collection_name=${basicCollectionName}`,
+                );
+                expect(latestCollectionRelation.AddonRelativeURL).to.equal(
+                    `/api/import_data_source?collection_name=${basicCollectionName}`,
+                );
             });
             it('Positive Test: creating a UDC with all types of basic fields', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
