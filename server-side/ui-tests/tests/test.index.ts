@@ -2413,6 +2413,11 @@ export async function handleTeamsURL(addonName, service, email, pass) {
     switch (addonName) {
         case 'QA':
             return await service.getSecretfromKMS(email, pass, 'QAWebHook');
+        case 'ASSETS_MANAGER_CLIENT':
+        case 'ASSETS MANAGER':
+        case 'ASSETS-MANAGER':
+        case 'ASSETS':
+            return await service.getSecretfromKMS(email, pass, 'AssetsManagerWebHook');
         case 'SUPPORT-TOOLS':
         case 'SUPPORT TOOLS':
             return await service.getSecretfromKMS(email, pass, 'SupportToolsWebHook');
