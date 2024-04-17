@@ -79,6 +79,11 @@ export class DevTest {
 
     static convertNameToUUIDForDevTests(addonName: string) {
         switch (addonName) {
+            case 'ASSETS_MANAGER_CLIENT':
+            case 'ASSETS MANAGER':
+            case 'ASSETS-MANAGER':
+            case 'ASSETS':
+                return 'ad909780-0c23-401e-8e8e-f514cc4f6aa2';
             case 'KMS':
                 return '8b4a1bd8-a2eb-4241-85ac-89c9e724e900';
             case 'SUPPORT-TOOLS':
@@ -207,6 +212,13 @@ export class DevTest {
         //3. install dependencys
         //=>76fe8cf0-da3f-44d3-accf-e661cdaea235
         if (addonDep !== undefined && addonDep.length !== 0) {
+            if (this.addonUUID === 'ad909780-0c23-401e-8e8e-f514cc4f6aa2') {
+                //assets
+                const depObjSync = {};
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                addonDep.push(depObjSync);
+                debugger;
+            }
             if (this.addonUUID === '8b4a1bd8-a2eb-4241-85ac-89c9e724e900') {
                 //KMS
                 const depObjSync = {};
@@ -1186,6 +1198,15 @@ export class DevTest {
     async handleTeamsURL(addonName: string) {
         //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
         switch (addonName) {
+            case 'ASSETS_MANAGER_CLIENT':
+            case 'ASSETS MANAGER':
+            case 'ASSETS-MANAGER':
+            case 'ASSETS':
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'AssetsManagerWebHook',
+                );
             case 'SUPPORT-TOOLS':
             case 'SUPPORT TOOLS':
                 return await this.adminBaseUserGeneralService.getSecretfromKMS(
@@ -1379,6 +1400,15 @@ export class DevTest {
 
     resolveUserPerTest(): any[] {
         switch (this.addonName) {
+            case 'ASSETS_MANAGER_CLIENT':
+            case 'ASSETS MANAGER':
+            case 'ASSETS-MANAGER':
+            case 'ASSETS':
+                return [
+                    'assetsTesterEU@pepperitest.com',
+                    'assetsTesterPROD@pepperitest.com',
+                    'assetsTesterSB@pepperitest.com',
+                ];
             case 'DATA INDEX':
             case 'DATA-INDEX':
                 return ['DataIndexEU@pepperitest.com', 'DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];
