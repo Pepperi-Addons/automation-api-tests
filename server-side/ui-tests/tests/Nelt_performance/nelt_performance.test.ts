@@ -284,8 +284,8 @@ export async function NeltPerformanceTests(
         });
 
         // 4
-        describe('Insights: 1. Home Screen --> Dnevni izvestaj', async () => {
-            it('Navigating from Home Screen (through Burger Menu) to "Dnevni izvestaj"', async function () {
+        describe('Insights: 1. Home Screen --> Dnevni izvestaji', async () => {
+            it('Navigating from Home Screen (through Burger Menu) to "Dnevni izvestaji"', async function () {
                 timeInterval = 0;
                 await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
                 base64ImageComponent = await driver.saveScreenshots();
@@ -296,7 +296,7 @@ export async function NeltPerformanceTests(
                 // time measurment
                 const Dnevni_izvestaj_opening = new Date().getTime();
                 await driver.click(
-                    neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni izvestaj'),
+                    neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni izvestaji'),
                 );
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(neltPerformanceSelectors.InsightsLoaded_Indication_GalleryCard);
@@ -321,24 +321,24 @@ export async function NeltPerformanceTests(
                 );
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `At "Dnevni izvestaj"`,
+                    title: `At "Dnevni izvestaji"`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
             });
             it(`Time Measured`, async function () {
                 addContext(this, {
-                    title: `Time Interval for "Dnevni izvestaj" to load:`,
+                    title: `Time Interval for "Dnevni izvestaji" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
                         1,
                     )} s`,
                 });
-                timeMeasurements['Home Screen --> Dnevni izvestaj'] = Number((timeInterval / 1000).toFixed(1));
+                timeMeasurements['Home Screen --> Dnevni izvestaji'] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: 'Home Screen --> Dnevni izvestaj',
+                    title: 'Home Screen --> Dnevni izvestaji',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Home Screen --> Dnevni izvestaj',
+                    Title: 'Home Screen --> Dnevni izvestaji',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -742,7 +742,7 @@ export async function NeltPerformanceTests(
 
         // 18 + 19 + 22 + 23
         describe(`(VisitFlow) Order: 1. Home Screen --> Kupci --> Select Account (first in list) --> Burger menu --> 
-        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> Near Expiry order --> Add items --> Submit`, async () => {
+        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> ${testParameters.nearExpiryVisitGroup} --> Near Expiry order (${testParameters.nearExpiryVisitStep}) --> Add items --> Submit`, async () => {
             it('Navigate to first account in list from Home Screen', async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
             });
@@ -978,27 +978,27 @@ export async function NeltPerformanceTests(
                 );
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `After "Near Expiry order" Opened`,
+                    title: `After "Near Expiry order (${testParameters.nearExpiryVisitStep})" Opened`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 driver.sleep(0.5 * 1000);
             });
             it(`Time Measured`, async function () {
                 addContext(this, {
-                    title: `Time Interval for "Near Expiry order" to load:`,
+                    title: `Time Interval for "Near Expiry order (${testParameters.nearExpiryVisitStep})" to load:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
                         1,
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Near Expiry order`
+                    `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.nearExpiryVisitGroup} --> Near Expiry order (${testParameters.nearExpiryVisitStep})`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Near Expiry order`,
+                    title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.nearExpiryVisitGroup} --> Near Expiry order (${testParameters.nearExpiryVisitStep})`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Near Expiry order`,
+                    Title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.nearExpiryVisitGroup} --> Near Expiry order (${testParameters.nearExpiryVisitStep})`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1100,27 +1100,27 @@ export async function NeltPerformanceTests(
                 );
                 base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `After "Near Expiry order" Submitted`,
+                    title: `After "Near Expiry order (${testParameters.nearExpiryVisitStep})" Submitted`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
                 driver.sleep(0.5 * 1000);
             });
             it(`Time Measured`, async function () {
                 addContext(this, {
-                    title: `Time Interval for "Near Expiry order" submission:`,
+                    title: `Time Interval for "Near Expiry order (${testParameters.nearExpiryVisitStep})" submission:`,
                     value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
                         1,
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Near Expiry order --> Add items --> Submit`
+                    `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.nearExpiryVisitGroup} --> Near Expiry order (${testParameters.nearExpiryVisitStep}) --> Add items --> Submit`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Near Expiry order --> Add items --> Submit`,
+                    title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.nearExpiryVisitGroup} --> Near Expiry order (${testParameters.nearExpiryVisitStep}) --> Add items --> Submit`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Near Expiry order --> Add items --> Submit`,
+                    Title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.nearExpiryVisitGroup} --> Near Expiry order (${testParameters.nearExpiryVisitStep}) --> Add items --> Submit`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1657,14 +1657,14 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select Filter (${testParameters.filterSubCategory})`
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Select Filter (${testParameters.filterSubCategory})`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select Filter (${testParameters.filterSubCategory})`,
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Select Filter (${testParameters.filterSubCategory})`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select Filter (${testParameters.filterSubCategory})`,
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Select Filter (${testParameters.filterSubCategory})`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1768,14 +1768,14 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select smart filter (${testParameters.smartFilterCategory})`
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Select smart filter (${testParameters.smartFilterCategory})`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select smart filter (${testParameters.smartFilterCategory})`,
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Select smart filter (${testParameters.smartFilterCategory})`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Select smart filter (${testParameters.smartFilterCategory})`,
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Select smart filter (${testParameters.smartFilterCategory})`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1864,14 +1864,14 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Change sort by`
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Change sort by`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Change sort by`,
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Change sort by`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Change sort by`,
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Change sort by`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1928,14 +1928,14 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are bundles (${testParameters.bundlePromotion})`
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions that are bundles (${testParameters.bundlePromotion})`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are bundles (${testParameters.bundlePromotion})`,
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions that are bundles (${testParameters.bundlePromotion})`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are bundles (${testParameters.bundlePromotion})`,
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions that are bundles (${testParameters.bundlePromotion})`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1980,14 +1980,14 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions (bundles) --> Click Done`
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions (bundles) --> Click Done`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions (bundles) --> Click Done`,
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions (bundles) --> Click Done`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions (bundles) --> Click Done`,
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions (bundles) --> Click Done`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -2030,14 +2030,14 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are not bundles (${testParameters.nonBundlePromotion})`
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions that are not bundles (${testParameters.nonBundlePromotion})`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are not bundles (${testParameters.nonBundlePromotion})`,
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions that are not bundles (${testParameters.nonBundlePromotion})`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions that are not bundles (${testParameters.nonBundlePromotion})`,
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions that are not bundles (${testParameters.nonBundlePromotion})`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -2078,14 +2078,14 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions (not bundles) --> Click Done`
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions (not bundles) --> Click Done`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions (not bundles) --> Click Done`,
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions (not bundles) --> Click Done`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Open promotions (not bundles) --> Click Done`,
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Open promotions (not bundles) --> Click Done`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -2240,24 +2240,69 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Add items --> Click on cart`
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Add items --> Click on cart`,
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order --> Add items --> Click on cart`,
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
                 driver.sleep(0.5 * 1000);
             });
-            it('Putting order on hold', async function () {
-                await driver.click(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
+            // it('Putting order on hold', async function () {
+            //     await driver.click(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
+            //     await neltPerformanceSelectors.isSpinnerDone();
+            //     await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
+            //     await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
+            // });
+            it('Submitting order', async function () {
+                timeInterval = 0;
+                // time measurment
+                const Submitting_Prodaja_order_opening = new Date().getTime();
+                await driver.click(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
                 await neltPerformanceSelectors.isSpinnerDone();
-                await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
                 await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
+                const Submitting_Prodaja_order_loaded = new Date().getTime();
+                timeInterval = Submitting_Prodaja_order_loaded - Submitting_Prodaja_order_opening;
+                console.info(
+                    'Submitting_Prodaja_order_opening: ',
+                    Submitting_Prodaja_order_opening,
+                    'Submitting_Prodaja_order_loaded: ',
+                    Submitting_Prodaja_order_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Prodaja order" Submitted`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "${testParameters.orderVisitStep} order" submission:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                timeMeasurements[
+                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart --> Submit`
+                ] = Number((timeInterval / 1000).toFixed(1));
+                timeMeasurementsRaw.push({
+                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart --> Submit`,
+                    time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart --> Submit`,
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
+                driver.sleep(0.5 * 1000);
             });
             it('Ending Visit Flow', async function () {
                 await neltPerfomanceService.endVisit.bind(this)(driver);
