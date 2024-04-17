@@ -5,15 +5,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
 import { Browser } from '../utilities/browser';
-import {
-    // WebAppDialog,
-    WebAppHeader,
-    WebAppHomePage,
-    WebAppLoginPage,
-    WebAppList,
-    // WebAppSettingsSidePanel
-} from '../pom';
-// import { ResourceEditors, ResourceList, ResourceViews } from '../pom/addons/ResourceList';
+import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppList } from '../pom';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
 import E2EUtils from '../utilities/e2e_utils';
@@ -25,7 +17,6 @@ import { ObjectsService } from '../../services';
 import { OrderPage } from '../pom/Pages/OrderPage';
 import { SurveyTemplateBuilder } from '../pom/addons/SurveyTemplateBuilder';
 import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
-// import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -41,8 +32,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
     let webAppList: WebAppList;
-    // let webAppDialog: WebAppDialog;
-    // let settingsSidePanel: WebAppSettingsSidePanel;
     let accountDashboardLayout: AccountDashboardLayout;
     let orderPage: OrderPage;
     let visitFlow: VisitFlow;
@@ -82,7 +71,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
     let slugUUID: string;
     let getCreatedVisitFlowMainActivity;
     let getCreatedSalesOrderTransaction;
-    // let resourceViews: ResourceViews;
     let salesOrderItemName: string;
     let base64ImageComponent;
 
@@ -94,8 +82,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
                 webAppList = new WebAppList(driver);
-                // webAppDialog = new WebAppDialog(driver);
-                // settingsSidePanel = new WebAppSettingsSidePanel(driver);
                 accountDashboardLayout = new AccountDashboardLayout(driver);
                 surveyService = new SurveyTemplateBuilder(driver);
                 e2eUtils = new E2EUtils(driver);
@@ -103,7 +89,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 visitFlow = new VisitFlow(driver);
                 pageBuilder = new PageBuilder(driver);
                 slugs = new Slugs(driver);
-                // resourceViews = new ResourceViews(driver);
                 randomString = generalService.generateRandomString(5);
                 surveyTemplateName = ``;
                 surveyTemplateDesc = ``;
@@ -120,7 +105,15 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 await driver.quit();
             });
 
-            it('Pages (starting with "VisitFlow Page Auto_") Leftovers Cleanup', async () => {
+            it('Login', async () => {
+                await webAppLoginPage.login(email, password);
+            });
+
+            it('Manual Resync', async () => {
+                await e2eUtils.performManualResync(client);
+            });
+
+            it('Pages Leftovers Cleanup (starting with "VisitFlow Page Auto_")', async () => {
                 const allPages = await pageBuilder.getAllPages(client);
                 const pagesOfAutoTest = allPages?.Body.filter((page) => {
                     if (page.Name.includes('VisitFlow Page Auto_')) {
@@ -144,7 +137,7 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 expect(findAutoPageAfterCleanup).to.be.undefined;
             });
 
-            it('Pages (starting with "Blank") Leftovers Cleanup', async () => {
+            it('Pages Leftovers Cleanup (starting with "Blank")', async () => {
                 const allPages = await pageBuilder.getDraftPages(client);
                 console.info(
                     `allPages.Body.length (looking for Blank Page): ${JSON.stringify(allPages.Body.length, null, 4)}`,
@@ -198,10 +191,6 @@ export async function VisitFlowTests(email: string, password: string, client: Cl
                 expect(visitFlowGroupsSchemes[0]).to.haveOwnProperty('Fields');
                 expect(visitFlowGroupsSchemes[0].Fields).to.haveOwnProperty('manuallyAddedGroupField');
                 console.info('visitFlowGroupsSchemes: ', JSON.stringify(visitFlowGroupsSchemes[0].Fields, null, 2));
-            });
-
-            it('Login', async () => {
-                await webAppLoginPage.login(email, password);
             });
 
             // describe("Verifying Addon's installation generated required data", () => {
