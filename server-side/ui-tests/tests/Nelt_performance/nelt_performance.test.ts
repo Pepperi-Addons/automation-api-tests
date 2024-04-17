@@ -2273,6 +2273,8 @@ export async function NeltPerformanceTests(
                 await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
                 await driver.untilIsVisible(neltPerformanceSelectors.PepList);
                 await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
+                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_za_van_rute_selectButton);
+                await driver.untilIsVisible(neltPerformanceSelectors.Valuta_placanja_selectButton);
                 const Click_on_Cart_loaded = new Date().getTime();
                 timeInterval = Click_on_Cart_loaded - Click_on_Cart_opening;
                 console.info(
@@ -2353,6 +2355,11 @@ export async function NeltPerformanceTests(
                 await driver.click(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
                 await driver.untilIsVisible(neltPerformanceSelectors.PepDialog);
                 await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Send button clicked`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 // time measurment
                 const Submitting_Prodaja_order_opening = new Date().getTime();
                 await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
