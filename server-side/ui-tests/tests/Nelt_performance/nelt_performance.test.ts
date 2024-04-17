@@ -193,6 +193,7 @@ export async function NeltPerformanceTests(
                 const Dugovanja_opening = new Date().getTime();
                 await driver.click(neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dugovanja'));
                 await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.PepList);
                 await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
                 const Dugovanja_loaded = new Date().getTime();
                 timeInterval = Dugovanja_loaded - Dugovanja_opening;
@@ -246,6 +247,7 @@ export async function NeltPerformanceTests(
                 await driver.click(neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni plan'));
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+                await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
                 const Dnevni_plan_loaded = new Date().getTime();
                 timeInterval = Dnevni_plan_loaded - Dnevni_plan_opening;
                 console.info(
@@ -273,6 +275,61 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({ title: 'Home Screen --> Dnevni plan', time: timeInterval });
                 timeMeasurementsArray.push({
                     Title: 'Home Screen --> Dnevni plan',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Back to Home Screen', async function () {
+                await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+            });
+        });
+
+        // 26
+        describe('ResourceView: 4. Home Screen --> Status dokumenata', async () => {
+            it('Navigating from Home Screen (through Burger Menu) to "Status dokumenata"', async function () {
+                timeInterval = 0;
+                await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Home Hamburger Menu Opened:`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                // time measurment
+                const Dnevni_plan_opening = new Date().getTime();
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Status dokumenata'),
+                );
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+                await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
+                const Dnevni_plan_loaded = new Date().getTime();
+                timeInterval = Dnevni_plan_loaded - Dnevni_plan_opening;
+                console.info(
+                    'Status dokumenata_opening: ',
+                    Dnevni_plan_opening,
+                    'Status dokumenata_loaded: ',
+                    Dnevni_plan_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At "Status dokumenata"`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "Status dokumenata" to load:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                timeMeasurements['Home Screen --> Status dokumenata'] = Number((timeInterval / 1000).toFixed(1));
+                timeMeasurementsRaw.push({ title: 'Home Screen --> Status dokumenata', time: timeInterval });
+                timeMeasurementsArray.push({
+                    Title: 'Home Screen --> Status dokumenata',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1049,11 +1106,6 @@ export async function NeltPerformanceTests(
             it('Clicking Cart Button', async function () {
                 await driver.click(neltPerformanceSelectors.Cart_Button);
                 await neltPerformanceSelectors.isSpinnerDone();
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `At Cart`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
                 try {
                     await driver.untilIsVisible(neltPerformanceSelectors.ContinueOrdering_Button);
                 } catch (error) {
@@ -1061,6 +1113,11 @@ export async function NeltPerformanceTests(
                 }
                 await driver.untilIsVisible(neltPerformanceSelectors.SubmitOrderCartBtn);
                 await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Cart`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
             });
             it('Selecting return reason', async function () {
                 await driver.click(neltPerformanceSelectors.Razlog_povrata_selectButton);
@@ -1362,11 +1419,6 @@ export async function NeltPerformanceTests(
             it('Clicking Cart Button', async function () {
                 await driver.click(neltPerformanceSelectors.Cart_Button);
                 await neltPerformanceSelectors.isSpinnerDone();
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `At Cart`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
                 try {
                     await driver.untilIsVisible(neltPerformanceSelectors.ContinueOrdering_Button);
                 } catch (error) {
@@ -1374,6 +1426,11 @@ export async function NeltPerformanceTests(
                 }
                 await driver.untilIsVisible(neltPerformanceSelectors.SubmitOrderCartBtn);
                 await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Cart`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
             });
             it('Selecting return reason', async function () {
                 await driver.click(neltPerformanceSelectors.Razlog_povrata_selectButton);
@@ -2216,6 +2273,8 @@ export async function NeltPerformanceTests(
                 await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
                 await driver.untilIsVisible(neltPerformanceSelectors.PepList);
                 await driver.untilIsVisible(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
+                await driver.untilIsVisible(neltPerformanceSelectors.Razlog_za_van_rute_selectButton);
+                await driver.untilIsVisible(neltPerformanceSelectors.Valuta_placanja_selectButton);
                 const Click_on_Cart_loaded = new Date().getTime();
                 timeInterval = Click_on_Cart_loaded - Click_on_Cart_opening;
                 console.info(
@@ -2253,6 +2312,38 @@ export async function NeltPerformanceTests(
                 });
                 driver.sleep(0.5 * 1000);
             });
+            it('Selecting Razlog', async function () {
+                await driver.click(neltPerformanceSelectors.Razlog_za_van_rute_selectButton);
+                await driver.untilIsVisible(neltPerformanceSelectors.OptionsList);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Option List Opened`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Razlog Selected`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Selecting Valuta', async function () {
+                await driver.click(neltPerformanceSelectors.Valuta_placanja_selectButton);
+                await driver.untilIsVisible(neltPerformanceSelectors.OptionsList);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Option List Opened`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.click(neltPerformanceSelectors.Razlog_povecanja_OptionThatContainsWhiteSpace);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Valuta Selected`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(0.5 * 1000);
+            });
             // it('Putting order on hold', async function () {
             //     await driver.click(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
             //     await neltPerformanceSelectors.isSpinnerDone();
@@ -2261,9 +2352,17 @@ export async function NeltPerformanceTests(
             // });
             it('Submitting order', async function () {
                 timeInterval = 0;
+                await driver.click(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
+                await driver.untilIsVisible(neltPerformanceSelectors.PepDialog);
+                await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Send button clicked`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
                 // time measurment
                 const Submitting_Prodaja_order_opening = new Date().getTime();
-                await driver.click(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
+                await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
                 const Submitting_Prodaja_order_loaded = new Date().getTime();
