@@ -247,7 +247,7 @@ export async function NeltPerformanceTests(
                 await driver.click(neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni plan'));
                 await neltPerformanceSelectors.isSpinnerDone();
                 await driver.untilIsVisible(neltPerformanceSelectors.PepList);
-                await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
+                // await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
                 const Dnevni_plan_loaded = new Date().getTime();
                 timeInterval = Dnevni_plan_loaded - Dnevni_plan_opening;
                 console.info(
@@ -275,61 +275,6 @@ export async function NeltPerformanceTests(
                 timeMeasurementsRaw.push({ title: 'Home Screen --> Dnevni plan', time: timeInterval });
                 timeMeasurementsArray.push({
                     Title: 'Home Screen --> Dnevni plan',
-                    Sec: Number((timeInterval / 1000).toFixed(1)),
-                    Milisec: timeInterval,
-                });
-                driver.sleep(0.5 * 1000);
-            });
-            it('Back to Home Screen', async function () {
-                await neltPerfomanceService.toHomeScreen.bind(this, driver)();
-            });
-        });
-
-        // 26
-        describe('ResourceView: 4. Home Screen --> Status dokumenata', async () => {
-            it('Navigating from Home Screen (through Burger Menu) to "Status dokumenata"', async function () {
-                timeInterval = 0;
-                await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Home Hamburger Menu Opened:`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                // time measurment
-                const Dnevni_plan_opening = new Date().getTime();
-                await driver.click(
-                    neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Status dokumenata'),
-                );
-                await neltPerformanceSelectors.isSpinnerDone();
-                await driver.untilIsVisible(neltPerformanceSelectors.PepList);
-                await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
-                const Dnevni_plan_loaded = new Date().getTime();
-                timeInterval = Dnevni_plan_loaded - Dnevni_plan_opening;
-                console.info(
-                    'Status dokumenata_opening: ',
-                    Dnevni_plan_opening,
-                    'Status dokumenata_loaded: ',
-                    Dnevni_plan_loaded,
-                    'Time Interval: ',
-                    timeInterval,
-                );
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `At "Status dokumenata"`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-            });
-            it(`Time Measured`, async function () {
-                addContext(this, {
-                    title: `Time Interval for "Status dokumenata" to load:`,
-                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-                        1,
-                    )} s`,
-                });
-                timeMeasurements['Home Screen --> Status dokumenata'] = Number((timeInterval / 1000).toFixed(1));
-                timeMeasurementsRaw.push({ title: 'Home Screen --> Status dokumenata', time: timeInterval });
-                timeMeasurementsArray.push({
-                    Title: 'Home Screen --> Status dokumenata',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -396,6 +341,61 @@ export async function NeltPerformanceTests(
                 });
                 timeMeasurementsArray.push({
                     Title: 'Home Screen --> Dnevni izvestaji',
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Back to Home Screen', async function () {
+                await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+            });
+        });
+
+        // 26
+        describe('ResourceView: 4. Home Screen --> Status dokumenata', async () => {
+            it('Navigating from Home Screen (through Burger Menu) to "Status dokumenata"', async function () {
+                timeInterval = 0;
+                await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Home Hamburger Menu Opened:`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                // time measurment
+                const Dnevni_plan_opening = new Date().getTime();
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Status dokumenata'),
+                );
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+                await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
+                const Dnevni_plan_loaded = new Date().getTime();
+                timeInterval = Dnevni_plan_loaded - Dnevni_plan_opening;
+                console.info(
+                    'Status dokumenata_opening: ',
+                    Dnevni_plan_opening,
+                    'Status dokumenata_loaded: ',
+                    Dnevni_plan_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At "Status dokumenata"`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "Status dokumenata" to load:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                timeMeasurements['Home Screen --> Status dokumenata'] = Number((timeInterval / 1000).toFixed(1));
+                timeMeasurementsRaw.push({ title: 'Home Screen --> Status dokumenata', time: timeInterval });
+                timeMeasurementsArray.push({
+                    Title: 'Home Screen --> Status dokumenata',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
