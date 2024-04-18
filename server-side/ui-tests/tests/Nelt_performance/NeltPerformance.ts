@@ -27,6 +27,7 @@ export class NeltPerformance extends AddonPage {
     public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
     public ListNumberOfResults: By = By.xpath(`//list-total//span[contains(@class,"bold number")]`);
     public PepList: By = By.xpath(`//pep-list`);
+    public PepList_title_no_data: By = By.xpath(`//pep-list//p[contains(@class,"title")][contains(@class,"no-data")]`);
     public ListRow: By = By.xpath(`//pep-list//virtual-scroller//fieldset[contains(@class,"table-row-fieldset")]`);
     public Search_Input: By = By.xpath('//input[@id="searchInput"]');
     public Search_Magnifier_Button: By = By.xpath('//search//pep-icon[@name="system_search"]');
@@ -197,6 +198,20 @@ export class NeltPerformance extends AddonPage {
     public SmartFilter_Principal_ApplyButton: By = By.xpath(
         `${this.SmartFilter_Principal_Nestle_label.value}//span[contains(@class,"mat-checkbox-label")]/div[contains(@class,"title")]/span[2]`,
     );
+
+    // Survey
+    public Survey_container: By = By.xpath('//survey-builder-internal');
+    public Survey_question: By = By.xpath('//survey-question-generator');
+    public Survey_question_input: By = By.xpath('//pep-textbox//input');
+
+    public getSurveyQuestionInputByIndex(index: number) {
+        return By.xpath(`${this.Survey_question.value}[${index}]${this.Survey_question_input.value}`);
+    }
+    public getSurveyButtonByText(text: string) {
+        return By.xpath(
+            `${this.Survey_container.value}//pep-top-bar//span[contains(@title,"${text}")]/ancestor::pep-button`,
+        );
+    }
 
     public getPepDialogButtonByText(text: string) {
         return By.xpath(`${this.PepDialog_buttonsContainer.value}//span[contains(text(),"${text}")]/parent::button`);
