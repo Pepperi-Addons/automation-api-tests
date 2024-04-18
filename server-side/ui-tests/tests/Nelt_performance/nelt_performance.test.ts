@@ -24,6 +24,8 @@ export async function NeltPerformanceTests(
     orderOfReturnsVisitStepName?: string,
     orderVisitGroupName?: string,
     orderVisitStepName?: string,
+    surveyVisitGroupName?: string,
+    surveyVisitStepName?: string,
     chooseAccountBy?: 'name' | 'ID',
     orderAccountName?: string,
     originalFilterName?: string,
@@ -53,14 +55,16 @@ export async function NeltPerformanceTests(
         orderOfReturnsVisitStep: orderOfReturnsVisitStepName || 'Povrat - ',
         orderVisitGroup: orderVisitGroupName || 'Prodaja',
         orderVisitStep: orderVisitStepName || 'Prodaja',
+        surveyVisitGroup: surveyVisitGroupName || 'Ankete',
+        surveyVisitStep: surveyVisitStepName || 'Nestle kase',
         chooseAccountBy: chooseAccountBy || 'name',
-        accountNameForOrder: orderAccountName || 'DOBROTA STR br. APR',
+        accountNameForOrder: orderAccountName || 'TEST SFA',
         originalFilter: originalFilterName || 'Svi proizvodi',
         filterCategory: filterCategoryName || 'Svi filteri',
         filterSubCategory: filterSubCategoryName || 'Nestle Food',
         smartFilterCategory: smartFilterCategoryName || 'Principal',
-        bundlePromotion: bundlePromotionString || '27235',
-        nonBundlePromotion: nonBundlePromotionString || 'Ponuda S',
+        bundlePromotion: bundlePromotionString || 'Ponuda S',
+        nonBundlePromotion: nonBundlePromotionString || '27235',
         nonPromotionItems: nonPromotionItemsString || '40g',
         nonPromotionItemsIndices: nonPromotionItemsIndices || [1, 2, 3],
         nonPromotionItemsQuantities: nonPromotionItemsQuantities || [10, 7, 8],
@@ -236,19 +240,42 @@ export async function NeltPerformanceTests(
         describe('ResourceView: 3. Home Screen --> Dnevni plan', async () => {
             it('Navigating from Home Screen (through Burger Menu) to "Dnevni plan"', async function () {
                 timeInterval = 0;
-                await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Home Hamburger Menu Opened:`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                // time measurment
-                const Dnevni_plan_opening = new Date().getTime();
-                await driver.click(neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni plan'));
-                await neltPerformanceSelectors.isSpinnerDone();
-                await driver.untilIsVisible(neltPerformanceSelectors.PepList);
-                // await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
-                const Dnevni_plan_loaded = new Date().getTime();
+                let Dnevni_plan_opening;
+                let Dnevni_plan_loaded;
+                try {
+                    await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Home Hamburger Menu Opened:`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    // time measurment
+                    Dnevni_plan_opening = new Date().getTime();
+                    await driver.click(
+                        neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni plan'),
+                    );
+                    await neltPerformanceSelectors.isSpinnerDone();
+                    await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+                    await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
+                    Dnevni_plan_loaded = new Date().getTime();
+                } catch (error) {
+                    await neltPerfomanceService.goHome();
+                    await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Home Hamburger Menu Opened:`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    // time measurment
+                    Dnevni_plan_opening = new Date().getTime();
+                    await driver.click(
+                        neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni plan'),
+                    );
+                    await neltPerformanceSelectors.isSpinnerDone();
+                    await driver.untilIsVisible(neltPerformanceSelectors.PepList);
+                    await driver.untilIsVisible(neltPerformanceSelectors.PepList_title_no_data);
+                    Dnevni_plan_loaded = new Date().getTime();
+                }
                 timeInterval = Dnevni_plan_loaded - Dnevni_plan_opening;
                 console.info(
                     'Dnevni plan_opening: ',
@@ -2411,14 +2438,231 @@ export async function NeltPerformanceTests(
             });
         });
 
+        // 32
+        describe(`(VisitFlow) Survey: 1. Home Screen --> Kupci --> Select account (${testParameters.accountNameForOrder}) --> Burger menu --> 
+        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> ${testParameters.surveyVisitGroup} Group --> ${testParameters.surveyVisitStep} Step --> Fill --> Submit`, async () => {
+            it(`Navigate to account "${testParameters.accountNameForOrder}" from Home Screen`, async function () {
+                await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
+                    driver,
+                    testParameters.accountNameForOrder,
+                    testParameters.chooseAccountBy,
+                );
+            });
+            it(`Choosing "${testParameters.burgerMenuVisitFlow}" at Dropdown Options of Hamburger Menu at Account Dashboard`, async function () {
+                await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                    driver,
+                    testParameters.burgerMenuVisitFlow,
+                );
+            });
+            it(`Selecting Visit Flow (${testParameters.visitFlowName}) from visits selection`, async function () {
+                if (await driver.isElementVisible(neltPerformanceSelectors.PepDialog)) {
+                    const pepDialogTitleValue = await (
+                        await driver.findElement(neltPerformanceSelectors.PepDialog_title)
+                    ).getText();
+                    if (pepDialogTitleValue.includes('Visit In Progress')) {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Open Dialog:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        const dialogMessageContent = await (
+                            await driver.findElement(neltPerformanceSelectors.PepDialog_message)
+                        ).getText();
+                        const accountNameOfOpenVisit = dialogMessageContent
+                            .replace('Please finish visit on account ', '')
+                            .trim();
+                        await driver.click(neltPerformanceSelectors.getPepDialogButtonByText('Ok'));
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Visit is Locked:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
+                            driver,
+                            accountNameOfOpenVisit,
+                            'name',
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Account Dashboard:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            testParameters.burgerMenuVisitFlow,
+                        );
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'At Open Visit:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        if (
+                            await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_GroupButton_End_disabled)
+                        ) {
+                            await neltPerfomanceService.startVisit.bind(this)(driver);
+                        }
+                        await neltPerfomanceService.endVisit.bind(this)(driver);
+                        await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+                        await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(driver, '');
+                        await neltPerfomanceService.selectUnderHamburgerMenuAtAccountDashboard.bind(this)(
+                            driver,
+                            testParameters.burgerMenuVisitFlow,
+                        );
+                    } else {
+                        base64ImageComponent = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: 'Unexpected Dialog is shown:',
+                            value: 'data:image/png;base64,' + base64ImageComponent,
+                        });
+                        console.error('Unexpected Dialog is shown');
+                        throw new Error('Unexpected Dialog is shown');
+                    }
+                }
+                if (await driver.isElementVisible(neltPerformanceSelectors.VisitFlow_visits_selection)) {
+                    await neltPerfomanceService.selectVisitFlowFromMultipleVisitsSelection.bind(this)(
+                        driver,
+                        testParameters.visitFlowName,
+                    );
+                }
+            });
+            it('Starting Visit Flow', async function () {
+                await neltPerfomanceService.startVisit.bind(this)(driver);
+            });
+            it(`Selecting "${testParameters.surveyVisitGroup}" Visit Group`, async function () {
+                await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfVisitGroupByText(testParameters.surveyVisitGroup),
+                );
+                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitStepByText(''));
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "${testParameters.surveyVisitGroup}" Visit Flow Group Clicked`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it(`Opening "${testParameters.surveyVisitStep}" survey (Visit Step)`, async function () {
+                timeInterval = 0;
+                // time measurment
+                const Nestle_survey_opening = new Date().getTime();
+                await driver.click(
+                    neltPerformanceSelectors.getSelectorOfVisitStepByText(testParameters.surveyVisitStep),
+                );
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.getSurveyButtonByText(''));
+                await driver.untilIsVisible(neltPerformanceSelectors.Survey_question);
+                const Nestle_survey_loaded = new Date().getTime();
+                timeInterval = Nestle_survey_loaded - Nestle_survey_opening;
+                console.info(
+                    'Nestle_survey_opening: ',
+                    Nestle_survey_opening,
+                    'Nestle_survey_loaded: ',
+                    Nestle_survey_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "${testParameters.surveyVisitStep} survey" Opened`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "${testParameters.surveyVisitStep} survey" to load:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                timeMeasurements[
+                    `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Group: Survey (${testParameters.surveyVisitGroup}) --> Step: ${testParameters.surveyVisitStep}`
+                ] = Number((timeInterval / 1000).toFixed(1));
+                timeMeasurementsRaw.push({
+                    title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Group: Survey (${testParameters.surveyVisitGroup}) --> Step: ${testParameters.surveyVisitStep}`,
+                    time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Group: Survey (${testParameters.surveyVisitGroup}) --> Step: ${testParameters.surveyVisitStep}`,
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Filling questions', async function () {
+                const numberOfQuestions = (await driver.findElements(neltPerformanceSelectors.Survey_question)).length;
+                for (let index = 1; index < numberOfQuestions + 1; index++) {
+                    await neltPerfomanceService.replaceContentOfInput(
+                        driver,
+                        neltPerformanceSelectors.getSurveyQuestionInputByIndex(index),
+                        '1',
+                    );
+                }
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Questions Filled`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+            it('Submitting survey', async function () {
+                timeInterval = 0;
+                // time measurment
+                const Submitting_Nestle_survey_opening = new Date().getTime();
+                await driver.click(neltPerformanceSelectors.getSurveyButtonByText('Save'));
+                await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
+                const Submitting_Nestle_survey_loaded = new Date().getTime();
+                timeInterval = Submitting_Nestle_survey_loaded - Submitting_Nestle_survey_opening;
+                console.info(
+                    'Submitting_Nestle_survey_opening: ',
+                    Submitting_Nestle_survey_opening,
+                    'Submitting_Nestle_survey_loaded: ',
+                    Submitting_Nestle_survey_loaded,
+                    'Time Interval: ',
+                    timeInterval,
+                );
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "${testParameters.surveyVisitStep} survey" Submitted`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it(`Time Measured`, async function () {
+                addContext(this, {
+                    title: `Time Interval for "${testParameters.surveyVisitStep} survey" submission:`,
+                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+                        1,
+                    )} s`,
+                });
+                timeMeasurements[
+                    `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.surveyVisitGroup} --> ${testParameters.surveyVisitStep} survey --> Add item --> Submit`
+                ] = Number((timeInterval / 1000).toFixed(1));
+                timeMeasurementsRaw.push({
+                    title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.surveyVisitGroup} --> ${testParameters.surveyVisitStep} survey --> Add item --> Submit`,
+                    time: timeInterval,
+                });
+                timeMeasurementsArray.push({
+                    Title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.surveyVisitGroup} --> ${testParameters.surveyVisitStep} survey --> Add item --> Submit`,
+                    Sec: Number((timeInterval / 1000).toFixed(1)),
+                    Milisec: timeInterval,
+                });
+                driver.sleep(0.5 * 1000);
+            });
+            it('Ending Visit Flow', async function () {
+                await neltPerfomanceService.endVisit.bind(this)(driver);
+            });
+            it('Back to Home Screen', async function () {
+                await neltPerfomanceService.toHomeScreen.bind(this, driver)();
+            });
+        });
+
         // 6
         // describe('6. Account Dashboard? CC agent use webapp', async () => {});
 
         // 10
         // describe('10. Zatvaranje ordera', async () => {});
-
-        // 26
-        // describe('26. Status dokumenata', async () => {});
 
         // 29
         // describe('29. Artikli na leafletu (Opening of page products on leaflet)', async () => {});
