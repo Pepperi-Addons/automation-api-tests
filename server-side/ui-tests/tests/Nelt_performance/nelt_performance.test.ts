@@ -2599,65 +2599,65 @@ export async function NeltPerformanceTests(
                 });
                 driver.sleep(0.5 * 1000);
             });
-            // it('Putting order on hold', async function () {
-            //     await driver.click(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
-            //     await neltPerformanceSelectors.isSpinnerDone();
-            //     await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
-            //     await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
-            // });
-            it('Submitting order', async function () {
-                timeInterval = 0;
-                await driver.click(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
-                await driver.untilIsVisible(neltPerformanceSelectors.PepDialog);
-                await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Send button clicked`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                // time measurment
-                const Submitting_Prodaja_order_opening = new Date().getTime();
-                await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
+            it('Putting order on hold', async function () {
+                await driver.click(neltPerformanceSelectors.TopBar_Right_PutOnHoldButtton_atCart);
                 await neltPerformanceSelectors.isSpinnerDone();
+                await driver.untilIsVisible(neltPerformanceSelectors.VisitFlow_singleVisit_container);
                 await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
-                const Submitting_Prodaja_order_loaded = new Date().getTime();
-                timeInterval = Submitting_Prodaja_order_loaded - Submitting_Prodaja_order_opening;
-                console.info(
-                    'Submitting_Prodaja_order_opening: ',
-                    Submitting_Prodaja_order_opening,
-                    'Submitting_Prodaja_order_loaded: ',
-                    Submitting_Prodaja_order_loaded,
-                    'Time Interval: ',
-                    timeInterval,
-                );
-                base64ImageComponent = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `After "Prodaja order" Submitted`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
-                });
-                driver.sleep(0.5 * 1000);
             });
-            it(`Time Measured`, async function () {
-                addContext(this, {
-                    title: `Time Interval for "${testParameters.orderVisitStep} order" submission:`,
-                    value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
-                        1,
-                    )} s`,
-                });
-                timeMeasurements[
-                    `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart --> Submit`
-                ] = Number((timeInterval / 1000).toFixed(1));
-                timeMeasurementsRaw.push({
-                    title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart --> Submit`,
-                    time: timeInterval,
-                });
-                timeMeasurementsArray.push({
-                    Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart --> Submit`,
-                    Sec: Number((timeInterval / 1000).toFixed(1)),
-                    Milisec: timeInterval,
-                });
-                driver.sleep(0.5 * 1000);
-            });
+            // it('Submitting order', async function () {
+            //     timeInterval = 0;
+            //     await driver.click(neltPerformanceSelectors.TopBar_Right_SendButtton_atCart);
+            //     await driver.untilIsVisible(neltPerformanceSelectors.PepDialog);
+            //     await driver.untilIsVisible(neltPerformanceSelectors.PepDialog_Continue_button);
+            //     base64ImageComponent = await driver.saveScreenshots();
+            //     addContext(this, {
+            //         title: `Send button clicked`,
+            //         value: 'data:image/png;base64,' + base64ImageComponent,
+            //     });
+            //     // time measurment
+            //     const Submitting_Prodaja_order_opening = new Date().getTime();
+            //     await driver.click(neltPerformanceSelectors.PepDialog_Continue_button);
+            //     await neltPerformanceSelectors.isSpinnerDone();
+            //     await driver.untilIsVisible(neltPerformanceSelectors.getSelectorOfVisitGroupByText('Kraj posete'));
+            //     const Submitting_Prodaja_order_loaded = new Date().getTime();
+            //     timeInterval = Submitting_Prodaja_order_loaded - Submitting_Prodaja_order_opening;
+            //     console.info(
+            //         'Submitting_Prodaja_order_opening: ',
+            //         Submitting_Prodaja_order_opening,
+            //         'Submitting_Prodaja_order_loaded: ',
+            //         Submitting_Prodaja_order_loaded,
+            //         'Time Interval: ',
+            //         timeInterval,
+            //     );
+            //     base64ImageComponent = await driver.saveScreenshots();
+            //     addContext(this, {
+            //         title: `After "Prodaja order" Submitted`,
+            //         value: 'data:image/png;base64,' + base64ImageComponent,
+            //     });
+            //     driver.sleep(0.5 * 1000);
+            // });
+            // it(`Time Measured`, async function () {
+            //     addContext(this, {
+            //         title: `Time Interval for "${testParameters.orderVisitStep} order" submission:`,
+            //         value: `row (miliseconds): ${timeInterval} ms | rounded (seconds): ${(timeInterval / 1000).toFixed(
+            //             1,
+            //         )} s`,
+            //     });
+            //     timeMeasurements[
+            //         `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart --> Submit`
+            //     ] = Number((timeInterval / 1000).toFixed(1));
+            //     timeMeasurementsRaw.push({
+            //         title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart --> Submit`,
+            //         time: timeInterval,
+            //     });
+            //     timeMeasurementsArray.push({
+            //         Title: `Select Account (${testParameters.accountNameForOrder}) --> Hamburger --> Visit (${testParameters.visitFlowName}) --> Order (${testParameters.orderVisitStep}) --> Add items --> Click on cart --> Submit`,
+            //         Sec: Number((timeInterval / 1000).toFixed(1)),
+            //         Milisec: timeInterval,
+            //     });
+            //     driver.sleep(0.5 * 1000);
+            // });
             it('Ending Visit Flow', async function () {
                 await neltPerfomanceService.endVisit.bind(this)(driver);
             });
