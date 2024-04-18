@@ -46,7 +46,6 @@ export const systemAddons: any = {
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.7.38'],
     'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.%.%'],
-    'Data Retention': ['8c9a5568-f35a-407d-856a-32d25ace2859', ''],
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''], //cpapi
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', ''],
