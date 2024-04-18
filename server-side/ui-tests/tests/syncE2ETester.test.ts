@@ -81,7 +81,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
-        'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''],
+        'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', '2.%.%'],
         'user-defined-flows': ['dc8c5ca7-3fcc-4285-b790-349c7f3908bd', ''], //flows
         'application-header': ['9bc8af38-dd67-4d33-beb0-7d6b39a6e98d', ''], // the header itself
     };
