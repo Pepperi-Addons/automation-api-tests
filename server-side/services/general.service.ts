@@ -50,7 +50,7 @@ export const systemAddons: any = {
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', ''],
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node (Cross Platform Engine)
-    'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''],
+    'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', '2.%.%'],
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', ''],
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version --
     'Custom Login': ['529b0de5-4640-4e78-83d0-b630a819db3b', ''],
