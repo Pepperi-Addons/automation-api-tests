@@ -2,7 +2,7 @@ import GeneralService, {
     ConsoleColors,
     TesterFunctions,
     ResourceTypes,
-    testDataForInitUser,
+    systemAddons,
     initiateTester,
 } from '../../services/general.service';
 import fs from 'fs';
@@ -2490,7 +2490,7 @@ export async function handleTeamsURL(addonName, service, email, pass) {
 export async function newUserDependenciesTests(generalService: GeneralService, varPass: string) {
     const baseAddonVersionsInstallationResponseObj = await generalService.baseAddonVersionsInstallation(
         varPass,
-        testDataForInitUser,
+        systemAddons,
     );
     const chnageVersionResponseArr = baseAddonVersionsInstallationResponseObj.chnageVersionResponseArr;
     const isInstalledArr = baseAddonVersionsInstallationResponseObj.isInstalledArr;
@@ -2500,14 +2500,14 @@ export async function newUserDependenciesTests(generalService: GeneralService, v
         this.retries(1);
 
         isInstalledArr.forEach((isInstalled, index) => {
-            it(`Validate That Needed Addon Is Installed: ${Object.keys(testDataForInitUser)[index]}`, () => {
+            it(`Validate That Needed Addon Is Installed: ${Object.keys(systemAddons)[index]}`, () => {
                 expect(isInstalled).to.be.true;
             });
         });
 
-        for (const addonName in testDataForInitUser) {
-            const addonUUID = testDataForInitUser[addonName][0];
-            const version = testDataForInitUser[addonName][1];
+        for (const addonName in systemAddons) {
+            const addonUUID = systemAddons[addonName][0];
+            const version = systemAddons[addonName][1];
             const varLatestVersion = chnageVersionResponseArr[addonName][2];
             const changeType = chnageVersionResponseArr[addonName][3];
             describe(`${addonName}`, function () {
