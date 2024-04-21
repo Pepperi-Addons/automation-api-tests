@@ -222,6 +222,16 @@ export class DevTest {
                 addonDep.push(depObjSync);
                 debugger;
             }
+            if (this.addonUUID === '33f8302d-8cfd-4410-8fcc-c1d647dd2910') {
+                //sync scheduler
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.sync) {
+                        debugger;
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                    }
+                }
+            }
             if (this.addonUUID === '8b4a1bd8-a2eb-4241-85ac-89c9e724e900') {
                 //KMS
                 const depObjSync = {};
