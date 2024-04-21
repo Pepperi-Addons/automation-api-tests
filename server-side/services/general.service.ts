@@ -1249,6 +1249,7 @@ export default class GeneralService {
                 addonName == 'Core Resources' || //new sync addons
                 addonName == 'Nebula' || //new sync addons
                 addonName == 'configurations' || //new sync addons
+                addonName == 'File Service Framework' || //PFS needed for sync
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
