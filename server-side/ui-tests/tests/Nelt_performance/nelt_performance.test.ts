@@ -249,6 +249,9 @@ export async function NeltPerformanceTests(
                         title: `Home Hamburger Menu Opened:`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
+                    await driver.untilIsVisible(
+                        neltPerformanceSelectors.getSelectorOfHomeHamburgerMenuItemByName('Dnevni plan'),
+                    );
                     // time measurment
                     Dnevni_plan_opening = new Date().getTime();
                     await driver.click(
@@ -826,7 +829,8 @@ export async function NeltPerformanceTests(
 
         // 32
         describe(`(VisitFlow) Survey: 1. Home Screen --> Kupci --> Select account (${testParameters.accountNameForOrder}) --> Burger menu --> 
-        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> ${testParameters.surveyVisitGroup} Group --> ${testParameters.surveyVisitStep} Step --> Fill --> Submit`, async () => {
+        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> ${testParameters.surveyVisitGroup} Group --> 
+        \n${testParameters.surveyVisitStep} Step --> Fill --> Submit`, async () => {
             it(`Navigate to account "${testParameters.accountNameForOrder}" from Home Screen`, async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
                     driver,
@@ -1045,7 +1049,8 @@ export async function NeltPerformanceTests(
 
         // 18 + 19 + 22 + 23
         describe(`(VisitFlow) Order: 1. Home Screen --> Kupci --> Select Account (${testParameters.accountNameForOrder}) --> Burger menu --> 
-        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> ${testParameters.nearExpiryVisitGroup} --> Near Expiry order (${testParameters.nearExpiryVisitStep}) --> Add items --> Submit`, async () => {
+        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> 
+        \n${testParameters.nearExpiryVisitGroup} --> Near Expiry order (${testParameters.nearExpiryVisitStep}) --> Add items --> Submit`, async () => {
             it(`Navigate to account "${testParameters.accountNameForOrder}" from Home Screen`, async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
                     driver,
@@ -1494,7 +1499,8 @@ export async function NeltPerformanceTests(
 
         // 20 + 21
         describe(`(VisitFlow) Order: 2. Home Screen --> Kupci --> Select account (${testParameters.accountNameForOrder}) --> Burger menu --> 
-        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> ${testParameters.orderOfReturnsVisitStep} order --> Add item --> Submit`, async () => {
+        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> 
+        \n${testParameters.orderOfReturnsVisitStep} order --> Add item --> Submit`, async () => {
             it(`Navigate to account "${testParameters.accountNameForOrder}" from Home Screen`, async function () {
                 await neltPerfomanceService.selectAccountViaHomePageMainButton.bind(this)(
                     driver,
@@ -1752,7 +1758,8 @@ export async function NeltPerformanceTests(
 
         // 8 + 10 + 11 + 12 + 13 + 14
         describe(`(VisitFlow) Order: 3. Home Screen --> Kupci --> Select Account (${testParameters.accountNameForOrder}) --> Burger menu --> 
-        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> ${testParameters.orderOfReturnsVisitStep} order --> Select filter | Smart filter | Sort by 
+        \n${testParameters.burgerMenuVisitFlow} --> Select Visit Flow (${testParameters.visitFlowName}) --> 
+        \n${testParameters.orderOfReturnsVisitStep} order --> Select filter | Smart filter | Sort by 
         \n| Bundle Promotion Item (${testParameters.bundlePromotion}) | Non-bundle Promotion Item (${testParameters.nonBundlePromotion}) 
         \n--> Add Items (non-promotion & bundle-promotion) --> Cart`, async () => {
             it(`Navigate to account "${testParameters.accountNameForOrder}" from Home Screen`, async function () {
