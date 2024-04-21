@@ -27,8 +27,9 @@ export const systemAddons: any = {
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.%.%'], //CPAS
     sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'], //open-sync
+    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
     'Key Management Service': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
     'Resource Tracer': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
     'Operation Invoker': ['f8d964d7-aad0-4d29-994b-5977a8f22dca', ''],
@@ -40,7 +41,6 @@ export const systemAddons: any = {
     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.%.%'], //CPAS
     'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
     'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.7.38'],
@@ -58,13 +58,13 @@ export const systemAddons: any = {
 };
 
 export const testData = {
-    ...systemAddons,
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //1.4.22 in the interim 1.4.X PFS version
+    'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+    ...systemAddons,
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON --
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
-    'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
 };
 
