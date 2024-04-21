@@ -86,6 +86,11 @@ export class DevTest {
                 return 'ad909780-0c23-401e-8e8e-f514cc4f6aa2';
             case 'KMS':
                 return '8b4a1bd8-a2eb-4241-85ac-89c9e724e900';
+            case 'PAGE-BUILDER':
+            case 'PAGE BUILDER':
+            case 'PAGE':
+            case 'PAGES':
+                return '50062e0c-9967-4ed4-9102-f2bc50602d41';
             case 'SYNC-SCHEDULER':
             case 'SYNC SCHEDULER':
                 return '33f8302d-8cfd-4410-8fcc-c1d647dd2910';
@@ -217,6 +222,13 @@ export class DevTest {
         if (addonDep !== undefined && addonDep.length !== 0) {
             if (this.addonUUID === 'ad909780-0c23-401e-8e8e-f514cc4f6aa2') {
                 //assets
+                const depObjSync = {};
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                addonDep.push(depObjSync);
+                debugger;
+            }
+            if (this.addonUUID === '50062e0c-9967-4ed4-9102-f2bc50602d41') {
+                //page builder
                 const depObjSync = {};
                 depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
                 addonDep.push(depObjSync);
@@ -1234,6 +1246,15 @@ export class DevTest {
                     this.adminBaseUserPass,
                     'SyncSchedulerWebHook',
                 );
+            case 'PAGE-BUILDER':
+            case 'PAGE BUILDER':
+            case 'PAGE':
+            case 'PAGES':
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'PageBuilderTeamsWebHook',
+                );
             case 'KMS':
                 return await this.adminBaseUserGeneralService.getSecretfromKMS(
                     this.adminBaseUserEmail,
@@ -1503,6 +1524,15 @@ export class DevTest {
                     'SupportToolsEU@pepperitest.com',
                     'SupportToolsProd@pepperitest.com',
                     'SupportToolsSB@pepperitest.com',
+                ];
+            case 'PAGE-BUILDER':
+            case 'PAGE BUILDER':
+            case 'PAGE':
+            case 'PAGES':
+                return [
+                    'PageBuilderEU@pepperitest.com',
+                    'PageBuilderPROD@pepperitest.com',
+                    'PageBuilderSB@pepperitest.com',
                 ];
             case 'JOURNEY-TRACKER':
             case 'JOURNEY':
