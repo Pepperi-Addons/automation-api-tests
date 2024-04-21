@@ -46,7 +46,7 @@ export const systemAddons: any = {
     ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.7.38'],
     'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.%.%'],
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''], //cpapi
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.58'], //cpapi
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', ''],
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node (Cross Platform Engine)
@@ -1088,6 +1088,7 @@ export default class GeneralService {
                 version === '' ? '%' : version
             }' AND Available Like 1 AND Phased Like 1`;
             if (
+                addonName == 'cpi-node-automation' || //cpi automation will never be phased
                 addonName == 'Cross Platform Engine Data' ||
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
@@ -1661,7 +1662,7 @@ export default class GeneralService {
         const chnageVersionResponseArr = await this.changeVersion(
             varPass,
             otherTestData ? otherTestData : testDataWithNewSyncForCpiRegression,
-            false,
+            true,
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
@@ -1673,7 +1674,7 @@ export default class GeneralService {
         const chnageVersionResponseArr = await this.changeVersion(
             varPass,
             otherTestData ? otherTestData : testDataWithNewSyncAndNebula,
-            false,
+            true,
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
@@ -1685,7 +1686,7 @@ export default class GeneralService {
         const chnageVersionResponseArr = await this.changeVersion(
             varPass,
             otherTestData ? otherTestData : testDataWithNewSyncNoNebula,
-            false,
+            true,
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
