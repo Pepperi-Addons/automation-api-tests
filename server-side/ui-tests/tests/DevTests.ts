@@ -86,6 +86,9 @@ export class DevTest {
                 return 'ad909780-0c23-401e-8e8e-f514cc4f6aa2';
             case 'KMS':
                 return '8b4a1bd8-a2eb-4241-85ac-89c9e724e900';
+            case 'SYNC-SCHEDULER':
+            case 'SYNC SCHEDULER':
+                return '33f8302d-8cfd-4410-8fcc-c1d647dd2910';
             case 'SUPPORT-TOOLS':
             case 'SUPPORT TOOLS':
                 return '76fe8cf0-da3f-44d3-accf-e661cdaea235';
@@ -1214,6 +1217,13 @@ export class DevTest {
                     this.adminBaseUserPass,
                     'SupportToolsWebHook',
                 );
+            case 'SYNC-SCHEDULER':
+            case 'SYNC SCHEDULER':
+                return await this.adminBaseUserGeneralService.getSecretfromKMS(
+                    this.adminBaseUserEmail,
+                    this.adminBaseUserPass,
+                    'SyncSchedulerWebHook',
+                );
             case 'KMS':
                 return await this.adminBaseUserGeneralService.getSecretfromKMS(
                     this.adminBaseUserEmail,
@@ -1422,6 +1432,13 @@ export class DevTest {
                 return ['KmsTesterEU@pepperitest.com', 'KmsTesterProd@pepperitest.com', 'KmsTesterSB@pepperitest.com']; //
             case 'ADAL':
                 return ['AdalEU@pepperitest.com', 'AdalProd@pepperitest.com', 'AdalSB@pepperitest.com'];
+            case 'SYNC-SCHEDULER':
+            case 'SYNC SCHEDULER':
+                return [
+                    'SyncSchedulerEU@pepperitest.com',
+                    'SyncSchedulerPROD@pepperitest.com',
+                    'SyncSchedulerSB@pepperitest.com',
+                ];
             case 'SYNC':
                 debugger;
                 if (this.isSyncNebulaDist) {
