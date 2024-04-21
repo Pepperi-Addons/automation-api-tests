@@ -2423,6 +2423,9 @@ export async function handleTeamsURL(addonName, service, email, pass) {
         case 'ASSETS-MANAGER':
         case 'ASSETS':
             return await service.getSecretfromKMS(email, pass, 'AssetsManagerWebHook');
+        case 'SYNC-SCHEDULER':
+        case 'SYNC SCHEDULER':
+            return await service.getSecretfromKMS(email, pass, 'SyncSchedulerWebHook');
         case 'SUPPORT-TOOLS':
         case 'SUPPORT TOOLS':
             return await service.getSecretfromKMS(email, pass, 'SupportToolsWebHook');
