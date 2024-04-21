@@ -962,15 +962,14 @@ export async function NeltPerformanceTests(
                         1,
                     )} s`,
                 });
-                timeMeasurements[
-                    `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Group: Survey (${testParameters.surveyVisitGroup}) --> Step: ${testParameters.surveyVisitStep}`
-                ] = Number((timeInterval / 1000).toFixed(1));
+                timeMeasurements[`Survey (${testParameters.surveyVisitGroup}) --> ${testParameters.surveyVisitStep}`] =
+                    Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Group: Survey (${testParameters.surveyVisitGroup}) --> Step: ${testParameters.surveyVisitStep}`,
+                    title: `Survey (${testParameters.surveyVisitGroup}) --> ${testParameters.surveyVisitStep}`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Group: Survey (${testParameters.surveyVisitGroup}) --> Step: ${testParameters.surveyVisitStep}`,
+                    Title: `Survey (${testParameters.surveyVisitGroup}) --> ${testParameters.surveyVisitStep}`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
@@ -1023,14 +1022,14 @@ export async function NeltPerformanceTests(
                     )} s`,
                 });
                 timeMeasurements[
-                    `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.surveyVisitGroup} --> ${testParameters.surveyVisitStep} survey --> Fill Questions --> Submit`
+                    `Survey (${testParameters.surveyVisitGroup}) --> ${testParameters.surveyVisitStep} --> Fill Questions --> Submit`
                 ] = Number((timeInterval / 1000).toFixed(1));
                 timeMeasurementsRaw.push({
-                    title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.surveyVisitGroup} --> ${testParameters.surveyVisitStep} survey --> Fill Questions --> Submit`,
+                    title: `Survey (${testParameters.surveyVisitGroup}) --> ${testParameters.surveyVisitStep} --> Fill Questions --> Submit`,
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: `Select Visit Flow (${testParameters.visitFlowName}) --> Start --> Select ${testParameters.surveyVisitGroup} --> ${testParameters.surveyVisitStep} survey --> Fill Questions --> Submit`,
+                    Title: `Survey (${testParameters.surveyVisitGroup}) --> ${testParameters.surveyVisitStep} --> Fill Questions --> Submit`,
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
