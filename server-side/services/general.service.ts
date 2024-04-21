@@ -1225,6 +1225,7 @@ export default class GeneralService {
                 version === '' ? '%' : version
             }' AND Available Like 1 AND Phased Like 1`;
             if (
+                addonName == 'cpi-node-automation' || //cpi automation will never be phased
                 addonName == 'Cross Platform Engine Data' ||
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
