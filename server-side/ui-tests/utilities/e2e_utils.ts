@@ -393,6 +393,7 @@ export default class E2EUtils extends BasePomObject {
                 console.error(error);
             }
         } while (!spinnerDone);
+        await webAppAPI.pollForResyncResponse(accessToken);
         await this.browser.navigate(homePageURL);
     }
 
