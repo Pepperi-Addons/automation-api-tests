@@ -118,139 +118,6 @@ export const testDataWithNewSyncNoNebula = {
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
 };
 
-const setOfAddonsForCpiNodeTesting = [
-    // Hagit, July 2023
-    // { addonName: string, addonUUID: string, setToVersion?: string, setToLatestAvailable?: boolean, setToLatestPhased?: boolean, }
-    {
-        addonName: 'API Testing Framework',
-        addonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Services Framework', addonUUID: '00000000-0000-0000-0000-000000000a91', setToVersion: '9.6.%' },
-    { addonName: 'Cross Platforms API', addonUUID: '00000000-0000-0000-0000-000000abcdef', setToVersion: '9.6.%' },
-    { addonName: 'WebApp API Framework', addonUUID: '00000000-0000-0000-0000-0000003eba91', setToLatestPhased: true },
-    { addonName: 'Cross Platform Engine', addonUUID: 'bb6ee826-1c6b-4a11-9758-40a46acb69c5', setToLatestPhased: true },
-    {
-        addonName: 'Cross Platform Engine Data',
-        addonUUID: 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b',
-        setToLatestPhased: true,
-    },
-    { addonName: 'Async Task Execution', addonUUID: '00000000-0000-0000-0000-0000000a594c', setToLatestPhased: true },
-    {
-        addonName: 'Core Data Source Interface',
-        addonUUID: '00000000-0000-0000-0000-00000000c07e',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Core Resources', addonUUID: 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f', setToLatestPhased: true },
-    { addonName: 'Generic Resource', addonUUID: 'df90dba6-e7cc-477b-95cf-2c70114e44e0', setToLatestAvailable: true },
-    {
-        addonName: 'File Service Framework',
-        addonUUID: '00000000-0000-0000-0000-0000000f11e5',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'WebApp Platform', addonUUID: '00000000-0000-0000-1234-000000000b2b', setToLatestPhased: true },
-    { addonName: 'System Health', addonUUID: 'f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', setToLatestPhased: true },
-    { addonName: 'Settings Framework', addonUUID: '354c5123-a7d0-4f52-8fce-3cf1ebc95314', setToLatestPhased: true },
-    { addonName: 'Addons Manager', addonUUID: 'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', setToLatestPhased: true },
-    { addonName: 'Data Views API', addonUUID: '484e7f22-796a-45f8-9082-12a734bac4e8', setToLatestAvailable: true },
-    {
-        addonName: 'Data Index Framework',
-        addonUUID: '00000000-0000-0000-0000-00000e1a571c',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Activity Data Index', addonUUID: '10979a11-d7f4-41df-8993-f06bfd778304', setToLatestAvailable: true },
-    { addonName: 'ADAL', addonUUID: '00000000-0000-0000-0000-00000000ada1', setToLatestAvailable: true },
-    {
-        addonName: 'User Defined Collections',
-        addonUUID: '122c0e9d-c240-4865-b446-f37ece866c22',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Automated Jobs', addonUUID: 'fcb7ced2-4c81-4705-9f2b-89310d45e6c7', setToLatestAvailable: true },
-    { addonName: 'Relations Framework', addonUUID: '5ac7d8c3-0249-4805-8ce9-af4aecd77794', setToLatestPhased: true },
-    { addonName: 'Object Types Editor', addonUUID: '04de9428-8658-4bf7-8171-b59f6327bbf1', setToLatestPhased: true },
-    {
-        addonName: 'Notification Service',
-        addonUUID: '00000000-0000-0000-0000-000000040fa9',
-        setToLatestAvailable: true,
-    },
-    {
-        addonName: 'Item Trade Promotions',
-        addonUUID: 'b5c00007-0941-44ab-9f0e-5da2773f2f04',
-        setToLatestAvailable: true,
-    },
-    {
-        addonName: 'Order Trade Promotions',
-        addonUUID: '375425f5-cd2f-4372-bb88-6ff878f40630',
-        setToLatestAvailable: true,
-    },
-    {
-        addonName: 'Package Trade Promotions',
-        addonUUID: '90b11a55-b36d-48f1-88dc-6d8e06d08286',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Audit Log', addonUUID: '00000000-0000-0000-0000-00000da1a109', setToLatestPhased: true },
-    {
-        addonName: 'Export and Import Framework (DIMX)',
-        addonUUID: '44c97115-6d14-4626-91dc-83f176e9a0fc',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Nebula', addonUUID: '00000000-0000-0000-0000-000000006a91', setToLatestAvailable: true },
-    { addonName: 'sync', addonUUID: '5122dc6d-745b-4f46-bb8e-bd25225d350a', setToVersion: '0.7.%' },
-    { addonName: 'cpi-node-automation', addonUUID: '2b39d63e-0982-4ada-8cbb-737b03b9ee58', setToVersion: '%' },
-];
-
-const setOfAddonsForE2EusersWithNewSync = [
-    // Hagit, July 2023
-    // { addonName: string, addonUUID: string, setToVersion?: string, setToLatestAvailable?: boolean, setToLatestPhased?: boolean, }
-    // { addonName: 'API Testing Framework', addonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', setToLatestAvailable: true, },
-    { addonName: 'Services Framework', addonUUID: '00000000-0000-0000-0000-000000000a91', setToLatestPhased: true },
-    { addonName: 'Cross Platforms API', addonUUID: '00000000-0000-0000-0000-000000abcdef', setToLatestPhased: true },
-    { addonName: 'WebApp API Framework', addonUUID: '00000000-0000-0000-0000-0000003eba91', setToLatestPhased: true },
-    { addonName: 'Cross Platform Engine', addonUUID: 'bb6ee826-1c6b-4a11-9758-40a46acb69c5', setToLatestPhased: true },
-    {
-        addonName: 'Cross Platform Engine Data',
-        addonUUID: 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b',
-        setToLatestPhased: true,
-    },
-    { addonName: 'Async Task Execution', addonUUID: '00000000-0000-0000-0000-0000000a594c', setToLatestPhased: true },
-    {
-        addonName: 'Core Data Source Interface',
-        addonUUID: '00000000-0000-0000-0000-00000000c07e',
-        setToLatestPhased: true,
-    },
-    { addonName: 'Core Resources', addonUUID: 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f', setToLatestPhased: true },
-    { addonName: 'Generic Resource', addonUUID: 'df90dba6-e7cc-477b-95cf-2c70114e44e0', setToLatestPhased: true },
-    { addonName: 'File Service Framework', addonUUID: '00000000-0000-0000-0000-0000000f11e5', setToLatestPhased: true },
-    { addonName: 'WebApp Platform', addonUUID: '00000000-0000-0000-1234-000000000b2b', setToLatestPhased: true },
-    { addonName: 'System Health', addonUUID: 'f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', setToLatestPhased: true },
-    { addonName: 'Settings Framework', addonUUID: '354c5123-a7d0-4f52-8fce-3cf1ebc95314', setToLatestPhased: true },
-    { addonName: 'Addons Manager', addonUUID: 'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', setToLatestPhased: true },
-    { addonName: 'Data Views API', addonUUID: '484e7f22-796a-45f8-9082-12a734bac4e8', setToLatestPhased: true },
-    { addonName: 'Data Index Framework', addonUUID: '00000000-0000-0000-0000-00000e1a571c', setToLatestPhased: true },
-    { addonName: 'Activity Data Index', addonUUID: '10979a11-d7f4-41df-8993-f06bfd778304', setToLatestPhased: true },
-    { addonName: 'ADAL', addonUUID: '00000000-0000-0000-0000-00000000ada1', setToLatestPhased: true },
-    {
-        addonName: 'User Defined Collections',
-        addonUUID: '122c0e9d-c240-4865-b446-f37ece866c22',
-        setToLatestPhased: true,
-    },
-    // { addonName: 'Automated Jobs', addonUUID: 'fcb7ced2-4c81-4705-9f2b-89310d45e6c7', setToLatestPhased: true, },
-    { addonName: 'Relations Framework', addonUUID: '5ac7d8c3-0249-4805-8ce9-af4aecd77794', setToLatestPhased: true },
-    { addonName: 'Object Types Editor', addonUUID: '04de9428-8658-4bf7-8171-b59f6327bbf1', setToLatestPhased: true },
-    // { addonName: 'Notification Service', addonUUID: '00000000-0000-0000-0000-000000040fa9', setToLatestPhased: true, },
-    // { addonName: 'Item Trade Promotions', addonUUID: 'b5c00007-0941-44ab-9f0e-5da2773f2f04', setToLatestPhased: true, },
-    // { addonName: 'Order Trade Promotions', addonUUID: '375425f5-cd2f-4372-bb88-6ff878f40630', setToLatestPhased: true, },
-    // { addonName: 'Package Trade Promotions', addonUUID: '90b11a55-b36d-48f1-88dc-6d8e06d08286', setToLatestPhased: true, },
-    { addonName: 'Audit Log', addonUUID: '00000000-0000-0000-0000-00000da1a109', setToLatestPhased: true },
-    {
-        addonName: 'Export and Import Framework (DIMX)',
-        addonUUID: '44c97115-6d14-4626-91dc-83f176e9a0fc',
-        setToLatestPhased: true,
-    },
-    { addonName: 'Nebula', addonUUID: '00000000-0000-0000-0000-000000006a91', setToLatestPhased: true },
-    { addonName: 'sync', addonUUID: '5122dc6d-745b-4f46-bb8e-bd25225d350a', setToLatestAvailable: true },
-];
-
 export const ConsoleColors = {
     MenuHeader: 'color: #FFFF00',
     MenuBackground: 'background-color: #000000',
@@ -382,16 +249,12 @@ export default class GeneralService {
         });
         this.adalService = new ADALService(this.papiClient);
         this.assetsBaseUrl = client.AssetsBaseUrl;
-        this.setOfAddonsForE2EusersWithNewSync = setOfAddonsForE2EusersWithNewSync;
-        this.setOfAddonsForCpiNodeTesting = setOfAddonsForCpiNodeTesting;
         this.testData = testData;
         this.testDataWithNewSyncForCpiRegression = testDataWithNewSyncForCpiRegression;
         this.testDataWithNewSync = testDataWithNewSyncAndNebula;
         this.testDataForInitUser = systemAddons;
         this.ConsoleColors = ConsoleColors;
     }
-    public setOfAddonsForE2EusersWithNewSync;
-    public setOfAddonsForCpiNodeTesting;
     public testData;
     public testDataWithNewSync;
     public testDataWithNewSyncForCpiRegression;
