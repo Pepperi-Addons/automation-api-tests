@@ -34,7 +34,7 @@ export const systemAddons: any = {
     'Resource Tracer': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
     'Operation Invoker': ['f8d964d7-aad0-4d29-994b-5977a8f22dca', ''],
     'Push Notifications': ['95025423-9096-4a4f-a8cd-d0a17548e42e', ''],
-    Logs: ['95025423-9096-4a4f-a8cd-d0a17548e42e', ''],
+    Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%.%'],
@@ -58,6 +58,7 @@ export const systemAddons: any = {
 };
 
 export const testData = {
+    Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //1.4.22 in the interim 1.4.X PFS version
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     ...systemAddons,
