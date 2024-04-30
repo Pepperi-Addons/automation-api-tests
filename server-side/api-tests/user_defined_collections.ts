@@ -1403,14 +1403,31 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 generalService.sleep(1000 * 120); //let PNS Update
                 for (let index = 1; index <= 85; index++) {
                     console.log(`searching for 250 rows for the ${index} time - out of 85 sampling batch`);
+                    const bodyToSend = {
+                        Page: index,
+                        MaxPageSize: 250,
+                        IncludeCount: true,
+                    };
+                    const elasticResponse = await generalService.fetchStatus(
+                        `/addons/shared_index/index/122c0e9d-c240-4865-b446-f37ece866c22_data/search/00000000-0000-0000-0000-00000000ada1/122c0e9d-c240-4865-b446-f37ece866c22~${dimxOverWriteCollectionName}`,
+                        { method: 'POST', body: JSON.stringify(bodyToSend) },
+                    );
+                    console.log(`elastic count testing for the ${index} time - out of 85 sampling batch`);
+                    expect(elasticResponse.Body.Count).to.equal(howManyRows);
                     const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
                         dimxOverWriteCollectionName,
                         index,
                         250,
                     );
+                    console.log(`UDC count testing for the ${index} time - out of 85 sampling batch`);
                     expect(allObjectsFromCollection.count).to.equal(howManyRows);
                     for (let index1 = 0; index1 < allObjectsFromCollection.objects.length; index1++) {
                         const row = allObjectsFromCollection.objects[index1];
+                        const elasticRow = elasticResponse.Body.Objects[index1];
+                        console.log(`elastic row tests for the ${index} time`);
+                        expect(elasticRow.code).to.contain('data_');
+                        expect(elasticRow.Key).to.contain('data_');
+                        console.log(`UDC row tests for the ${index} time`);
                         expect(row.code).to.contain('data_');
                         expect(row.value).to.contain('old_value_');
                     }
