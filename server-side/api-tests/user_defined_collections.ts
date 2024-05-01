@@ -1400,7 +1400,26 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 }
                 const lineStats = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject).LinesStatistics;
                 expect(lineStats.Inserted).to.equal(howManyRows);
-                generalService.sleep(1000 * 120); //let PNS Update
+                // generalService.sleep(1000 * 120); //let PNS Update
+                let indexForWhile = 0;
+                let countFromElastic = 0;
+                console.log('polling the elastic count property');
+                while (indexForWhile < 17 && countFromElastic !== howManyRows) {
+                    const bodyToSend = {
+                        Page: 1,
+                        PageSize: 250,
+                        IncludeCount: true,
+                    };
+                    const elasticResponse = await generalService.fetchStatus(
+                        `/addons/shared_index/index/122c0e9d-c240-4865-b446-f37ece866c22_data/search/00000000-0000-0000-0000-00000000ada1/122c0e9d-c240-4865-b446-f37ece866c22~${dimxOverWriteCollectionName}`,
+                        { method: 'POST', body: JSON.stringify(bodyToSend) },
+                    );
+                    countFromElastic = elasticResponse.Body.Count;
+                    console.log(`got ${countFromElastic} from elastic`);
+                    indexForWhile++;
+                    generalService.sleep(1000 * 8);
+                }
+                expect(countFromElastic).to.equal(howManyRows);
                 let bodyToSend;
                 let nextPageKey;
                 for (let index = 1; index <= 85; index++) {
