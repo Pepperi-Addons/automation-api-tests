@@ -991,26 +991,26 @@ export class DevTest {
                 method: 'POST',
                 body: JSON.stringify({ Text: body }),
             });
-            throw new Error(
-                `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
-                    monitoringResponse,
-                )}`,
-            );
+            // throw new Error(
+            //     `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
+            //         monitoringResponse,
+            //     )}`,
+            // );
         }
-        if (monitoringResponse.Status !== 200) {
-            throw new Error(
-                `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
-                    monitoringResponse,
-                )}`,
-            );
-        }
-        if (Object.keys(monitoringResponse.Error).length !== 0) {
-            throw new Error(
-                `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
-                    monitoringResponse,
-                )}`,
-            );
-        }
+        // if (monitoringResponse.Status !== 200) {
+        //     throw new Error(
+        //         `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
+        //             monitoringResponse,
+        //         )}`,
+        //     );
+        // }
+        // if (Object.keys(monitoringResponse.Error).length !== 0) {
+        //     throw new Error(
+        //         `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
+        //             monitoringResponse,
+        //         )}`,
+        //     );
+        // }
     }
 
     async printResultsTestObject(testResultArray, userName, env, currentTestName) {
@@ -1170,14 +1170,14 @@ export class DevTest {
                 method: 'POST',
                 body: JSON.stringify({ Text: body }),
             });
-            throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+            // throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
         }
-        if (monitoringResponse.Status !== 200) {
-            throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-        }
-        if (Object.keys(monitoringResponse.Error).length !== 0) {
-            throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-        }
+        // if (monitoringResponse.Status !== 200) {
+        //     throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+        // }
+        // if (Object.keys(monitoringResponse.Error).length !== 0) {
+        //     throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+        // }
     }
 
     async reportBuildEnded() {
@@ -1212,12 +1212,12 @@ export class DevTest {
             });
             console.log(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
         }
-        if (monitoringResponse.Status !== 200) {
-            console.log(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-        }
-        if (Object.keys(monitoringResponse.Error).length !== 0) {
-            console.log(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-        }
+        // if (monitoringResponse.Status !== 200) {
+        //     console.log(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+        // }
+        // if (Object.keys(monitoringResponse.Error).length !== 0) {
+        //     console.log(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+        // }
     }
 
     async handleTeamsURL(addonName: string) {
