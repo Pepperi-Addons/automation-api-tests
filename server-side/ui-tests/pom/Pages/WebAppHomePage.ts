@@ -8,6 +8,7 @@ import promised from 'chai-as-promised';
 import { WebAppAPI } from '../WebAppAPI';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { WebAppPage } from './base/WebAppPage';
+import { Context } from 'vm';
 
 chai.use(promised);
 
@@ -245,10 +246,15 @@ export class WebAppHomePage extends WebAppPage {
         return !isFound;
     }
 
-    public async buttonsApearingOnHomeScreenByPartialText(text: string): Promise<boolean> {
+    public async buttonsApearingOnHomeScreenByPartialText(
+        this: Context,
+        driver: Browser,
+        text: string,
+    ): Promise<boolean> {
+        const webappHomePage = new WebAppHomePage(driver);
         try {
-            const buttonsByPartialText = await this.browser.findElements(
-                this.getSelectorOfHomeScreenButtonByPartialText(text),
+            const buttonsByPartialText = await driver.findElements(
+                webappHomePage.getSelectorOfHomeScreenButtonByPartialText(text),
             );
             return buttonsByPartialText.length > 0 ? true : false;
         } catch (error) {
