@@ -1405,7 +1405,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     console.log(`searching for 250 rows for the ${index} time - out of 85 sampling batch`);
                     const bodyToSend = {
                         Page: index,
-                        MaxPageSize: 250,
+                        PageSize: 250,
                         IncludeCount: true,
                     };
                     const elasticResponse = await generalService.fetchStatus(
@@ -1424,10 +1424,10 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     for (let index1 = 0; index1 < allObjectsFromCollection.objects.length; index1++) {
                         const row = allObjectsFromCollection.objects[index1];
                         const elasticRow = elasticResponse.Body.Objects[index1];
-                        console.log(`elastic row tests for the ${index} time`);
+                        console.log(`elastic row tests for the ${index1 + 1} time`);
                         expect(elasticRow.code).to.contain('data_');
                         expect(elasticRow.Key).to.contain('data_');
-                        console.log(`UDC row tests for the ${index} time`);
+                        console.log(`UDC row tests for the ${index1 + 1} time`);
                         expect(row.code).to.contain('data_');
                         expect(row.value).to.contain('old_value_');
                     }
