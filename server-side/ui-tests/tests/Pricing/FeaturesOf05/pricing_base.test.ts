@@ -20,7 +20,7 @@ export async function PricingBaseTests(
     email: string,
     password: string,
     client: Client,
-    specificVersion: 'version07for05data' | undefined = undefined,
+    specificVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
 ) {
     /*
 _________________ 
@@ -117,6 +117,14 @@ _________________
                 specificVersion === 'version07for05data'
                     ? pricingRules[udtFirstTableName].version05
                     : pricingRules[udtFirstTableName].version07;
+            break;
+
+        case '8':
+            console.info('AT installedPricingVersion CASE 8');
+            ppmValues_content =
+                specificVersion === 'version08for07data'
+                    ? pricingRules[udtFirstTableName].version07
+                    : pricingRules[udtFirstTableName].version08;
             break;
 
         default:

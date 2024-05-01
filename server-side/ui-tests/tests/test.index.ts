@@ -626,10 +626,18 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     }
 
     if (tests === 'Pricing05Features') {
-        await PricingUdtCleanup(client);
+        let installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        let installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtCleanup(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
+        installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtInsertion(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
         await PricingBaseTests(email, pass, client);
         await PricingAdditionalGroupsReadonlyTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
@@ -638,10 +646,18 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     }
 
     if (tests === 'Pricing06Features') {
-        await PricingUdtCleanup(client);
+        let installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        let installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtCleanup(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
+        installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtInsertion(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingExclusionTests(email, pass, client);
