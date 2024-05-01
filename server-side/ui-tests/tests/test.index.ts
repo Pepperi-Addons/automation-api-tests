@@ -638,8 +638,13 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         )?.Version;
         installedPricingVersion = installedPricingVersionLong?.split('.')[1];
         await PricingUdtInsertion(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
-        await PricingBaseTests(email, pass, client);
-        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
+        await PricingBaseTests(email, pass, client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
+        await PricingAdditionalGroupsReadonlyTests(
+            email,
+            pass,
+            client,
+            installedPricingVersion == '8' ? 'version08for07data' : undefined,
+        );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
