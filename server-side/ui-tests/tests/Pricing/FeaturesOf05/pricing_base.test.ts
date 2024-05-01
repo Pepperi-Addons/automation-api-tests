@@ -78,39 +78,50 @@ _________________
  */
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
+
     const installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
         (addon) => addon.Addon.Name == 'Pricing',
     )?.Version;
+
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
+
     const pricingData =
         installedPricingVersion === '5'
             ? new PricingData05()
             : specificVersion === 'version07for05data'
             ? new PricingData05()
             : new PricingData06();
+
     const pricingRules = new PricingRules();
+
+    const udtFirstTableName = 'PPM_Values';
+    // const udtSecondTableName = 'PPM_AccountValues';
+
     let ppmValues_content;
+
     switch (installedPricingVersion) {
         case '5':
             console.info('AT installedPricingVersion CASE 5');
-            ppmValues_content = pricingRules.version05;
+            ppmValues_content = pricingRules[udtFirstTableName].version05;
             break;
 
         case '6':
             console.info('AT installedPricingVersion CASE 6');
-            ppmValues_content = pricingRules.version06;
+            ppmValues_content = pricingRules[udtFirstTableName].version06;
             break;
 
         case '7':
             console.info('AT installedPricingVersion CASE 7');
             ppmValues_content =
-                specificVersion === 'version07for05data' ? pricingRules.version05 : pricingRules.version07;
+                specificVersion === 'version07for05data'
+                    ? pricingRules[udtFirstTableName].version05
+                    : pricingRules[udtFirstTableName].version07;
             break;
 
         default:
             console.info('AT installedPricingVersion Default');
-            ppmValues_content = pricingRules.version07;
+            ppmValues_content = pricingRules[udtFirstTableName].version07;
             break;
     }
 
