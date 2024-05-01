@@ -1506,7 +1506,22 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(overwriteLineStats.Updated).to.equal(howManyUpdated);
                 expect(overwriteLineStats.Inserted).to.equal(howManyNewRowsOnOverwrite);
                 expect(overwriteLineStats.Total).to.equal(howManyOld + howManyUpdated + howManyNewRowsOnOverwrite);
-                generalService.sleep(1000 * 140); //let PNS Update
+                // generalService.sleep(1000 * 140); //let PNS Update
+                indexForWhile = 0;
+                let countFromUDC = 0;
+                console.log('polling the UDC count property');
+                while (indexForWhile < 20 && countFromUDC !== howManyRows) {
+                    const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
+                        dimxOverWriteCollectionName,
+                        1,
+                        250,
+                    );
+                    countFromUDC = allObjectsFromCollection.count;
+                    console.log(`got ${countFromUDC} from UDC`);
+                    indexForWhile++;
+                    generalService.sleep(1000 * 8);
+                }
+                expect(countFromUDC).to.equal(howManyRows);
                 const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
                     dimxOverWriteCollectionName,
                     1,
