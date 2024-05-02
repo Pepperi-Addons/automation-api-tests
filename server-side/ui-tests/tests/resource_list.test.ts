@@ -903,9 +903,9 @@ export async function ResourceListTests(email: string, password: string, client:
                 driver.sleep(0.5 * 1000);
                 await resourceListUtils.removeHomePageButtonsLeftoversByProfile(`${resource_name} `, 'Rep');
                 await webAppHomePage.manualResync(client);
-                const leftoversButtonsOnHomeScreen = await webAppHomePage.buttonsApearingOnHomeScreenByPartialText(
-                    `${resource_name} `,
-                );
+                const leftoversButtonsOnHomeScreen = await webAppHomePage.buttonsApearingOnHomeScreenByPartialText.bind(
+                    this,
+                )(driver, `${resource_name} `);
                 expect(leftoversButtonsOnHomeScreen).to.equal(false);
             });
 

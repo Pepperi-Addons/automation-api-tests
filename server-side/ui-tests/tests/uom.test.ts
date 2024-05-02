@@ -14,6 +14,7 @@ import { BrandedApp } from '../pom/addons/BrandedApp';
 import { replaceUIControls } from './test.index';
 import addContext from 'mochawesome/addContext';
 import { AddonLoadCondition } from '../pom/addons/base/AddonPage';
+import E2EUtils from '../utilities/e2e_utils';
 
 chai.use(promised);
 
@@ -31,6 +32,7 @@ export async function UomTests(email: string, password: string, varPass: string,
     let uom: Uom;
     let workingUomObject: UomUIObject;
     let orderPage: OrderPage;
+    let e2eUtils: E2EUtils;
 
     const _TEST_DATA_ATD_NAME = `UOM_${generalService.generateRandomString(15)}`;
     const _TEST_DATA_ATD_DESCRIPTION = 'ATD for uom automation testing';
@@ -185,6 +187,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                 objectTypeEditor = new ObjectTypeEditor(driver);
                 orderPage = new OrderPage(driver);
                 uom = new Uom(driver);
+                e2eUtils = new E2EUtils(driver);
             });
 
             afterEach(async function () {
@@ -202,6 +205,21 @@ export async function UomTests(email: string, password: string, varPass: string,
                     title: `Logged in`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
+            });
+            it('Remove Leftovers Buttons from home screen', async function () {
+                await webAppHeader.goHome();
+                await webAppHeader.openSettings();
+                await webAppHomePage.isSpinnerDone();
+                driver.sleep(0.5 * 1000);
+                await e2eUtils.removeHomePageButtonsLeftoversByProfile(`UOM_`, 'Admin');
+                await e2eUtils.performManualSync(client);
+                const leftoversButtonsOnHomeScreen = await webAppHomePage.buttonsApearingOnHomeScreenByPartialText.bind(
+                    this,
+                )(driver, `UOM_`);
+                expect(leftoversButtonsOnHomeScreen).to.equal(false);
+            });
+            it('Return to home page', async function () {
+                await webAppHeader.goHome();
             });
             it('Select Catalog', async function () {
                 //1. validating all items are added to the main catalog
