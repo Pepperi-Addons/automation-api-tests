@@ -1400,17 +1400,64 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 }
                 const lineStats = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject).LinesStatistics;
                 expect(lineStats.Inserted).to.equal(howManyRows);
-                generalService.sleep(1000 * 120); //let PNS Update
+                // generalService.sleep(1000 * 120); //let PNS Update
+                let indexForWhile = 0;
+                let countFromElastic = 0;
+                console.log('polling the elastic count property');
+                while (indexForWhile < 17 && countFromElastic !== howManyRows) {
+                    const bodyToSend = {
+                        Page: 1,
+                        PageSize: 250,
+                        IncludeCount: true,
+                    };
+                    const elasticResponse = await generalService.fetchStatus(
+                        `/addons/shared_index/index/122c0e9d-c240-4865-b446-f37ece866c22_data/search/00000000-0000-0000-0000-00000000ada1/122c0e9d-c240-4865-b446-f37ece866c22~${dimxOverWriteCollectionName}`,
+                        { method: 'POST', body: JSON.stringify(bodyToSend) },
+                    );
+                    countFromElastic = elasticResponse.Body.Count;
+                    console.log(`got ${countFromElastic} from elastic`);
+                    indexForWhile++;
+                    generalService.sleep(1000 * 8);
+                }
+                expect(countFromElastic).to.equal(howManyRows);
+                let bodyToSend;
+                let nextPageKey;
                 for (let index = 1; index <= 85; index++) {
                     console.log(`searching for 250 rows for the ${index} time - out of 85 sampling batch`);
+                    if (index === 1) {
+                        bodyToSend = {
+                            Page: index,
+                            PageSize: 250,
+                            IncludeCount: true,
+                        };
+                    } else {
+                        bodyToSend = {
+                            PageKey: nextPageKey,
+                            PageSize: 250,
+                            IncludeCount: true,
+                        };
+                    }
+                    const elasticResponse = await generalService.fetchStatus(
+                        `/addons/shared_index/index/122c0e9d-c240-4865-b446-f37ece866c22_data/search/00000000-0000-0000-0000-00000000ada1/122c0e9d-c240-4865-b446-f37ece866c22~${dimxOverWriteCollectionName}`,
+                        { method: 'POST', body: JSON.stringify(bodyToSend) },
+                    );
+                    nextPageKey = elasticResponse.Body.NextPageKey;
+                    console.log(`elastic count testing for the ${index} time - out of 85 sampling batch`);
+                    expect(elasticResponse.Body.Count).to.equal(howManyRows);
                     const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
                         dimxOverWriteCollectionName,
                         index,
                         250,
                     );
+                    console.log(`UDC count testing for the ${index} time - out of 85 sampling batch`);
                     expect(allObjectsFromCollection.count).to.equal(howManyRows);
                     for (let index1 = 0; index1 < allObjectsFromCollection.objects.length; index1++) {
                         const row = allObjectsFromCollection.objects[index1];
+                        const elasticRow = elasticResponse.Body.Objects[index1];
+                        console.log(`elastic row tests for the ${index1 + 1} time`);
+                        expect(elasticRow.code).to.contain('data_');
+                        expect(elasticRow.Key).to.contain('data_');
+                        console.log(`UDC row tests for the ${index1 + 1} time`);
                         expect(row.code).to.contain('data_');
                         expect(row.value).to.contain('old_value_');
                     }
@@ -1459,7 +1506,22 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(overwriteLineStats.Updated).to.equal(howManyUpdated);
                 expect(overwriteLineStats.Inserted).to.equal(howManyNewRowsOnOverwrite);
                 expect(overwriteLineStats.Total).to.equal(howManyOld + howManyUpdated + howManyNewRowsOnOverwrite);
-                generalService.sleep(1000 * 140); //let PNS Update
+                // generalService.sleep(1000 * 140); //let PNS Update
+                indexForWhile = 0;
+                let countFromUDC = 0;
+                console.log('polling the UDC count property');
+                while (indexForWhile < 20 && countFromUDC !== howManyRows) {
+                    const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
+                        dimxOverWriteCollectionName,
+                        1,
+                        250,
+                    );
+                    countFromUDC = allObjectsFromCollection.count;
+                    console.log(`got ${countFromUDC} from UDC`);
+                    indexForWhile++;
+                    generalService.sleep(1000 * 8);
+                }
+                expect(countFromUDC).to.equal(howManyRows);
                 const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
                     dimxOverWriteCollectionName,
                     1,

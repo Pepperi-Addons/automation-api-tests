@@ -262,6 +262,15 @@ export async function NeltPerformanceTests(
                     await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
                     Dnevni_plan_loaded = new Date().getTime();
                 } catch (error) {
+                    addContext(this, {
+                        title: `Inside the catch - the error thrown:`,
+                        value: error,
+                    });
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Inside the catch`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await neltPerfomanceService.goHome();
                     await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
                     base64ImageComponent = await driver.saveScreenshots();

@@ -626,22 +626,43 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     }
 
     if (tests === 'Pricing05Features') {
-        await PricingUdtCleanup(client);
+        let installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        let installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtCleanup(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
-        await PricingBaseTests(email, pass, client);
-        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
+        installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtInsertion(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
+        await PricingBaseTests(email, pass, client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
+        await PricingAdditionalGroupsReadonlyTests(
+            email,
+            pass,
+            client,
+            installedPricingVersion == '8' ? 'version08for07data' : undefined,
+        );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
     }
 
     if (tests === 'Pricing06Features') {
-        await PricingUdtCleanup(client);
+        let installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        let installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtCleanup(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
+        installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtInsertion(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingExclusionTests(email, pass, client);
@@ -2927,26 +2948,26 @@ export async function reportToTeams(
     if (monitoringResponse.Ok !== true) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await generalService.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
-        throw new Error(
-            `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
+        // throw new Error(
+        //     `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
+        //         monitoringResponse,
+        //     )}`,
+        // );
     }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(
-            `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(
-            `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
+    // if (monitoringResponse.Status !== 200) {
+    //     throw new Error(
+    //         `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
+    //             monitoringResponse,
+    //         )}`,
+    //     );
+    // }
+    // if (Object.keys(monitoringResponse.Error).length !== 0) {
+    //     throw new Error(
+    //         `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
+    //             monitoringResponse,
+    //         )}`,
+    //     );
+    // }
 }
 
 export async function genericReportToTeams(addonName, env, uuid, message, user, version, generalService) {
@@ -2975,26 +2996,26 @@ export async function genericReportToTeams(addonName, env, uuid, message, user, 
     if (monitoringResponse.Ok !== true) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await generalService.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
-        throw new Error(
-            `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
+        // throw new Error(
+        //     `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
+        //         monitoringResponse,
+        //     )}`,
+        // );
     }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(
-            `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(
-            `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
+    // if (monitoringResponse.Status !== 200) {
+    //     throw new Error(
+    //         `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
+    //             monitoringResponse,
+    //         )}`,
+    //     );
+    // }
+    // if (Object.keys(monitoringResponse.Error).length !== 0) {
+    //     throw new Error(
+    //         `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
+    //             monitoringResponse,
+    //         )}`,
+    //     );
+    // }
 }
 
 export async function reportToTeamsNeptune(
@@ -3065,26 +3086,26 @@ export async function reportToTeamsNeptune(
     if (monitoringResponse.Ok !== true) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await generalService.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
-        throw new Error(
-            `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
+        // throw new Error(
+        //     `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
+        //         monitoringResponse,
+        //     )}`,
+        // );
     }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(
-            `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(
-            `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
+    // if (monitoringResponse.Status !== 200) {
+    //     throw new Error(
+    //         `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
+    //             monitoringResponse,
+    //         )}`,
+    //     );
+    // }
+    // if (Object.keys(monitoringResponse.Error).length !== 0) {
+    //     throw new Error(
+    //         `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
+    //             monitoringResponse,
+    //         )}`,
+    //     );
+    // }
 }
 
 export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, error, service: GeneralService) {
@@ -3114,14 +3135,14 @@ export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, e
     if (monitoringResponse.Ok !== true) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
-        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+        // throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
     }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-    }
+    // if (monitoringResponse.Status !== 200) {
+    //     throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+    // }
+    // if (Object.keys(monitoringResponse.Error).length !== 0) {
+    //     throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    // }
 }
 
 export async function reportToTeamsMessageNeptune(addonName, addonUUID, addonVersion, error, service: GeneralService) {
@@ -3153,14 +3174,14 @@ export async function reportToTeamsMessageNeptune(addonName, addonUUID, addonVer
     if (monitoringResponse.Ok !== true) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
-        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+        // throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
     }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-    }
+    // if (monitoringResponse.Status !== 200) {
+    //     throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+    // }
+    // if (Object.keys(monitoringResponse.Error).length !== 0) {
+    //     throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    // }
 }
 
 export async function reportBuildStarted(addonName, addonUUID, addonVersion, service: GeneralService) {
@@ -3187,14 +3208,14 @@ export async function reportBuildStarted(addonName, addonUUID, addonVersion, ser
     if (monitoringResponse.Ok !== true) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
-        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+        // throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
     }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-    }
+    // if (monitoringResponse.Status !== 200) {
+    //     throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+    // }
+    // if (Object.keys(monitoringResponse.Error).length !== 0) {
+    //     throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    // }
 }
 
 export async function reportBuildEnded(addonName, addonUUID, addonVersion, service: GeneralService) {
@@ -3221,14 +3242,14 @@ export async function reportBuildEnded(addonName, addonUUID, addonVersion, servi
     if (monitoringResponse.Ok !== true) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
-        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
+        // throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
     }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-    }
+    // if (monitoringResponse.Status !== 200) {
+    //     throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
+    // }
+    // if (Object.keys(monitoringResponse.Error).length !== 0) {
+    //     throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    // }
 }
 
 function resolveUserPerTestNeptune(addonName): any[] {
