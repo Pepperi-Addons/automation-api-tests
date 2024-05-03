@@ -1,4 +1,5 @@
 import addContext from 'mochawesome/addContext';
+import { Context } from 'vm';
 import { Browser } from './browser';
 import { WebAppHeader } from '../pom/WebAppHeader';
 import { BrandedApp, WebAppAPI, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
@@ -26,6 +27,7 @@ import { expect } from 'chai';
 import { CollectionDefinition, UDCService } from '../../services/user-defined-collections.service';
 import { SelectedView, ViewerBlock, BasePageLayoutSectionColumn } from '../blueprints/PageBlocksBlueprints';
 import { AddonLoadCondition } from '../pom/addons/base/AddonPage';
+import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 
 export default class E2EUtils extends BasePomObject {
     public constructor(protected browser: Browser) {
@@ -744,5 +746,52 @@ export default class E2EUtils extends BasePomObject {
 
         await webAppHomePage.returnToHomePage();
         return;
+    }
+
+    public async selectAccountFromAccountList(
+        this: Context,
+        driver: Browser,
+        accountID: string,
+        searchBy: 'ID' | 'name' = 'ID',
+    ): Promise<void> {
+        const accountDashboardLayout = new AccountDashboardLayout(driver);
+        await accountDashboardLayout.isSpinnerDone();
+        let base64Image = await driver.saveScreenshots();
+        addContext(this, {
+            title: `At Accounts`,
+            value: 'data:image/png;base64,' + base64Image,
+        });
+        const searchInput = await driver.findElement(accountDashboardLayout.Search_Input);
+        await searchInput.clear();
+        driver.sleep(0.1 * 1000);
+        accountID && (await searchInput.sendKeys(accountID + '\n'));
+        driver.sleep(0.5 * 1000);
+        // await driver.click(neltPerformanceSelectors.HtmlBody);
+        await driver.click(accountDashboardLayout.TopBarContainer);
+        driver.sleep(0.1 * 1000);
+        accountID && (await driver.click(accountDashboardLayout.Search_Magnifier_Button));
+        driver.sleep(0.1 * 1000);
+        await accountDashboardLayout.isSpinnerDone();
+        base64Image = await driver.saveScreenshots();
+        addContext(this, {
+            title: `At Accounts - after Search for "${accountID}"`,
+            value: 'data:image/png;base64,' + base64Image,
+        });
+        const selector =
+            accountID === ''
+                ? accountDashboardLayout.FirstAccountInList
+                : searchBy === 'name'
+                ? accountDashboardLayout.getSelectorOfAccountHyperlinkByName(accountID)
+                : accountDashboardLayout.getSelectorOfAccountHyperlinkByID(Number(accountID));
+        await driver.click(selector);
+        await accountDashboardLayout.isSpinnerDone();
+        base64Image = await driver.saveScreenshots();
+        addContext(this, {
+            title: `At Account Dashboard`,
+            value: 'data:image/png;base64,' + base64Image,
+        });
+        await driver.untilIsVisible(accountDashboardLayout.AccountDashboard_PlusButton);
+        await driver.untilIsVisible(accountDashboardLayout.AccountDashboard_HamburgerMenu_Button);
+        await driver.untilIsVisible(accountDashboardLayout.AccountDetails_component);
     }
 }

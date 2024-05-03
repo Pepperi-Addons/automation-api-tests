@@ -40,14 +40,16 @@ import {
     PricingAddonsUpsert,
     PricingConfigUpload,
     PricingUdtInsertion,
+    PricingUdtCleanup,
+    PricingUdcInsertion,
+    PricingUdcCleanup,
     PricingBaseTests,
     PricingAdditionalGroupsReadonlyTests,
     PricingUomTests,
     PricingTotalsTests,
-    PricingMultipleValuesTests,
-    PricingPartialValueTests,
     PricingExclusionTests,
-    PricingUdtCleanup,
+    PricingPartialValueTests,
+    PricingMultipleValuesTests,
     ResourceListAbiTests,
     InstallationsTest,
     StorybookColorPickerTests,
@@ -668,6 +670,20 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         await PricingExclusionTests(email, pass, client);
         await PricingPartialValueTests(email, pass, client);
         await PricingMultipleValuesTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'Pricing08Features') {
+        await PricingUdtCleanup(client);
+        await PricingUdcCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingUdtInsertion(client);
+        await PricingUdcInsertion(client);
+        await PricingConfigUpload(client, email, pass);
+        await PricingBaseTests(email, pass, client);
+        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
