@@ -1878,7 +1878,7 @@ export default class PricingConfiguration {
                 ],
             },
             MultipleValuesKeyFields: ['TransactionAccountTSAPricingContracts'],
-            UDC: [],
+            UDC: ['PricingUdtReplacement'],
         },
         PPM_CalcProcedures: [
             {

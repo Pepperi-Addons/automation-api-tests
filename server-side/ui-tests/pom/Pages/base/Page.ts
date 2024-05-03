@@ -15,6 +15,8 @@ export abstract class Page extends BasePomObject {
 
     public PepperiHiddenLoadingSpinner: By = By.css('#loadingSpinnerModal[hidden]');
     public HtmlBody: By = By.css('html body');
+    public TopBarContainer: By = By.xpath('//div[contains(@class,"top-bar-container")]');
+    public SearchBankFields_input: By = By.xpath('//input[@id="txtSearchBankFields"]');
 
     public getSelectorOfCardContainerByProfile(profile: 'Rep' | 'Admin' | 'Buyer' = 'Rep') {
         return By.xpath(`//span[@title="${profile}"]/parent::div/parent::div`);
