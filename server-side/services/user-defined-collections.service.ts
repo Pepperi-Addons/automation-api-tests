@@ -274,6 +274,18 @@ export class UDCService {
                 body: JSON.stringify(body),
             },
         );
+        return { objects: response.Body.Objects, count: response.Body.Count, nextPageKey: response.Body.NextPageKey };
+    }
+
+    async searchOnUDCUsingNextPageKey(collectionName, nextPageKey) {
+        const body = { MaxPageSize: 250, IncludeCount: true, PageKey: nextPageKey };
+        const response = await this.generalService.fetchStatus(
+            `/addons/data/search/122c0e9d-c240-4865-b446-f37ece866c22/${collectionName}`,
+            {
+                method: 'POST',
+                body: JSON.stringify(body),
+            },
+        );
         return { objects: response.Body.Objects, count: response.Body.Count };
     }
 
