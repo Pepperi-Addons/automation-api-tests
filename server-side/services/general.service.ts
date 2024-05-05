@@ -168,11 +168,8 @@ process.on('unhandledRejection', async (error) => {
             ConsoleColors.SystemInformation,
         );
         process.exit(1);
-    } else if (
-        error instanceof Error &&
-        JSON.stringify(error.message).includes(`SyntaxError: Unexpected token '<', "<html>`)
-    ) {
-        console.log(`%Unhandled Rejection: ${error.message}`, ConsoleColors.Error);
+    } else if (error && typeof error === 'string' && error.includes(`SyntaxError: Unexpected token '<', "<html>`)) {
+        console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
         console.log(
             `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
             ConsoleColors.SystemInformation,
