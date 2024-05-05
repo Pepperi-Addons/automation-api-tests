@@ -1329,7 +1329,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 dimxOverWriteCollectionName = 'DimxOverwrite' + generalService.generateRandomString(15);
                 const pfsService = new PFSService(generalService);
                 const howManyRows = 100000;
-                //1. create the file to import
+                //1. create the file to import & post it to PFS temp file
                 const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
                 const mime = 'text/csv';
                 const tempFileResponse = await pfsService.postTempFile({
@@ -1393,6 +1393,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     120,
                     7000,
                 );
+                //3.1. validate line statistics from DIMX is correct after improt
                 if (auditLogDevTestResponse.Status) {
                     expect(auditLogDevTestResponse.Status.Name).to.equal('Success');
                 } else {
@@ -1400,7 +1401,8 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 }
                 const lineStats = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject).LinesStatistics;
                 expect(lineStats.Inserted).to.equal(howManyRows);
-                // generalService.sleep(1000 * 120); //let PNS Update
+                debugger;
+                //4. poll elastic to validate that PNS has updated
                 let indexForWhile = 0;
                 let countFromElastic = 0;
                 console.log('polling the elastic count property');
@@ -1420,35 +1422,46 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     generalService.sleep(1000 * 8);
                 }
                 expect(countFromElastic).to.equal(howManyRows);
-                let bodyToSend;
-                let nextPageKey;
+                //5. go over 85 sampels of 250 rows to validate the data is correctly formed
+                let bodyToSendElastic;
+                let nextPageKeyElastic;
+                let nextPageKeyUDC;
+                let allObjectsFromCollection;
                 for (let index = 1; index <= 85; index++) {
                     console.log(`searching for 250 rows for the ${index} time - out of 85 sampling batch`);
                     if (index === 1) {
-                        bodyToSend = {
+                        bodyToSendElastic = {
                             Page: index,
                             PageSize: 250,
                             IncludeCount: true,
                         };
                     } else {
-                        bodyToSend = {
-                            PageKey: nextPageKey,
+                        bodyToSendElastic = {
+                            PageKey: nextPageKeyElastic,
                             PageSize: 250,
                             IncludeCount: true,
                         };
                     }
                     const elasticResponse = await generalService.fetchStatus(
                         `/addons/shared_index/index/122c0e9d-c240-4865-b446-f37ece866c22_data/search/00000000-0000-0000-0000-00000000ada1/122c0e9d-c240-4865-b446-f37ece866c22~${dimxOverWriteCollectionName}`,
-                        { method: 'POST', body: JSON.stringify(bodyToSend) },
+                        { method: 'POST', body: JSON.stringify(bodyToSendElastic) },
                     );
-                    nextPageKey = elasticResponse.Body.NextPageKey;
+                    nextPageKeyElastic = elasticResponse.Body.NextPageKey;
                     console.log(`elastic count testing for the ${index} time - out of 85 sampling batch`);
                     expect(elasticResponse.Body.Count).to.equal(howManyRows);
-                    const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
-                        dimxOverWriteCollectionName,
-                        index,
-                        250,
-                    );
+                    if (index === 1) {
+                        allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
+                            dimxOverWriteCollectionName,
+                            index,
+                            250,
+                        );
+                    } else {
+                        allObjectsFromCollection = await udcService.searchOnUDCUsingNextPageKey(
+                            dimxOverWriteCollectionName,
+                            nextPageKeyUDC,
+                        );
+                    }
+                    nextPageKeyUDC = allObjectsFromCollection.nextPageKey;
                     console.log(`UDC count testing for the ${index} time - out of 85 sampling batch`);
                     expect(allObjectsFromCollection.count).to.equal(howManyRows);
                     for (let index1 = 0; index1 < allObjectsFromCollection.objects.length; index1++) {
@@ -1463,7 +1476,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     }
                     generalService.sleep(1000 * 5);
                 }
-                //4. create new file which overwrites
+                //6. create new file which we'll use to overwrite
                 const newFileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
                 const tempFileNewResponse = await pfsService.postTempFile({
                     FileName: newFileName,
@@ -1484,7 +1497,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const putResponse2 = await pfsService.putPresignedURL(tempFileNewResponse.PutURL, newBuf);
                 expect(putResponse2.ok).to.equal(true);
                 expect(putResponse2.status).to.equal(200);
-                //5. run DIMX overwrite on new file
+                //7. run DIMX overwrite on new file
                 const bodyToSendOverWrite = { URI: tempFileNewResponse.TemporaryFileURL, OverwriteTable: true };
                 const importOverWriteResponse = await generalService.fetchStatus(
                     `/addons/data/import/file/${UserDefinedCollectionsUUID}/${dimxOverWriteCollectionName}`,
@@ -1506,7 +1519,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 expect(overwriteLineStats.Updated).to.equal(howManyUpdated);
                 expect(overwriteLineStats.Inserted).to.equal(howManyNewRowsOnOverwrite);
                 expect(overwriteLineStats.Total).to.equal(howManyOld + howManyUpdated + howManyNewRowsOnOverwrite);
-                // generalService.sleep(1000 * 140); //let PNS Update
+                //8. let PNS Update
                 indexForWhile = 0;
                 let countFromUDC = 0;
                 console.log('polling the UDC count property');
@@ -1522,12 +1535,12 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                     generalService.sleep(1000 * 8);
                 }
                 expect(countFromUDC).to.equal(howManyRows);
-                const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
+                const allObjectsFromCollectionUDC = await udcService.getAllObjectFromCollectionCount(
                     dimxOverWriteCollectionName,
                     1,
                     250,
                 );
-                expect(allObjectsFromCollection.count).to.equal(100000);
+                expect(allObjectsFromCollectionUDC.count).to.equal(100000);
                 const fileURI = JSON.parse(overwriteResponse.AuditInfo.ResultObject).URI;
                 const fileAfterOverwriting = await generalService.fetchStatus(fileURI);
                 const updateArray = fileAfterOverwriting.Body.filter((entry) => entry.Status === 'Update');
