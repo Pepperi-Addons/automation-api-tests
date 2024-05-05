@@ -40,14 +40,16 @@ import {
     PricingAddonsUpsert,
     PricingConfigUpload,
     PricingUdtInsertion,
+    PricingUdtCleanup,
+    PricingUdcInsertion,
+    PricingUdcCleanup,
     PricingBaseTests,
     PricingAdditionalGroupsReadonlyTests,
     PricingUomTests,
     PricingTotalsTests,
-    PricingMultipleValuesTests,
-    PricingPartialValueTests,
     PricingExclusionTests,
-    PricingUdtCleanup,
+    PricingPartialValueTests,
+    PricingMultipleValuesTests,
     ResourceListAbiTests,
     InstallationsTest,
     StorybookColorPickerTests,
@@ -626,27 +628,62 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     }
 
     if (tests === 'Pricing05Features') {
-        await PricingUdtCleanup(client);
+        let installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        let installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtCleanup(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
-        await PricingBaseTests(email, pass, client);
-        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
+        installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtInsertion(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
+        await PricingBaseTests(email, pass, client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
+        await PricingAdditionalGroupsReadonlyTests(
+            email,
+            pass,
+            client,
+            installedPricingVersion == '8' ? 'version08for07data' : undefined,
+        );
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
     }
 
     if (tests === 'Pricing06Features') {
-        await PricingUdtCleanup(client);
+        let installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        let installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtCleanup(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
+        installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtInsertion(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingExclusionTests(email, pass, client);
         await PricingPartialValueTests(email, pass, client);
         await PricingMultipleValuesTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'Pricing08Features') {
+        await PricingUdtCleanup(client);
+        await PricingUdcCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingUdtInsertion(client);
+        await PricingUdcInsertion(client);
+        await PricingConfigUpload(client, email, pass);
+        await PricingBaseTests(email, pass, client);
+        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;

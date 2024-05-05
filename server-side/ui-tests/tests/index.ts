@@ -19,10 +19,18 @@ import { RLdataPrep } from './rl_data_prep.test';
 import { VisitFlowTests } from './visit_flow.test';
 import { VFdataPrep } from './vf_data_prep.test';
 import { SurveyTests } from './survey.test';
+import { PricingAddonsUpsert } from './Pricing/pricing_addons_installation.test';
+import { PricingConfigUpload } from './Pricing/pricing_configuration_upload.test';
+import { PricingUdtInsertion } from './Pricing/pricing_udt_insertion.test';
+import { PricingUdtCleanup } from './Pricing/pricing_udt_cleanup.test';
+import { PricingUdcInsertion } from './Pricing/pricing_udc_insertion.test';
+import { PricingUdcCleanup } from './Pricing/pricing_udc_cleanup.test';
 import { PricingBaseTests } from './Pricing/FeaturesOf05/pricing_base.test';
 import { PricingAdditionalGroupsReadonlyTests } from './Pricing/FeaturesOf05/pricing_additional_groups_readonly.test';
 import { PricingUomTests } from './Pricing/FeaturesOf06/pricing_uom.test';
 import { PricingTotalsTests } from './Pricing/FeaturesOf06/pricing_totals.test';
+import { PricingExclusionTests } from './Pricing/FeaturesOf06/pricing_exclusion.test';
+import { PricingPartialValueTests } from './Pricing/FeaturesOf06/pricing_partial_value.test';
 import { PricingMultipleValuesTests } from './Pricing/FeaturesOf06/pricing_multiple_values.test';
 import { ResourceListAbiTests } from './rl_abi.test';
 import { InstallationsTest } from './installations.test';
@@ -53,12 +61,6 @@ import { StorybookTextboxTests } from './storybook/storybook_textbox.test';
 import { StorybookQueryBuilderTests } from './storybook/storybook_query_builder.test';
 import { StorybookSmartFiltersTests } from './storybook/storybook_smart_filters.test';
 import { NeltPerformanceTests } from './Nelt_performance/nelt_performance.test';
-import { PricingPartialValueTests } from './Pricing/FeaturesOf06/pricing_partial_value.test';
-import { PricingExclusionTests } from './Pricing/FeaturesOf06/pricing_exclusion.test';
-import { PricingAddonsUpsert } from './Pricing/pricing_addons_installation.test';
-import { PricingConfigUpload } from './Pricing/pricing_configuration_upload.test';
-import { PricingUdtCleanup } from './Pricing/pricing_udt_cleanup.test';
-import { PricingUdtInsertion } from './Pricing/pricing_udt_insertion.test';
 import { ListsAbiTests } from './lists_abi.test';
 import { CustomCollectionsUpsert } from './custom_collections_upsert.test';
 
@@ -87,6 +89,9 @@ export {
     PricingAddonsUpsert,
     PricingConfigUpload,
     PricingUdtInsertion,
+    PricingUdtCleanup,
+    PricingUdcInsertion,
+    PricingUdcCleanup,
     PricingBaseTests,
     PricingAdditionalGroupsReadonlyTests,
     PricingUomTests,
@@ -94,7 +99,6 @@ export {
     PricingMultipleValuesTests,
     PricingPartialValueTests,
     PricingExclusionTests,
-    PricingUdtCleanup,
     ResourceListAbiTests,
     ListsAbiTests,
     InstallationsTest,

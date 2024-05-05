@@ -9,12 +9,13 @@ import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import E2EUtils from '../utilities/e2e_utils';
-import { BaseFormDataViewField, DataViewFieldType } from '@pepperi-addons/papi-sdk';
+import { BaseFormDataViewField } from '@pepperi-addons/papi-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
 import { BasePageLayoutSectionColumn, ResourceViewEditorBlock } from '../blueprints/PageBlocksBlueprints';
 import { ResourceListBlock } from '../pom/ResourceList.block';
 import { Slugs } from '../pom/addons/Slugs';
+import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 
 chai.use(promised);
 
@@ -30,10 +31,11 @@ export async function ResourceListTests(email: string, password: string, client:
         ResourceListABI_Addon: ['cd3ba412-66a4-42f4-8abc-65768c5dc606', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.0.%'], // to prevent open sync from being installed (2.0.%)
+        'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-        'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'], // CPI_Node
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'],
+        // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'], // Dependency of Nebula
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // Dependency of Nebula
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -53,10 +55,12 @@ export async function ResourceListTests(email: string, password: string, client:
     let slugs: Slugs;
     let resourceListUtils: E2EUtils;
     let resourceListBlock: ResourceListBlock;
+    let accountDashboardLayout: AccountDashboardLayout;
 
     let random_name: string;
     const test_generic_decsription = 'for RL automated testing';
     let resource_name: string;
+    let resource_name_from_account_dashborad: string;
     let editorName: string;
     let editor_decsription: string;
     let view_decsription: string;
@@ -172,7 +176,20 @@ export async function ResourceListTests(email: string, password: string, client:
             view_fields_names: ['name', 'age', 'Key'],
         },
         ReferenceAccountAuto: {
-            view_fields_names: ['name', 'age', 'Key'],
+            view_fields_names: [
+                'of_account',
+                'best_seller_item',
+                'max_quantity',
+                'discount_rate',
+                'offered_discount_location',
+            ],
+            view_fields: [
+                { fieldName: 'of_account', dataViewType: 'TextBox', mandatory: true, readonly: true },
+                { fieldName: 'best_seller_item', dataViewType: 'TextBox', mandatory: true, readonly: true },
+                { fieldName: 'max_quantity', dataViewType: 'NumberInteger', mandatory: true, readonly: true },
+                { fieldName: 'discount_rate', dataViewType: 'NumberReal', mandatory: true, readonly: true },
+                { fieldName: 'offered_discount_location', dataViewType: 'TextBox', mandatory: true, readonly: true },
+            ],
         },
         // Dataless: {
         //     view_fields_names: ['Key', 'integerhavenodata'],
@@ -203,6 +220,7 @@ export async function ResourceListTests(email: string, password: string, client:
             pageBuilder = new PageBuilder(driver);
             slugs = new Slugs(driver);
             resourceListUtils = new E2EUtils(driver);
+            accountDashboardLayout = new AccountDashboardLayout(driver);
             random_name = generalService.generateRandomString(5);
         });
 
@@ -377,20 +395,20 @@ export async function ResourceListTests(email: string, password: string, client:
                 // Configure View
                 await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
                 viewKey = await resourceListUtils.getUUIDfromURL();
-                const viewFields: {
-                    fieldName: string;
-                    dataViewType: DataViewFieldType;
-                    mandatory: boolean;
-                    readonly: boolean;
-                }[] = [
-                    { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: true },
-                    { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: true },
-                    { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: true },
-                ];
+                // const viewFields: {
+                //     fieldName: string;
+                //     dataViewType: DataViewFieldType;
+                //     mandatory: boolean;
+                //     readonly: boolean;
+                // }[] = [
+                //     { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                //     { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                //     { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                // ];
                 await resourceViews.customViewConfig(client, {
                     matchingEditorName: editorName,
                     viewKey: viewKey,
-                    fieldsToConfigureInView: viewFields,
+                    fieldsToConfigureInView: detailsByResource[resource_name].view_fields,
                 });
                 let base64ImageComponent = await driver.saveScreenshots();
                 addContext(this, {
@@ -573,6 +591,246 @@ export async function ResourceListTests(email: string, password: string, client:
                 await webAppHomePage.manualResync(client);
                 const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugDisplayName);
                 expect(isNotFound).to.equal(true);
+            });
+
+            it('Validating Deletion of Page', async function () {
+                console.info(`deletePageResponse: ${JSON.stringify(deletePageResponse, null, 2)}`);
+                driver.sleep(0.5 * 1000);
+                expect(deletePageResponse.Ok).to.equal(true);
+                expect(deletePageResponse.Status).to.equal(200);
+                expect(deletePageResponse.Body.Hidden).to.equal(true);
+                expect(deletePageResponse.Body.Name).to.equal(pageName);
+            });
+        });
+
+        describe('Resource View from Account Dashboard', async function () {
+            // conditions for this section: tested user must have UDC = NameAgeAuto
+            before(function () {
+                resource_name = 'ReferenceAccountAuto';
+            });
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
+
+            it('Add & Configure View', async function () {
+                // Add View
+                viewName = `${resource_name_from_account_dashborad} View _(${random_name})`;
+                view_decsription = `View of resource: ${resource_name_from_account_dashborad} - ${test_generic_decsription}`;
+                await resourceListUtils.addView({
+                    nameOfView: viewName,
+                    descriptionOfView: view_decsription,
+                    nameOfResource: resource_name_from_account_dashborad,
+                });
+                if (await driver.isElementVisible(resourceViews.EditPage_BackToList_Button)) {
+                    await driver.click(resourceViews.EditPage_BackToList_Button);
+                }
+                // Configure View
+                await resourceListUtils.gotoEditPageOfSelectedViewByName(viewName);
+                viewKey = await resourceListUtils.getUUIDfromURL();
+                await resourceViews.customViewConfig(client, {
+                    matchingEditorName: '',
+                    viewKey: viewKey,
+                    fieldsToConfigureInView: detailsByResource[resource_name_from_account_dashborad].view_fields,
+                });
+                let base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `In View "${resource_name_from_account_dashborad}"`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                resourceViews.pause(0.5 * 1000);
+                await driver.click(resourceViews.EditPage_BackToList_Button);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Back at Views List`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                resourceViews.pause(0.5 * 1000);
+            });
+
+            it('Create Page', async function () {
+                await resourceListUtils.navigateTo('Page Builder');
+                // debugger
+                await pageBuilder.validatePageBuilderIsLoaded();
+                // await pageBuilder.deleteAll();
+                pageName = `${resource_name_from_account_dashborad} Page Auto_(${random_name})`;
+                await pageBuilder.addBlankPage(
+                    pageName,
+                    `Automation Testing Page for resource ${resource_name_from_account_dashborad}`,
+                );
+                driver.sleep(0.2 * 1000);
+                pageKey = await resourceListUtils.getUUIDfromURL();
+                createdPage = await pageBuilder.getPageByUUID(pageKey, client);
+                console.info(`createdPage before blocks addition: ${JSON.stringify(createdPage, null, 2)}`);
+                const editorBlockKey = uuidv4();
+                console.info('Newly generated editor block key: ', editorBlockKey);
+                const viewBlockKey = uuidv4();
+                console.info('Newly generated view block key: ', viewBlockKey);
+                const selectedViews = [
+                    {
+                        collectionName: resource_name_from_account_dashborad,
+                        collectionID: '',
+                        selectedViewUUID: viewKey,
+                        selectedViewName: viewName,
+                    },
+                ];
+                const viewerBlock = new ResourceViewEditorBlock(
+                    viewBlockKey,
+                    'DataViewerBlock',
+                    undefined,
+                    selectedViews,
+                );
+                console.info(`viewer block: ${JSON.stringify(viewerBlock, null, 2)}`);
+                const editorBlock = new ResourceViewEditorBlock(editorBlockKey, 'DataConfigurationBlock', {
+                    collectionName: resource_name_from_account_dashborad,
+                    editorUUID: editorKey,
+                });
+                console.info(`editor block: ${JSON.stringify(editorBlock, null, 2)}`);
+                createdPage.Blocks.push(editorBlock);
+                createdPage.Blocks.push(viewerBlock);
+                createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(viewBlockKey);
+                createdPage.Layout.Sections[0].Columns.push(new BasePageLayoutSectionColumn(editorBlockKey));
+
+                const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
+                console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Page Creation`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                expect(responseOfPublishPage.Ok).to.be.true;
+                expect(responseOfPublishPage.Status).to.equal(200);
+                pageBuilder.pause(1 * 1000);
+                await webAppHeader.goHome();
+            });
+
+            it('Create & Map Slug', async function () {
+                slugDisplayName = `${resource_name_from_account_dashborad} ${random_name}`;
+                slug_path = `${resource_name_from_account_dashborad.toLowerCase()}_${random_name}`;
+                await resourceListUtils.createSlug(slugDisplayName, slug_path, pageKey, email, password, client);
+            });
+
+            it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil) -> Configuring Slug', async () => {
+                await accountDashboardLayout.configureToAccountSelectedSectionByProfile(
+                    driver,
+                    slugDisplayName,
+                    'Menu',
+                    'Admin',
+                );
+            });
+
+            it('Logout Login & Manual Sync', async () => {
+                await resourceListUtils.logOutLogIn(email, password);
+                await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+                await resourceListUtils.performManualSync(client);
+            });
+
+            it('Navigating to a specific Account & Entering Resource View slug from Menu', async function () {
+                const accountName = 'First Account';
+                await webAppHeader.goHome();
+                await webAppHomePage.isSpinnerDone();
+                await webAppHomePage.clickOnBtn('Accounts');
+                await resourceListUtils.selectAccountFromAccountList.bind(this)(driver, accountName, 'name');
+                await resourceList.isSpinnerDone();
+                driver.sleep(1 * 1000);
+                let base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At "${accountName}" dashboard`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await resourceList.waitTillVisible(accountDashboardLayout.AccountDashboard_HamburgerMenu_Button, 15000);
+                await resourceList.click(accountDashboardLayout.AccountDashboard_HamburgerMenu_Button);
+                resourceList.pause(0.2 * 1000);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Hamburger Menu opened`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await resourceList.waitTillVisible(
+                    accountDashboardLayout.AccountDashboard_HamburgerMenu_Content,
+                    15000,
+                );
+                resourceList.pause(1 * 1000);
+                await resourceList.click(
+                    accountDashboardLayout.getSelectorOfAccountHomePageHamburgerMenuItemByText(slugDisplayName),
+                );
+                resourceList.pause(1 * 1000);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Clicked Wanted Slug at hamburger menu`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+
+            it('At Block performing checks', async function () {
+                resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
+                await resourceListBlock.isSpinnerDone();
+                addContext(this, {
+                    title: `Current URL`,
+                    value: `${await driver.getCurrentUrl()}`,
+                });
+                let base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
+                driver.sleep(0.5 * 1000);
+                const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
+                const expectedViewFieldsNames =
+                    detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
+                columnsTitles.forEach(async (columnTitle) => {
+                    const columnTitleText = await columnTitle.getText();
+                    expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
+                });
+                driver.sleep(0.5 * 1000);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Assertions`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+
+            it('Return to Home Page', async function () {
+                await webAppHeader.goHome();
+                await webAppHomePage.isSpinnerDone();
+            });
+        });
+
+        describe('Teardown', async function () {
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.collectEndTestData(this);
+            });
+
+            it('Delete Page', async function () {
+                deletePageResponse = await pageBuilder.removePageByUUID(pageKey, client);
+            });
+
+            it('Delete Slug', async function () {
+                const deleteSlugResponse = await slugs.deleteSlugByName(slug_path, client);
+                expect(deleteSlugResponse.Ok).to.equal(true);
+                expect(deleteSlugResponse.Status).to.equal(200);
+                expect(deleteSlugResponse.Body.success).to.equal(true);
+            });
+
+            it('Delete View Via API', async function () {
+                const deleteViewResponse = await resourceViews.deleteViewViaApiByUUID(viewKey, client);
+                expect(deleteViewResponse.Ok).to.equal(true);
+                expect(deleteViewResponse.Status).to.equal(200);
+                expect(deleteViewResponse.Body.Name).to.equal(viewName);
+                expect(deleteViewResponse.Body.Hidden).to.equal(true);
+            });
+
+            it('Unconfiguring Slug from Account Dashboard', async () => {
+                await accountDashboardLayout.unconfigureFromAccountSelectedSectionByProfile(
+                    driver,
+                    slugDisplayName,
+                    'Menu',
+                    'Admin',
+                    resource_name_from_account_dashborad,
+                );
             });
 
             it('Validating Deletion of Page', async function () {
