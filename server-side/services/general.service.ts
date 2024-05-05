@@ -156,6 +156,7 @@ console.log('%c#00FF00\t\tSuccess\t\t\t', `${ConsoleColors.MenuBackground}; ${Co
  * The process will end
  */
 process.on('unhandledRejection', async (error) => {
+    debugger;
     if (error instanceof Error && JSON.stringify(error.stack).includes('selenium-webdriver\\lib\\http.js')) {
         console.log(`%cError in Chrome API: ${error}`, ConsoleColors.Error);
         console.log('Wait 10 seconds before trying to call the browser api again');
@@ -183,6 +184,19 @@ process.on('unhandledRejection', async (error) => {
         );
         process.exit(1);
     } else if (error && typeof error === 'string' && error.includes(`doesn't have any phased available version`)) {
+        console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
+        console.log(
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
+    } else if (
+        error &&
+        typeof error === 'object' &&
+        'message' in error &&
+        typeof error.message === 'string' &&
+        error.message.includes(`doesn't have any phased available version`)
+    ) {
         console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
         console.log(
             `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
