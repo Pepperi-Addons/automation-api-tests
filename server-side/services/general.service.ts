@@ -195,7 +195,7 @@ process.on('unhandledRejection', async (error) => {
         typeof error === 'object' &&
         'message' in error &&
         typeof error.message === 'string' &&
-        error.message.includes(`doesn't have any phased available version`)
+        (error as any).message.includes(`doesn't have any phased available version`)
     ) {
         console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
         console.log(
