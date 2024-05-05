@@ -69,6 +69,8 @@ export async function ResourceListTests(email: string, password: string, client:
     let viewName: string;
     let slugDisplayName: string;
     let slug_path: string;
+    let slugDisplayNameAccountDashboard: string;
+    let slug_path_account_dashboard: string;
     let pageName: string;
     let pageKey: string;
     let createdPage;
@@ -710,15 +712,22 @@ export async function ResourceListTests(email: string, password: string, client:
             });
 
             it('Create & Map Slug', async function () {
-                slugDisplayName = `${resource_name_from_account_dashborad} ${random_name}`;
-                slug_path = `${resource_name_from_account_dashborad.toLowerCase()}_${random_name}`;
-                await resourceListUtils.createSlug(slugDisplayName, slug_path, pageKey, email, password, client);
+                slugDisplayNameAccountDashboard = `${resource_name_from_account_dashborad} ${random_name}`;
+                slug_path_account_dashboard = `${resource_name_from_account_dashborad.toLowerCase()}_${random_name}`;
+                await resourceListUtils.createSlug(
+                    slugDisplayNameAccountDashboard,
+                    slug_path_account_dashboard,
+                    pageKey,
+                    email,
+                    password,
+                    client,
+                );
             });
 
             it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil) -> Configuring Slug', async () => {
                 await accountDashboardLayout.configureToAccountSelectedSectionByProfile(
                     driver,
-                    slugDisplayName,
+                    slugDisplayNameAccountDashboard,
                     'Menu',
                     'Admin',
                 );
@@ -757,7 +766,9 @@ export async function ResourceListTests(email: string, password: string, client:
                 );
                 resourceList.pause(1 * 1000);
                 await resourceList.click(
-                    accountDashboardLayout.getSelectorOfAccountHomePageHamburgerMenuItemByText(slugDisplayName),
+                    accountDashboardLayout.getSelectorOfAccountHomePageHamburgerMenuItemByText(
+                        slugDisplayNameAccountDashboard,
+                    ),
                 );
                 resourceList.pause(1 * 1000);
                 base64ImageComponent = await driver.saveScreenshots();
@@ -768,7 +779,10 @@ export async function ResourceListTests(email: string, password: string, client:
             });
 
             it('At Block performing checks', async function () {
-                resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
+                resourceListBlock = new ResourceListBlock(
+                    driver,
+                    `https://app.pepperi.com/${slug_path_account_dashboard}`,
+                );
                 await resourceListBlock.isSpinnerDone();
                 addContext(this, {
                     title: `Current URL`,
@@ -814,7 +828,7 @@ export async function ResourceListTests(email: string, password: string, client:
             });
 
             it('Delete Slug', async function () {
-                const deleteSlugResponse = await slugs.deleteSlugByName(slug_path, client);
+                const deleteSlugResponse = await slugs.deleteSlugByName(slug_path_account_dashboard, client);
                 expect(deleteSlugResponse.Ok).to.equal(true);
                 expect(deleteSlugResponse.Status).to.equal(200);
                 expect(deleteSlugResponse.Body.success).to.equal(true);
@@ -826,16 +840,6 @@ export async function ResourceListTests(email: string, password: string, client:
                 expect(deleteViewResponse.Status).to.equal(200);
                 expect(deleteViewResponse.Body.Name).to.equal(viewName);
                 expect(deleteViewResponse.Body.Hidden).to.equal(true);
-            });
-
-            it('Unconfiguring Slug from Account Dashboard', async () => {
-                await accountDashboardLayout.unconfigureFromAccountSelectedSectionByProfile(
-                    driver,
-                    slugDisplayName,
-                    'Menu',
-                    'Admin',
-                    resource_name_from_account_dashborad,
-                );
             });
 
             it('Validating Deletion of Page', async function () {
@@ -1179,6 +1183,16 @@ export async function ResourceListTests(email: string, password: string, client:
                     title: `After Buttons Removal`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
+            });
+
+            it('Unconfiguring Slug from Account Dashboard', async () => {
+                await accountDashboardLayout.unconfigureFromAccountSelectedSectionByProfile(
+                    driver,
+                    slugDisplayNameAccountDashboard,
+                    'Menu',
+                    'Admin',
+                    resource_name_from_account_dashborad,
+                );
             });
         });
 
