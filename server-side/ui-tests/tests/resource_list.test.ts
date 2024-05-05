@@ -162,6 +162,11 @@ export async function ResourceListTests(email: string, password: string, client:
         // },
         NameAgeAuto: {
             view_fields_names: ['name', 'age', 'Key'],
+            view_fields: [
+                { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: true },
+            ],
         },
         ArraysOfPrimitivesAuto: {
             view_fields_names: ['name', 'age', 'Key'],
