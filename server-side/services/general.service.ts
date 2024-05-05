@@ -112,9 +112,11 @@ export const testDataWithNewSyncAndNebula = {
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
 };
-
+//this is done because sync installations are using "phased=false"
+const testDataWithSyncNoNebula = testData;
+testDataWithSyncNoNebula['Cross Platform Engine Data'] = ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'];
 export const testDataWithNewSyncNoNebula = {
-    ...testData, // already has sync
+    ...testDataWithSyncNoNebula, // already has sync
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
 };
