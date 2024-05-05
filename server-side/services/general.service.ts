@@ -182,6 +182,13 @@ process.on('unhandledRejection', async (error) => {
             ConsoleColors.SystemInformation,
         );
         process.exit(1);
+    } else if (error && typeof error === 'string' && error.includes(`doesn't have any phased available version`)) {
+        console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
+        console.log(
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
     } else {
         console.log(`%cError unhandledRejection: ${error}`, ConsoleColors.Error);
         console.debug(`%cSleep: ${4000} milliseconds`, ConsoleColors.Information);
