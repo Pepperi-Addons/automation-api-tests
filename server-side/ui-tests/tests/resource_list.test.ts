@@ -611,7 +611,7 @@ export async function ResourceListTests(email: string, password: string, client:
         describe('Resource View from Account Dashboard', async function () {
             // conditions for this section: tested user must have UDC = NameAgeAuto
             before(function () {
-                resource_name = 'ReferenceAccountAuto';
+                resource_name_from_account_dashborad = 'ReferenceAccountAuto';
             });
             afterEach(async function () {
                 driver.sleep(500);
