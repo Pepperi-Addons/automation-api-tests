@@ -161,7 +161,7 @@ export class DevTest {
                     this.addonName
                 } Unavailable As We Coludn't Install It`;
                 await this.unavailableVersion();
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 throw new Error(errorString);
             }
         }
@@ -450,7 +450,7 @@ export class DevTest {
             const errorString = `Error: Couldn't Get Latest Available Versions Of ${this.addonName}: ${
                 (error as any).message
             }`;
-            await this.reportToTeamsMessage(errorString);
+            await this.reportToTeamsException(errorString);
             throw new Error(errorString);
         }
         if (
@@ -460,7 +460,7 @@ export class DevTest {
         ) {
             const errorString = `Error: Latest Avalibale Versions Of ${this.addonName} Across Envs Are Different: Prod - ${latestVersionOfTestedAddonProd}, Staging - ${latestVersionOfTestedAddonSb}, EU - ${latestVersionOfTestedAddonEu}`;
             debugger;
-            await this.reportToTeamsMessage(errorString);
+            await this.reportToTeamsException(errorString);
             await this.unavailableVersion();
             throw new Error(errorString);
         } else {
@@ -579,7 +579,7 @@ export class DevTest {
                 whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
                 whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
                 const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 throw new Error(`${errorString}`);
             }
             if (
@@ -591,7 +591,7 @@ export class DevTest {
                 whichEnvs += devTestResponseProd.Body.URI === undefined ? 'PRDO,' : '';
                 whichEnvs += devTestResponseSb.Body.URI === undefined ? 'SB' : '';
                 const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 throw new Error(`${errorString}`);
             }
             console.log(
@@ -636,7 +636,7 @@ export class DevTest {
                 ) {
                     errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -661,7 +661,7 @@ export class DevTest {
                 if (!devTestResultsSb.AuditInfo.ResultObject) {
                     errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -683,7 +683,7 @@ export class DevTest {
                     testResultArraySB,
                 )}, On: ${currentTestName} Test`;
                 debugger;
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -731,7 +731,7 @@ export class DevTest {
                         devTestResultsSb.AuditInfo,
                     )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -856,13 +856,13 @@ export class DevTest {
             await this.unavailableVersion();
             this.devPassingEnvs = devPassingEnvs2;
             this.devFailedEnvs = devFailedEnvs2;
-            await this.reportToTeams(jenkinsLink);
+            await this.reportToTeamsTestStatus(jenkinsLink);
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
             return false;
         } else if (!this.doWeHaveSuchAppTest(this.addonName)) {
             this.devPassingEnvs = devPassingEnvs2;
             this.devFailedEnvs = devFailedEnvs2;
-            await this.reportToTeams(jenkinsLink);
+            await this.reportToTeamsTestStatus(jenkinsLink);
         }
     }
 
@@ -921,8 +921,8 @@ export class DevTest {
         return this.prodUser;
     }
 
-    async reportToTeams(jenkinsLink) {
-        await this.reportBuildEnded();
+    async reportToTeamsTestStatus(jenkinsLink) {
+        await this.reportBuildEndedToQaChannle();
         const users = await this.resolveUserPerTest2();
         const userMails = users.map((user) => user.email);
         const stringUsers = userMails.join(', ');
@@ -957,7 +957,11 @@ export class DevTest {
                   this.failedSuitesSB.map((obj) => `${obj.testName} - ${obj.executionUUID}`).join(',<br>') +
                   '<br>'
         }`;
-        const teamsURL = await this.handleTeamsURL(this.addonName);
+        const teamsURL = await this.adminBaseUserGeneralService.handleTeamsURL(
+            this.addonName,
+            this.adminBaseUserEmail,
+            this.adminBaseUserPass,
+        );
         const bodyToSend = {
             Name: `The Results Of Intergration Tests Written By Developer For ${this.addonName} - (${this.addonUUID}), Version: ${this.addonVersion}`,
             Description: message,
@@ -985,32 +989,18 @@ export class DevTest {
                 body: JSON.stringify(bodyToSend),
             },
         );
-        if (monitoringResponse.Ok !== true) {
+        console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+        if (
+            monitoringResponse.Ok !== true ||
+            monitoringResponse.Status !== 200 ||
+            Object.keys(monitoringResponse.Error).length !== 0
+        ) {
             const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
             await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
                 method: 'POST',
                 body: JSON.stringify({ Text: body }),
             });
-            // throw new Error(
-            //     `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
-            //         monitoringResponse,
-            //     )}`,
-            // );
         }
-        // if (monitoringResponse.Status !== 200) {
-        //     throw new Error(
-        //         `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
-        //             monitoringResponse,
-        //         )}`,
-        //     );
-        // }
-        // if (Object.keys(monitoringResponse.Error).length !== 0) {
-        //     throw new Error(
-        //         `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
-        //             monitoringResponse,
-        //         )}`,
-        //     );
-        // }
     }
 
     async printResultsTestObject(testResultArray, userName, env, currentTestName) {
@@ -1134,11 +1124,15 @@ export class DevTest {
         return testResponse;
     }
 
-    async reportToTeamsMessage(error) {
+    async reportToTeamsException(error) {
         debugger;
-        await this.reportBuildEnded();
+        await this.reportBuildEndedToQaChannle();
         const message = `${error}`;
-        const teamsURL = await this.handleTeamsURL(this.addonName);
+        const teamsURL = await this.adminBaseUserGeneralService.handleTeamsURL(
+            this.addonName,
+            this.adminBaseUserEmail,
+            this.adminBaseUserPass,
+        );
         const bodyToSend = {
             Name: `${this.addonName} Approvment Tests Status: Failed Due CI/CD Process Exception`,
             Description: `${this.addonName} - (${this.addonUUID}), Version:${this.addonVersion}, Failed!`,
@@ -1163,26 +1157,28 @@ export class DevTest {
                 body: JSON.stringify(bodyToSend),
             },
         );
+        console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
         debugger;
-        if (monitoringResponse.Ok !== true) {
+        if (
+            monitoringResponse.Ok !== true ||
+            monitoringResponse.Status !== 200 ||
+            Object.keys(monitoringResponse.Error).length !== 0
+        ) {
             const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
             await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
                 method: 'POST',
                 body: JSON.stringify({ Text: body }),
             });
-            // throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
         }
-        // if (monitoringResponse.Status !== 200) {
-        //     throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-        // }
-        // if (Object.keys(monitoringResponse.Error).length !== 0) {
-        //     throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-        // }
     }
 
-    async reportBuildEnded() {
+    async reportBuildEndedToQaChannle() {
         const message = `${this.addonName} - (${this.addonUUID}), Version:${this.addonVersion}, Ended Testing`;
-        const teamsURL = await this.handleTeamsURL('QA');
+        const teamsURL = await this.adminBaseUserGeneralService.handleTeamsURL(
+            'QA',
+            this.adminBaseUserEmail,
+            this.adminBaseUserPass,
+        );
         const bodyToSend = {
             Name: `${this.addonName}, ${this.addonUUID}, ${this.addonVersion}`,
             Description: message,
@@ -1204,7 +1200,12 @@ export class DevTest {
                 body: JSON.stringify(bodyToSend),
             },
         );
-        if (monitoringResponse.Ok !== true) {
+        console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+        if (
+            monitoringResponse.Ok !== true ||
+            monitoringResponse.Status !== 200 ||
+            Object.keys(monitoringResponse.Error).length !== 0
+        ) {
             const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
             await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
                 method: 'POST',
@@ -1212,208 +1213,202 @@ export class DevTest {
             });
             console.log(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
         }
-        // if (monitoringResponse.Status !== 200) {
-        //     console.log(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-        // }
-        // if (Object.keys(monitoringResponse.Error).length !== 0) {
-        //     console.log(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
-        // }
     }
 
-    async handleTeamsURL(addonName: string) {
-        //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
-        switch (addonName) {
-            case 'ASSETS_MANAGER_CLIENT':
-            case 'ASSETS MANAGER':
-            case 'ASSETS-MANAGER':
-            case 'ASSETS':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'AssetsManagerWebHook',
-                );
-            case 'SUPPORT-TOOLS':
-            case 'SUPPORT TOOLS':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'SupportToolsWebHook',
-                );
-            case 'SYNC-SCHEDULER':
-            case 'SYNC SCHEDULER':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'SyncSchedulerWebHook',
-                );
-            case 'PAGE-BUILDER':
-            case 'PAGE BUILDER':
-            case 'PAGE':
-            case 'PAGES':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'PageBuilderTeamsWebHook',
-                );
-            case 'KMS':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'KMSTeamsWebHook',
-                );
-            case 'QA':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'QAWebHook',
-                );
-            case 'PAPI-DATA-INDEX':
-            case 'PAPI INDEX':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'PapiDataIndexWebHook',
-                );
-            case 'JOURNEY':
-            case 'JOURNEY-TRACKER':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'JourneyTeamsWebHook',
-                );
-            case 'SYNC':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'SyncTeamsWebHook',
-                );
-            case 'ADAL': //new teams
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'ADALTeamsWebHook',
-                );
-            case 'NEBULA':
-            case 'FEBULA': //new teams
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'NebulaTeamsWebHook',
-                );
-            case 'DIMX':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'DIMXTeamsWebHook',
-                );
-            case 'DATA INDEX': //new teams
-            case 'DATA-INDEX':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'DataIndexTeamsWebHook',
-                );
-            case 'PFS':
-            case 'PEPPERI-FILE-STORAGE':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'PFSTeamsWebHook',
-                );
-            case 'PNS':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'PNSTeamsWebHook',
-                );
-            case 'USER-DEFINED-COLLECTIONS':
-            case 'UDC':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'UDCTeamsWebHook',
-                );
-            case 'SCHEDULER':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'SchedulerTeamsWebHook',
-                );
-            case 'CPI-DATA': //new teams
-            case 'CPI DATA':
-            case 'ADDONS-CPI-DATA':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'CPIDataTeamsWebHook',
-                );
-            case 'CORE': //new teams
-            case 'CORE-GENERIC-RESOURCES':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'CORETeamsWebHook',
-                );
-            case 'RESOURCE-LIST': //new teams
-            case 'RESOURCE LIST':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'ResourceListTeamsWebHook',
-                );
-            case 'UDB':
-            case 'USER DEFINED BLOCKS':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'UDBTeamsWebHook',
-                );
-            case 'CONFIGURATIONS':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'CONFIGURATIONSTeamsWebHook',
-                );
-            case 'RELATED-ITEMS':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'RelatedItemsTeamsWebHook',
-                );
-            case 'GENERIC-RESOURCE': //new teams
-            case 'GENERIC RESOURCE':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'GenericResourceTeamsWebHook',
-                );
-            case 'NODE': //new teams
-            case 'CPI-NODE':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'CPINodeTeamsWebHook',
-                );
-            case 'CRAWLER':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'CRAWLERTeamsWebHook',
-                );
-            case 'ASYNCADDON':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'ASYNCTeamsWebHook',
-                );
-            case 'TRANSLATION':
-                return await this.adminBaseUserGeneralService.getSecretfromKMS(
-                    this.adminBaseUserEmail,
-                    this.adminBaseUserPass,
-                    'TRANSLATIONTeamsWebHook',
-                );
-        }
-    }
+    // async handleTeamsURL(addonName: string) {
+    //     //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
+    //     switch (addonName) {
+    //         case 'ASSETS_MANAGER_CLIENT':
+    //         case 'ASSETS MANAGER':
+    //         case 'ASSETS-MANAGER':
+    //         case 'ASSETS':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'AssetsManagerWebHook',
+    //             );
+    //         case 'SUPPORT-TOOLS':
+    //         case 'SUPPORT TOOLS':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'SupportToolsWebHook',
+    //             );
+    //         case 'SYNC-SCHEDULER':
+    //         case 'SYNC SCHEDULER':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'SyncSchedulerWebHook',
+    //             );
+    //         case 'PAGE-BUILDER':
+    //         case 'PAGE BUILDER':
+    //         case 'PAGE':
+    //         case 'PAGES':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'PageBuilderTeamsWebHook',
+    //             );
+    //         case 'KMS':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'KMSTeamsWebHook',
+    //             );
+    //         case 'QA':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'QAWebHook',
+    //             );
+    //         case 'PAPI-DATA-INDEX':
+    //         case 'PAPI INDEX':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'PapiDataIndexWebHook',
+    //             );
+    //         case 'JOURNEY':
+    //         case 'JOURNEY-TRACKER':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'JourneyTeamsWebHook',
+    //             );
+    //         case 'SYNC':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'SyncTeamsWebHook',
+    //             );
+    //         case 'ADAL': //new teams
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'ADALTeamsWebHook',
+    //             );
+    //         case 'NEBULA':
+    //         case 'FEBULA': //new teams
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'NebulaTeamsWebHook',
+    //             );
+    //         case 'DIMX':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'DIMXTeamsWebHook',
+    //             );
+    //         case 'DATA INDEX': //new teams
+    //         case 'DATA-INDEX':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'DataIndexTeamsWebHook',
+    //             );
+    //         case 'PFS':
+    //         case 'PEPPERI-FILE-STORAGE':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'PFSTeamsWebHook',
+    //             );
+    //         case 'PNS':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'PNSTeamsWebHook',
+    //             );
+    //         case 'USER-DEFINED-COLLECTIONS':
+    //         case 'UDC':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'UDCTeamsWebHook',
+    //             );
+    //         case 'SCHEDULER':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'SchedulerTeamsWebHook',
+    //             );
+    //         case 'CPI-DATA': //new teams
+    //         case 'CPI DATA':
+    //         case 'ADDONS-CPI-DATA':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'CPIDataTeamsWebHook',
+    //             );
+    //         case 'CORE': //new teams
+    //         case 'CORE-GENERIC-RESOURCES':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'CORETeamsWebHook',
+    //             );
+    //         case 'RESOURCE-LIST': //new teams
+    //         case 'RESOURCE LIST':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'ResourceListTeamsWebHook',
+    //             );
+    //         case 'UDB':
+    //         case 'USER DEFINED BLOCKS':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'UDBTeamsWebHook',
+    //             );
+    //         case 'CONFIGURATIONS':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'CONFIGURATIONSTeamsWebHook',
+    //             );
+    //         case 'RELATED-ITEMS':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'RelatedItemsTeamsWebHook',
+    //             );
+    //         case 'GENERIC-RESOURCE': //new teams
+    //         case 'GENERIC RESOURCE':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'GenericResourceTeamsWebHook',
+    //             );
+    //         case 'NODE': //new teams
+    //         case 'CPI-NODE':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'CPINodeTeamsWebHook',
+    //             );
+    //         case 'CRAWLER':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'CRAWLERTeamsWebHook',
+    //             );
+    //         case 'ASYNCADDON':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'ASYNCTeamsWebHook',
+    //             );
+    //         case 'TRANSLATION':
+    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
+    //                 this.adminBaseUserEmail,
+    //                 this.adminBaseUserPass,
+    //                 'TRANSLATIONTeamsWebHook',
+    //             );
+    //     }
+    // }
 
     async resolveUserPerTest2(): Promise<DevTestUser[]> {
         const usreEmailList = this.resolveUserPerTest();
