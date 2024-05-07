@@ -120,7 +120,7 @@ export async function VFdataPrep(varPass: string, client: Client) {
         'pepperi-pack': ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.0.%'], // dependency > 0.2.58 versions 2.0.% are open sync and are irrelevant to this test
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%'], // dependency > 0.2.58 versions 2.0.% are open sync and are irrelevant to this test
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.3.88'], // PFS makes create session loop
         // 'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', '0.5.12'], // current phased version 0.5.10 | dependency > 0.5.7
         // Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.6.26'], // current phased version 0.6.26 | dependency > 0.6.3
