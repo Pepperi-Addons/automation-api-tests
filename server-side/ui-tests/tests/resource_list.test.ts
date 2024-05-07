@@ -9,19 +9,21 @@ import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import E2EUtils from '../utilities/e2e_utils';
-import { BaseFormDataViewField } from '@pepperi-addons/papi-sdk';
+import { BaseFormDataViewField, DataViewFieldType } from '@pepperi-addons/papi-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
 import { BasePageLayoutSectionColumn, ResourceViewEditorBlock } from '../blueprints/PageBlocksBlueprints';
 import { ResourceListBlock } from '../pom/ResourceList.block';
 import { Slugs } from '../pom/addons/Slugs';
 import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
+import { UDCService } from '../../services/user-defined-collections.service';
 
 chai.use(promised);
 
 export async function ResourceListTests(email: string, password: string, client: Client, varPass: string) {
     const date = new Date();
     const generalService = new GeneralService(client);
+    const udcService = new UDCService(generalService);
     // const papi_resources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
 
     await generalService.baseAddonVersionsInstallation(varPass);
@@ -30,8 +32,9 @@ export async function ResourceListTests(email: string, password: string, client:
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         ResourceListABI_Addon: ['cd3ba412-66a4-42f4-8abc-65768c5dc606', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.0.%'], // to prevent open sync from being installed (2.0.%)
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%'], // to prevent open sync from being installed (2.0.%)
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+        // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%'],
         // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'], // Dependency of Nebula
@@ -43,6 +46,12 @@ export async function ResourceListTests(email: string, password: string, client:
     const installedResourceListVersion = (await generalService.getInstalledAddons()).find(
         (addon) => addon.Addon.Name == 'Resource List',
     )?.Version;
+
+    const accountName = 'Second Account';
+    const resource_name_from_account_dashborad = 'ReferenceAccountAuto';
+    const getSchemesResponse = await udcService.getSchemes({ where: `Name=${resource_name_from_account_dashborad}` });
+    let syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
 
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
@@ -56,11 +65,10 @@ export async function ResourceListTests(email: string, password: string, client:
     let resourceListUtils: E2EUtils;
     let resourceListBlock: ResourceListBlock;
     let accountDashboardLayout: AccountDashboardLayout;
-
+    let previousSyncStatus: boolean | undefined;
     let random_name: string;
     const test_generic_decsription = 'for RL automated testing';
     let resource_name: string;
-    let resource_name_from_account_dashborad: string;
     let editorName: string;
     let editor_decsription: string;
     let view_decsription: string;
@@ -69,12 +77,24 @@ export async function ResourceListTests(email: string, password: string, client:
     let viewName: string;
     let slugDisplayName: string;
     let slug_path: string;
+    let slugDisplayNameAccountDashboard: string;
+    let slug_path_account_dashboard: string;
     let pageName: string;
     let pageKey: string;
     let createdPage;
     let deletePageResponse;
 
-    const detailsByResource = {
+    const detailsByResource: {
+        [key: string]: {
+            view_fields_names: string[];
+            view_fields: {
+                fieldName: string;
+                dataViewType: DataViewFieldType;
+                mandatory: boolean;
+                readonly: boolean;
+            }[];
+        };
+    } = {
         accounts: {
             view_fields_names: ['Name', 'Email', 'Country', 'City', 'Type', 'UUID'],
             view_fields: [
@@ -170,15 +190,19 @@ export async function ResourceListTests(email: string, password: string, client:
         },
         ArraysOfPrimitivesAuto: {
             view_fields_names: ['name', 'age', 'Key'],
+            view_fields: [],
         },
         FiltersAccRefAuto: {
             view_fields_names: ['name', 'age', 'Key'],
+            view_fields: [],
         },
         IndexedFieldsAuto: {
             view_fields_names: ['name', 'age', 'Key'],
+            view_fields: [],
         },
         IndexedNameAgeAuto: {
             view_fields_names: ['name', 'age', 'Key'],
+            view_fields: [],
         },
         ReferenceAccountAuto: {
             view_fields_names: [
@@ -554,7 +578,7 @@ export async function ResourceListTests(email: string, password: string, client:
             });
         });
 
-        describe('Teardown', async function () {
+        describe('Teardown of Pipeline', async function () {
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.collectEndTestData(this);
@@ -609,10 +633,7 @@ export async function ResourceListTests(email: string, password: string, client:
         });
 
         describe('Resource View from Account Dashboard', async function () {
-            // conditions for this section: tested user must have UDC = NameAgeAuto
-            before(function () {
-                resource_name = 'ReferenceAccountAuto';
-            });
+            // conditions for this section: tested user must have UDC = ReferenceAccountAuto
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.collectEndTestData(this);
@@ -710,28 +731,36 @@ export async function ResourceListTests(email: string, password: string, client:
             });
 
             it('Create & Map Slug', async function () {
-                slugDisplayName = `${resource_name_from_account_dashborad} ${random_name}`;
-                slug_path = `${resource_name_from_account_dashborad.toLowerCase()}_${random_name}`;
-                await resourceListUtils.createSlug(slugDisplayName, slug_path, pageKey, email, password, client);
+                slugDisplayNameAccountDashboard = `${resource_name_from_account_dashborad} ${random_name}`;
+                slug_path_account_dashboard = `${resource_name_from_account_dashborad.toLowerCase()}_${random_name}`;
+                await resourceListUtils.createSlug(
+                    slugDisplayNameAccountDashboard,
+                    slug_path_account_dashboard,
+                    pageKey,
+                    email,
+                    password,
+                    client,
+                );
             });
 
-            it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil) -> Configuring Slug', async () => {
+            it('Admin: Navigating to Account Dashboard Layout -> Menu (Pencil) -> Admin (Pencil) -> Configuring Slug', async () => {
                 await accountDashboardLayout.configureToAccountSelectedSectionByProfile(
                     driver,
-                    slugDisplayName,
+                    slugDisplayNameAccountDashboard,
                     'Menu',
                     'Admin',
                 );
             });
 
-            it('Logout Login & Manual Sync', async () => {
+            it(`Logout Login & Manual Sync`, async () => {
                 await resourceListUtils.logOutLogIn(email, password);
                 await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 await resourceListUtils.performManualSync(client);
             });
 
-            it('Navigating to a specific Account & Entering Resource View slug from Menu', async function () {
-                const accountName = 'First Account';
+            it(`${
+                syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'
+            }: Navigating to a specific Account (${accountName}) & Entering Resource View slug from Menu`, async function () {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
                 await webAppHomePage.clickOnBtn('Accounts');
@@ -757,7 +786,9 @@ export async function ResourceListTests(email: string, password: string, client:
                 );
                 resourceList.pause(1 * 1000);
                 await resourceList.click(
-                    accountDashboardLayout.getSelectorOfAccountHomePageHamburgerMenuItemByText(slugDisplayName),
+                    accountDashboardLayout.getSelectorOfAccountHomePageHamburgerMenuItemByText(
+                        slugDisplayNameAccountDashboard,
+                    ),
                 );
                 resourceList.pause(1 * 1000);
                 base64ImageComponent = await driver.saveScreenshots();
@@ -768,7 +799,119 @@ export async function ResourceListTests(email: string, password: string, client:
             });
 
             it('At Block performing checks', async function () {
-                resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
+                resourceListBlock = new ResourceListBlock(
+                    driver,
+                    `https://app.pepperi.com/${slug_path_account_dashboard}`,
+                );
+                await resourceListBlock.isSpinnerDone();
+                addContext(this, {
+                    title: `Current URL`,
+                    value: `${await driver.getCurrentUrl()}`,
+                });
+                let base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
+                driver.sleep(0.5 * 1000);
+                const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
+                const expectedViewFieldsNames =
+                    detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
+                columnsTitles.forEach(async (columnTitle) => {
+                    const columnTitleText = await columnTitle.getText();
+                    expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
+                });
+                driver.sleep(0.5 * 1000);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Assertions`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+
+            it(`Changing Sync definition at ${resource_name_from_account_dashborad} from ${
+                syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'
+            } to ${syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'}`, async () => {
+                previousSyncStatus = syncStatusOfReferenceAccount;
+                const newSyncDefinition = syncStatusOfReferenceAccount
+                    ? { Sync: false }
+                    : { Sync: true, SyncFieldLevel: false };
+                console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                console.info('newSyncDefinition: ', newSyncDefinition);
+                const response = await udcService.postScheme({
+                    Name: resource_name_from_account_dashborad,
+                    SyncData: newSyncDefinition,
+                });
+                console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
+            });
+
+            it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async () => {
+                syncStatusOfReferenceAccount
+                    ? await resourceListUtils.performManualResync(client)
+                    : await resourceListUtils.performManualSync(client);
+            });
+
+            it(`Logout Login`, async () => {
+                await resourceListUtils.logOutLogIn(email, password);
+                await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+            });
+
+            it('Validating Sync definition changed', async function () {
+                const getSchemesResponse = await udcService.getSchemes({
+                    where: `Name=${resource_name_from_account_dashborad}`,
+                });
+                syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+                console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                expect(syncStatusOfReferenceAccount).to.not.equal(previousSyncStatus);
+            });
+
+            it(`${
+                syncStatusOfReferenceAccount ? 'Online Only' : 'Offline & Online'
+            }: Navigating to a specific Account (${accountName}) & Entering Resource View slug from Menu`, async function () {
+                await webAppHeader.goHome();
+                await webAppHomePage.isSpinnerDone();
+                await webAppHomePage.clickOnBtn('Accounts');
+                await resourceListUtils.selectAccountFromAccountList.bind(this)(driver, accountName, 'name');
+                await resourceList.isSpinnerDone();
+                driver.sleep(1 * 1000);
+                let base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At "${accountName}" dashboard`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await resourceList.waitTillVisible(accountDashboardLayout.AccountDashboard_HamburgerMenu_Button, 15000);
+                await resourceList.click(accountDashboardLayout.AccountDashboard_HamburgerMenu_Button);
+                resourceList.pause(0.2 * 1000);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Hamburger Menu opened`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+                await resourceList.waitTillVisible(
+                    accountDashboardLayout.AccountDashboard_HamburgerMenu_Content,
+                    15000,
+                );
+                resourceList.pause(1 * 1000);
+                await resourceList.click(
+                    accountDashboardLayout.getSelectorOfAccountHomePageHamburgerMenuItemByText(
+                        slugDisplayNameAccountDashboard,
+                    ),
+                );
+                resourceList.pause(1 * 1000);
+                base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Clicked Wanted Slug at hamburger menu`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+
+            it('At Block performing checks', async function () {
+                resourceListBlock = new ResourceListBlock(
+                    driver,
+                    `https://app.pepperi.com/${slug_path_account_dashboard}`,
+                );
                 await resourceListBlock.isSpinnerDone();
                 addContext(this, {
                     title: `Current URL`,
@@ -803,7 +946,7 @@ export async function ResourceListTests(email: string, password: string, client:
             });
         });
 
-        describe('Teardown', async function () {
+        describe('Teardown of Account Dashboard scenario', async function () {
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.collectEndTestData(this);
@@ -814,7 +957,7 @@ export async function ResourceListTests(email: string, password: string, client:
             });
 
             it('Delete Slug', async function () {
-                const deleteSlugResponse = await slugs.deleteSlugByName(slug_path, client);
+                const deleteSlugResponse = await slugs.deleteSlugByName(slug_path_account_dashboard, client);
                 expect(deleteSlugResponse.Ok).to.equal(true);
                 expect(deleteSlugResponse.Status).to.equal(200);
                 expect(deleteSlugResponse.Body.success).to.equal(true);
@@ -826,16 +969,6 @@ export async function ResourceListTests(email: string, password: string, client:
                 expect(deleteViewResponse.Status).to.equal(200);
                 expect(deleteViewResponse.Body.Name).to.equal(viewName);
                 expect(deleteViewResponse.Body.Hidden).to.equal(true);
-            });
-
-            it('Unconfiguring Slug from Account Dashboard', async () => {
-                await accountDashboardLayout.unconfigureFromAccountSelectedSectionByProfile(
-                    driver,
-                    slugDisplayName,
-                    'Menu',
-                    'Admin',
-                    resource_name_from_account_dashborad,
-                );
             });
 
             it('Validating Deletion of Page', async function () {
@@ -1179,6 +1312,16 @@ export async function ResourceListTests(email: string, password: string, client:
                     title: `After Buttons Removal`,
                     value: 'data:image/png;base64,' + base64ImageComponent,
                 });
+            });
+
+            it('Unconfiguring Slug from Account Dashboard', async () => {
+                await accountDashboardLayout.unconfigureFromAccountSelectedSectionByProfile(
+                    driver,
+                    slugDisplayNameAccountDashboard,
+                    'Menu',
+                    'Admin',
+                    resource_name_from_account_dashborad,
+                );
             });
         });
 
