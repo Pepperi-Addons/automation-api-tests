@@ -48,7 +48,12 @@ export async function ResourceListTests(email: string, password: string, client:
     )?.Version;
 
     const accountName = 'Second Account';
+    const resource_name_sanity = 'SchemeOnlyObjectAuto';
+    const resource_name_pipeline = 'NameAgeAuto';
+    const coreResourcesSlugDisplayName = 'Auto Test';
+    const core_resources_slug_path = 'auto_test';
     const coreResourcesUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
+    const test_generic_decsription = 'for RL automated testing';
     const resource_name_from_account_dashborad = 'ReferenceAccountAuto';
     const getSchemesResponse = await udcService.getSchemes({ where: `Name=${resource_name_from_account_dashborad}` });
     let syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
@@ -68,8 +73,6 @@ export async function ResourceListTests(email: string, password: string, client:
     let accountDashboardLayout: AccountDashboardLayout;
     let previousSyncStatus: boolean | undefined;
     let random_name: string;
-    const test_generic_decsription = 'for RL automated testing';
-    let resource_name: string;
     let editorName: string;
     let editor_decsription: string;
     let view_decsription: string;
@@ -260,10 +263,114 @@ export async function ResourceListTests(email: string, password: string, client:
         });
 
         describe('UDCs Prep', async function () {
+            it(`Upsert "${resource_name_sanity}" Collection`, async function () {
+                const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                    nameOfCollection: resource_name_sanity,
+                    descriptionOfCollection: 'Created with Automation',
+                    typeOfCollection: 'contained',
+                    syncDefinitionOfCollection: { Sync: false },
+                    fieldsOfCollection: [
+                        {
+                            classType: 'Primitive',
+                            fieldName: 'name',
+                            fieldTitle: 'Name',
+                            field: {
+                                Type: 'String',
+                                Description: '',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                            },
+                        },
+                        {
+                            classType: 'Primitive',
+                            fieldName: 'age',
+                            fieldTitle: 'Age',
+                            field: {
+                                Type: 'Integer',
+                                Description: '',
+                                AddonUUID: '',
+                                ApplySystemFilter: false,
+                                Mandatory: false,
+                                Indexed: false,
+                            },
+                        },
+                    ],
+                });
+                const upsertResponse = await udcService.postScheme(bodyOfCollection);
+                console.info(`${resource_name_sanity} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+                expect(upsertResponse).to.be.an('object');
+                expect(Object.keys(upsertResponse)).to.eql([
+                    'GenericResource',
+                    'ModificationDateTime',
+                    'SyncData',
+                    'CreationDateTime',
+                    'UserDefined',
+                    'Fields',
+                    'Description',
+                    'DataSourceData',
+                    'DocumentKey',
+                    'Type',
+                    'ListView',
+                    'Hidden',
+                    'Name',
+                    'AddonUUID',
+                ]);
+                expect(upsertResponse.Name).to.equal(resource_name_sanity);
+                expect(upsertResponse.Fields).to.be.an('object');
+                expect(Object.keys(upsertResponse)).to.eql(['name', 'age']);
+            });
+
+            it(`Upsert "${resource_name_pipeline}" Collection`, async function () {
+                const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                    nameOfCollection: resource_name_pipeline,
+                    descriptionOfCollection: 'Created with Automation',
+                    typeOfCollection: 'contained',
+                    fieldsOfCollection: [
+                        {
+                            classType: 'Primitive',
+                            fieldName: 'name',
+                            fieldTitle: '',
+                            field: { Type: 'String', Mandatory: false, Indexed: false, Description: '' },
+                        },
+                        {
+                            classType: 'Primitive',
+                            fieldName: 'age',
+                            fieldTitle: '',
+                            field: { Type: 'Integer', Mandatory: false, Indexed: false, Description: '' },
+                        },
+                    ],
+                });
+                const upsertResponse = await udcService.postScheme(bodyOfCollection);
+                console.info(`${resource_name_pipeline} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+                expect(upsertResponse).to.be.an('object');
+                expect(Object.keys(upsertResponse)).to.eql([
+                    'GenericResource',
+                    'ModificationDateTime',
+                    'SyncData',
+                    'CreationDateTime',
+                    'UserDefined',
+                    'Fields',
+                    'Description',
+                    'DataSourceData',
+                    'DocumentKey',
+                    'Type',
+                    'ListView',
+                    'Hidden',
+                    'Name',
+                    'AddonUUID',
+                ]);
+                expect(upsertResponse.Name).to.equal(resource_name_pipeline);
+                expect(upsertResponse.Fields).to.be.an('object');
+                expect(Object.keys(upsertResponse)).to.eql(['name', 'age']);
+            });
+
             it(`Upsert "${resource_name_from_account_dashborad}" Collection`, async function () {
                 const bodyOfCollection = udcService.prepareDataForUdcCreation({
                     nameOfCollection: resource_name_from_account_dashborad,
                     descriptionOfCollection: 'Created with Automation',
+                    syncDefinitionOfCollection: { Sync: syncStatusOfReferenceAccount || false },
                     fieldsOfCollection: [
                         {
                             classType: 'Resource',
@@ -338,7 +445,39 @@ export async function ResourceListTests(email: string, password: string, client:
                     ],
                 });
                 const upsertResponse = await udcService.postScheme(bodyOfCollection);
-                console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+                console.info(
+                    `${resource_name_from_account_dashborad} upsertResponse: ${JSON.stringify(
+                        upsertResponse,
+                        null,
+                        2,
+                    )}`,
+                );
+                expect(upsertResponse).to.be.an('object');
+                expect(Object.keys(upsertResponse)).to.eql([
+                    'GenericResource',
+                    'ModificationDateTime',
+                    'SyncData',
+                    'CreationDateTime',
+                    'UserDefined',
+                    'Fields',
+                    'Description',
+                    'DataSourceData',
+                    'DocumentKey',
+                    'Type',
+                    'ListView',
+                    'Hidden',
+                    'Name',
+                    'AddonUUID',
+                ]);
+                expect(upsertResponse.Name).to.equal(resource_name_from_account_dashborad);
+                expect(upsertResponse.Fields).to.be.an('object');
+                expect(Object.keys(upsertResponse)).to.eql([
+                    'of_account',
+                    'best_seller_item',
+                    'max_quantity',
+                    'discount_rate',
+                    'offered_discount_location',
+                ]);
             });
         });
 
@@ -402,15 +541,14 @@ export async function ResourceListTests(email: string, password: string, client:
 
             describe('Operations (e.g Addition, Deletion)', async function () {
                 it('Neviagte to Editors, Add Editor and Delete it', async function () {
-                    resource_name = 'SchemeOnlyObjectAuto';
-                    editorName = `RL_Editors_${resource_name}_Test_${random_name}`;
-                    editor_decsription = `Editor ${resource_name} ${test_generic_decsription}`;
+                    editorName = `RL_Editors_${resource_name_sanity}_Test_${random_name}`;
+                    editor_decsription = `Editor ${resource_name_sanity} ${test_generic_decsription}`;
                     await resourceListUtils.navigateTo('Resource Views');
                     await resourceList.isSpinnerDone();
                     await resourceEditors.clickTab('Editors_Tab');
                     await resourceEditors.isSpinnerDone();
                     await resourceEditors.validateEditorsListPageIsLoaded();
-                    await resourceEditors.addToResourceList(editorName, editor_decsription, resource_name);
+                    await resourceEditors.addToResourceList(editorName, editor_decsription, resource_name_sanity);
                     await resourceEditors.verifyEditorEditPageOpen(editorName);
                     await resourceEditors.click(resourceEditors.EditPage_BackToList_Button);
                     await resourceEditors.clickTab('Editors_Tab');
@@ -445,9 +583,6 @@ export async function ResourceListTests(email: string, password: string, client:
 
             describe('Pipeline', async function () {
                 // conditions for this section: tested user must have UDC = NameAgeAuto
-                before(function () {
-                    resource_name = 'NameAgeAuto';
-                });
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
@@ -455,12 +590,12 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Add & Configure Editor', async function () {
                     // Add Editor
-                    editorName = `${resource_name} Editor _(${random_name})`;
-                    editor_decsription = `Editor of resource: ${resource_name} - ${test_generic_decsription}`;
+                    editorName = `${resource_name_pipeline} Editor _(${random_name})`;
+                    editor_decsription = `Editor of resource: ${resource_name_pipeline} - ${test_generic_decsription}`;
                     await resourceListUtils.addEditor({
                         nameOfEditor: editorName,
                         descriptionOfEditor: editor_decsription,
-                        nameOfResource: resource_name,
+                        nameOfResource: resource_name_pipeline,
                     });
                     if (await driver.isElementVisible(resourceEditors.EditPage_BackToList_Button)) {
                         await driver.click(resourceEditors.EditPage_BackToList_Button);
@@ -484,7 +619,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     );
                     let base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `In Editor "${resource_name}"`,
+                        title: `In Editor "${resource_name_pipeline}"`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                     resourceEditors.pause(0.5 * 1000);
@@ -499,12 +634,12 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Add & Configure View', async function () {
                     // Add View
-                    viewName = `${resource_name} View _(${random_name})`;
-                    view_decsription = `View of resource: ${resource_name} - ${test_generic_decsription}`;
+                    viewName = `${resource_name_pipeline} View _(${random_name})`;
+                    view_decsription = `View of resource: ${resource_name_pipeline} - ${test_generic_decsription}`;
                     await resourceListUtils.addView({
                         nameOfView: viewName,
                         descriptionOfView: view_decsription,
-                        nameOfResource: resource_name,
+                        nameOfResource: resource_name_pipeline,
                     });
                     if (await driver.isElementVisible(resourceViews.EditPage_BackToList_Button)) {
                         await driver.click(resourceViews.EditPage_BackToList_Button);
@@ -525,11 +660,11 @@ export async function ResourceListTests(email: string, password: string, client:
                     await resourceViews.customViewConfig(client, {
                         matchingEditorName: editorName,
                         viewKey: viewKey,
-                        fieldsToConfigureInView: detailsByResource[resource_name].view_fields,
+                        fieldsToConfigureInView: detailsByResource[resource_name_pipeline].view_fields,
                     });
                     let base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `In View "${resource_name}"`,
+                        title: `In View "${resource_name_pipeline}"`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                     resourceViews.pause(0.5 * 1000);
@@ -547,8 +682,11 @@ export async function ResourceListTests(email: string, password: string, client:
                     // debugger
                     await pageBuilder.validatePageBuilderIsLoaded();
                     // await pageBuilder.deleteAll();
-                    pageName = `${resource_name} Page Auto_(${random_name})`;
-                    await pageBuilder.addBlankPage(pageName, `Automation Testing Page for resource ${resource_name}`);
+                    pageName = `${resource_name_pipeline} Page Auto_(${random_name})`;
+                    await pageBuilder.addBlankPage(
+                        pageName,
+                        `Automation Testing Page for resource ${resource_name_pipeline}`,
+                    );
                     driver.sleep(0.2 * 1000);
                     pageKey = await resourceListUtils.getUUIDfromURL();
                     createdPage = await pageBuilder.getPageByUUID(pageKey, client);
@@ -559,7 +697,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     console.info('Newly generated view block key: ', viewBlockKey);
                     const selectedViews = [
                         {
-                            collectionName: resource_name,
+                            collectionName: resource_name_pipeline,
                             collectionID: '',
                             selectedViewUUID: viewKey,
                             selectedViewName: viewName,
@@ -573,7 +711,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     );
                     console.info(`viewer block: ${JSON.stringify(viewerBlock, null, 2)}`);
                     const editorBlock = new ResourceViewEditorBlock(editorBlockKey, 'DataConfigurationBlock', {
-                        collectionName: resource_name,
+                        collectionName: resource_name_pipeline,
                         editorUUID: editorKey,
                     });
                     console.info(`editor block: ${JSON.stringify(editorBlock, null, 2)}`);
@@ -596,8 +734,8 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it('Create & Map Slug', async function () {
-                    slugDisplayName = `${resource_name} ${random_name}`;
-                    slug_path = `${resource_name.toLowerCase()}_${random_name}`;
+                    slugDisplayName = `${resource_name_pipeline} ${random_name}`;
+                    slug_path = `${resource_name_pipeline.toLowerCase()}_${random_name}`;
                     await resourceListUtils.createSlug(slugDisplayName, slug_path, pageKey, email, password, client);
                 });
 
@@ -630,13 +768,13 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                     let base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `In Block "${resource_name}"`,
+                        title: `In Block "${resource_name_pipeline}"`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(0.5 * 1000);
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    const expectedViewFieldsNames = detailsByResource[resource_name].view_fields_names;
+                    const expectedViewFieldsNames = detailsByResource[resource_name_pipeline].view_fields_names;
                     expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
                     columnsTitles.forEach(async (columnTitle) => {
                         const columnTitleText = await columnTitle.getText();
@@ -720,7 +858,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            describe('Resource View from Account Dashboard', async function () {
+            describe(`Resource View (${resource_name_from_account_dashborad}) from Account Dashboard`, async function () {
                 // conditions for this section: tested user must have UDC = ReferenceAccountAuto
                 afterEach(async function () {
                     driver.sleep(500);
@@ -1040,6 +1178,145 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
+            describe(`Resource View (${resource_name_from_account_dashborad}) without account filter`, async function () {
+                // conditions for this section: tested user must have UDC = ReferenceAccountAuto
+                afterEach(async function () {
+                    driver.sleep(500);
+                    await webAppHomePage.collectEndTestData(this);
+                });
+
+                it(`${syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'} --> Navigating to ${
+                    client.BaseURL
+                }/${slugDisplayNameAccountDashboard}`, async function () {
+                    await driver.navigate(`${client.BaseURL}/${slugDisplayNameAccountDashboard}`);
+                    resourceList.pause(1 * 1000);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At ${client.BaseURL}/${slugDisplayNameAccountDashboard}`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+
+                it('At Block performing checks', async function () {
+                    resourceListBlock = new ResourceListBlock(
+                        driver,
+                        `https://app.pepperi.com/${slug_path_account_dashboard}`,
+                    );
+                    await resourceListBlock.isSpinnerDone();
+                    addContext(this, {
+                        title: `Current URL`,
+                        value: `${await driver.getCurrentUrl()}`,
+                    });
+                    let base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
+                    driver.sleep(0.5 * 1000);
+                    const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
+                    const expectedViewFieldsNames =
+                        detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                    expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
+                    columnsTitles.forEach(async (columnTitle) => {
+                        const columnTitleText = await columnTitle.getText();
+                        expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
+                    });
+                    driver.sleep(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `After Assertions`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+
+                it(`Changing Sync definition at ${resource_name_from_account_dashborad} from ${
+                    syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'
+                } to ${syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'}`, async () => {
+                    previousSyncStatus = syncStatusOfReferenceAccount;
+                    const newSyncDefinition = syncStatusOfReferenceAccount
+                        ? { Sync: false }
+                        : { Sync: true, SyncFieldLevel: false };
+                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                    console.info('newSyncDefinition: ', newSyncDefinition);
+                    const response = await udcService.postScheme({
+                        Name: resource_name_from_account_dashborad,
+                        SyncData: newSyncDefinition,
+                    });
+                    console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
+                });
+
+                it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async () => {
+                    syncStatusOfReferenceAccount
+                        ? await resourceListUtils.performManualResync(client)
+                        : await resourceListUtils.performManualSync(client);
+                });
+
+                it(`Logout Login`, async () => {
+                    await resourceListUtils.logOutLogIn(email, password);
+                    await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+                });
+
+                it('Validating Sync definition changed', async function () {
+                    const getSchemesResponse = await udcService.getSchemes({
+                        where: `Name=${resource_name_from_account_dashborad}`,
+                    });
+                    syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                    expect(syncStatusOfReferenceAccount).to.not.equal(previousSyncStatus);
+                });
+
+                it(`${syncStatusOfReferenceAccount ? 'Online Only' : 'Offline & Online'} --> Navigating to ${
+                    client.BaseURL
+                }/${slugDisplayNameAccountDashboard}`, async function () {
+                    await driver.navigate(`${client.BaseURL}/${slugDisplayNameAccountDashboard}`);
+                    resourceList.pause(1 * 1000);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At ${client.BaseURL}/${slugDisplayNameAccountDashboard}`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+
+                it('At Block performing checks', async function () {
+                    resourceListBlock = new ResourceListBlock(
+                        driver,
+                        `https://app.pepperi.com/${slug_path_account_dashboard}`,
+                    );
+                    await resourceListBlock.isSpinnerDone();
+                    addContext(this, {
+                        title: `Current URL`,
+                        value: `${await driver.getCurrentUrl()}`,
+                    });
+                    let base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
+                    driver.sleep(0.5 * 1000);
+                    const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
+                    const expectedViewFieldsNames =
+                        detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                    expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
+                    columnsTitles.forEach(async (columnTitle) => {
+                        const columnTitleText = await columnTitle.getText();
+                        expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
+                    });
+                    driver.sleep(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `After Assertions`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
+
+                it('Return to Home Page', async function () {
+                    await webAppHeader.goHome();
+                    await webAppHomePage.isSpinnerDone();
+                });
+            });
+
             describe('Teardown of Account Dashboard scenario', async function () {
                 afterEach(async function () {
                     driver.sleep(500);
@@ -1080,9 +1357,10 @@ export async function ResourceListTests(email: string, password: string, client:
                 describe(`Flow Tests for "${resource}"`, async function () {
                     // conditions for this section: tested user must have UDC = NameAgeAuto
                     before(function () {
-                        slugDisplayName = 'Auto Test';
-                        slug_path = 'auto_test';
-                        resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
+                        resourceListBlock = new ResourceListBlock(
+                            driver,
+                            `https://app.pepperi.com/${core_resources_slug_path}`,
+                        );
                     });
 
                     afterEach(async function () {
@@ -1184,7 +1462,7 @@ export async function ResourceListTests(email: string, password: string, client:
 
                     it('Map the Slug with the Page', async function () {
                         const mapPage = await resourceListUtils.changePageAtMappedSlugs(
-                            [{ slug_path: slug_path, pageUUID: pageKey }],
+                            [{ slug_path: core_resources_slug_path, pageUUID: pageKey }],
                             client,
                         );
                         console.info(`Map Page To Slug: ${JSON.stringify(mapPage, null, 2)}`);
@@ -1196,7 +1474,7 @@ export async function ResourceListTests(email: string, password: string, client:
 
                     it('Block Tests', async function () {
                         await webAppHomePage.isSpinnerDone();
-                        await webAppHomePage.clickOnBtn(slugDisplayName);
+                        await webAppHomePage.clickOnBtn(coreResourcesSlugDisplayName);
                         await resourceListBlock.isSpinnerDone();
                         driver.sleep(2 * 1000);
                         let base64ImageComponent = await driver.saveScreenshots();
@@ -1397,12 +1675,15 @@ export async function ResourceListTests(email: string, password: string, client:
                     await webAppHeader.openSettings();
                     await webAppHomePage.isSpinnerDone();
                     driver.sleep(0.5 * 1000);
-                    await resourceListUtils.removeHomePageButtonsLeftoversByProfile(`${resource_name} `, 'Rep');
+                    await resourceListUtils.removeHomePageButtonsLeftoversByProfile(
+                        `${resource_name_pipeline} `,
+                        'Rep',
+                    );
                     await webAppHomePage.manualResync(client);
                     const leftoversButtonsOnHomeScreen =
                         await webAppHomePage.buttonsApearingOnHomeScreenByPartialText.bind(this)(
                             driver,
-                            `${resource_name} `,
+                            `${resource_name_pipeline} `,
                         );
                     expect(leftoversButtonsOnHomeScreen).to.equal(false);
                 });
