@@ -215,6 +215,7 @@ export async function ResourceListTests(email: string, password: string, client:
             ],
             view_fields: [
                 { fieldName: 'of_account', dataViewType: 'TextBox', mandatory: true, readonly: true },
+                { fieldName: 'of_account.Name', dataViewType: 'TextBox', mandatory: true, readonly: true },
                 { fieldName: 'best_seller_item', dataViewType: 'TextBox', mandatory: true, readonly: true },
                 { fieldName: 'max_quantity', dataViewType: 'NumberInteger', mandatory: true, readonly: true },
                 { fieldName: 'discount_rate', dataViewType: 'NumberReal', mandatory: true, readonly: true },

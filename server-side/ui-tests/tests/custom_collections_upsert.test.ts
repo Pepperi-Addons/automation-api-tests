@@ -31,7 +31,7 @@ export async function CustomCollectionsUpsert(
         describe('API Creation of UDCs', () => {
             /********************  Collections Creation  ********************/
 
-            udcContainedArray == 'true' &&
+            (udcContainedArray == 'true' || udcContainedArray == undefined) &&
                 it('0. Creating UDC of "Scheme Only" with API', async () => {
                     // Collection:  ====>   SchemeOnlyObjectAuto   <====        //
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -76,7 +76,7 @@ export async function CustomCollectionsUpsert(
                     expect(upsertResponse.Error).to.eql({});
                 });
 
-            udcNameAge == 'true' &&
+            (udcNameAge == 'true' || udcNameAge == undefined) &&
                 it('1. Creating a UDC of "Name Age" with API', async () => {
                     // Collection:  ====>   NameAgeAuto   <====        //
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -101,7 +101,7 @@ export async function CustomCollectionsUpsert(
                     console.info(`upsertCollecionResponse: ${JSON.stringify(upsertCollecionResponse, null, 2)}`);
                 });
 
-            udcIndexedNameAge == 'true' &&
+            (udcIndexedNameAge == 'true' || udcIndexedNameAge == undefined) &&
                 it('2. Creating a UDC of "Indexed Name Age" with API', async () => {
                     // Collection:  ====>   IndexedNameAgeAuto   <====        //
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -127,7 +127,7 @@ export async function CustomCollectionsUpsert(
                     console.info(`upsertCollecionResponse: ${JSON.stringify(upsertCollecionResponse, null, 2)}`);
                 });
 
-            udcIndexedFields == 'true' &&
+            (udcIndexedFields == 'true' || udcIndexedFields == undefined) &&
                 it('3. Creating a UDC of "Indexed Fields" with API', async () => {
                     // Collection:  ====>   IndexedFieldsAuto   <====        //
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -164,7 +164,7 @@ export async function CustomCollectionsUpsert(
                     console.info(`upsertCollecionResponse: ${JSON.stringify(upsertCollecionResponse, null, 2)}`);
                 });
 
-            udcArrays == 'true' &&
+            (udcArrays == 'true' || udcArrays == undefined) &&
                 it('4. Creating UDC of "Arrays of Primiteve Types Fields" with API', async () => {
                     //  Strings Array  |  Integers Array  |  Doubles Array  //
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -220,7 +220,7 @@ export async function CustomCollectionsUpsert(
                     expect(upsertResponse.Error).to.eql({});
                 });
 
-            udcReferenceAccount == 'true' &&
+            (udcReferenceAccount == 'true' || udcReferenceAccount == undefined) &&
                 it('5. Creating a UDC of "Reference Account" with API', async () => {
                     // Collection:  ====>   ReferenceAccountAuto   <====        //
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -306,7 +306,7 @@ export async function CustomCollectionsUpsert(
                     expect(upsertResponse.Error).to.eql({});
                 });
 
-            udcAccountFilter == 'true' &&
+            (udcAccountFilter == 'true' || udcAccountFilter == undefined) &&
                 it('6. Creating a UDC of "Account Filter Reference Account" with API', async () => {
                     // Collection:  ====>   AccountFilterReferenceAccountAuto   <====        //
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -390,7 +390,7 @@ export async function CustomCollectionsUpsert(
                     console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
                 });
 
-            udcFiltersRefAccount == 'true' &&
+            (udcFiltersRefAccount == 'true' || udcFiltersRefAccount == undefined) &&
                 it('7. Creating a UDC of "Filters Account Ref" with API', async () => {
                     // Collection:  ====>   FiltersAccRefAuto   <====        //
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -450,7 +450,7 @@ export async function CustomCollectionsUpsert(
                     expect(upsertCollecionResponse.Error).to.eql({});
                 });
 
-            udcBigDataRefAccount == 'true' &&
+            (udcBigDataRefAccount == 'true' || udcBigDataRefAccount == undefined) &&
                 it('8. Creating a UDC of "Big Data Reference Account" with API', async () => {
                     // Collection:  ====>   BigDataReferenceAccountAuto   <====        //
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -533,7 +533,7 @@ export async function CustomCollectionsUpsert(
                     console.info(`upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
                 });
 
-            udcContainedArray == 'true' &&
+            (udcContainedArray == 'true' || udcContainedArray == undefined) &&
                 it('9. Creating UDC of "Contained Array" with API', async () => {
                     // Collection:  ====>   ContainedArrayAuto   <====        //
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
@@ -583,7 +583,7 @@ export async function CustomCollectionsUpsert(
             /********************  Values Insertions To Collections  ********************/
 
             // Collection: ==========>   NameAgeAuto   <==========   //
-            udcNameAge == 'true' &&
+            (udcNameAge == 'true' || udcNameAge == undefined) &&
                 it('1. Adding Values to Collection: "NameAgeAuto"', async () => {
                     const dataNameAgeAuto = [
                         { name: 'Shoshi', age: 20 },
@@ -628,7 +628,7 @@ export async function CustomCollectionsUpsert(
                 });
 
             // Collection: ==========>   IndexedNameAgeAuto   <==========   //
-            udcIndexedNameAge == 'true' &&
+            (udcIndexedNameAge == 'true' || udcIndexedNameAge == undefined) &&
                 it('2. Adding Values to Collection: "IndexedNameAgeAuto"', async () => {
                     const dataIndexedNameAgeAuto = [
                         { name: 'Shoshi', age: 47 },
@@ -658,7 +658,7 @@ export async function CustomCollectionsUpsert(
                 });
 
             // Collection: ==========>   IndexedFieldsAuto   <==========   //
-            udcIndexedFields == 'true' &&
+            (udcIndexedFields == 'true' || udcIndexedFields == undefined) &&
                 it('3. Adding Values to Collection: "IndexedFieldsAuto"', async () => {
                     const dataIndexedFieldsAuto = [
                         { item: 'Aa', price: 10.5, quantity: 80, instock: true },
@@ -681,7 +681,7 @@ export async function CustomCollectionsUpsert(
                 });
 
             // Collection: ==========>   ArraysOfPrimitivesAuto   <==========   //
-            udcArrays == 'true' &&
+            (udcArrays == 'true' || udcArrays == undefined) &&
                 it('4. Adding Values to Collection: "ArraysOfPrimitivesAuto"', async () => {
                     const dataReferenceAccountAuto = [
                         {
@@ -714,7 +714,7 @@ export async function CustomCollectionsUpsert(
                 });
 
             // Collection: ==========>   ReferenceAccountAuto   <==========   //
-            udcReferenceAccount == 'true' &&
+            (udcReferenceAccount == 'true' || udcReferenceAccount == undefined) &&
                 it('5. Adding Values to Collection: "ReferenceAccountAuto"', async () => {
                     const dataReferenceAccountAuto = [
                         { of_account: acc03UUID, best_seller_item: 'Daisy', max_quantity: 1500 },
@@ -776,7 +776,7 @@ export async function CustomCollectionsUpsert(
                 });
 
             // Collection: ==========>   AccountFilterReferenceAccountAuto   <==========   //
-            udcAccountFilter == 'true' &&
+            (udcAccountFilter == 'true' || udcAccountFilter == undefined) &&
                 it('6. Adding Values to Collection: "AccountFilterReferenceAccountAuto"', async () => {
                     //
                     const dataAccountFilterReferenceAccountAuto = [
@@ -842,7 +842,7 @@ export async function CustomCollectionsUpsert(
                 });
 
             // Collection: ==========>   FiltersAccRefAuto   <==========   //
-            udcFiltersRefAccount == 'true' &&
+            (udcFiltersRefAccount == 'true' || udcFiltersRefAccount == undefined) &&
                 it('7. Adding Values to Collection: "FiltersAccRefAuto"', async () => {
                     const dataFiltersAccRefAuto = [
                         { from_account: acc02UUID, item: 'Abagada', price: 10.5, quantity: 80, instock: true },
@@ -867,7 +867,7 @@ export async function CustomCollectionsUpsert(
                 });
 
             // Collection: ==========>   BigDataReferenceAccountAuto   <==========   //
-            udcBigDataRefAccount == 'true' &&
+            (udcBigDataRefAccount == 'true' || udcBigDataRefAccount == undefined) &&
                 it('8. Adding Values to Collection: "BigDataReferenceAccountAuto"', async () => {
                     const dataBigDataReferenceAccountAuto = [
                         { in_account: acc03UUID, best_seller_item: 'Cart', max_quantity: 1500 },
@@ -932,7 +932,7 @@ export async function CustomCollectionsUpsert(
                 });
 
             // Collection: ==========>   ContainedArrayAuto   <==========   //
-            udcContainedArray == 'true' &&
+            (udcContainedArray == 'true' || udcContainedArray == undefined) &&
                 it('9. Adding Values to Collection: "ContainedArrayAuto"', async () => {
                     const dataContainedArrayAuto = [
                         {
