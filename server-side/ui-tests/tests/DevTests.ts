@@ -161,7 +161,7 @@ export class DevTest {
                     this.addonName
                 } Unavailable As We Coludn't Install It`;
                 await this.unavailableVersion();
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 throw new Error(errorString);
             }
         }
@@ -450,7 +450,7 @@ export class DevTest {
             const errorString = `Error: Couldn't Get Latest Available Versions Of ${this.addonName}: ${
                 (error as any).message
             }`;
-            await this.reportToTeamsMessage(errorString);
+            await this.reportToTeamsException(errorString);
             throw new Error(errorString);
         }
         if (
@@ -460,7 +460,7 @@ export class DevTest {
         ) {
             const errorString = `Error: Latest Avalibale Versions Of ${this.addonName} Across Envs Are Different: Prod - ${latestVersionOfTestedAddonProd}, Staging - ${latestVersionOfTestedAddonSb}, EU - ${latestVersionOfTestedAddonEu}`;
             debugger;
-            await this.reportToTeamsMessage(errorString);
+            await this.reportToTeamsException(errorString);
             await this.unavailableVersion();
             throw new Error(errorString);
         } else {
@@ -579,7 +579,7 @@ export class DevTest {
                 whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
                 whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
                 const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 throw new Error(`${errorString}`);
             }
             if (
@@ -591,7 +591,7 @@ export class DevTest {
                 whichEnvs += devTestResponseProd.Body.URI === undefined ? 'PRDO,' : '';
                 whichEnvs += devTestResponseSb.Body.URI === undefined ? 'SB' : '';
                 const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 throw new Error(`${errorString}`);
             }
             console.log(
@@ -636,7 +636,7 @@ export class DevTest {
                 ) {
                     errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -661,7 +661,7 @@ export class DevTest {
                 if (!devTestResultsSb.AuditInfo.ResultObject) {
                     errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -683,7 +683,7 @@ export class DevTest {
                     testResultArraySB,
                 )}, On: ${currentTestName} Test`;
                 debugger;
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -731,7 +731,7 @@ export class DevTest {
                         devTestResultsSb.AuditInfo,
                     )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
-                await this.reportToTeamsMessage(errorString);
+                await this.reportToTeamsException(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -856,13 +856,13 @@ export class DevTest {
             await this.unavailableVersion();
             this.devPassingEnvs = devPassingEnvs2;
             this.devFailedEnvs = devFailedEnvs2;
-            await this.reportToTeams(jenkinsLink);
+            await this.reportToTeamsTestStatus(jenkinsLink);
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
             return false;
         } else if (!this.doWeHaveSuchAppTest(this.addonName)) {
             this.devPassingEnvs = devPassingEnvs2;
             this.devFailedEnvs = devFailedEnvs2;
-            await this.reportToTeams(jenkinsLink);
+            await this.reportToTeamsTestStatus(jenkinsLink);
         }
     }
 
@@ -921,8 +921,8 @@ export class DevTest {
         return this.prodUser;
     }
 
-    async reportToTeams(jenkinsLink) {
-        await this.reportBuildEnded();
+    async reportToTeamsTestStatus(jenkinsLink) {
+        await this.reportBuildEndedToQaChannle();
         const users = await this.resolveUserPerTest2();
         const userMails = users.map((user) => user.email);
         const stringUsers = userMails.join(', ');
@@ -1134,9 +1134,9 @@ export class DevTest {
         return testResponse;
     }
 
-    async reportToTeamsMessage(error) {
+    async reportToTeamsException(error) {
         debugger;
-        await this.reportBuildEnded();
+        await this.reportBuildEndedToQaChannle();
         const message = `${error}`;
         const teamsURL = await this.handleTeamsURL(this.addonName);
         const bodyToSend = {
@@ -1180,7 +1180,7 @@ export class DevTest {
         // }
     }
 
-    async reportBuildEnded() {
+    async reportBuildEndedToQaChannle() {
         const message = `${this.addonName} - (${this.addonUUID}), Version:${this.addonVersion}, Ended Testing`;
         const teamsURL = await this.handleTeamsURL('QA');
         const bodyToSend = {
