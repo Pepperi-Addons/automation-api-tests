@@ -2067,6 +2067,7 @@ export default class GeneralService {
 
     async handleTeamsURL(addonName, email, pass) {
         //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
+        // handle teams URL for reporting of cicd - evgeny: add new addons here
         switch (addonName) {
             case 'QA':
                 return await this.getSecretfromKMS(email, pass, 'QAWebHook');

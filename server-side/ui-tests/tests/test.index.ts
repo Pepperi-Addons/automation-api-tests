@@ -2878,7 +2878,12 @@ export async function reportToTeams(
             body: JSON.stringify(bodyToSend),
         },
     );
-    if (monitoringResponse.Ok !== true) {
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await generalService.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
         // throw new Error(
@@ -2926,7 +2931,12 @@ export async function genericReportToTeams(addonName, env, uuid, message, user, 
             body: JSON.stringify(bodyToSend),
         },
     );
-    if (monitoringResponse.Ok !== true) {
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await generalService.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
         // throw new Error(
@@ -3016,7 +3026,12 @@ export async function reportToTeamsNeptune(
             body: JSON.stringify(bodyToSend),
         },
     );
-    if (monitoringResponse.Ok !== true) {
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await generalService.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
         // throw new Error(
@@ -3065,7 +3080,12 @@ export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, e
         },
         body: JSON.stringify(bodyToSend),
     });
-    if (monitoringResponse.Ok !== true) {
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
         // throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
@@ -3103,8 +3123,13 @@ export async function reportToTeamsMessageNeptune(addonName, addonUUID, addonVer
         },
         body: JSON.stringify(bodyToSend),
     });
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
     debugger;
-    if (monitoringResponse.Ok !== true) {
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
         // throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
@@ -3138,7 +3163,12 @@ export async function reportBuildStarted(addonName, addonUUID, addonVersion, ser
         },
         body: JSON.stringify(bodyToSend),
     });
-    if (monitoringResponse.Ok !== true) {
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
         // throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
@@ -3172,7 +3202,12 @@ export async function reportBuildEnded(addonName, addonUUID, addonVersion, servi
         },
         body: JSON.stringify(bodyToSend),
     });
-    if (monitoringResponse.Ok !== true) {
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
         const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
         await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
         // throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);

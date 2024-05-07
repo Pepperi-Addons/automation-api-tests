@@ -989,7 +989,12 @@ export class DevTest {
                 body: JSON.stringify(bodyToSend),
             },
         );
-        if (monitoringResponse.Ok !== true) {
+        console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+        if (
+            monitoringResponse.Ok !== true ||
+            monitoringResponse.Status !== 200 ||
+            Object.keys(monitoringResponse.Error).length !== 0
+        ) {
             const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
             await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
                 method: 'POST',
@@ -1171,8 +1176,13 @@ export class DevTest {
                 body: JSON.stringify(bodyToSend),
             },
         );
+        console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
         debugger;
-        if (monitoringResponse.Ok !== true) {
+        if (
+            monitoringResponse.Ok !== true ||
+            monitoringResponse.Status !== 200 ||
+            Object.keys(monitoringResponse.Error).length !== 0
+        ) {
             const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
             await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
                 method: 'POST',
@@ -1216,7 +1226,12 @@ export class DevTest {
                 body: JSON.stringify(bodyToSend),
             },
         );
-        if (monitoringResponse.Ok !== true) {
+        console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+        if (
+            monitoringResponse.Ok !== true ||
+            monitoringResponse.Status !== 200 ||
+            Object.keys(monitoringResponse.Error).length !== 0
+        ) {
             const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
             await this.adminBaseUserGeneralService.fetchStatus(teamsURL, {
                 method: 'POST',
