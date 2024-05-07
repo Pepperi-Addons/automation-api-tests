@@ -2450,89 +2450,6 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     }
 })();
 
-export async function handleTeamsURL(addonName, service, email, pass) {
-    //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
-    switch (addonName) {
-        case 'QA':
-            return await service.getSecretfromKMS(email, pass, 'QAWebHook');
-        case 'ASSETS_MANAGER_CLIENT':
-        case 'ASSETS MANAGER':
-        case 'ASSETS-MANAGER':
-        case 'ASSETS':
-            return await service.getSecretfromKMS(email, pass, 'AssetsManagerWebHook');
-        case 'SYNC-SCHEDULER':
-        case 'SYNC SCHEDULER':
-            return await service.getSecretfromKMS(email, pass, 'SyncSchedulerWebHook');
-        case 'SUPPORT-TOOLS':
-        case 'SUPPORT TOOLS':
-            return await service.getSecretfromKMS(email, pass, 'SupportToolsWebHook');
-        case 'KMS':
-            return await service.getSecretfromKMS(email, pass, 'KMSTeamsWebHook');
-        case 'PAGE-BUILDER':
-        case 'PAGE BUILDER':
-        case 'PAGE':
-        case 'PAGE-BUILDER':
-            return await service.getSecretfromKMS(email, pass, 'PageBuilderTeamsWebHook');
-        case 'PAPI-DATA-INDEX':
-        case 'PAPI INDEX': //evgeny todo
-            return await service.getSecretfromKMS(email, pass, 'PapiDataIndexWebHook');
-        case 'JOURNEY':
-        case 'JOURNEY-TRACKER':
-            return await service.getSecretfromKMS(email, pass, 'JourneyTeamsWebHook');
-        case 'SYNC':
-            return await service.getSecretfromKMS(email, pass, 'SyncTeamsWebHook');
-        case 'ADAL':
-            return await service.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
-        case 'NEBULA':
-        case 'FEBULA':
-            return await service.getSecretfromKMS(email, pass, 'NebulaTeamsWebHook');
-        case 'DIMX':
-            return await service.getSecretfromKMS(email, pass, 'DIMXTeamsWebHook');
-        case 'DATA INDEX':
-        case 'DATA-INDEX':
-            return await service.getSecretfromKMS(email, pass, 'DataIndexTeamsWebHook');
-        case 'PFS':
-        case 'PEPPERI-FILE-STORAGE':
-            return await service.getSecretfromKMS(email, pass, 'PFSTeamsWebHook');
-        case 'PNS':
-            return await service.getSecretfromKMS(email, pass, 'PNSTeamsWebHook');
-        case 'USER-DEFINED-COLLECTIONS':
-        case 'UDC':
-            return await service.getSecretfromKMS(email, pass, 'UDCTeamsWebHook');
-        case 'SCHEDULER':
-            return await service.getSecretfromKMS(email, pass, 'SchedulerTeamsWebHook');
-        case 'CPI-DATA':
-        case 'CPI DATA':
-        case 'ADDONS-CPI-DATA':
-            return await service.getSecretfromKMS(email, pass, 'CPIDataTeamsWebHook');
-        case 'CORE':
-        case 'CORE-GENERIC-RESOURCES':
-            return await service.getSecretfromKMS(email, pass, 'CORETeamsWebHook');
-        case 'RESOURCE-LIST':
-        case 'RESOURCE LIST':
-            return await service.getSecretfromKMS(email, pass, 'ResourceListTeamsWebHook');
-        case 'UDB':
-        case 'USER DEFINED BLOCKS':
-            return await service.getSecretfromKMS(email, pass, 'UDBTeamsWebHook');
-        case 'CONFIGURATIONS':
-            return await service.getSecretfromKMS(email, pass, 'CONFIGURATIONSTeamsWebHook');
-        case 'RELATED-ITEMS':
-            return await service.getSecretfromKMS(email, pass, 'RelatedItemsTeamsWebHook');
-        case 'GENERIC-RESOURCE':
-        case 'GENERIC RESOURCE':
-            return await service.getSecretfromKMS(email, pass, 'GenericResourceTeamsWebHook');
-        case 'NODE':
-        case 'CPI-NODE':
-            return await service.getSecretfromKMS(email, pass, 'CPINodeTeamsWebHook');
-        case 'CRAWLER':
-            return await service.getSecretfromKMS(email, pass, 'CRAWLERTeamsWebHook');
-        case 'ASYNCADDON':
-            return await service.getSecretfromKMS(email, pass, 'ASYNCTeamsWebHook');
-        case 'TRANSLATION':
-            return await service.getSecretfromKMS(email, pass, 'TRANSLATIONTeamsWebHook');
-    }
-}
-
 export async function newUserDependenciesTests(generalService: GeneralService, varPass: string) {
     const baseAddonVersionsInstallationResponseObj = await generalService.baseAddonVersionsInstallation(
         varPass,
@@ -2939,7 +2856,7 @@ export async function reportToTeams(
                 message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console<br><br>Failed Tests:<br>ARE TOO MANY - CANNOT SEND SO MUCH DATA VIA TEAMS PLEASE CHECK JENKINS!`;
         }
     }
-    const teamsURL = await handleTeamsURL(addonName, generalService, email, pass);
+    const teamsURL = await generalService.handleTeamsURL(addonName, email, pass);
     const bodyToSend = {
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
@@ -2987,7 +2904,7 @@ export async function reportToTeams(
 }
 
 export async function genericReportToTeams(addonName, env, uuid, message, user, version, generalService) {
-    const teamsURL = await handleTeamsURL(addonName, generalService, email, pass);
+    const teamsURL = await generalService.handleTeamsURL(addonName, email, pass);
     const bodyToSend = {
         Name: `Nightly Regression Failure: ${addonName}, ${version}`,
         Description: `${env} user: ${user}`,
@@ -3077,7 +2994,7 @@ export async function reportToTeamsNeptune(
         }  ${failingEnvs.length === 0 ? '' : 'Failed On: ' + failingEnvs.join(', ')}`;
         message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
     }
-    const teamsURL = await handleTeamsURL(addonName, generalService, email, pass);
+    const teamsURL = await generalService.handleTeamsURL(addonName, email, pass);
     const bodyToSend = {
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
@@ -3127,7 +3044,7 @@ export async function reportToTeamsNeptune(
 export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, error, service: GeneralService) {
     await reportBuildEnded(addonName, addonUUID, addonVersion, service);
     const message = `${error}`;
-    const teamsURL = await handleTeamsURL(addonName, service, email, pass);
+    const teamsURL = await service.handleTeamsURL(addonName, email, pass);
     const bodyToSend = {
         Name: `${addonName} Approvment Tests Status: Failed Due CI/CD Process Exception`,
         Description: `${addonName} - (${addonUUID}), Version:${addonVersion}, Failed!`,
@@ -3164,7 +3081,7 @@ export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, e
 export async function reportToTeamsMessageNeptune(addonName, addonUUID, addonVersion, error, service: GeneralService) {
     await reportBuildEnded(addonName, addonUUID, addonVersion, service);
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Failed On: ${error}`;
-    const teamsURL = await handleTeamsURL(addonName, service, email, pass);
+    const teamsURL = await service.handleTeamsURL(addonName, email, pass);
     const bodyToSend = {
         Name: `${addonName} - NEPTUNE Approvment Tests Status: Failed Due CI/CD Process Exception`,
         Description: message,
@@ -3202,7 +3119,7 @@ export async function reportToTeamsMessageNeptune(addonName, addonUUID, addonVer
 
 export async function reportBuildStarted(addonName, addonUUID, addonVersion, service: GeneralService) {
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Started Building`;
-    const teamsURL = await handleTeamsURL('QA', service, email, pass);
+    const teamsURL = await service.handleTeamsURL('QA', email, pass);
     const bodyToSend = {
         Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
         Description: message,
@@ -3236,7 +3153,7 @@ export async function reportBuildStarted(addonName, addonUUID, addonVersion, ser
 
 export async function reportBuildEnded(addonName, addonUUID, addonVersion, service: GeneralService) {
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Ended Testing`;
-    const teamsURL = await handleTeamsURL('QA', service, email, pass);
+    const teamsURL = await service.handleTeamsURL('QA', email, pass);
     const bodyToSend = {
         Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
         Description: message,

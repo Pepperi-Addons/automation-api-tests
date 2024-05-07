@@ -2065,6 +2065,89 @@ export default class GeneralService {
         // }
     }
 
+    async handleTeamsURL(addonName, email, pass) {
+        //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
+        switch (addonName) {
+            case 'QA':
+                return await this.getSecretfromKMS(email, pass, 'QAWebHook');
+            case 'ASSETS_MANAGER_CLIENT':
+            case 'ASSETS MANAGER':
+            case 'ASSETS-MANAGER':
+            case 'ASSETS':
+                return await this.getSecretfromKMS(email, pass, 'AssetsManagerWebHook');
+            case 'SYNC-SCHEDULER':
+            case 'SYNC SCHEDULER':
+                return await this.getSecretfromKMS(email, pass, 'SyncSchedulerWebHook');
+            case 'SUPPORT-TOOLS':
+            case 'SUPPORT TOOLS':
+                return await this.getSecretfromKMS(email, pass, 'SupportToolsWebHook');
+            case 'KMS':
+                return await this.getSecretfromKMS(email, pass, 'KMSTeamsWebHook');
+            case 'PAGE-BUILDER':
+            case 'PAGE BUILDER':
+            case 'PAGE':
+            case 'PAGE-BUILDER':
+                return await this.getSecretfromKMS(email, pass, 'PageBuilderTeamsWebHook');
+            case 'PAPI-DATA-INDEX':
+            case 'PAPI INDEX': //evgeny todo
+                return await this.getSecretfromKMS(email, pass, 'PapiDataIndexWebHook');
+            case 'JOURNEY':
+            case 'JOURNEY-TRACKER':
+                return await this.getSecretfromKMS(email, pass, 'JourneyTeamsWebHook');
+            case 'SYNC':
+                return await this.getSecretfromKMS(email, pass, 'SyncTeamsWebHook');
+            case 'ADAL':
+                return await this.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
+            case 'NEBULA':
+            case 'FEBULA':
+                return await this.getSecretfromKMS(email, pass, 'NebulaTeamsWebHook');
+            case 'DIMX':
+                return await this.getSecretfromKMS(email, pass, 'DIMXTeamsWebHook');
+            case 'DATA INDEX':
+            case 'DATA-INDEX':
+                return await this.getSecretfromKMS(email, pass, 'DataIndexTeamsWebHook');
+            case 'PFS':
+            case 'PEPPERI-FILE-STORAGE':
+                return await this.getSecretfromKMS(email, pass, 'PFSTeamsWebHook');
+            case 'PNS':
+                return await this.getSecretfromKMS(email, pass, 'PNSTeamsWebHook');
+            case 'USER-DEFINED-COLLECTIONS':
+            case 'UDC':
+                return await this.getSecretfromKMS(email, pass, 'UDCTeamsWebHook');
+            case 'SCHEDULER':
+                return await this.getSecretfromKMS(email, pass, 'SchedulerTeamsWebHook');
+            case 'CPI-DATA':
+            case 'CPI DATA':
+            case 'ADDONS-CPI-DATA':
+                return await this.getSecretfromKMS(email, pass, 'CPIDataTeamsWebHook');
+            case 'CORE':
+            case 'CORE-GENERIC-RESOURCES':
+                return await this.getSecretfromKMS(email, pass, 'CORETeamsWebHook');
+            case 'RESOURCE-LIST':
+            case 'RESOURCE LIST':
+                return await this.getSecretfromKMS(email, pass, 'ResourceListTeamsWebHook');
+            case 'UDB':
+            case 'USER DEFINED BLOCKS':
+                return await this.getSecretfromKMS(email, pass, 'UDBTeamsWebHook');
+            case 'CONFIGURATIONS':
+                return await this.getSecretfromKMS(email, pass, 'CONFIGURATIONSTeamsWebHook');
+            case 'RELATED-ITEMS':
+                return await this.getSecretfromKMS(email, pass, 'RelatedItemsTeamsWebHook');
+            case 'GENERIC-RESOURCE':
+            case 'GENERIC RESOURCE':
+                return await this.getSecretfromKMS(email, pass, 'GenericResourceTeamsWebHook');
+            case 'NODE':
+            case 'CPI-NODE':
+                return await this.getSecretfromKMS(email, pass, 'CPINodeTeamsWebHook');
+            case 'CRAWLER':
+                return await this.getSecretfromKMS(email, pass, 'CRAWLERTeamsWebHook');
+            case 'ASYNCADDON':
+                return await this.getSecretfromKMS(email, pass, 'ASYNCTeamsWebHook');
+            case 'TRANSLATION':
+                return await this.getSecretfromKMS(email, pass, 'TRANSLATIONTeamsWebHook');
+        }
+    }
+
     extractSchema(schema, key: string, filterAttributes: FilterAttributes) {
         outerLoop: for (let j = 0; j < schema.length; j++) {
             const entery = schema[j];
