@@ -34,6 +34,7 @@ export async function ResourceListTests(email: string, password: string, client:
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%'], // to prevent open sync from being installed (2.0.%)
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+        'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // current phased version 0.5.10 | dependency > 0.5.7
         // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%'],
         // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
