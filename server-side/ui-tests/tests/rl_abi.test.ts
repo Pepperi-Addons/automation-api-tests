@@ -47,6 +47,31 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         'Name',
         'AddonUUID',
     ];
+    const udcsForTest = {
+        ReferenceAccountAuto: {
+            of_account: 'Resource', // with indexed fields: Email, Name, UUID
+            best_seller_item: 'String', // with optional values: ['A', 'B', 'C', 'D', 'Hair dryer', 'Roller', 'Cart', 'Mask', 'Shirt', '']
+            max_quantity: 'Integer',
+            discount_rate: 'Double',
+            offered_discount_location: 'String Array', // with optional values: ['store', 'on-line', 'rep']
+        },
+        FiltersAccRefAuto: {
+            from_account: 'Resource', // with indexed fields: Email, Name, UUID
+            item: 'String',
+            price: 'Double',
+            quantity: 'Integer',
+            instock: 'Bool',
+        },
+        ArraysOfPrimitivesAuto: {
+            names: 'String Array',
+            numbers: 'Integer Array',
+            reals: 'Double Array',
+        },
+        ContainedArrayAuto: {
+            title: 'String',
+            contained_scheme_only_name_age: 'ContainedResource Array',
+        },
+    };
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -180,26 +205,39 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expect(numOfListingsIn_ContainedArray).to.be.greaterThan(0);
         });
 
-        it(`Setting Collection's Sync Definition to False`, async () => {
-            const collectionsNames = [
-                'ReferenceAccountAuto',
-                'FiltersAccRefAuto',
-                'ArraysOfPrimitivesAuto',
-                'ContainedArrayAuto',
-            ];
+        it(`Setting Collection's Sync Definition to False & Validating Collection's Structure + Fields`, async () => {
+            const collectionsNames = Object.keys(udcsForTest);
             const postSchemeResponses = await Promise.all(
                 collectionsNames.map(async (collectionName) => {
-                    return await udcService.postScheme({ Name: collectionName, SyncData: { Sync: false } });
+                    return await udcService.postScheme({ Name: collectionName, SyncData: { Sync: true } });
                 }),
             );
             postSchemeResponses.forEach((response, index) => {
+                const collectionName = collectionsNames[index];
+                const fieldsNames = Object.keys(udcsForTest[collectionName]);
                 expect(response).to.not.be('undefined');
                 expect(response).to.be.an('object');
                 Object.keys(response).forEach((collectionProperty) => {
                     expect(collectionProperty).to.be.oneOf(collectionProperties);
                 });
-                expect(response.Name).to.equal(collectionsNames[index]);
+                expect(response).to.haveOwnProperty('Name');
+                expect(response).to.haveOwnProperty('Fields');
+                expect(response).to.haveOwnProperty('SyncData');
+                expect(response.Name).to.equal(collectionName);
                 expect(response.Fields).to.be.an('object');
+                if (response.Fields != undefined) {
+                    expect(Object.keys(response.Fields)).to.be.greaterThan(0).and.to.eql(fieldsNames);
+                    fieldsNames.forEach((fieldName) => {
+                        const expectedFieldType = udcsForTest[collectionName][fieldName];
+                        if (response.Fields != undefined) {
+                            expect(response.Fields).to.haveOwnProperty(fieldName);
+                            const field = response.Fields[fieldName];
+                            expect(field).to.be.an('object').and.haveOwnProperty('Type');
+                            expect(field.Type).to.equal(expectedFieldType);
+                        }
+                    });
+                }
+                expect(response.SyncData).to.eql(JSON.stringify({ Sync: false, SyncFieldLevel: false }));
             });
         });
 

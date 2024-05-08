@@ -325,7 +325,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
                 expect(upsertResponse.Name).to.equal(resource_name_sanity);
                 expect(upsertResponse.Fields).to.be.an('object');
-                expect(Object.keys(upsertResponse)).to.eql(['name', 'age']);
+                if (upsertResponse.Fields) expect(Object.keys(upsertResponse.Fields)).to.eql(['name', 'age']);
             });
 
             it(`Upsert "${resource_name_pipeline}" Collection`, async function () {
@@ -356,7 +356,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
                 expect(upsertResponse.Name).to.equal(resource_name_pipeline);
                 expect(upsertResponse.Fields).to.be.an('object');
-                expect(Object.keys(upsertResponse)).to.eql(['name', 'age']);
+                if (upsertResponse.Fields) expect(Object.keys(upsertResponse.Fields)).to.eql(['name', 'age']);
             });
 
             it(`Upsert "${resource_name_from_account_dashborad}" Collection`, async function () {
@@ -451,13 +451,14 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
                 expect(upsertResponse.Name).to.equal(resource_name_from_account_dashborad);
                 expect(upsertResponse.Fields).to.be.an('object');
-                expect(Object.keys(upsertResponse)).to.eql([
-                    'of_account',
-                    'best_seller_item',
-                    'max_quantity',
-                    'discount_rate',
-                    'offered_discount_location',
-                ]);
+                if (upsertResponse.Fields)
+                    expect(Object.keys(upsertResponse.Fields)).to.eql([
+                        'of_account',
+                        'best_seller_item',
+                        'max_quantity',
+                        'discount_rate',
+                        'offered_discount_location',
+                    ]);
             });
         });
 
