@@ -332,7 +332,6 @@ export async function ResourceListTests(email: string, password: string, client:
                 const bodyOfCollection = udcService.prepareDataForUdcCreation({
                     nameOfCollection: resource_name_pipeline,
                     descriptionOfCollection: 'Created with Automation',
-                    typeOfCollection: 'contained',
                     fieldsOfCollection: [
                         {
                             classType: 'Primitive',
@@ -456,8 +455,8 @@ export async function ResourceListTests(email: string, password: string, client:
                         'of_account',
                         'best_seller_item',
                         'max_quantity',
-                        'discount_rate',
                         'offered_discount_location',
+                        'discount_rate',
                     ]);
             });
         });
@@ -469,6 +468,11 @@ export async function ResourceListTests(email: string, password: string, client:
 
             it('Manual Resync', async () => {
                 await resourceListUtils.performManualResync(client);
+            });
+
+            it(`Logout Login`, async () => {
+                await resourceListUtils.logOutLogIn(email, password);
+                await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
             });
 
             describe('Views & Editors Full Functionality test', async function () {
@@ -1169,11 +1173,12 @@ export async function ResourceListTests(email: string, password: string, client:
                 it(`${syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'} --> Navigating to ${
                     client.BaseURL
                 }/${slugDisplayNameAccountDashboard}`, async function () {
-                    await driver.navigate(`${client.BaseURL}/${slugDisplayNameAccountDashboard}`);
+                    const baseUrl = client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com';
+                    await driver.navigate(`${baseUrl}/${slugDisplayNameAccountDashboard}`);
                     resourceList.pause(1 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `At ${client.BaseURL}/${slugDisplayNameAccountDashboard}`,
+                        title: `At ${baseUrl}/${slugDisplayNameAccountDashboard}`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
