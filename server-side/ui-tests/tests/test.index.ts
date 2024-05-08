@@ -280,7 +280,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         //Verify all items exist or replace them
         await replaceItemsTests(generalService);
 
-        await newUserDependenciesTests(generalService, varPass);
+        await newlyCretedDistDependenciesTests(generalService, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -1682,11 +1682,11 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         const service = new GeneralService(client);
-        const initialAddonUUID = DevTest.convertNameToUUIDForDevTests(addonName);
+        const initialAddonUUID = DevTest.convertAddonNameToUUIDForDevTests(addonName);
         let versionOfAddon = '';
         if (initialAddonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
             versionOfAddon = (
-                await service.getAddonLatestAvailableVersion('5122dc6d-745b-4f46-bb8e-bd25225d350a', varPass)
+                await service.getAddonsLatestAvailableVersion('5122dc6d-745b-4f46-bb8e-bd25225d350a', varPass)
             ).latestVersion;
         }
         const devTest = new DevTest(
@@ -1718,8 +1718,8 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
             debugger;
             // 3. install all dependencys of tested addon latest available version on testing users then finaly install tested addon
-            await devTest.installDependencies();
-            await devTest.valdateTestedAddonLatestVersionIsInstalled();
+            await devTest.installTestedAddonsDependencies();
+            await devTest.valdateTestedAddonLatestAvaliVersionIsInstalled();
             console.log(
                 `####################### Finished Installing: ${devTest.addonName} - (${devTest.addonUUID}), version: ${
                     devTest.addonVersion
@@ -1732,7 +1732,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                 `####################### Calling GET:/tests/tests Of ${devTest.addonName} - (${devTest.addonUUID}) To Get All Test Names #######################`,
             );
             try {
-                testsList = await devTest.getTestNames();
+                testsList = await devTest.getDevTestNames();
             } catch (error) {
                 debugger;
                 const errorString = `Error: Got Exception Trying To Get Test Names By Calling /tests/tests On: ${
@@ -1766,7 +1766,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
             //4. iterate on all test names and call each
             await devTest.runDevTest(testsList);
             //5. parse the response we got from the tests, print & report to Teams
-            const didPass = await devTest.calculateAndReportResults(isLocal, numOfTests);
+            const didPass = await devTest.parseReportResults(isLocal, numOfTests);
             //6. no point in running app. tests after dev failed
             if (didPass !== undefined && didPass === false) {
                 console.log(
@@ -1885,8 +1885,6 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1931,8 +1929,6 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1977,8 +1973,6 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -2001,6 +1995,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                 addonVersionSbEx = addonVersionSb;
                 break;
             }
+            //these tests (CPI-DATAs) are deprecated - because it has to run on Nebula
             // case 'CPI DATA':
             // case 'ADDONS-CPI-DATA':
             // case 'CPI-DATA': {
@@ -2069,8 +2064,6 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -2281,8 +2274,6 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -2327,8 +2318,6 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -2374,8 +2363,6 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -2421,8 +2408,6 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -2450,7 +2435,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                 console.log(`no approvement tests for addon: ${addonName}`);
                 return;
         }
-        await appTestsRunnnerService.resultParser(
+        await appTestsRunnnerService.resultParserAndReporter(
             JenkinsBuildResultsAllEnvsEx,
             addonEntryUUIDEuEx,
             addonEntryUUIDProdEx,
@@ -2474,7 +2459,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
     }
 })();
 
-export async function newUserDependenciesTests(generalService: GeneralService, varPass: string) {
+export async function newlyCretedDistDependenciesTests(generalService: GeneralService, varPass: string) {
     const baseAddonVersionsInstallationResponseObj = await generalService.baseAddonVersionsInstallation(
         varPass,
         systemAddons,

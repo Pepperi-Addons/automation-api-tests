@@ -10,7 +10,7 @@ chai.use(promised);
 export async function ConfigurationTests(email: string, password: string, client: Client, varPass) {
     const generalService = new GeneralService(client);
     const addonVersion = (
-        await generalService.getAddonLatestAvailableVersion('84c999c3-84b7-454e-9a86-71b7abc96554', varPass)
+        await generalService.getAddonsLatestAvailableVersion('84c999c3-84b7-454e-9a86-71b7abc96554', varPass)
     ).latestVersion;
     let env;
     let testNames: string[] = [];
