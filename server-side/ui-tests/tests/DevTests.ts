@@ -54,7 +54,7 @@ export class DevTest {
         version: string,
     ) {
         this.addonName = addonName;
-        this.addonUUID = DevTest.convertNameToUUIDForDevTests(addonName.toUpperCase());
+        this.addonUUID = DevTest.convertAddonNameToUUIDForDevTests(addonName.toUpperCase());
         this.addonTestsURL = `/addons/api/async/${this.addonUUID}/tests/tests`;
         this.channelToReportURL = '';
         this.varPass = varPass;
@@ -77,7 +77,7 @@ export class DevTest {
         }
     }
 
-    static convertNameToUUIDForDevTests(addonName: string) {
+    static convertAddonNameToUUIDForDevTests(addonName: string) {
         switch (addonName) {
             case 'ASSETS_MANAGER_CLIENT':
             case 'ASSETS MANAGER':
@@ -147,8 +147,8 @@ export class DevTest {
         }
     }
 
-    async installDependencies() {
-        const userList = await this.resolveUserPerTest2();
+    async installTestedAddonsDependencies() {
+        const userList = await this.initArrayOfTestedUsers();
         for (let index = 0; index < userList.length; index++) {
             const user = userList[index];
             const varPass = user.env === 'EU' || user.env === 'PROD' ? this.varPass : this.varPassSB;
@@ -161,15 +161,15 @@ export class DevTest {
                     this.addonName
                 } Unavailable As We Coludn't Install It`;
                 await this.unavailableVersion();
-                await this.reportToTeamsException(errorString);
+                await this.reportExceptionToTeams(errorString);
                 throw new Error(errorString);
             }
         }
     }
 
-    async valdateTestedAddonLatestVersionIsInstalled() {
+    async valdateTestedAddonLatestAvaliVersionIsInstalled() {
         const arrayOfResponses: boolean[] = [];
-        const userList = await this.resolveUserPerTest2();
+        const userList = await this.initArrayOfTestedUsers();
         for (let index = 0; index < userList.length; index++) {
             const user = userList[index];
             arrayOfResponses.push(await this.valdateTestedAddonLatestVersionIsInstalledInternal(user.email, user.env));
@@ -419,9 +419,9 @@ export class DevTest {
     }
 
     async validateAllVersionsAreEqualBetweenEnvs() {
-        this.euUser = (await this.resolveUserPerTest2())[0];
-        this.prodUser = (await this.resolveUserPerTest2())[1];
-        this.sbUser = (await this.resolveUserPerTest2())[2];
+        this.euUser = (await this.initArrayOfTestedUsers())[0];
+        this.prodUser = (await this.initArrayOfTestedUsers())[1];
+        this.sbUser = (await this.initArrayOfTestedUsers())[2];
         let latestVersionOfTestedAddonProd,
             addonEntryUUIDProd,
             latestVersionOfTestedAddonEu,
@@ -450,7 +450,7 @@ export class DevTest {
             const errorString = `Error: Couldn't Get Latest Available Versions Of ${this.addonName}: ${
                 (error as any).message
             }`;
-            await this.reportToTeamsException(errorString);
+            await this.reportExceptionToTeams(errorString);
             throw new Error(errorString);
         }
         if (
@@ -460,7 +460,7 @@ export class DevTest {
         ) {
             const errorString = `Error: Latest Avalibale Versions Of ${this.addonName} Across Envs Are Different: Prod - ${latestVersionOfTestedAddonProd}, Staging - ${latestVersionOfTestedAddonSb}, EU - ${latestVersionOfTestedAddonEu}`;
             debugger;
-            await this.reportToTeamsException(errorString);
+            await this.reportExceptionToTeams(errorString);
             await this.unavailableVersion();
             throw new Error(errorString);
         } else {
@@ -471,7 +471,7 @@ export class DevTest {
         }
     }
 
-    async getTestNames(): Promise<string[] | { ADAL: any; DataIndex: any }> {
+    async getDevTestNames(): Promise<string[] | { ADAL: any; DataIndex: any }> {
         if (this.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
             return await this.getTestNamesADAL();
         }
@@ -533,7 +533,7 @@ export class DevTest {
         return { ADAL: toReturnADAL, DataIndex: roReturnDataIndex };
     }
 
-    async runDevTestInt(testNames: string[], testserUuid?: string) {
+    async runDevTestsAndFetchResultsInt(testNames: string[], testserUuid?: string) {
         debugger;
         for (let index = 0; index < testNames.length; index++) {
             const currentTestName = testNames[index];
@@ -579,7 +579,7 @@ export class DevTest {
                 whichEnvs += devTestResponseProd === undefined ? 'PRDO,' : '';
                 whichEnvs += devTestResponseSb === undefined ? 'SB' : '';
                 const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                await this.reportToTeamsException(errorString);
+                await this.reportExceptionToTeams(errorString);
                 throw new Error(`${errorString}`);
             }
             if (
@@ -591,7 +591,7 @@ export class DevTest {
                 whichEnvs += devTestResponseProd.Body.URI === undefined ? 'PRDO,' : '';
                 whichEnvs += devTestResponseSb.Body.URI === undefined ? 'SB' : '';
                 const errorString = `Error: got undefined when trying to run ${whichEnvs} tests - no EXECUTION UUID!`;
-                await this.reportToTeamsException(errorString);
+                await this.reportExceptionToTeams(errorString);
                 throw new Error(`${errorString}`);
             }
             console.log(
@@ -636,7 +636,7 @@ export class DevTest {
                 ) {
                     errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test:${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
-                await this.reportToTeamsException(errorString);
+                await this.reportExceptionToTeams(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -661,7 +661,7 @@ export class DevTest {
                 if (!devTestResultsSb.AuditInfo.ResultObject) {
                     errorString += `${sbUser} got the error: ${devTestResultsSb.AuditInfo.ErrorMessage} from Audit Log, On Test ${currentTestName}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
-                await this.reportToTeamsException(errorString);
+                await this.reportExceptionToTeams(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -683,7 +683,7 @@ export class DevTest {
                     testResultArraySB,
                 )}, On: ${currentTestName} Test`;
                 debugger;
-                await this.reportToTeamsException(errorString);
+                await this.reportExceptionToTeams(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -731,7 +731,7 @@ export class DevTest {
                         devTestResultsSb.AuditInfo,
                     )}, EXECUTION UUID: ${devTestResponseSb.Body.URI},\n`;
                 }
-                await this.reportToTeamsException(errorString);
+                await this.reportExceptionToTeams(errorString);
                 await this.unavailableVersion();
                 throw new Error(`Error: got exception trying to parse returned result object: ${errorString} `);
             }
@@ -791,23 +791,23 @@ export class DevTest {
     async runDevTestADAL(testNamesADAL: string[], testNamesDataIndex: string[]) {
         if (testNamesADAL.length !== 0) {
             console.log('ADAL Dev Tests: ');
-            await this.runDevTestInt(testNamesADAL, this.addonUUID);
+            await this.runDevTestsAndFetchResultsInt(testNamesADAL, this.addonUUID);
         } else {
             console.log(`No ADAL Dev Tests For Version ${this.addonVersion}`);
         }
         console.log('Data Index Dev Tests: ');
-        await this.runDevTestInt(testNamesDataIndex);
+        await this.runDevTestsAndFetchResultsInt(testNamesDataIndex);
     }
 
     async runDevTest(testNames: any) {
         if (this.addonUUID === '00000000-0000-0000-0000-00000000ada1') {
             await this.runDevTestADAL(testNames.ADAL, testNames.DataIndex);
         } else {
-            await this.runDevTestInt(testNames);
+            await this.runDevTestsAndFetchResultsInt(testNames);
         }
     }
 
-    async calculateAndReportResults(isLocal, numOfTests) {
+    async parseReportResults(isLocal, numOfTests) {
         const devPassingEnvs2: string[] = [];
         const devFailedEnvs2: string[] = [];
         // const testsList = await this.getTestNames();
@@ -856,13 +856,13 @@ export class DevTest {
             await this.unavailableVersion();
             this.devPassingEnvs = devPassingEnvs2;
             this.devFailedEnvs = devFailedEnvs2;
-            await this.reportToTeamsTestStatus(jenkinsLink);
+            await this.reportAddonsTestsStatusToTeams(jenkinsLink);
             console.log('Dev Test Didnt Pass - No Point In Running Approvment');
             return false;
         } else if (!this.doWeHaveSuchAppTest(this.addonName)) {
             this.devPassingEnvs = devPassingEnvs2;
             this.devFailedEnvs = devFailedEnvs2;
-            await this.reportToTeamsTestStatus(jenkinsLink);
+            await this.reportAddonsTestsStatusToTeams(jenkinsLink);
         }
     }
 
@@ -921,9 +921,9 @@ export class DevTest {
         return this.prodUser;
     }
 
-    async reportToTeamsTestStatus(jenkinsLink) {
-        await this.reportBuildEndedToQaChannle();
-        const users = await this.resolveUserPerTest2();
+    async reportAddonsTestsStatusToTeams(jenkinsLink) {
+        await this.QAChannleRepoeterBuildEnded();
+        const users = await this.initArrayOfTestedUsers();
         const userMails = users.map((user) => user.email);
         const stringUsers = userMails.join(', ');
         const uniqFailingEnvs = [...new Set(this.devFailedEnvs.map((env) => env.toUpperCase()))];
@@ -1124,9 +1124,9 @@ export class DevTest {
         return testResponse;
     }
 
-    async reportToTeamsException(error) {
+    async reportExceptionToTeams(error) {
         debugger;
-        await this.reportBuildEndedToQaChannle();
+        await this.QAChannleRepoeterBuildEnded();
         const message = `${error}`;
         const teamsURL = await this.adminBaseUserGeneralService.handleTeamsURL(
             this.addonName,
@@ -1172,7 +1172,7 @@ export class DevTest {
         }
     }
 
-    async reportBuildEndedToQaChannle() {
+    async QAChannleRepoeterBuildEnded() {
         const message = `${this.addonName} - (${this.addonUUID}), Version:${this.addonVersion}, Ended Testing`;
         const teamsURL = await this.adminBaseUserGeneralService.handleTeamsURL(
             'QA',
@@ -1215,203 +1215,8 @@ export class DevTest {
         }
     }
 
-    // async handleTeamsURL(addonName: string) {
-    //     //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
-    //     switch (addonName) {
-    //         case 'ASSETS_MANAGER_CLIENT':
-    //         case 'ASSETS MANAGER':
-    //         case 'ASSETS-MANAGER':
-    //         case 'ASSETS':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'AssetsManagerWebHook',
-    //             );
-    //         case 'SUPPORT-TOOLS':
-    //         case 'SUPPORT TOOLS':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'SupportToolsWebHook',
-    //             );
-    //         case 'SYNC-SCHEDULER':
-    //         case 'SYNC SCHEDULER':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'SyncSchedulerWebHook',
-    //             );
-    //         case 'PAGE-BUILDER':
-    //         case 'PAGE BUILDER':
-    //         case 'PAGE':
-    //         case 'PAGES':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'PageBuilderTeamsWebHook',
-    //             );
-    //         case 'KMS':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'KMSTeamsWebHook',
-    //             );
-    //         case 'QA':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'QAWebHook',
-    //             );
-    //         case 'PAPI-DATA-INDEX':
-    //         case 'PAPI INDEX':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'PapiDataIndexWebHook',
-    //             );
-    //         case 'JOURNEY':
-    //         case 'JOURNEY-TRACKER':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'JourneyTeamsWebHook',
-    //             );
-    //         case 'SYNC':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'SyncTeamsWebHook',
-    //             );
-    //         case 'ADAL': //new teams
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'ADALTeamsWebHook',
-    //             );
-    //         case 'NEBULA':
-    //         case 'FEBULA': //new teams
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'NebulaTeamsWebHook',
-    //             );
-    //         case 'DIMX':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'DIMXTeamsWebHook',
-    //             );
-    //         case 'DATA INDEX': //new teams
-    //         case 'DATA-INDEX':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'DataIndexTeamsWebHook',
-    //             );
-    //         case 'PFS':
-    //         case 'PEPPERI-FILE-STORAGE':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'PFSTeamsWebHook',
-    //             );
-    //         case 'PNS':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'PNSTeamsWebHook',
-    //             );
-    //         case 'USER-DEFINED-COLLECTIONS':
-    //         case 'UDC':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'UDCTeamsWebHook',
-    //             );
-    //         case 'SCHEDULER':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'SchedulerTeamsWebHook',
-    //             );
-    //         case 'CPI-DATA': //new teams
-    //         case 'CPI DATA':
-    //         case 'ADDONS-CPI-DATA':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'CPIDataTeamsWebHook',
-    //             );
-    //         case 'CORE': //new teams
-    //         case 'CORE-GENERIC-RESOURCES':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'CORETeamsWebHook',
-    //             );
-    //         case 'RESOURCE-LIST': //new teams
-    //         case 'RESOURCE LIST':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'ResourceListTeamsWebHook',
-    //             );
-    //         case 'UDB':
-    //         case 'USER DEFINED BLOCKS':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'UDBTeamsWebHook',
-    //             );
-    //         case 'CONFIGURATIONS':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'CONFIGURATIONSTeamsWebHook',
-    //             );
-    //         case 'RELATED-ITEMS':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'RelatedItemsTeamsWebHook',
-    //             );
-    //         case 'GENERIC-RESOURCE': //new teams
-    //         case 'GENERIC RESOURCE':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'GenericResourceTeamsWebHook',
-    //             );
-    //         case 'NODE': //new teams
-    //         case 'CPI-NODE':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'CPINodeTeamsWebHook',
-    //             );
-    //         case 'CRAWLER':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'CRAWLERTeamsWebHook',
-    //             );
-    //         case 'ASYNCADDON':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'ASYNCTeamsWebHook',
-    //             );
-    //         case 'TRANSLATION':
-    //             return await this.adminBaseUserGeneralService.getSecretfromKMS(
-    //                 this.adminBaseUserEmail,
-    //                 this.adminBaseUserPass,
-    //                 'TRANSLATIONTeamsWebHook',
-    //             );
-    //     }
-    // }
-
-    async resolveUserPerTest2(): Promise<DevTestUser[]> {
-        const usreEmailList = this.resolveUserPerTest();
+    async initArrayOfTestedUsers(): Promise<DevTestUser[]> {
+        const usreEmailList = this.resolveUserPerAddonTest();
         const userListToReturn: DevTestUser[] = [];
         for (let index = 0; index < usreEmailList.length; index++) {
             const userEmail = usreEmailList[index];
@@ -1434,7 +1239,7 @@ export class DevTest {
         return userListToReturn;
     }
 
-    resolveUserPerTest(): any[] {
+    resolveUserPerAddonTest(): any[] {
         switch (this.addonName) {
             case 'ASSETS_MANAGER_CLIENT':
             case 'ASSETS MANAGER':
