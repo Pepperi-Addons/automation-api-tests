@@ -19,7 +19,7 @@ import { DistributorService } from '../../services/distributor.service';
 import { AddonLoadCondition } from '../pom/addons/base/AddonPage';
 import { TestDataTests } from '../../api-tests/test-service/test_data';
 import { LoginTests, OrderTests } from '.';
-import { replaceItemsTests, replaceUIControlsTests, newUserDependenciesTests } from './test.index';
+import { replaceItemsTests, replaceUIControlsTests, newlyCretedDistDependenciesTests } from './test.index';
 import { By, Key } from 'selenium-webdriver';
 
 chai.use(promised);
@@ -354,7 +354,7 @@ export async function CreateDistributorTests(
                     //Verify all items exist or replace them
                     await replaceItemsTests(adminService);
 
-                    await newUserDependenciesTests(adminService, varPass);
+                    await newlyCretedDistDependenciesTests(adminService, varPass);
                 });
             });
 

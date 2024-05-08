@@ -1294,7 +1294,7 @@ export default class GeneralService {
         return { latestPhasedVersion: latestPhasedVersion || '', message: informativeMessage };
     }
 
-    async getAddonLatestAvailableVersion(
+    async getAddonsLatestAvailableVersion(
         addonUUID: string,
         varKey: string,
         version?: string,
@@ -1495,7 +1495,7 @@ export default class GeneralService {
                 }
             }
         } else if (requested.setToLatestAvailable) {
-            const availableVersionResponse = await this.getAddonLatestAvailableVersion(requested.addonUUID, varKey);
+            const availableVersionResponse = await this.getAddonsLatestAvailableVersion(requested.addonUUID, varKey);
             if (availableVersionResponse.message.includes('retrieved successfully')) {
                 changeResponseObject['latestAvailableVersion'] = availableVersionResponse.latestVersion;
                 const setToLatestAvailableResponse = await this.setAddonToVersion(
