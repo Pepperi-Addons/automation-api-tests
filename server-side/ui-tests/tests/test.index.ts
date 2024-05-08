@@ -175,6 +175,15 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
 // const nonPromotionItemsIndices = process.env.npm_config_nelt_items_indices ? JSON.parse(process.env.npm_config_nelt_items_indices as string) as number[] : undefined;
 // const nonPromotionItemsQuantities = process.env.npm_config_nelt_items_qty ? JSON.parse(process.env.npm_config_nelt_items_qty as string) as number[] : undefined;
 // const bundlePromotionItemsIndices = process.env.npm_config_nelt_promotion_indices ? JSON.parse(process.env.npm_config_nelt_promotion_indices as string) as number[] : undefined;
+const udcNameAge = process.env.npm_config_udc_name_age as string;
+const udcIndexedNameAge = process.env.npm_config_udc_indexed_name_age as string;
+const udcIndexedFields = process.env.npm_config_udc_indexed_fields as string;
+const udcArrays = process.env.npm_config_udc_arrays as string;
+const udcReferenceAccount = process.env.npm_config_udc_reference_account as string;
+const udcAccountFilter = process.env.npm_config_udc_account_filter as string;
+const udcFiltersRefAccount = process.env.npm_config_udc_filters_ref_account as string;
+const udcBigDataRefAccount = process.env.npm_config_udc_big_data_ref_account as string;
+const udcContainedArray = process.env.npm_config_udc_contained_array as string;
 
 (async function () {
     const tempGeneralService = new GeneralService({
@@ -520,7 +529,22 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     }
 
     if (tests === 'UdcsToUser') {
-        await CustomCollectionsUpsert(email, client, acc01UUID, acc02UUID, acc03UUID);
+        await CustomCollectionsUpsert(
+            email,
+            client,
+            acc01UUID,
+            acc02UUID,
+            acc03UUID,
+            udcNameAge,
+            udcIndexedNameAge,
+            udcIndexedFields,
+            udcArrays,
+            udcReferenceAccount,
+            udcAccountFilter,
+            udcFiltersRefAccount,
+            udcBigDataRefAccount,
+            udcContainedArray,
+        );
         run();
         return;
     }
@@ -581,8 +605,8 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     }
 
     if (tests === 'VisitFlow') {
-        await VFdataPrep(varPass, client);
-        await VisitFlowTests(email, pass, client);
+        // await VFdataPrep(varPass, client);
+        await VisitFlowTests(varPass, client, email, pass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
