@@ -229,6 +229,7 @@ export async function ResourceListTests(email: string, password: string, client:
         ReferenceAccountAuto: {
             view_fields_names: [
                 'of_account',
+                'of_account.Name',
                 'best_seller_item',
                 'max_quantity',
                 'discount_rate',
