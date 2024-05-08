@@ -21,6 +21,7 @@ import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 chai.use(promised);
 
 export async function VisitFlowTests(varPass: string, client: Client, email: string, password: string) {
+    const date = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
@@ -71,7 +72,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
         // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.%'], // current phased version 0.6.41 | dependency > 0.6.35
         // 'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''], // current phased version 0.6.2 | dependency > 0.6.2
         // 'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // current phased version 0.7.112 | dependency > 0.7.104
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
+        // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
     };
 
     await generalService.baseAddonVersionsInstallation(varPass);
@@ -126,7 +127,13 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
     let salesOrderItemName: string;
     let base64ImageComponent;
 
-    describe('Visit Flow Test Suite', async () => {
+    const installedVisitFlowVersion = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'VisitFlow',
+    )?.Version;
+
+    describe(`Visit Flow Test Suite - ${
+        client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
+    } || Ver: ${installedVisitFlowVersion} || ${date}`, async () => {
         describe('Visit Flow UI tests', () => {
             before(async function () {
                 driver = await Browser.initiateChrome();

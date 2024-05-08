@@ -30,6 +30,23 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const objectsService = new ObjectsService(generalService);
     const openCatalogService = new OpenCatalogService(generalService);
     const dateTime = new Date();
+    const collectionProperties = [
+        'GenericResource',
+        'ModificationDateTime',
+        'SyncData',
+        'CreationDateTime',
+        'UserDefined',
+        'Fields',
+        'Description',
+        'DataSourceData',
+        'DocumentKey',
+        'Type',
+        'Lock',
+        'ListView',
+        'Hidden',
+        'Name',
+        'AddonUUID',
+    ];
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -152,6 +169,38 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expect(typeof numOfListingsIn_FiltersAccRefAuto).to.equal('number');
             expect(typeof numOfListingsIn_ArraysOfPrimitivesAuto).to.equal('number');
             expect(typeof numOfListingsIn_ContainedArray).to.equal('number');
+            expect(numOfListingsIn_items).to.be.greaterThan(0);
+            expect(numOfListingsIn_accounts).to.be.greaterThan(0);
+            expect(numOfListingsIn_items_filtered_MaNa).to.be.greaterThan(0);
+            expect(numOfListingsIn_items_filtered_a).to.be.greaterThan(0);
+            expect(numOfListingsIn_accounts_filtered_a).to.be.greaterThan(0);
+            expect(numOfListingsIn_ReferenceAccountAuto).to.be.greaterThan(0);
+            expect(numOfListingsIn_FiltersAccRefAuto).to.be.greaterThan(0);
+            expect(numOfListingsIn_ArraysOfPrimitivesAuto).to.be.greaterThan(0);
+            expect(numOfListingsIn_ContainedArray).to.be.greaterThan(0);
+        });
+
+        it(`Setting Collection's Sync Definition to False`, async () => {
+            const collectionsNames = [
+                'ReferenceAccountAuto',
+                'FiltersAccRefAuto',
+                'ArraysOfPrimitivesAuto',
+                'ContainedArrayAuto',
+            ];
+            const postSchemeResponses = await Promise.all(
+                collectionsNames.map(async (collectionName) => {
+                    return await udcService.postScheme({ Name: collectionName, SyncData: { Sync: false } });
+                }),
+            );
+            postSchemeResponses.forEach((response, index) => {
+                expect(response).to.not.be('undefined');
+                expect(response).to.be.an('object');
+                Object.keys(response).forEach((collectionProperty) => {
+                    expect(collectionProperty).to.be.oneOf(collectionProperties);
+                });
+                expect(response.Name).to.equal(collectionsNames[index]);
+                expect(response.Fields).to.be.an('object');
+            });
         });
 
         describe('RL ABI UI tests', async () => {
@@ -509,9 +558,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 }
             });
 
-            describe(`Prerequisites Addons for Resource List Tests - ${
-                client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-            } | Tested user: ${email} | Date Time: ${dateTime}`, () => {
+            describe(`Prerequisites Addons for Resource List Tests`, () => {
                 for (const addonName in testData) {
                     const addonUUID = testData[addonName][0];
                     const version = testData[addonName][1];
