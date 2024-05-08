@@ -152,6 +152,19 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expect(typeof numOfListingsIn_FiltersAccRefAuto).to.equal('number');
             expect(typeof numOfListingsIn_ArraysOfPrimitivesAuto).to.equal('number');
             expect(typeof numOfListingsIn_ContainedArray).to.equal('number');
+            expect(numOfListingsIn_items).to.be.greaterThan(0);
+            expect(numOfListingsIn_accounts).to.be.greaterThan(0);
+            expect(numOfListingsIn_items_filtered_MaNa).to.be.greaterThan(0);
+            expect(numOfListingsIn_items_filtered_a).to.be.greaterThan(0);
+            expect(numOfListingsIn_accounts_filtered_a).to.be.greaterThan(0);
+            expect(numOfListingsIn_ReferenceAccountAuto).to.be.greaterThan(0);
+            expect(numOfListingsIn_FiltersAccRefAuto).to.be.greaterThan(0);
+            expect(numOfListingsIn_ArraysOfPrimitivesAuto).to.be.greaterThan(0);
+            expect(numOfListingsIn_ContainedArray).to.be.greaterThan(0);
+        });
+
+        it(`Setting Collection's Sync Definition to False`, async () => {
+            expect(typeof numOfListingsIn_items).to.equal('number');
         });
 
         describe('RL ABI UI tests', async () => {
@@ -509,9 +522,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 }
             });
 
-            describe(`Prerequisites Addons for Resource List Tests - ${
-                client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-            } | Tested user: ${email} | Date Time: ${dateTime}`, () => {
+            describe(`Prerequisites Addons for Resource List Tests`, () => {
                 for (const addonName in testData) {
                     const addonUUID = testData[addonName][0];
                     const version = testData[addonName][1];

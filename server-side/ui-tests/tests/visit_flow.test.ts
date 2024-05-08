@@ -21,6 +21,7 @@ import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 chai.use(promised);
 
 export async function VisitFlowTests(varPass: string, client: Client, email: string, password: string) {
+    const date = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
@@ -126,7 +127,13 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
     let salesOrderItemName: string;
     let base64ImageComponent;
 
-    describe('Visit Flow Test Suite', async () => {
+    const installedVisitFlowVersion = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'VisitFlow',
+    )?.Version;
+
+    describe(`Visit Flow Test Suite - ${
+        client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
+    } || Ver: ${installedVisitFlowVersion} || ${date}`, async () => {
         describe('Visit Flow UI tests', () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
