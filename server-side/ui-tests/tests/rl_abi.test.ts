@@ -30,6 +30,23 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const objectsService = new ObjectsService(generalService);
     const openCatalogService = new OpenCatalogService(generalService);
     const dateTime = new Date();
+    const collectionProperties = [
+        'GenericResource',
+        'ModificationDateTime',
+        'SyncData',
+        'CreationDateTime',
+        'UserDefined',
+        'Fields',
+        'Description',
+        'DataSourceData',
+        'DocumentKey',
+        'Type',
+        'Lock',
+        'ListView',
+        'Hidden',
+        'Name',
+        'AddonUUID',
+    ];
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -164,7 +181,26 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         });
 
         it(`Setting Collection's Sync Definition to False`, async () => {
-            expect(typeof numOfListingsIn_items).to.equal('number');
+            const collectionsNames = [
+                'ReferenceAccountAuto',
+                'FiltersAccRefAuto',
+                'ArraysOfPrimitivesAuto',
+                'ContainedArrayAuto',
+            ];
+            const postSchemeResponses = await Promise.all(
+                collectionsNames.map(async (collectionName) => {
+                    return await udcService.postScheme({ Name: collectionName, SyncData: { Sync: false } });
+                }),
+            );
+            postSchemeResponses.forEach((response, index) => {
+                expect(response).to.not.be('undefined');
+                expect(response).to.be.an('object');
+                Object.keys(response).forEach((collectionProperty) => {
+                    expect(collectionProperty).to.be.oneOf(collectionProperties);
+                });
+                expect(response.Name).to.equal(collectionsNames[index]);
+                expect(response.Fields).to.be.an('object');
+            });
         });
 
         describe('RL ABI UI tests', async () => {

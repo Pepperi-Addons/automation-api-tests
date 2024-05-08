@@ -72,7 +72,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
         // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', '0.6.%'], // current phased version 0.6.41 | dependency > 0.6.35
         // 'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''], // current phased version 0.6.2 | dependency > 0.6.2
         // 'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // current phased version 0.7.112 | dependency > 0.7.104
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
+        // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
     };
 
     await generalService.baseAddonVersionsInstallation(varPass);

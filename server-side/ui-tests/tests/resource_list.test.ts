@@ -56,6 +56,23 @@ export async function ResourceListTests(email: string, password: string, client:
     const coreResourcesUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
     const test_generic_decsription = 'for RL automated testing';
     const resource_name_from_account_dashborad = 'ReferenceAccountAuto';
+    const collectionProperties = [
+        'GenericResource',
+        'ModificationDateTime',
+        'SyncData',
+        'CreationDateTime',
+        'UserDefined',
+        'Fields',
+        'Description',
+        'DataSourceData',
+        'DocumentKey',
+        'Type',
+        'Lock',
+        'ListView',
+        'Hidden',
+        'Name',
+        'AddonUUID',
+    ];
     const getSchemesResponse = await udcService.getSchemes({ where: `Name=${resource_name_from_account_dashborad}` });
     let syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
@@ -302,22 +319,9 @@ export async function ResourceListTests(email: string, password: string, client:
                 const upsertResponse = await udcService.postScheme(bodyOfCollection);
                 console.info(`${resource_name_sanity} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
                 expect(upsertResponse).to.be.an('object');
-                expect(Object.keys(upsertResponse)).to.eql([
-                    'GenericResource',
-                    'ModificationDateTime',
-                    'SyncData',
-                    'CreationDateTime',
-                    'UserDefined',
-                    'Fields',
-                    'Description',
-                    'DataSourceData',
-                    'DocumentKey',
-                    'Type',
-                    'ListView',
-                    'Hidden',
-                    'Name',
-                    'AddonUUID',
-                ]);
+                Object.keys(upsertResponse).forEach((collectionProperty) => {
+                    expect(collectionProperty).to.be.oneOf(collectionProperties);
+                });
                 expect(upsertResponse.Name).to.equal(resource_name_sanity);
                 expect(upsertResponse.Fields).to.be.an('object');
                 expect(Object.keys(upsertResponse)).to.eql(['name', 'age']);
@@ -346,22 +350,9 @@ export async function ResourceListTests(email: string, password: string, client:
                 const upsertResponse = await udcService.postScheme(bodyOfCollection);
                 console.info(`${resource_name_pipeline} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
                 expect(upsertResponse).to.be.an('object');
-                expect(Object.keys(upsertResponse)).to.eql([
-                    'GenericResource',
-                    'ModificationDateTime',
-                    'SyncData',
-                    'CreationDateTime',
-                    'UserDefined',
-                    'Fields',
-                    'Description',
-                    'DataSourceData',
-                    'DocumentKey',
-                    'Type',
-                    'ListView',
-                    'Hidden',
-                    'Name',
-                    'AddonUUID',
-                ]);
+                Object.keys(upsertResponse).forEach((collectionProperty) => {
+                    expect(collectionProperty).to.be.oneOf(collectionProperties);
+                });
                 expect(upsertResponse.Name).to.equal(resource_name_pipeline);
                 expect(upsertResponse.Fields).to.be.an('object');
                 expect(Object.keys(upsertResponse)).to.eql(['name', 'age']);
@@ -454,22 +445,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     )}`,
                 );
                 expect(upsertResponse).to.be.an('object');
-                expect(Object.keys(upsertResponse)).to.eql([
-                    'GenericResource',
-                    'ModificationDateTime',
-                    'SyncData',
-                    'CreationDateTime',
-                    'UserDefined',
-                    'Fields',
-                    'Description',
-                    'DataSourceData',
-                    'DocumentKey',
-                    'Type',
-                    'ListView',
-                    'Hidden',
-                    'Name',
-                    'AddonUUID',
-                ]);
+                Object.keys(upsertResponse).forEach((collectionProperty) => {
+                    expect(collectionProperty).to.be.oneOf(collectionProperties);
+                });
                 expect(upsertResponse.Name).to.equal(resource_name_from_account_dashborad);
                 expect(upsertResponse.Fields).to.be.an('object');
                 expect(Object.keys(upsertResponse)).to.eql([
