@@ -24,6 +24,7 @@ export async function ResourceListTests(email: string, password: string, client:
     const date = new Date();
     const generalService = new GeneralService(client);
     const udcService = new UDCService(generalService);
+    const baseUrl = client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com';
     // const papi_resources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
 
     await generalService.baseAddonVersionsInstallation(varPass);
@@ -1170,10 +1171,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     await webAppHomePage.collectEndTestData(this);
                 });
 
-                it(`${syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'} --> Navigating to ${
-                    client.BaseURL
-                }/${slugDisplayNameAccountDashboard}`, async function () {
-                    const baseUrl = client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com';
+                it(`${
+                    syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'
+                } --> Navigating to ${baseUrl}/${slugDisplayNameAccountDashboard}`, async function () {
                     await driver.navigate(`${baseUrl}/${slugDisplayNameAccountDashboard}`);
                     resourceList.pause(1 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
