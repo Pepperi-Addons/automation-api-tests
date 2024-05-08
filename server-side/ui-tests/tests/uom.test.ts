@@ -21,6 +21,7 @@ chai.use(promised);
 export async function UomTests(email: string, password: string, varPass: string, client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
+    const date = new Date();
 
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
@@ -84,7 +85,7 @@ export async function UomTests(email: string, password: string, varPass: string,
 
     describe(`UOM Tests Suite - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-    }`, async function () {
+    } || ${date}`, async function () {
         describe('Prerequisites Addons for UOM Tests', () => {
             //Test Data
             //UOM
@@ -1421,6 +1422,30 @@ export async function UomTests(email: string, password: string, varPass: string,
                     }
                 });
             });
+        });
+
+        describe(`Prerequisites Addons for VISIT FLOW Tests`, async () => {
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
         });
     });
 }
