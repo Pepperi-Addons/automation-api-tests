@@ -605,8 +605,8 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
     }
 
     if (tests === 'VisitFlow') {
-        await VFdataPrep(varPass, client);
-        await VisitFlowTests(email, pass, client);
+        // await VFdataPrep(varPass, client);
+        await VisitFlowTests(varPass, client, email, pass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
