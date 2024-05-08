@@ -239,6 +239,7 @@ export class AccountDashboardLayout extends AddonPage {
                 driver.sleep(2 * 1000);
                 await driver.switchToDefaultContent();
                 driver.sleep(7 * 1000);
+                break;
             } catch (error) {
                 await driver.switchToDefaultContent();
                 console.error(error);
