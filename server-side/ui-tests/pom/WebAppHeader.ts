@@ -26,9 +26,15 @@ export class WebAppHeader extends Page {
     }
 
     public async goHome() {
-        if (!(await this.browser.getCurrentUrl()).includes('HomePage')) {
-            await this.browser.click(this.Home);
-            this.browser.sleep(1000);
+        try {
+            if (!(await this.browser.getCurrentUrl()).includes('HomePage')) {
+                await this.browser.click(this.Home);
+                this.browser.sleep(1000);
+            }
+        } catch (error) {
+            // bug: DI-27559
+            console.error(error);
+            await this.browser.navigate(`${this.url}/HomePage`);
         }
         return;
     }
