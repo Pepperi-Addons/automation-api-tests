@@ -24,6 +24,7 @@ export async function ResourceListTests(email: string, password: string, client:
     const date = new Date();
     const generalService = new GeneralService(client);
     const udcService = new UDCService(generalService);
+    const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
     // const papi_resources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
 
     await generalService.baseAddonVersionsInstallation(varPass);
@@ -325,14 +326,13 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
                 expect(upsertResponse.Name).to.equal(resource_name_sanity);
                 expect(upsertResponse.Fields).to.be.an('object');
-                expect(Object.keys(upsertResponse)).to.eql(['name', 'age']);
+                if (upsertResponse.Fields) expect(Object.keys(upsertResponse.Fields)).to.eql(['name', 'age']);
             });
 
             it(`Upsert "${resource_name_pipeline}" Collection`, async function () {
                 const bodyOfCollection = udcService.prepareDataForUdcCreation({
                     nameOfCollection: resource_name_pipeline,
                     descriptionOfCollection: 'Created with Automation',
-                    typeOfCollection: 'contained',
                     fieldsOfCollection: [
                         {
                             classType: 'Primitive',
@@ -356,7 +356,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
                 expect(upsertResponse.Name).to.equal(resource_name_pipeline);
                 expect(upsertResponse.Fields).to.be.an('object');
-                expect(Object.keys(upsertResponse)).to.eql(['name', 'age']);
+                if (upsertResponse.Fields) expect(Object.keys(upsertResponse.Fields)).to.eql(['name', 'age']);
             });
 
             it(`Upsert "${resource_name_from_account_dashborad}" Collection`, async function () {
@@ -451,13 +451,14 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
                 expect(upsertResponse.Name).to.equal(resource_name_from_account_dashborad);
                 expect(upsertResponse.Fields).to.be.an('object');
-                expect(Object.keys(upsertResponse)).to.eql([
-                    'of_account',
-                    'best_seller_item',
-                    'max_quantity',
-                    'discount_rate',
-                    'offered_discount_location',
-                ]);
+                if (upsertResponse.Fields)
+                    expect(Object.keys(upsertResponse.Fields)).to.eql([
+                        'of_account',
+                        'best_seller_item',
+                        'max_quantity',
+                        'offered_discount_location',
+                        'discount_rate',
+                    ]);
             });
         });
 
@@ -468,6 +469,11 @@ export async function ResourceListTests(email: string, password: string, client:
 
             it('Manual Resync', async () => {
                 await resourceListUtils.performManualResync(client);
+            });
+
+            it(`Logout Login`, async () => {
+                await resourceListUtils.logOutLogIn(email, password);
+                await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
             });
 
             describe('Views & Editors Full Functionality test', async function () {
@@ -1165,14 +1171,15 @@ export async function ResourceListTests(email: string, password: string, client:
                     await webAppHomePage.collectEndTestData(this);
                 });
 
-                it(`${syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'} --> Navigating to ${
-                    client.BaseURL
-                }/${slugDisplayNameAccountDashboard}`, async function () {
-                    await driver.navigate(`${client.BaseURL}/${slugDisplayNameAccountDashboard}`);
+                it(`${
+                    syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'
+                } --> Navigating to ${baseUrl}/${slug_path_account_dashboard}`, async function () {
+                    await driver.navigate(`${baseUrl}/${slug_path_account_dashboard}`);
+                    await resourceList.isSpinnerDone();
                     resourceList.pause(1 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `At ${client.BaseURL}/${slugDisplayNameAccountDashboard}`,
+                        title: `At ${baseUrl}/${slug_path_account_dashboard}`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
@@ -1246,14 +1253,15 @@ export async function ResourceListTests(email: string, password: string, client:
                     expect(syncStatusOfReferenceAccount).to.not.equal(previousSyncStatus);
                 });
 
-                it(`${syncStatusOfReferenceAccount ? 'Online Only' : 'Offline & Online'} --> Navigating to ${
-                    client.BaseURL
-                }/${slugDisplayNameAccountDashboard}`, async function () {
-                    await driver.navigate(`${client.BaseURL}/${slugDisplayNameAccountDashboard}`);
+                it(`${
+                    syncStatusOfReferenceAccount ? 'Online Only' : 'Offline & Online'
+                } --> Navigating to ${baseUrl}/${slug_path_account_dashboard}`, async function () {
+                    await driver.navigate(`${baseUrl}/${slug_path_account_dashboard}`);
+                    await resourceList.isSpinnerDone();
                     resourceList.pause(1 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `At ${client.BaseURL}/${slugDisplayNameAccountDashboard}`,
+                        title: `At ${baseUrl}/${slug_path_account_dashboard}`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
