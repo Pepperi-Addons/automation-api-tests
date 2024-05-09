@@ -205,7 +205,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
             expect(numOfListingsIn_ContainedArray).to.be.greaterThan(0);
         });
 
-        it(`Setting Collection's Sync Definition to True & Validating Collection's Structure + Fields`, async () => {
+        it(`Setting Collection's Sync Definition to True (Offline Online) & Validating Collection's Structure + Fields`, async () => {
             const collectionsNames = Object.keys(udcsForTest);
             const postSchemeResponses = await Promise.all(
                 collectionsNames.map(async (collectionName) => {
