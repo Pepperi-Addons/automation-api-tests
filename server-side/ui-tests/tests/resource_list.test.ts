@@ -54,6 +54,7 @@ export async function ResourceListTests(email: string, password: string, client:
     const resource_name_pipeline = 'NameAgeAuto';
     const coreResourcesSlugDisplayName = 'Auto Test';
     const core_resources_slug_path = 'auto_test';
+    const slug_path_ref_acc = 'reference_account_auto';
     const coreResourcesUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
     const test_generic_decsription = 'for RL automated testing';
     const resource_name_from_account_dashborad = 'ReferenceAccountAuto';
@@ -1172,11 +1173,16 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`${
-                    syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'
-                } --> Navigating to ${baseUrl}/${slug_path_account_dashboard}`, async function () {
+                    syncStatusOfReferenceAccount ? 'Online Only' : 'Offline & Online'
+                } --> Navigating to ${baseUrl}/${slug_path_ref_acc}`, async function () {
                     await driver.navigate(`${baseUrl}/${slug_path_account_dashboard}`);
                     await resourceList.isSpinnerDone();
                     resourceList.pause(1 * 1000);
+                    const currentURL = await driver.getCurrentUrl();
+                    addContext(this, {
+                        title: `Current URL:`,
+                        value: currentURL,
+                    });
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `At ${baseUrl}/${slug_path_account_dashboard}`,
@@ -1218,8 +1224,8 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`Changing Sync definition at ${resource_name_from_account_dashborad} from ${
-                    syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'
-                } to ${syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'}`, async () => {
+                    syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'
+                } to ${syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'}`, async () => {
                     previousSyncStatus = syncStatusOfReferenceAccount;
                     const newSyncDefinition = syncStatusOfReferenceAccount
                         ? { Sync: false }
@@ -1233,7 +1239,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
                 });
 
-                it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async () => {
+                it(`Manual ${syncStatusOfReferenceAccount ? 'Sync' : 'Resync'}`, async () => {
                     syncStatusOfReferenceAccount
                         ? await resourceListUtils.performManualResync(client)
                         : await resourceListUtils.performManualSync(client);
@@ -1254,8 +1260,8 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`${
-                    syncStatusOfReferenceAccount ? 'Online Only' : 'Offline & Online'
-                } --> Navigating to ${baseUrl}/${slug_path_account_dashboard}`, async function () {
+                    syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'
+                } --> Navigating to ${baseUrl}/${slug_path_ref_acc}`, async function () {
                     await driver.navigate(`${baseUrl}/${slug_path_account_dashboard}`);
                     await resourceList.isSpinnerDone();
                     resourceList.pause(1 * 1000);
