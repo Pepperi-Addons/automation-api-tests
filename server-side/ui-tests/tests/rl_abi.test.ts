@@ -226,7 +226,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 expect(response.Name).to.equal(collectionName);
                 expect(response.Fields).to.be.an('object');
                 if (response.Fields != undefined) {
-                    expect(Object.keys(response.Fields)).to.be.greaterThan(0).and.to.eql(fieldsNames);
+                    expect(Object.keys(response.Fields)).to.have.lengthOf.greaterThan(0).and.to.eql(fieldsNames);
                     fieldsNames.forEach((fieldName) => {
                         const expectedFieldType = udcsForTest[collectionName][fieldName];
                         if (response.Fields != undefined) {
