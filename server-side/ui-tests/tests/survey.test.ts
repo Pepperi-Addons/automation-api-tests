@@ -280,6 +280,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it(`1. Create A UDC Which Extends 'surveys' Scheme Before Creating A Survey`, async function () {
                 const udcService = new UDCService(generalService);
                 const newSurveyUDCName = 'NewSurveyCollection' + generalService.generateRandomString(4);
+                console.log('about to create a new UDC named: ' + newSurveyUDCName);
                 const response = await udcService.createUDCWithFields(
                     newSurveyUDCName,
                     [],
@@ -289,6 +290,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     undefined,
                     { AddonUUID: 'dd0a85ea-7ef0-4bc1-b14f-959e0372877a', Name: 'surveys' },
                 );
+                console.log('got the response from : ' + newSurveyUDCName);
                 if (
                     generalService.papiClient['options'].baseURL.includes('staging') &&
                     response.hasOwnProperty('Fail') &&
