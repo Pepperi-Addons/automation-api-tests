@@ -3,7 +3,7 @@ export default class PricingRules {
     public dummyPPM_AccountValues_length = 0;
 
     public PPM_Values = {
-        version05: {
+        features05: {
             'ZBASE@A002@Acc01@Frag005':
                 '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
             'ZBASE@A002@Acc01@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
@@ -36,7 +36,7 @@ export default class PricingRules {
             'MTAX@A002@Acc01@Frag012': '[[true,"1555891200000","2534022144999","1","1","MTAX_A002",[[0,"I",17,"%"]]]]',
         },
 
-        version06: {
+        features06: {
             'ZBASE@A002@Acc01@Frag005':
                 '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
             'ZBASE@A002@Acc01@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
@@ -141,7 +141,7 @@ export default class PricingRules {
                 '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[260,"D",40,"%"]]]]',
         },
 
-        version07: {
+        features07: {
             'ZTEST@A002@Acc01@Frag005':
                 '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]', // illegal data (condition)
             'ZBASE@A202@Acc01@Frag005':
@@ -250,18 +250,18 @@ export default class PricingRules {
                 '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[260,"D",40,"%"]]]]',
         },
 
-        version08: {
+        features08: {
             'ZBASE@A005@dummyItem': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",100,"P"]]]]',
         },
     };
 
     public PPM_AccountValues = {
-        version07: {},
-        version08: {},
+        features07: {},
+        features08: {},
     };
 
     public UDC_PricingUdtReplacement = {
-        version08: {
+        features08: {
             'ZBASE@A002@Acc01@Frag005':
                 '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",10,"P"]]]]',
             'ZBASE@A002@Acc01@ToBr56': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A002",[[0,"S",22,"P"]]]]',
