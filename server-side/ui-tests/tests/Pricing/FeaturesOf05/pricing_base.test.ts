@@ -9,7 +9,7 @@ import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage
 import { ObjectsService } from '../../../../services';
 import { OrderPage } from '../../../pom/Pages/OrderPage';
 import { PricingData05 } from '../../../pom/addons/PricingData05';
-import { PricingData06 } from '../../../pom/addons/PricingData06';
+// import { PricingData06 } from '../../../pom/addons/PricingData06';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingService } from '../../../../services/pricing.service';
 import PricingRules from '../../../pom/addons/PricingRules';
@@ -20,7 +20,7 @@ export async function PricingBaseTests(
     email: string,
     password: string,
     client: Client,
-    specificVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
+    specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
 ) {
     /*
 _________________ 
@@ -68,7 +68,7 @@ _________________ Order Of Actions:
     2. Looping over states
 
         3. At Order Center: Looping over items
-        ----> retrieving pricing fields values from UI and comparing to expected data ( pricingData.testItemsValues.Base[item.name][priceField][account][state] )
+        ----> retrieving pricing fields values from UI and comparing to expected data ( pricingData[testItemsData].Base[item.name][priceField][account][state] )
 
         4. At Cart (for each state apart of "baseline"): Looping over items
         ----> same check as at order center
@@ -86,50 +86,69 @@ _________________
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
 
-    const pricingData =
-        installedPricingVersion === '5'
-            ? new PricingData05()
-            : specificVersion === 'version07for05data'
-            ? new PricingData05()
-            : new PricingData06();
+    const pricingData = new PricingData05();
 
     const pricingRules = new PricingRules();
 
     const udtFirstTableName = 'PPM_Values';
     // const udtSecondTableName = 'PPM_AccountValues';
 
+    let testItemsData = 'testItemsValues';
     let ppmValues_content;
 
     switch (installedPricingVersion) {
         case '5':
             console.info('AT installedPricingVersion CASE 5');
+            testItemsData = 'testItemsValues_version05';
             ppmValues_content = pricingRules[udtFirstTableName].features05;
             break;
 
         case '6':
             console.info('AT installedPricingVersion CASE 6');
-            ppmValues_content = pricingRules[udtFirstTableName].features06;
+            ppmValues_content = {
+                ...pricingRules[udtFirstTableName].features05,
+                ...pricingRules[udtFirstTableName].features06,
+            };
             break;
 
         case '7':
             console.info('AT installedPricingVersion CASE 7');
+            testItemsData = specialVersion === 'version07for05data' ? 'testItemsValues_version05' : 'testItemsValues';
             ppmValues_content =
-                specificVersion === 'version07for05data'
+                specialVersion === 'version07for05data'
                     ? pricingRules[udtFirstTableName].features05
-                    : pricingRules[udtFirstTableName].features07;
+                    : {
+                          ...pricingRules[udtFirstTableName].features05,
+                          ...pricingRules[udtFirstTableName].features06,
+                          ...pricingRules[udtFirstTableName].features07,
+                      };
             break;
 
         case '8':
             console.info('AT installedPricingVersion CASE 8');
             ppmValues_content =
-                specificVersion === 'version08for07data'
-                    ? pricingRules[udtFirstTableName].features07
-                    : pricingRules[udtFirstTableName].features08;
+                specialVersion === 'version08for07data'
+                    ? {
+                          ...pricingRules[udtFirstTableName].features05,
+                          ...pricingRules[udtFirstTableName].features06,
+                          ...pricingRules[udtFirstTableName].features07,
+                      }
+                    : {
+                          ...pricingRules[udtFirstTableName].features05,
+                          ...pricingRules[udtFirstTableName].features06,
+                          ...pricingRules[udtFirstTableName].features07,
+                          ...pricingRules[udtFirstTableName].features08,
+                      };
             break;
 
         default:
             console.info('AT installedPricingVersion Default');
-            ppmValues_content = pricingRules[udtFirstTableName].features07;
+            ppmValues_content = {
+                ...pricingRules[udtFirstTableName].features05,
+                ...pricingRules[udtFirstTableName].features06,
+                ...pricingRules[udtFirstTableName].features07,
+                ...pricingRules[udtFirstTableName].features08,
+            };
             break;
     }
 
@@ -381,26 +400,24 @@ _________________
                                 switch (state) {
                                     case 'baseline':
                                         expectedNPMCalcMessageLength =
-                                            pricingData.testItemsValues.Base[item.name]['NPMCalcMessage'][account][
-                                                state
-                                            ].length;
+                                            pricingData[testItemsData].Base[item.name]['NPMCalcMessage'][account][state]
+                                                .length;
                                         expect(priceTSAs['NPMCalcMessage'].length).equals(expectedNPMCalcMessageLength);
                                         break;
 
                                     default:
                                         expectedNPMCalcMessageLength =
-                                            pricingData.testItemsValues.Base[item.name]['NPMCalcMessage'][account][
+                                            pricingData[testItemsData].Base[item.name]['NPMCalcMessage'][account][
                                                 'baseline'
                                             ].length +
-                                            pricingData.testItemsValues.Base[item.name]['NPMCalcMessage'][account][
-                                                state
-                                            ].length;
+                                            pricingData[testItemsData].Base[item.name]['NPMCalcMessage'][account][state]
+                                                .length;
                                         expect(priceTSAs['NPMCalcMessage'].length).equals(expectedNPMCalcMessageLength);
                                         break;
                                 }
                                 priceFields.forEach((priceField) => {
                                     const expectedValue =
-                                        pricingData.testItemsValues.Base[item.name][priceField][account][state];
+                                        pricingData[testItemsData].Base[item.name][priceField][account][state];
                                     expect(priceTSAs[priceField]).equals(expectedValue);
                                 });
                                 driver.sleep(0.2 * 1000);
@@ -466,7 +483,7 @@ _________________
                                         // expect(totalUnitsAmount).equals(expectedAmount);
                                         priceFields.forEach((priceField) => {
                                             const expextedValue =
-                                                pricingData.testItemsValues.Base[item.name][priceField][account][state];
+                                                pricingData[testItemsData].Base[item.name][priceField][account][state];
                                             expect(priceTSAs[priceField]).equals(expextedValue);
                                         });
                                     });
