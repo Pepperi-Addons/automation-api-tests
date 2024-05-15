@@ -53,6 +53,7 @@ export class DevTest {
         adminBaseUserPass,
         version: string,
     ) {
+        debugger;
         this.addonName = addonName;
         this.addonUUID = DevTest.convertAddonNameToUUIDForDevTests(addonName.toUpperCase());
         this.addonTestsURL = `/addons/api/async/${this.addonUUID}/tests/tests`;
@@ -72,6 +73,7 @@ export class DevTest {
         if (this.addonUUID === '00000000-0000-0000-0000-0000000f11e5' && version.includes('1.3')) {
             //PFS
             this.isPFSNebulaDist = true;
+            debugger;
         } else {
             this.isPFSNebulaDist = false;
         }
@@ -305,6 +307,7 @@ export class DevTest {
                             addonDep[index].cpi_data = ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'];
                         }
                     }
+                    depObjSync['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.3.%'];
                     depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
                     depObjSync['Nebula'] = ['00000000-0000-0000-0000-000000006a91', ''];
                 } else {
