@@ -9,7 +9,7 @@ import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage
 import { ObjectsService } from '../../../../services';
 import { OrderPage } from '../../../pom/Pages/OrderPage';
 import { PricingData05 } from '../../../pom/addons/PricingData05';
-import { PricingData06 } from '../../../pom/addons/PricingData06';
+// import { PricingData06 } from '../../../pom/addons/PricingData06';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingService } from '../../../../services/pricing.service';
 import PricingRules from '../../../pom/addons/PricingRules';
@@ -29,7 +29,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
     email: string,
     password: string,
     client: Client,
-    specificVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
+    specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
 ) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
@@ -45,45 +45,64 @@ export async function PricingAdditionalGroupsReadonlyTests(
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
 
-    const pricingData =
-        installedPricingVersion === '5'
-            ? new PricingData05()
-            : specificVersion === 'version07for05data'
-            ? new PricingData05()
-            : new PricingData06();
+    const pricingData = new PricingData05();
 
+    let testItemsData = 'testItemsValues';
     let ppmValues_content;
 
     switch (installedPricingVersion) {
         case '5':
             console.info('AT installedPricingVersion CASE 5');
+            testItemsData = 'testItemsValues_version05';
             ppmValues_content = pricingRules[udtFirstTableName].features05;
             break;
 
         case '6':
             console.info('AT installedPricingVersion CASE 6');
-            ppmValues_content = pricingRules[udtFirstTableName].features06;
+            ppmValues_content = {
+                ...pricingRules[udtFirstTableName].features05,
+                ...pricingRules[udtFirstTableName].features06,
+            };
             break;
 
         case '7':
             console.info('AT installedPricingVersion CASE 7');
+            testItemsData = specialVersion === 'version07for05data' ? 'testItemsValues_version05' : 'testItemsValues';
             ppmValues_content =
-                specificVersion === 'version07for05data'
+                specialVersion === 'version07for05data'
                     ? pricingRules[udtFirstTableName].features05
-                    : pricingRules[udtFirstTableName].features07;
+                    : {
+                          ...pricingRules[udtFirstTableName].features05,
+                          ...pricingRules[udtFirstTableName].features06,
+                          ...pricingRules[udtFirstTableName].features07,
+                      };
             break;
 
         case '8':
             console.info('AT installedPricingVersion CASE 8');
             ppmValues_content =
-                specificVersion === 'version08for07data'
-                    ? pricingRules[udtFirstTableName].features07
-                    : pricingRules[udtFirstTableName].features08;
+                specialVersion === 'version08for07data'
+                    ? {
+                          ...pricingRules[udtFirstTableName].features05,
+                          ...pricingRules[udtFirstTableName].features06,
+                          ...pricingRules[udtFirstTableName].features07,
+                      }
+                    : {
+                          ...pricingRules[udtFirstTableName].features05,
+                          ...pricingRules[udtFirstTableName].features06,
+                          ...pricingRules[udtFirstTableName].features07,
+                          ...pricingRules[udtFirstTableName].features08,
+                      };
             break;
 
         default:
             console.info('AT installedPricingVersion Default');
-            ppmValues_content = pricingRules[udtFirstTableName].features07;
+            ppmValues_content = {
+                ...pricingRules[udtFirstTableName].features05,
+                ...pricingRules[udtFirstTableName].features06,
+                ...pricingRules[udtFirstTableName].features07,
+                ...pricingRules[udtFirstTableName].features08,
+            };
             break;
     }
 
@@ -477,15 +496,15 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'NPMCalcMessage',
                                     ]);
                                     const expectedNPMCalcMessageLength =
-                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData[testItemsData].Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ]['baseline'].length +
-                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData[testItemsData].Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ][states[index]].length;
                                     priceFields.forEach((priceField) => {
                                         const expectedValue =
-                                            pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][
+                                            pricingData[testItemsData].Additional[item_forFreeGoods][priceField][
                                                 account
                                             ][states[index]];
                                         expect(ToBr55priceTSAs_OC[priceField]).equals(expectedValue);
@@ -518,13 +537,13 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                     'NPMCalcMessage',
                                 ]);
                                 const expectedNPMCalcMessageLength =
-                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
-                                        account
-                                    ]['baseline'].length;
+                                    pricingData[testItemsData].Additional[item_forFreeGoods]['NPMCalcMessage'][account][
+                                        'baseline'
+                                    ].length;
                                 await pricingService.clearOrderCenterSearch();
                                 priceFields.forEach((priceField) => {
                                     const expectedValue =
-                                        pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][account][
+                                        pricingData[testItemsData].Additional[item_forFreeGoods][priceField][account][
                                             'baseline'
                                         ];
                                     expect(ToBr55priceTSAs_OC[priceField]).equals(expectedValue);
@@ -584,15 +603,15 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'NPMCalcMessage',
                                     ]);
                                     const expectedNPMCalcMessageLength =
-                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData[testItemsData].Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ]['baseline'].length +
-                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData[testItemsData].Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ][states[index]].length;
                                     priceFields.forEach((priceField) => {
                                         const expectedValue =
-                                            pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][
+                                            pricingData[testItemsData].Additional[item_forFreeGoods][priceField][
                                                 account
                                             ][states[index]];
                                         expect(Drug0002priceTSAs_OC[priceField]).equals(expectedValue);
@@ -632,16 +651,16 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                     'NPMCalcMessage',
                                 ]);
                                 const expectedNPMCalcMessageLength =
-                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
-                                        account
-                                    ]['baseline'].length +
-                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
-                                        account
-                                    ]['9case(54units)'].length;
+                                    pricingData[testItemsData].Additional[item_forFreeGoods]['NPMCalcMessage'][account][
+                                        'baseline'
+                                    ].length +
+                                    pricingData[testItemsData].Additional[item_forFreeGoods]['NPMCalcMessage'][account][
+                                        '9case(54units)'
+                                    ].length;
                                 await pricingService.clearOrderCenterSearch();
                                 priceFields.forEach((priceField) => {
                                     const expectedValue =
-                                        pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][account][
+                                        pricingData[testItemsData].Additional[item_forFreeGoods][priceField][account][
                                             'baseline'
                                         ];
                                     expect(Drug0002priceTSAs_OC[priceField]).equals(expectedValue);
@@ -702,15 +721,15 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'NPMCalcMessage',
                                     ]);
                                     const expectedNPMCalcMessageLength =
-                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData[testItemsData].Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ]['baseline'].length +
-                                        pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
+                                        pricingData[testItemsData].Additional[item_forFreeGoods]['NPMCalcMessage'][
                                             account
                                         ][states[index]].length;
                                     priceFields.forEach((priceField) => {
                                         const expectedValue =
-                                            pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][
+                                            pricingData[testItemsData].Additional[item_forFreeGoods][priceField][
                                                 account
                                             ][states[index]];
                                         expect(Drug0004priceTSAs_OC[priceField]).equals(expectedValue);
@@ -750,15 +769,15 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                     'NPMCalcMessage',
                                 ]);
                                 const expectedNPMCalcMessageLength =
-                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
-                                        account
-                                    ]['baseline'].length +
-                                    pricingData.testItemsValues.Additional[item_forFreeGoods]['NPMCalcMessage'][
-                                        account
-                                    ]['2case(12units)'].length;
+                                    pricingData[testItemsData].Additional[item_forFreeGoods]['NPMCalcMessage'][account][
+                                        'baseline'
+                                    ].length +
+                                    pricingData[testItemsData].Additional[item_forFreeGoods]['NPMCalcMessage'][account][
+                                        '2case(12units)'
+                                    ].length;
                                 priceFields.forEach((priceField) => {
                                     const expectedValue =
-                                        pricingData.testItemsValues.Additional[item_forFreeGoods][priceField][account][
+                                        pricingData[testItemsData].Additional[item_forFreeGoods][priceField][account][
                                             'baseline'
                                         ];
                                     expect(Drug0004priceTSAs_OC[priceField]).equals(expectedValue);
@@ -964,9 +983,9 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                     switch (priceField) {
                                         case 'PriceBaseUnitPriceAfter1':
                                             const expectedValue =
-                                                pricingData.testItemsValues.Additional[item][
-                                                    'PriceBaseUnitPriceAfter1'
-                                                ][account]['baseline'];
+                                                pricingData[testItemsData].Additional[item]['PriceBaseUnitPriceAfter1'][
+                                                    account
+                                                ]['baseline'];
                                             expect(Drug0002_priceTSAsCart[priceField]).to.equal(expectedValue);
                                             break;
 
@@ -1013,7 +1032,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         switch (priceField) {
                                             case 'PriceBaseUnitPriceAfter1':
                                                 const expectedValue =
-                                                    pricingData.testItemsValues.Additional[item].ItemPrice;
+                                                    pricingData[testItemsData].Additional[item].ItemPrice;
                                                 expect(ToBr10_priceTSAsCart[priceField]).to.equal(expectedValue);
                                                 break;
 
@@ -1089,8 +1108,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                 priceFields.forEach((priceField) => {
                                     switch (priceField) {
                                         case 'PriceBaseUnitPriceAfter1':
-                                            const expectedValue =
-                                                pricingData.testItemsValues.Additional[item].ItemPrice;
+                                            const expectedValue = pricingData[testItemsData].Additional[item].ItemPrice;
                                             expect(ToBr55_priceTSAsCart[priceField]).to.equal(expectedValue);
                                             break;
 
@@ -1313,22 +1331,22 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'Amount',
                                     ]);
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Name,
                                     );
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Type,
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Value,
                                     );
                                     break;
@@ -1336,9 +1354,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                 default:
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                            '3units'
-                                        ],
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.OtherAcc['3units'],
                                     );
                                     break;
                             }
@@ -1365,7 +1381,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                             'Amount',
                                         ]);
                                         expect(MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                            pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01[
                                                 '3units'
                                             ][0].Name,
                                         );
@@ -1373,12 +1389,12 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                             Object.keys(MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0]),
                                         ).eql(['Name', 'Type', 'Value', 'Amount']);
                                         expect(MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                            pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01[
                                                 '3units'
                                             ][0].Conditions[0].Name,
                                         );
                                         expect(MakeUpItem_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                            pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
+                                            pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01[
                                                 '3units'
                                             ][0].Conditions[0].Type,
                                         );
@@ -1389,7 +1405,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                             .to.be.an('array')
                                             .with.lengthOf(0);
                                         expect(Object.keys(MakeUpItem_priceTSAsCart.NPMCalcMessage)).eql(
-                                            pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                            pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
                                                 '3units'
                                             ],
                                         );
@@ -1426,22 +1442,22 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'Amount',
                                     ]);
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Name,
                                     );
                                     expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Type,
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Value,
                                     );
                                     break;
@@ -1449,9 +1465,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                 default:
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                            '3units'
-                                        ],
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.OtherAcc['3units'],
                                     );
                                     break;
                             }
@@ -1485,22 +1499,22 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'Amount',
                                     ]);
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Name,
                                     );
                                     expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Type,
                                     );
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['3units'][0]
                                             .Conditions[0].Value,
                                     );
                                     break;
@@ -1508,9 +1522,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                 default:
                                     expect(MakeUp018_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp018_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                            '3units'
-                                        ],
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.OtherAcc['3units'],
                                     );
                                     break;
                             }
@@ -1544,22 +1556,22 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'Amount',
                                     ]);
                                     expect(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
                                             .Name,
                                     );
                                     expect(Object.keys(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
                                             .Conditions[0].Type,
                                     );
                                     expect(MakeUp001_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['6units'][0]
                                             .Conditions[0].Value,
                                     );
                                     break;
@@ -1567,9 +1579,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                 default:
                                     expect(MakeUp001_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp001_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                            '6units'
-                                        ],
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.OtherAcc['6units'],
                                     );
                                     break;
                             }
@@ -1603,22 +1613,22 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'Amount',
                                     ]);
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Name,
                                     );
                                     expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Conditions[0].Type,
                                     );
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Conditions[0].Value,
                                     );
                                     break;
@@ -1626,9 +1636,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                 default:
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                            '7units'
-                                        ],
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.OtherAcc['7units'],
                                     );
                                     break;
                             }
@@ -1662,34 +1670,30 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'Amount',
                                     ]);
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '11units'
-                                        ][0].Name,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
+                                            .Name,
                                     );
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '11units'
-                                        ][0].Conditions[0].Name,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
+                                            .Conditions[0].Name,
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '11units'
-                                        ][0].Conditions[0].Type,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
+                                            .Conditions[0].Type,
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '11units'
-                                        ][0].Conditions[0].Value,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['11units'][0]
+                                            .Conditions[0].Value,
                                     );
                                     break;
 
                                 default:
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp003_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
                                             '11units'
                                         ],
                                     );
@@ -1725,39 +1729,34 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'Amount',
                                     ]);
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '12units'
-                                        ][0].Name,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                            .Name,
                                     );
                                     expect(Object.keys(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '12units'
-                                        ][0].Conditions[0].Name,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                            .Conditions[0].Name,
                                     );
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '12units'
-                                        ][0].Conditions[0].Type,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                            .Conditions[0].Type,
                                     );
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Value).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '12units'
-                                        ][0].Conditions[0].Value,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                            .Conditions[0].Value,
                                     );
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Amount).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '12units'
-                                        ][0].Conditions[0].Amount,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                            .Conditions[0].Amount,
                                     );
                                     break;
 
                                 default:
                                     expect(MakeUp006_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp006_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
                                             '12units'
                                         ],
                                     );
@@ -1784,11 +1783,9 @@ export async function PricingAdditionalGroupsReadonlyTests(
                             );
                             driver.sleep(0.1 * 1000);
                             const expected_MakeUp003_NPMCalcMessage_baseline =
-                                pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account].baseline;
+                                pricingData[testItemsData].Group[item_forGroupRules].NPMCalcMessage[account].baseline;
                             const expected_MakeUp003_NPMCalcMessage =
-                                pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
-                                    '10units'
-                                ];
+                                pricingData[testItemsData].Group[item_forGroupRules].NPMCalcMessage[account]['10units'];
                             expect(MakeUp003_priceTSAsCart.NPMCalcMessage)
                                 .to.be.an('array')
                                 .with.lengthOf(
@@ -1801,7 +1798,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         Object.keys(expected_MakeUp003_NPMCalcMessage[0]),
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Name).eql(
-                                        pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
+                                        pricingData[testItemsData].Group[item_forGroupRules].NPMCalcMessage[account][
                                             '10units'
                                         ][0].Name,
                                     );
@@ -1809,17 +1806,17 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         Object.keys(expected_MakeUp003_NPMCalcMessage[0].Conditions[0]),
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0].Name).eql(
-                                        pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
+                                        pricingData[testItemsData].Group[item_forGroupRules].NPMCalcMessage[account][
                                             '10units'
                                         ][0].Conditions[0].Name,
                                     );
                                     expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0].Type).eql(
-                                        pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
+                                        pricingData[testItemsData].Group[item_forGroupRules].NPMCalcMessage[account][
                                             '10units'
                                         ][0].Conditions[0].Type,
                                     );
                                     // expect(MakeUp003_priceTSAsCart.NPMCalcMessage[0].Conditions[0].Value).eql(
-                                    //     pricingData.testItemsValues.Group[item_forGroupRules].NPMCalcMessage[account][
+                                    //     pricingData[testItemsData].Group[item_forGroupRules].NPMCalcMessage[account][
                                     //         '10units'
                                     //     ][0].Conditions[0].Value,
                                     // );
@@ -1854,18 +1851,18 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'Amount',
                                     ]);
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Name,
                                     );
                                     expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Conditions[0].Name,
                                     );
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['7units'][0]
                                             .Conditions[0].Type,
                                     );
                                     break;
@@ -1873,9 +1870,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                 default:
                                     expect(MakeUp002_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp002_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
-                                            '7units'
-                                        ],
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.OtherAcc['7units'],
                                     );
                                     break;
                             }
@@ -1909,29 +1904,26 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         'Amount',
                                     ]);
                                     expect(MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Name']).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '12units'
-                                        ][0].Name,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                            .Name,
                                     );
                                     expect(Object.keys(MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0])).eql(
                                         ['Name', 'Type', 'Value', 'Amount'],
                                     );
                                     expect(MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Name).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '12units'
-                                        ][0].Conditions[0].Name,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                            .Conditions[0].Name,
                                     );
                                     expect(MakeUp019_priceTSAsCart.NPMCalcMessage[0]['Conditions'][0].Type).equals(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.Acc01[
-                                            '12units'
-                                        ][0].Conditions[0].Type,
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.Acc01['12units'][0]
+                                            .Conditions[0].Type,
                                     );
                                     break;
 
                                 default:
                                     expect(MakeUp019_priceTSAsCart.NPMCalcMessage).to.be.an('array').with.lengthOf(0);
                                     expect(Object.keys(MakeUp019_priceTSAsCart.NPMCalcMessage)).eql(
-                                        pricingData.testItemsValues.Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
+                                        pricingData[testItemsData].Group.BeautyMakeUp.NPMCalcMessage.OtherAcc[
                                             '12units'
                                         ],
                                     );
@@ -2081,7 +2073,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                             // expect(totalUnitsAmount).equals(groupRuleItem[account].unitQuantity);
                                             priceFields.forEach((priceField) => {
                                                 expectedValue =
-                                                    pricingData.testItemsValues.Group['MakeUp018'][priceField][account][
+                                                    pricingData[testItemsData].Group['MakeUp018'][priceField][account][
                                                         'additional'
                                                     ]['Each'];
                                                 addContext(this, {
@@ -2092,7 +2084,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                                 // switch (priceField) {
                                                 //     case 'PriceBaseUnitPriceAfter1':
                                                 //         const expectedValue =
-                                                //             pricingData.testItemsValues['MakeUp018']['ItemPrice'];
+                                                //             pricingData[testItemsData]['MakeUp018']['ItemPrice'];
                                                 //         addContext(this, {
                                                 //             title: `TSA field "${priceField}" Values`,
                                                 //             value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
@@ -2135,7 +2127,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                                 case 'PriceBaseUnitPriceAfter1':
                                                     const expectedValue =
                                                         installedPricingVersion === '5'
-                                                            ? pricingData.testItemsValues.Group[itemName]['ItemPrice']
+                                                            ? pricingData[testItemsData].Group[itemName]['ItemPrice']
                                                             : 0;
                                                     addContext(this, {
                                                         title: `TSA field "${priceField}" Values`,
@@ -2181,7 +2173,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         switch (priceField) {
                                             case 'PriceDiscountUnitPriceAfter1':
                                                 expectedValue =
-                                                    pricingData.testItemsValues.Group[groupRuleItem.name][priceField][
+                                                    pricingData[testItemsData].Group[groupRuleItem.name][priceField][
                                                         account
                                                     ]['cart'];
                                                 addContext(this, {
@@ -2192,7 +2184,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                                 break;
                                             case 'PriceGroupDiscountUnitPriceAfter1':
                                                 expectedValue =
-                                                    pricingData.testItemsValues.Group[groupRuleItem.name][priceField][
+                                                    pricingData[testItemsData].Group[groupRuleItem.name][priceField][
                                                         account
                                                     ]['cart'];
                                                 addContext(this, {
@@ -2204,7 +2196,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
 
                                             default:
                                                 expectedValue =
-                                                    pricingData.testItemsValues.Group[groupRuleItem.name]['ItemPrice'];
+                                                    pricingData[testItemsData].Group[groupRuleItem.name]['ItemPrice'];
                                                 addContext(this, {
                                                     title: `TSA field "${priceField}" Values`,
                                                     value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
@@ -2508,12 +2500,12 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                                 switch (priceField) {
                                                     case 'PriceBaseUnitPriceAfter1':
                                                         expectedValue =
-                                                            pricingData.testItemsValues[readonlyCartItem.section][
+                                                            pricingData[testItemsData][readonlyCartItem.section][
                                                                 itemName
                                                             ][priceField][account]['additional']['Each'];
                                                         if (ifFreePlusUOM && ifFreePlusUOM.includes('Case')) {
                                                             expectedValue =
-                                                                pricingData.testItemsValues[readonlyCartItem.section][
+                                                                pricingData[testItemsData][readonlyCartItem.section][
                                                                     itemName
                                                                 ][priceField][account]['additional']['Case'];
                                                         }
@@ -2600,7 +2592,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                             if (account === 'OtherAcc') {
                                                 priceFields.forEach((priceField) => {
                                                     expectedValue =
-                                                        pricingData.testItemsValues[readonlyCartItem.section][
+                                                        pricingData[testItemsData][readonlyCartItem.section][
                                                             readonlyCartItem.name
                                                         ][priceField][account]['cart'];
                                                     addContext(this, {
@@ -2620,7 +2612,7 @@ export async function PricingAdditionalGroupsReadonlyTests(
                                         default:
                                             priceFields.forEach((priceField) => {
                                                 expectedValue =
-                                                    pricingData.testItemsValues[readonlyCartItem.section][
+                                                    pricingData[testItemsData][readonlyCartItem.section][
                                                         readonlyCartItem.name
                                                     ][priceField][account]['cart'];
                                                 addContext(this, {
