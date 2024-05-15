@@ -680,15 +680,19 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         let installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
             (addon) => addon.Addon.Name == 'Pricing',
         )?.Version;
-        let installedPricingVersion = installedPricingVersionLong?.split('.')[1];
-        await PricingUdtCleanup(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
+        await PricingUdtCleanup(
+            client,
+            installedPricingVersionLong?.startsWith('0.8') ? 'version08for07data' : undefined,
+        );
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
         installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
             (addon) => addon.Addon.Name == 'Pricing',
         )?.Version;
-        installedPricingVersion = installedPricingVersionLong?.split('.')[1];
-        await PricingUdtInsertion(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
+        await PricingUdtInsertion(
+            client,
+            installedPricingVersionLong?.startsWith('0.8') ? 'version08for07data' : undefined,
+        );
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingExclusionTests(email, pass, client);
@@ -1687,6 +1691,11 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         if (initialAddonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
             versionOfAddon = (
                 await service.getAddonsLatestAvailableVersion('5122dc6d-745b-4f46-bb8e-bd25225d350a', varPass)
+            ).latestVersion;
+        }
+        if (initialAddonUUID === '00000000-0000-0000-0000-0000000f11e5') {
+            versionOfAddon = (
+                await service.getAddonsLatestAvailableVersion('00000000-0000-0000-0000-0000000f11e5', varPass)
             ).latestVersion;
         }
         const devTest = new DevTest(
