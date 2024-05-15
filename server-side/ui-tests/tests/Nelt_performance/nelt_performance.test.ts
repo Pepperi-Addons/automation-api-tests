@@ -262,16 +262,17 @@ export async function NeltPerformanceTests(
                     await driver.untilIsVisible(neltPerformanceSelectors.ListRow);
                     Dnevni_plan_loaded = new Date().getTime();
                 } catch (error) {
+                    const errorMessage = error as Error;
                     addContext(this, {
                         title: `Inside the catch - the error thrown:`,
-                        value: error,
+                        value: errorMessage.message,
                     });
                     base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `Inside the catch`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
-                    await neltPerfomanceService.goHome();
+                    await neltPerfomanceService.toHomeScreen.bind(this)(driver);
                     await driver.click(neltPerformanceSelectors.HamburgerMenuButtonAtHome);
                     base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -2697,7 +2698,7 @@ export async function NeltPerformanceTests(
         // describe('31. Task response', async () => {});
 
         describe('CONCLUSION', async () => {
-            it(`Time Measured`, async function () {
+            it(`Measured Time List`, async function () {
                 addContext(this, {
                     title: `All Measured Times (in seconds):`,
                     value: `${JSON.stringify(timeMeasurements, null, 2)}`,
