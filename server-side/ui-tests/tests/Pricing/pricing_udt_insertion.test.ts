@@ -12,7 +12,7 @@ chai.use(promised);
 
 export async function PricingUdtInsertion(
     client: Client,
-    specificVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
+    specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
 ) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
@@ -51,28 +51,49 @@ export async function PricingUdtInsertion(
 
                     case '6':
                         console.info('AT installedPricingVersion CASE 6');
-                        ppmValues_content = pricingRules[udtFirstTableName].features06;
+                        ppmValues_content = {
+                            ...pricingRules[udtFirstTableName].features05,
+                            ...pricingRules[udtFirstTableName].features06,
+                        };
                         break;
 
                     case '7':
                         console.info('AT installedPricingVersion CASE 7');
                         ppmValues_content =
-                            specificVersion === 'version07for05data'
+                            specialVersion === 'version07for05data'
                                 ? pricingRules[udtFirstTableName].features05
-                                : pricingRules[udtFirstTableName].features07;
+                                : {
+                                      ...pricingRules[udtFirstTableName].features05,
+                                      ...pricingRules[udtFirstTableName].features06,
+                                      ...pricingRules[udtFirstTableName].features07,
+                                  };
                         break;
 
                     case '8':
                         console.info('AT installedPricingVersion CASE 8');
                         ppmValues_content =
-                            specificVersion === 'version08for07data'
-                                ? pricingRules[udtFirstTableName].features07
-                                : pricingRules[udtFirstTableName].features08;
+                            specialVersion === 'version08for07data'
+                                ? {
+                                      ...pricingRules[udtFirstTableName].features05,
+                                      ...pricingRules[udtFirstTableName].features06,
+                                      ...pricingRules[udtFirstTableName].features07,
+                                  }
+                                : {
+                                      ...pricingRules[udtFirstTableName].features05,
+                                      ...pricingRules[udtFirstTableName].features06,
+                                      ...pricingRules[udtFirstTableName].features07,
+                                      ...pricingRules[udtFirstTableName].features08,
+                                  };
                         break;
 
                     default:
                         console.info('AT installedPricingVersion Default');
-                        ppmValues_content = pricingRules[udtFirstTableName].features07;
+                        ppmValues_content = {
+                            ...pricingRules[udtFirstTableName].features05,
+                            ...pricingRules[udtFirstTableName].features06,
+                            ...pricingRules[udtFirstTableName].features07,
+                            ...pricingRules[udtFirstTableName].features08,
+                        };
                         break;
                 }
                 addContext(this, {
@@ -137,7 +158,7 @@ export async function PricingUdtInsertion(
                     case '8':
                         console.info('AT installedPricingVersion CASE 8');
                         ppmAccountValues_content =
-                            specificVersion === 'version08for07data'
+                            specialVersion === 'version08for07data'
                                 ? pricingRules[udtSecondTableName].features07
                                 : pricingRules[udtSecondTableName].features08;
                         break;
