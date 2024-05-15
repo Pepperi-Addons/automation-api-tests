@@ -34,12 +34,12 @@ export async function PricingUdcCleanup(
                 switch (installedPricingVersionShort) {
                     case '8':
                         console.info('AT installedPricingVersion CASE 8');
-                        udc_ppmValues_content = pricingRules[`UDC_${udcFirstTableName}`].version08;
+                        udc_ppmValues_content = pricingRules[`UDC_${udcFirstTableName}`].features08;
                         break;
 
                     default:
                         console.info('AT installedPricingVersion Default');
-                        udc_ppmValues_content = pricingRules[`UDC_${udcFirstTableName}`].version08;
+                        udc_ppmValues_content = pricingRules[`UDC_${udcFirstTableName}`].features08;
                         break;
                 }
                 addContext(this, {

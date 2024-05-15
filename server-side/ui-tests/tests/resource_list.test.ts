@@ -36,6 +36,7 @@ export async function ResourceListTests(email: string, password: string, client:
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%'], // to prevent open sync from being installed (2.0.%)
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // needed for filtering by account (ReferenceAccount collections)
+        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%'],
         // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
@@ -54,6 +55,7 @@ export async function ResourceListTests(email: string, password: string, client:
     const resource_name_pipeline = 'NameAgeAuto';
     const coreResourcesSlugDisplayName = 'Auto Test';
     const core_resources_slug_path = 'auto_test';
+    const slug_path_ref_acc = 'reference_account_auto';
     const coreResourcesUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
     const test_generic_decsription = 'for RL automated testing';
     const resource_name_from_account_dashborad = 'ReferenceAccountAuto';
@@ -75,7 +77,7 @@ export async function ResourceListTests(email: string, password: string, client:
         'AddonUUID',
     ];
     const getSchemesResponse = await udcService.getSchemes({ where: `Name=${resource_name_from_account_dashborad}` });
-    let syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+    const syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
 
     let driver: Browser;
@@ -90,7 +92,7 @@ export async function ResourceListTests(email: string, password: string, client:
     let resourceListUtils: E2EUtils;
     let resourceListBlock: ResourceListBlock;
     let accountDashboardLayout: AccountDashboardLayout;
-    let previousSyncStatus: boolean | undefined;
+    // let previousSyncStatus: boolean | undefined; // bug: DI-27584
     let random_name: string;
     let editorName: string;
     let editor_decsription: string;
@@ -1046,117 +1048,118 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                 });
 
-                it(`Changing Sync definition at ${resource_name_from_account_dashborad} from ${
-                    syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'
-                } to ${syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'}`, async () => {
-                    previousSyncStatus = syncStatusOfReferenceAccount;
-                    const newSyncDefinition = syncStatusOfReferenceAccount
-                        ? { Sync: false }
-                        : { Sync: true, SyncFieldLevel: false };
-                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
-                    console.info('newSyncDefinition: ', newSyncDefinition);
-                    const response = await udcService.postScheme({
-                        Name: resource_name_from_account_dashborad,
-                        SyncData: newSyncDefinition,
-                    });
-                    console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
-                });
+                // bug: DI-27584
+                // it(`Changing Sync definition at ${resource_name_from_account_dashborad} from ${
+                //     syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'
+                // } to ${syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'}`, async () => {
+                //     previousSyncStatus = syncStatusOfReferenceAccount;
+                //     const newSyncDefinition = syncStatusOfReferenceAccount
+                //         ? { Sync: false }
+                //         : { Sync: true, SyncFieldLevel: false };
+                //     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                //     console.info('newSyncDefinition: ', newSyncDefinition);
+                //     const response = await udcService.postScheme({
+                //         Name: resource_name_from_account_dashborad,
+                //         SyncData: newSyncDefinition,
+                //     });
+                //     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
+                // });
 
-                it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async () => {
-                    syncStatusOfReferenceAccount
-                        ? await resourceListUtils.performManualResync(client)
-                        : await resourceListUtils.performManualSync(client);
-                });
+                // it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async () => {
+                //     syncStatusOfReferenceAccount
+                //         ? await resourceListUtils.performManualResync(client)
+                //         : await resourceListUtils.performManualSync(client);
+                // });
 
-                it(`Logout Login`, async () => {
-                    await resourceListUtils.logOutLogIn(email, password);
-                    await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
-                });
+                // it(`Logout Login`, async () => {
+                //     await resourceListUtils.logOutLogIn(email, password);
+                //     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+                // });
 
-                it('Validating Sync definition changed', async function () {
-                    const getSchemesResponse = await udcService.getSchemes({
-                        where: `Name=${resource_name_from_account_dashborad}`,
-                    });
-                    syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
-                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
-                    expect(syncStatusOfReferenceAccount).to.not.equal(previousSyncStatus);
-                });
+                // it('Validating Sync definition changed', async function () {
+                //     const getSchemesResponse = await udcService.getSchemes({
+                //         where: `Name=${resource_name_from_account_dashborad}`,
+                //     });
+                //     syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+                //     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                //     expect(syncStatusOfReferenceAccount).to.not.equal(previousSyncStatus);
+                // });
 
-                it(`${
-                    syncStatusOfReferenceAccount ? 'Online Only' : 'Offline & Online'
-                }: Navigating to a specific Account (${accountName}) & Entering Resource View slug from Menu`, async function () {
-                    await webAppHeader.goHome();
-                    await webAppHomePage.isSpinnerDone();
-                    await webAppHomePage.clickOnBtn('Accounts');
-                    await resourceListUtils.selectAccountFromAccountList.bind(this)(driver, accountName, 'name');
-                    await resourceList.isSpinnerDone();
-                    driver.sleep(1 * 1000);
-                    let base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `At "${accountName}" dashboard`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                    await resourceList.waitTillVisible(
-                        accountDashboardLayout.AccountDashboard_HamburgerMenu_Button,
-                        15000,
-                    );
-                    await resourceList.click(accountDashboardLayout.AccountDashboard_HamburgerMenu_Button);
-                    resourceList.pause(0.2 * 1000);
-                    base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `Hamburger Menu opened`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                    await resourceList.waitTillVisible(
-                        accountDashboardLayout.AccountDashboard_HamburgerMenu_Content,
-                        15000,
-                    );
-                    resourceList.pause(1 * 1000);
-                    await resourceList.click(
-                        accountDashboardLayout.getSelectorOfAccountHomePageHamburgerMenuItemByText(
-                            slugDisplayNameAccountDashboard,
-                        ),
-                    );
-                    resourceList.pause(1 * 1000);
-                    base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `Clicked Wanted Slug at hamburger menu`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
+                // it(`${
+                //     syncStatusOfReferenceAccount ? 'Online Only' : 'Offline & Online'
+                // }: Navigating to a specific Account (${accountName}) & Entering Resource View slug from Menu`, async function () {
+                //     await webAppHeader.goHome();
+                //     await webAppHomePage.isSpinnerDone();
+                //     await webAppHomePage.clickOnBtn('Accounts');
+                //     await resourceListUtils.selectAccountFromAccountList.bind(this)(driver, accountName, 'name');
+                //     await resourceList.isSpinnerDone();
+                //     driver.sleep(1 * 1000);
+                //     let base64ImageComponent = await driver.saveScreenshots();
+                //     addContext(this, {
+                //         title: `At "${accountName}" dashboard`,
+                //         value: 'data:image/png;base64,' + base64ImageComponent,
+                //     });
+                //     await resourceList.waitTillVisible(
+                //         accountDashboardLayout.AccountDashboard_HamburgerMenu_Button,
+                //         15000,
+                //     );
+                //     await resourceList.click(accountDashboardLayout.AccountDashboard_HamburgerMenu_Button);
+                //     resourceList.pause(0.2 * 1000);
+                //     base64ImageComponent = await driver.saveScreenshots();
+                //     addContext(this, {
+                //         title: `Hamburger Menu opened`,
+                //         value: 'data:image/png;base64,' + base64ImageComponent,
+                //     });
+                //     await resourceList.waitTillVisible(
+                //         accountDashboardLayout.AccountDashboard_HamburgerMenu_Content,
+                //         15000,
+                //     );
+                //     resourceList.pause(1 * 1000);
+                //     await resourceList.click(
+                //         accountDashboardLayout.getSelectorOfAccountHomePageHamburgerMenuItemByText(
+                //             slugDisplayNameAccountDashboard,
+                //         ),
+                //     );
+                //     resourceList.pause(1 * 1000);
+                //     base64ImageComponent = await driver.saveScreenshots();
+                //     addContext(this, {
+                //         title: `Clicked Wanted Slug at hamburger menu`,
+                //         value: 'data:image/png;base64,' + base64ImageComponent,
+                //     });
+                // });
 
-                it('At Block performing checks', async function () {
-                    resourceListBlock = new ResourceListBlock(
-                        driver,
-                        `https://app.pepperi.com/${slug_path_account_dashboard}`,
-                    );
-                    await resourceListBlock.isSpinnerDone();
-                    addContext(this, {
-                        title: `Current URL`,
-                        value: `${await driver.getCurrentUrl()}`,
-                    });
-                    let base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                    await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-                    driver.sleep(0.5 * 1000);
-                    const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    const expectedViewFieldsNames =
-                        detailsByResource[resource_name_from_account_dashborad].view_fields_names;
-                    expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
-                    columnsTitles.forEach(async (columnTitle) => {
-                        const columnTitleText = await columnTitle.getText();
-                        expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
-                    });
-                    driver.sleep(0.5 * 1000);
-                    base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `After Assertions`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
+                // it('At Block performing checks', async function () {
+                //     resourceListBlock = new ResourceListBlock(
+                //         driver,
+                //         `https://app.pepperi.com/${slug_path_account_dashboard}`,
+                //     );
+                //     await resourceListBlock.isSpinnerDone();
+                //     addContext(this, {
+                //         title: `Current URL`,
+                //         value: `${await driver.getCurrentUrl()}`,
+                //     });
+                //     let base64ImageComponent = await driver.saveScreenshots();
+                //     addContext(this, {
+                //         title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
+                //         value: 'data:image/png;base64,' + base64ImageComponent,
+                //     });
+                //     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
+                //     driver.sleep(0.5 * 1000);
+                //     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
+                //     const expectedViewFieldsNames =
+                //         detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                //     expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
+                //     columnsTitles.forEach(async (columnTitle) => {
+                //         const columnTitleText = await columnTitle.getText();
+                //         expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
+                //     });
+                //     driver.sleep(0.5 * 1000);
+                //     base64ImageComponent = await driver.saveScreenshots();
+                //     addContext(this, {
+                //         title: `After Assertions`,
+                //         value: 'data:image/png;base64,' + base64ImageComponent,
+                //     });
+                // });
 
                 it('Return to Home Page', async function () {
                     await webAppHeader.goHome();
@@ -1172,93 +1175,16 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`${
-                    syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'
-                } --> Navigating to ${baseUrl}/${slug_path_account_dashboard}`, async function () {
-                    await driver.navigate(`${baseUrl}/${slug_path_account_dashboard}`);
-                    await resourceList.isSpinnerDone();
-                    resourceList.pause(1 * 1000);
-                    const base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `At ${baseUrl}/${slug_path_account_dashboard}`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
-
-                it('At Block performing checks', async function () {
-                    resourceListBlock = new ResourceListBlock(
-                        driver,
-                        `https://app.pepperi.com/${slug_path_account_dashboard}`,
-                    );
-                    await resourceListBlock.isSpinnerDone();
-                    addContext(this, {
-                        title: `Current URL`,
-                        value: `${await driver.getCurrentUrl()}`,
-                    });
-                    let base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                    await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-                    driver.sleep(0.5 * 1000);
-                    const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    const expectedViewFieldsNames =
-                        detailsByResource[resource_name_from_account_dashborad].view_fields_names;
-                    expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
-                    columnsTitles.forEach(async (columnTitle) => {
-                        const columnTitleText = await columnTitle.getText();
-                        expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
-                    });
-                    driver.sleep(0.5 * 1000);
-                    base64ImageComponent = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `After Assertions`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
-                    });
-                });
-
-                it(`Changing Sync definition at ${resource_name_from_account_dashborad} from ${
-                    syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'
-                } to ${syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'}`, async () => {
-                    previousSyncStatus = syncStatusOfReferenceAccount;
-                    const newSyncDefinition = syncStatusOfReferenceAccount
-                        ? { Sync: false }
-                        : { Sync: true, SyncFieldLevel: false };
-                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
-                    console.info('newSyncDefinition: ', newSyncDefinition);
-                    const response = await udcService.postScheme({
-                        Name: resource_name_from_account_dashborad,
-                        SyncData: newSyncDefinition,
-                    });
-                    console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
-                });
-
-                it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async () => {
-                    syncStatusOfReferenceAccount
-                        ? await resourceListUtils.performManualResync(client)
-                        : await resourceListUtils.performManualSync(client);
-                });
-
-                it(`Logout Login`, async () => {
-                    await resourceListUtils.logOutLogIn(email, password);
-                    await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
-                });
-
-                it('Validating Sync definition changed', async function () {
-                    const getSchemesResponse = await udcService.getSchemes({
-                        where: `Name=${resource_name_from_account_dashborad}`,
-                    });
-                    syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
-                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
-                    expect(syncStatusOfReferenceAccount).to.not.equal(previousSyncStatus);
-                });
-
-                it(`${
                     syncStatusOfReferenceAccount ? 'Online Only' : 'Offline & Online'
-                } --> Navigating to ${baseUrl}/${slug_path_account_dashboard}`, async function () {
+                } --> Navigating to ${baseUrl}/${slug_path_ref_acc}`, async function () {
                     await driver.navigate(`${baseUrl}/${slug_path_account_dashboard}`);
                     await resourceList.isSpinnerDone();
                     resourceList.pause(1 * 1000);
+                    const currentURL = await driver.getCurrentUrl();
+                    addContext(this, {
+                        title: `Current URL:`,
+                        value: currentURL,
+                    });
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `At ${baseUrl}/${slug_path_account_dashboard}`,
@@ -1298,6 +1224,89 @@ export async function ResourceListTests(email: string, password: string, client:
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
+
+                // bug: DI-27584
+                // it(`Changing Sync definition at ${resource_name_from_account_dashborad} from ${
+                //     syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'
+                // } to ${syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'}`, async () => {
+                //     previousSyncStatus = syncStatusOfReferenceAccount;
+                //     const newSyncDefinition = syncStatusOfReferenceAccount
+                //         ? { Sync: false }
+                //         : { Sync: true, SyncFieldLevel: false };
+                //     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                //     console.info('newSyncDefinition: ', newSyncDefinition);
+                //     const response = await udcService.postScheme({
+                //         Name: resource_name_from_account_dashborad,
+                //         SyncData: newSyncDefinition,
+                //     });
+                //     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
+                // });
+
+                // it(`Manual ${syncStatusOfReferenceAccount ? 'Sync' : 'Resync'}`, async () => {
+                //     syncStatusOfReferenceAccount
+                //         ? await resourceListUtils.performManualResync(client)
+                //         : await resourceListUtils.performManualSync(client);
+                // });
+
+                // it(`Logout Login`, async () => {
+                //     await resourceListUtils.logOutLogIn(email, password);
+                //     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+                // });
+
+                // it('Validating Sync definition changed', async function () {
+                //     const getSchemesResponse = await udcService.getSchemes({
+                //         where: `Name=${resource_name_from_account_dashborad}`,
+                //     });
+                //     syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+                //     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                //     expect(syncStatusOfReferenceAccount).to.not.equal(previousSyncStatus);
+                // });
+
+                // it(`${
+                //     syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'
+                // } --> Navigating to ${baseUrl}/${slug_path_ref_acc}`, async function () {
+                //     await driver.navigate(`${baseUrl}/${slug_path_account_dashboard}`);
+                //     await resourceList.isSpinnerDone();
+                //     resourceList.pause(1 * 1000);
+                //     const base64ImageComponent = await driver.saveScreenshots();
+                //     addContext(this, {
+                //         title: `At ${baseUrl}/${slug_path_account_dashboard}`,
+                //         value: 'data:image/png;base64,' + base64ImageComponent,
+                //     });
+                // });
+
+                // it('At Block performing checks', async function () {
+                //     resourceListBlock = new ResourceListBlock(
+                //         driver,
+                //         `https://app.pepperi.com/${slug_path_account_dashboard}`,
+                //     );
+                //     await resourceListBlock.isSpinnerDone();
+                //     addContext(this, {
+                //         title: `Current URL`,
+                //         value: `${await driver.getCurrentUrl()}`,
+                //     });
+                //     let base64ImageComponent = await driver.saveScreenshots();
+                //     addContext(this, {
+                //         title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
+                //         value: 'data:image/png;base64,' + base64ImageComponent,
+                //     });
+                //     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
+                //     driver.sleep(0.5 * 1000);
+                //     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
+                //     const expectedViewFieldsNames =
+                //         detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                //     expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
+                //     columnsTitles.forEach(async (columnTitle) => {
+                //         const columnTitleText = await columnTitle.getText();
+                //         expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
+                //     });
+                //     driver.sleep(0.5 * 1000);
+                //     base64ImageComponent = await driver.saveScreenshots();
+                //     addContext(this, {
+                //         title: `After Assertions`,
+                //         value: 'data:image/png;base64,' + base64ImageComponent,
+                //     });
+                // });
 
                 it('Return to Home Page', async function () {
                     await webAppHeader.goHome();
