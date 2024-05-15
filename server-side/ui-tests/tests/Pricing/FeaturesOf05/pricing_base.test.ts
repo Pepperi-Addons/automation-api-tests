@@ -96,14 +96,14 @@ _________________
     let testItemsData = 'testItemsValues';
     let ppmValues_content;
 
-    switch (installedPricingVersion) {
-        case '5':
+    switch (true) {
+        case installedPricingVersionLong?.startsWith('0.5'):
             console.info('AT installedPricingVersion CASE 5');
             testItemsData = 'testItemsValues_version05';
             ppmValues_content = pricingRules[udtFirstTableName].features05;
             break;
 
-        case '6':
+        case installedPricingVersionLong?.startsWith('0.6'):
             console.info('AT installedPricingVersion CASE 6');
             ppmValues_content = {
                 ...pricingRules[udtFirstTableName].features05,
@@ -111,7 +111,7 @@ _________________
             };
             break;
 
-        case '7':
+        case installedPricingVersionLong?.startsWith('0.7'):
             console.info('AT installedPricingVersion CASE 7');
             testItemsData = specialVersion === 'version07for05data' ? 'testItemsValues_version05' : 'testItemsValues';
             ppmValues_content =
@@ -124,7 +124,7 @@ _________________
                       };
             break;
 
-        case '8':
+        case installedPricingVersionLong?.startsWith('0.8'):
             console.info('AT installedPricingVersion CASE 8');
             ppmValues_content =
                 specialVersion === 'version08for07data'
