@@ -72,11 +72,11 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //papi
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //pfs
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.0.%'],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'],
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], //webapp b2b
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.7.%'], //cpi - data
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''], //cpi - data
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], //udc
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
