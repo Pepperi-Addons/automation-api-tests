@@ -21,7 +21,8 @@ import tester from '../tester';
 import * as path from 'path';
 
 export const systemAddons: any = {
-    //built for open-sync, because I cant start from installing Nebula -
+    //these are the system addons of pepperi, i.e. every dist starts with them regardless - all these are configured by: Type = 1
+    //this JSON is built for open-sync, because I cant start from installing Nebula -
     //it requires KMS permission, so if you need Nebula: create the dist THEN set KMS permission then run upg. dep. for nebula dists
     Crawler: ['f489d076-381f-4cf7-aa63-33c6489eb017', ''], // evgeny: 27/3/24 - cpi data dep.
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
@@ -58,6 +59,9 @@ export const systemAddons: any = {
 };
 
 export const testData = {
+    //these are the addons which all the "regular" dists in pepperi work with, we need them to work on latest versions -
+    //this also contains our testing addon - these addons are combined to become our basic upg. dep. set
+    //please notice that this JSON extends "system addons" so of course its still fits open sync
     Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //1.4.22 in the interim 1.4.X PFS version
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
@@ -69,12 +73,14 @@ export const testData = {
     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
 };
 
+//this may be redundant
 const testDataWithNoSync = { ...testData };
 delete testDataWithNoSync.sync;
 export const testDataNoSyncNoNebula = {
     ...testDataWithNoSync,
 };
 
+//this is the upg. dep. for nebula dists - containing nebula and locked on sync, cpi data and config versions
 const baseAddonsForNebula = { ...testData };
 baseAddonsForNebula.Slugs = ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.3.7'];
 baseAddonsForNebula.configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.%'];
@@ -86,11 +92,13 @@ export const testDataForNebulaDists = {
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
 };
 
+//this may be redundant
 //this is done because sync installations are using "phased=false"
 const testDataWithSyncForCpi = testData;
 testDataWithSyncForCpi['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''];
 testDataWithSyncForCpi['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.2.28'];
 
+//this may be redundant
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
 export const testDataWithNewSyncForCpiRegression = {
     ...testDataWithSyncForCpi,
@@ -100,19 +108,22 @@ export const testDataWithNewSyncForCpiRegression = {
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
 };
 
+//this may be redundant
 //this is done because sync installations are using "phased=false"
 const testDataWithSync = testData;
 testDataWithSync['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''];
 testDataWithSync['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', ''];
 
+//this may be redundant
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
-
 export const testDataWithNewSyncAndNebula = {
     ...testData, // already has sync
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
 };
+
+//this may be redundant
 //this is done because sync installations are using "phased=false"
 export const testDataWithNewSyncNoNebula = {
     ...testData, // already has sync
