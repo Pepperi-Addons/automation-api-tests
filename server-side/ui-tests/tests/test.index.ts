@@ -1693,6 +1693,11 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                 await service.getAddonsLatestAvailableVersion('5122dc6d-745b-4f46-bb8e-bd25225d350a', varPass)
             ).latestVersion;
         }
+        if (initialAddonUUID === '00000000-0000-0000-0000-0000000f11e5') {
+            versionOfAddon = (
+                await service.getAddonsLatestAvailableVersion('00000000-0000-0000-0000-0000000f11e5', varPass)
+            ).latestVersion;
+        }
         const devTest = new DevTest(
             addonName,
             varPass,
