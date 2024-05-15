@@ -43,13 +43,13 @@ export async function PricingUdtInsertion(
     describe('UDT Upsert - Test Suite', () => {
         describe(`UDT: "${udtFirstTableName}" insertion`, () => {
             it('getting data object according to installed version', async function () {
-                switch (installedPricingVersionShort) {
-                    case '5':
+                switch (true) {
+                    case installedPricingVersion?.startsWith('0.5'):
                         console.info('AT installedPricingVersion CASE 5');
                         ppmValues_content = pricingRules[udtFirstTableName].features05;
                         break;
 
-                    case '6':
+                    case installedPricingVersion?.startsWith('0.6'):
                         console.info('AT installedPricingVersion CASE 6');
                         ppmValues_content = {
                             ...pricingRules[udtFirstTableName].features05,
@@ -57,7 +57,7 @@ export async function PricingUdtInsertion(
                         };
                         break;
 
-                    case '7':
+                    case installedPricingVersion?.startsWith('0.7'):
                         console.info('AT installedPricingVersion CASE 7');
                         ppmValues_content =
                             specialVersion === 'version07for05data'
@@ -69,7 +69,7 @@ export async function PricingUdtInsertion(
                                   };
                         break;
 
-                    case '8':
+                    case installedPricingVersion?.startsWith('0.8'):
                         console.info('AT installedPricingVersion CASE 8');
                         ppmValues_content =
                             specialVersion === 'version08for07data'

@@ -18,7 +18,7 @@ export async function PricingUdcCleanup(
     const pricingRules = new PricingRules();
     const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
     const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'Pricing')?.Version;
-    const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
+    // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     const dateTime = new Date();
     const udcFirstTableName = 'PricingUdtReplacement';
     // const udcSecondTableName = 'future_udc_table_name';
@@ -31,8 +31,8 @@ export async function PricingUdcCleanup(
     } | ${dateTime}`, () => {
         describe(`UDC: "${udcFirstTableName}" cleanup`, () => {
             it('getting data object according to installed version', async function () {
-                switch (installedPricingVersionShort) {
-                    case '8':
+                switch (true) {
+                    case installedPricingVersion?.startsWith('0.8'):
                         console.info('AT installedPricingVersion CASE 8');
                         udc_ppmValues_content = pricingRules[`UDC_${udcFirstTableName}`].features08;
                         break;

@@ -130,8 +130,8 @@ ________________________________________________________________________________
 
     let ppmValues_content;
 
-    switch (installedPricingVersion) {
-        case '6':
+    switch (true) {
+        case installedPricingVersion?.startsWith('0.6'):
             console.info('AT installedPricingVersion CASE 6');
             ppmValues_content = pricingRules[udtFirstTableName].features06;
             break;
