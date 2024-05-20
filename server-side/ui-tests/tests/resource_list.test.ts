@@ -1349,9 +1349,10 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
-                    numberOfResultsAccountFilter = (
-                        await driver.findElement(resourceList.NumberOfItemsInList)
-                    ).getText();
+                    const numberOfResultsAccountFilterElement = await driver.findElement(
+                        resourceList.NumberOfItemsInList,
+                    );
+                    numberOfResultsAccountFilter = (await numberOfResultsAccountFilterElement.getText()).trim();
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1491,9 +1492,10 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
-                    numberOfResultsAccountFilter = (
-                        await driver.findElement(resourceList.NumberOfItemsInList)
-                    ).getText();
+                    const numberOfResultsAccountFilterElement = await driver.findElement(
+                        resourceList.NumberOfItemsInList,
+                    );
+                    numberOfResultsAccountFilter = (await numberOfResultsAccountFilterElement.getText()).trim();
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1575,9 +1577,10 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
-                    numberOfResultsAccountFilter = (
-                        await driver.findElement(resourceList.NumberOfItemsInList)
-                    ).getText();
+                    const numberOfResultsAccountFilterElement = await driver.findElement(
+                        resourceList.NumberOfItemsInList,
+                    );
+                    numberOfResultsAccountFilter = (await numberOfResultsAccountFilterElement.getText()).trim();
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1687,9 +1690,10 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
-                    numberOfResultsAccountFilter = (
-                        await driver.findElement(resourceList.NumberOfItemsInList)
-                    ).getText();
+                    const numberOfResultsAccountFilterElement = await driver.findElement(
+                        resourceList.NumberOfItemsInList,
+                    );
+                    numberOfResultsAccountFilter = (await numberOfResultsAccountFilterElement.getText()).trim();
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
