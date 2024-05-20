@@ -59,6 +59,7 @@ export async function ResourceListTests(email: string, password: string, client:
     let createdPage;
     let deletePageResponse;
     let num_of_listings_at_account;
+    let numberOfResultsAccountFilter;
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -1301,7 +1302,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                 });
 
-                it('At Block performing checks', async function () {
+                it('At Block (Account Filter) performing checks', async function () {
                     resourceListBlock = new ResourceListBlock(
                         driver,
                         `https://app.pepperi.com/${slug_path_account_dashboard}`,
@@ -1332,6 +1333,21 @@ export async function ResourceListTests(email: string, password: string, client:
                         title: `After Assertions`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
+                    numberOfResultsAccountFilter = (
+                        await driver.findElement(resourceList.NumberOfItemsInList)
+                    ).getText();
+                });
+
+                it('Making Sure Number Of Results is correct', async function () {
+                    addContext(this, {
+                        title: `Number of Listings in "${resource_name_from_account_dashborad}" conected to "${accountName}"`,
+                        value: num_of_listings_at_account,
+                    });
+                    addContext(this, {
+                        title: `Number of Results from UI`,
+                        value: numberOfResultsAccountFilter,
+                    });
+                    expect(numberOfResultsAccountFilter).equals(num_of_listings_at_account);
                 });
 
                 // bug: DI-27584
