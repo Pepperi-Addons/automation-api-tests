@@ -226,9 +226,10 @@ process.on('unhandledRejection', async (error) => {
         error &&
         typeof error === 'object' &&
         'message' in error &&
-        (JSON.stringify(error.message).includes('Error') || JSON.stringify(error).includes('502'))
+        (JSON.stringify((error as any).message).includes('Error') ||
+            JSON.stringify((error as any).message).includes('502'))
     ) {
-        console.log(`%Unhandled Rejection: ${JSON.stringify(error.message)}`, ConsoleColors.Error);
+        console.log(`%Unhandled Rejection: ${JSON.stringify((error as any).message)}`, ConsoleColors.Error);
         console.log(
             `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
             ConsoleColors.SystemInformation,
