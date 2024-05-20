@@ -59,7 +59,7 @@ export class UpsertResourceFieldsToView extends UpsertResourceFields implements 
             this.Columns = [];
             for (const field of fields) {
                 this.Columns.push({ Width: 10 });
-                console.info(`field: ${field}`);
+                console.info(`field: ${JSON.stringify(field, null, 2)}`);
             }
         }
     }

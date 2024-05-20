@@ -374,13 +374,15 @@ export async function NeltPerformanceTests(
                         1,
                     )} s`,
                 });
-                timeMeasurements['Home Screen --> Dnevni izvestaji'] = Number((timeInterval / 1000).toFixed(1));
+                timeMeasurements['Home Screen --> Dnevni izvestaji (Insights)'] = Number(
+                    (timeInterval / 1000).toFixed(1),
+                );
                 timeMeasurementsRaw.push({
-                    title: 'Home Screen --> Dnevni izvestaji',
+                    title: 'Home Screen --> Dnevni izvestaji (Insights)',
                     time: timeInterval,
                 });
                 timeMeasurementsArray.push({
-                    Title: 'Home Screen --> Dnevni izvestaji',
+                    Title: 'Home Screen --> Dnevni izvestaji (Insights)',
                     Sec: Number((timeInterval / 1000).toFixed(1)),
                     Milisec: timeInterval,
                 });
