@@ -215,6 +215,25 @@ process.on('unhandledRejection', async (error) => {
             ConsoleColors.SystemInformation,
         );
         process.exit(1);
+    } else if (typeof error === 'string' && (error.includes('Error') || error.includes('502'))) {
+        console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
+        console.log(
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
+    } else if (
+        error &&
+        typeof error === 'object' &&
+        'message' in error &&
+        (JSON.stringify(error.message).includes('Error') || JSON.stringify(error).includes('502'))
+    ) {
+        console.log(`%Unhandled Rejection: ${JSON.stringify(error.message)}`, ConsoleColors.Error);
+        console.log(
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
     } else {
         console.log(`%cError unhandledRejection: ${error}`, ConsoleColors.Error);
         console.debug(`%cSleep: ${4000} milliseconds`, ConsoleColors.Information);
