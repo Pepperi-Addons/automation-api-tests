@@ -5,6 +5,8 @@ import { expect } from 'chai';
 import { WebAppSettingsSidePanel } from './Components/WebAppSettingsSidePanel';
 import { WebAppHomePage } from './Pages/WebAppHomePage';
 import { WebAppHeader } from './WebAppHeader';
+import addContext from 'mochawesome/addContext';
+import { Context } from 'vm';
 
 export class AccountDashboardLayout extends AddonPage {
     // Account Dashborad Layout
@@ -160,12 +162,14 @@ export class AccountDashboardLayout extends AddonPage {
     }
 
     public async unconfigureFromAccountSelectedSectionByProfile(
+        this: Context,
         driver: Browser,
         deletionText: string,
         selectedSection: 'Menu' = 'Menu', // TOBE expended upon need
         profile: 'Admin' | 'Rep' | 'Buyer' = 'Rep',
         cleanupText?: string,
     ) {
+        const accountDashboardLayout = new AccountDashboardLayout(driver);
         const webAppHomePage = new WebAppHomePage(driver);
         const webAppHeader = new WebAppHeader(driver);
         const settingsSidePanel = new WebAppSettingsSidePanel(driver);
@@ -180,69 +184,106 @@ export class AccountDashboardLayout extends AddonPage {
                 await webAppHomePage.isSpinnerDone();
                 await webAppHeader.openSettings();
                 await webAppHeader.isSpinnerDone();
-                this.pause(0.5 * 1000);
+                accountDashboardLayout.pause(0.5 * 1000);
                 await settingsSidePanel.selectSettingsByID('Accounts');
                 await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
                 for (let i = 0; i < 2; i++) {
-                    this.pause(10 * 1000);
+                    accountDashboardLayout.pause(10 * 1000);
                     try {
-                        await this.isSpinnerDone();
-                        await driver.switchTo(this.AddonContainerIframe);
-                        await this.waitTillVisible(this.AccountDashboardLayout_Container, 5000);
+                        await accountDashboardLayout.isSpinnerDone();
+                        await driver.switchTo(accountDashboardLayout.AddonContainerIframe);
+                        await accountDashboardLayout.waitTillVisible(
+                            accountDashboardLayout.AccountDashboardLayout_Container,
+                            5 * 1000,
+                        );
                         break;
                     } catch (error) {
                         console.error(error);
                     }
                 }
-                await this.waitTillVisible(this.AccountDashboardLayout_Title, 5000);
-                await this.waitTillVisible(this.AccountDashboardLayout_ListContainer, 5000);
-                await this.waitTillVisible(this[selectedSectionUnderAccount], 5000);
-                await this.clickElement(selectedSectionUnderAccount);
-                await this.waitTillVisible(
-                    this.getSelectorOfPencilButtonOfSelectedSection(selectedSectionUnderAccount),
-                    5000,
+                await accountDashboardLayout.waitTillVisible(
+                    accountDashboardLayout.AccountDashboardLayout_Title,
+                    5 * 1000,
                 );
-                await this.click(this.getSelectorOfPencilButtonOfSelectedSection(selectedSectionUnderAccount));
-                await this.waitTillVisible(this.AccountDashboardLayout_ConfigPage_Title, 5000);
+                await accountDashboardLayout.waitTillVisible(
+                    accountDashboardLayout.AccountDashboardLayout_ListContainer,
+                    5 * 1000,
+                );
+                await accountDashboardLayout.waitTillVisible(
+                    accountDashboardLayout[selectedSectionUnderAccount],
+                    5 * 1000,
+                );
+                await accountDashboardLayout.clickElement(selectedSectionUnderAccount);
+                await accountDashboardLayout.waitTillVisible(
+                    accountDashboardLayout.getSelectorOfPencilButtonOfSelectedSection(selectedSectionUnderAccount),
+                    5 * 1000,
+                );
+                await accountDashboardLayout.click(
+                    accountDashboardLayout.getSelectorOfPencilButtonOfSelectedSection(selectedSectionUnderAccount),
+                );
+                await accountDashboardLayout.waitTillVisible(
+                    accountDashboardLayout.AccountDashboardLayout_ConfigPage_Title,
+                    5 * 1000,
+                );
                 expect(
-                    await (await driver.findElement(this.AccountDashboardLayout_ConfigPage_Title)).getText(),
+                    await (
+                        await driver.findElement(accountDashboardLayout.AccountDashboardLayout_ConfigPage_Title)
+                    ).getText(),
                 ).to.equal(selectedSection);
-                await this.waitTillVisible(this.getSelectorOfEditCardByProfile(profile), 5000);
-                await this.click(this.getSelectorOfEditCardByProfile(profile));
-                await this.waitTillVisible(
-                    this.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(deletionText),
-                    5000,
+                await accountDashboardLayout.waitTillVisible(
+                    accountDashboardLayout.getSelectorOfEditCardByProfile(profile),
+                    5 * 1000,
                 );
-                await this.click(this.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(deletionText));
+                await accountDashboardLayout.click(accountDashboardLayout.getSelectorOfEditCardByProfile(profile));
+                await accountDashboardLayout.waitTillVisible(
+                    accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(deletionText),
+                    5 * 1000,
+                );
+                await accountDashboardLayout.click(
+                    accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(deletionText),
+                );
                 if (
                     cleanupText &&
                     (await driver.isElementVisible(
-                        this.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(cleanupText),
+                        accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(
+                            cleanupText,
+                        ),
                     ))
                 ) {
                     const configuredSlugsLeftovers = await driver.findElements(
-                        this.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(cleanupText),
+                        accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(
+                            cleanupText,
+                        ),
                     );
                     configuredSlugsLeftovers.forEach(async (leftoverSlugDeleteButton) => {
                         await leftoverSlugDeleteButton.click();
                     });
                     driver.sleep(2 * 1000);
                 }
-                await this.click(this.getSelectorOfFooterButtonByText('Save'));
+                await accountDashboardLayout.click(accountDashboardLayout.getSelectorOfFooterButtonByText('Save'));
                 driver.sleep(3 * 1000);
-                await this.waitTillVisible(
-                    this.getSelectorOfPencilButtonOfSelectedSection(selectedSectionUnderAccount),
-                    5000,
+                // await accountDashboardLayout.isSpinnerDone();
+                await accountDashboardLayout.waitTillVisible(
+                    accountDashboardLayout.getSelectorOfPencilButtonOfSelectedSection(selectedSectionUnderAccount),
+                    10 * 1000,
                 );
-                await this.click(this.getSelectorOfFooterButtonByText('Cancel'));
-                await this.waitTillVisible(this[selectedSectionUnderAccount], 5000);
+                await accountDashboardLayout.click(accountDashboardLayout.getSelectorOfFooterButtonByText('Cancel'));
+                await accountDashboardLayout.waitTillVisible(
+                    accountDashboardLayout[selectedSectionUnderAccount],
+                    5 * 1000,
+                );
                 driver.sleep(2 * 1000);
                 await driver.switchToDefaultContent();
                 driver.sleep(7 * 1000);
                 break;
             } catch (error) {
+                const err = error as Error;
                 await driver.switchToDefaultContent();
                 console.error(error);
+                addContext(this, {
+                    title: `At Catch of unconfigureFromAccountSelectedSectionByProfile function, the Error:`,
+                    value: err,
+                });
                 await webAppHeader.goHome();
             }
         }
