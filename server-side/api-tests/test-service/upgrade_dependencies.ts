@@ -12,6 +12,7 @@ export async function UpgradeDependenciesTests(generalService: GeneralService, r
     } else {
         varKey = request.body.varKeyPro;
     }
+
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testData, true);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
 

@@ -93,27 +93,14 @@ export const testDataForNebulaDists = {
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
 };
 
-//this may be redundant
-//this is done because sync installations are using "phased=false"
-const testDataWithSyncForCpi = testData;
-testDataWithSyncForCpi['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''];
-testDataWithSyncForCpi['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.2.28'];
-
-//this may be redundant
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
 export const testDataWithNewSyncForCpiRegression = {
-    ...testDataWithSyncForCpi,
+    ...testData,
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
 };
-
-//this may be redundant
-//this is done because sync installations are using "phased=false"
-const testDataWithSync = testData;
-testDataWithSync['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''];
-testDataWithSync['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', ''];
 
 //this may be redundant
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
@@ -127,7 +114,7 @@ export const testDataWithNewSyncAndNebula = {
 //this may be redundant
 //this is done because sync installations are using "phased=false"
 export const testDataWithNewSyncNoNebula = {
-    ...testData, // already has sync
+    // ...testData, // already has sync
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
 };
