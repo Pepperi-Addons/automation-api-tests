@@ -9,7 +9,7 @@ import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import E2EUtils from '../utilities/e2e_utils';
-import { BaseFormDataViewField, DataViewFieldType } from '@pepperi-addons/papi-sdk';
+import { BaseFormDataViewField, CollectionField, DataViewFieldType } from '@pepperi-addons/papi-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
 import { BasePageLayoutSectionColumn, ResourceViewEditorBlock } from '../blueprints/PageBlocksBlueprints';
@@ -17,15 +17,48 @@ import { ResourceListBlock } from '../pom/ResourceList.block';
 import { Slugs } from '../pom/addons/Slugs';
 import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 import { UDCService } from '../../services/user-defined-collections.service';
+import { ObjectsService } from '../../services/objects.service';
 
 chai.use(promised);
 
+/* Basic Functionality test of Resource List */
 export async function ResourceListTests(email: string, password: string, client: Client, varPass: string) {
     const date = new Date();
     const generalService = new GeneralService(client);
+    const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
     const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
     // const papi_resources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
+
+    let driver: Browser;
+    let webAppLoginPage: WebAppLoginPage;
+    let webAppHomePage: WebAppHomePage;
+    let webAppHeader: WebAppHeader;
+    let resourceList: ResourceList;
+    let resourceEditors: ResourceEditors;
+    let resourceViews: ResourceViews;
+    let pageBuilder: PageBuilder;
+    let slugs: Slugs;
+    let resourceListUtils: E2EUtils;
+    let resourceListBlock: ResourceListBlock;
+    let accountDashboardLayout: AccountDashboardLayout;
+    let previousSyncStatus: boolean | undefined; // bug: DI-27584
+    let random_name: string;
+    let editorName: string;
+    let editor_decsription: string;
+    let view_decsription: string;
+    let editorKey: string;
+    let viewKey: string;
+    let viewName: string;
+    let slugDisplayName: string;
+    let slug_path: string;
+    let slugDisplayNameAccountDashboard: string;
+    let slug_path_account_dashboard: string;
+    let pageName: string;
+    let pageKey: string;
+    let createdPage;
+    let deletePageResponse;
+    let num_of_listings_at_account;
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -49,6 +82,27 @@ export async function ResourceListTests(email: string, password: string, client:
     const installedResourceListVersion = (await generalService.getInstalledAddons()).find(
         (addon) => addon.Addon.Name == 'Resource List',
     )?.Version;
+
+    const accountsUUIDs = {};
+    const accounts = await objectsService.getAccounts({ page_size: -1 });
+    accountsUUIDs['First Account'] = accounts?.filter((account) => {
+        if (account.Name?.includes('First ')) {
+            return account;
+        }
+    })[0]['UUID'];
+    accountsUUIDs['Second Account'] = accounts?.filter((account) => {
+        if (account.Name?.includes('Second ')) {
+            return account;
+        }
+    })[0]['UUID'];
+    accountsUUIDs['Third Account'] = accounts?.filter((account) => {
+        if (account.Name?.includes('Third ')) {
+            return account;
+        }
+    })[0]['UUID'];
+    console.info('First Account: ', JSON.stringify(accountsUUIDs['First Account'], null, 2));
+    console.info('Second Account: ', JSON.stringify(accountsUUIDs['Second Account'], null, 2));
+    console.info('Third Account: ', JSON.stringify(accountsUUIDs['Third Account'], null, 2));
 
     const accountName = 'Second Account';
     const resource_name_sanity = 'SchemeOnlyObjectAuto';
@@ -77,37 +131,8 @@ export async function ResourceListTests(email: string, password: string, client:
         'AddonUUID',
     ];
     const getSchemesResponse = await udcService.getSchemes({ where: `Name=${resource_name_from_account_dashborad}` });
-    const syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+    let syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
-
-    let driver: Browser;
-    let webAppLoginPage: WebAppLoginPage;
-    let webAppHomePage: WebAppHomePage;
-    let webAppHeader: WebAppHeader;
-    let resourceList: ResourceList;
-    let resourceEditors: ResourceEditors;
-    let resourceViews: ResourceViews;
-    let pageBuilder: PageBuilder;
-    let slugs: Slugs;
-    let resourceListUtils: E2EUtils;
-    let resourceListBlock: ResourceListBlock;
-    let accountDashboardLayout: AccountDashboardLayout;
-    // let previousSyncStatus: boolean | undefined; // bug: DI-27584
-    let random_name: string;
-    let editorName: string;
-    let editor_decsription: string;
-    let view_decsription: string;
-    let editorKey: string;
-    let viewKey: string;
-    let viewName: string;
-    let slugDisplayName: string;
-    let slug_path: string;
-    let slugDisplayNameAccountDashboard: string;
-    let slug_path_account_dashboard: string;
-    let pageName: string;
-    let pageKey: string;
-    let createdPage;
-    let deletePageResponse;
 
     const detailsByResource: {
         [key: string]: {
@@ -118,6 +143,16 @@ export async function ResourceListTests(email: string, password: string, client:
                 mandatory: boolean;
                 readonly: boolean;
             }[];
+            collectionType?: 'contained' | 'data';
+            collectionFields?: {
+                classType: 'Primitive' | 'Array' | 'Contained' | 'Resource' | 'ContainedArray';
+                fieldName: string;
+                fieldTitle: string;
+                field: CollectionField;
+                dataViewType?: DataViewFieldType;
+                readonly?: boolean;
+            }[];
+            listings?: { [key: string]: any }[];
         };
     } = {
         accounts: {
@@ -212,23 +247,117 @@ export async function ResourceListTests(email: string, password: string, client:
                 { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: true },
                 { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: true },
             ],
+            collectionFields: [
+                {
+                    classType: 'Primitive',
+                    fieldName: 'name',
+                    fieldTitle: '',
+                    field: { Type: 'String', Mandatory: false, Indexed: false, Description: '' },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'age',
+                    fieldTitle: '',
+                    field: { Type: 'Integer', Mandatory: false, Indexed: false, Description: '' },
+                },
+            ],
+            listings: [
+                { name: 'Za', age: 1 },
+                { name: 'Yb', age: 2 },
+                { name: 'Xc', age: 3 },
+                { name: 'Wd', age: 4 },
+                { name: 'Ve', age: 5 },
+                { name: 'Uf', age: 6 },
+                { name: 'Tg', age: 7 },
+                { name: 'Sh', age: 8 },
+                { name: 'Ri', age: 9 },
+                { name: 'Qj', age: 10 },
+                { name: 'Pk', age: 11 },
+                { name: 'Ol', age: 12 },
+                { name: 'Nm', age: 13 },
+                { name: 'Mn', age: 14 },
+                { name: 'Lo', age: 15 },
+                { name: 'Kp', age: 16 },
+                { name: 'Jq', age: 17 },
+                { name: 'Ir', age: 18 },
+                { name: 'Hs', age: 19 },
+                { name: 'Gt', age: 20 },
+                { name: 'Fu', age: 21 },
+                { name: 'Ev', age: 22 },
+                { name: 'Dw', age: 23 },
+                { name: 'Cx', age: 24 },
+                { name: 'By', age: 25 },
+                { name: 'Az', age: 26 },
+                { name: 'Aa', age: 27 },
+                { name: 'Bb', age: 28 },
+                { name: 'Cc', age: 29 },
+                { name: 'Dd', age: 30 },
+                { name: 'Ee', age: 31 },
+                { name: 'Ff', age: 32 },
+                { name: 'Gg', age: 33 },
+                { name: 'Hh', age: 34 },
+                { name: 'Ii', age: 35 },
+                { name: 'Jj', age: 36 },
+                { name: 'Kk', age: 37 },
+                { name: 'Ll', age: 38 },
+                { name: 'Mm', age: 39 },
+                { name: 'Nn', age: 40 },
+                { name: 'Oo', age: 41 },
+                { name: 'Pp', age: 42 },
+                { name: 'Qq', age: 43 },
+                { name: 'Rr', age: 44 },
+                { name: 'Ss', age: 45 },
+                { name: 'Tt', age: 46 },
+                { name: 'Uu', age: 47 },
+                { name: 'Vv', age: 48 },
+                { name: 'Ww', age: 49 },
+                { name: 'Xx', age: 50 },
+                { name: 'Yy', age: 51 },
+                { name: 'Zz', age: 52 },
+                { name: 'Ana', age: 1 },
+                { name: 'Bob', age: 2 },
+                { name: 'Charles', age: 3 },
+                { name: 'Dave', age: 4 },
+                { name: 'Eve', age: 5 },
+                { name: 'Frank', age: 6 },
+                { name: 'Goni', age: 7 },
+                { name: 'Hagay', age: 8 },
+                { name: 'Itzik', age: 9 },
+                { name: 'Jack', age: 10 },
+                { name: 'Kavin', age: 11 },
+                { name: 'Louis', age: 12 },
+                { name: 'Mike', age: 13 },
+                { name: 'Nelly', age: 14 },
+                { name: 'Oslo', age: 15 },
+                { name: 'Paris', age: 16 },
+                { name: 'Queen', age: 17 },
+                { name: 'Rocky', age: 18 },
+                { name: 'Saint', age: 19 },
+                { name: 'Tzachi', age: 20 },
+                { name: 'Uri', age: 21 },
+                { name: 'Vova', age: 22 },
+                { name: 'Wane', age: 23 },
+                { name: 'Xen', age: 24 },
+                { name: 'Yan', age: 25 },
+                { name: 'Zorik', age: 26 },
+            ],
         },
-        ArraysOfPrimitivesAuto: {
-            view_fields_names: ['name', 'age', 'Key'],
-            view_fields: [],
-        },
-        FiltersAccRefAuto: {
-            view_fields_names: ['name', 'age', 'Key'],
-            view_fields: [],
-        },
-        IndexedFieldsAuto: {
-            view_fields_names: ['name', 'age', 'Key'],
-            view_fields: [],
-        },
-        IndexedNameAgeAuto: {
-            view_fields_names: ['name', 'age', 'Key'],
-            view_fields: [],
-        },
+        // ArraysOfPrimitivesAuto: {
+        //     view_fields_names: ['name', 'age', 'Key'],
+        //     view_fields: [],
+        // },
+        // FiltersAccRefAuto: {
+        //     view_fields_names: ['name', 'age', 'Key'],
+        //     view_fields: [],
+        // },
+        // IndexedFieldsAuto: {
+        //     view_fields_names: ['name', 'age', 'Key'],
+        //     view_fields: [],
+        // },
+        // IndexedNameAgeAuto: {
+        //     view_fields_names: ['name', 'age', 'Key'],
+        //     view_fields: [],
+        // },
         ReferenceAccountAuto: {
             view_fields_names: [
                 'of_account',
@@ -246,10 +375,181 @@ export async function ResourceListTests(email: string, password: string, client:
                 { fieldName: 'discount_rate', dataViewType: 'NumberReal', mandatory: true, readonly: true },
                 { fieldName: 'offered_discount_location', dataViewType: 'TextBox', mandatory: true, readonly: true },
             ],
+            collectionFields: [
+                {
+                    classType: 'Resource',
+                    fieldName: 'of_account',
+                    fieldTitle: '',
+                    field: {
+                        Type: 'Resource',
+                        Resource: 'accounts',
+                        Description: '',
+                        Mandatory: false,
+                        Indexed: true,
+                        IndexedFields: {
+                            Email: { Indexed: true, Type: 'String' },
+                            Name: { Indexed: true, Type: 'String' },
+                            UUID: { Indexed: true, Type: 'String' },
+                        },
+                        Items: { Description: '', Mandatory: false, Type: 'String' },
+                        OptionalValues: [],
+                        AddonUUID: coreResourcesUUID,
+                    },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'best_seller_item',
+                    fieldTitle: '',
+                    field: {
+                        Type: 'String',
+                        Description: '',
+                        AddonUUID: '',
+                        ApplySystemFilter: false,
+                        Mandatory: false,
+                        Indexed: false,
+                        IndexedFields: {},
+                        OptionalValues: ['A', 'B', 'C', 'D', 'Hair dryer', 'Roller', 'Cart', 'Mask', 'Shirt', ''],
+                    },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'max_quantity',
+                    fieldTitle: '',
+                    field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'discount_rate',
+                    fieldTitle: '',
+                    field: { Type: 'Double', Mandatory: false, Indexed: false, Description: '' },
+                },
+                {
+                    classType: 'Array',
+                    fieldName: 'offered_discount_location',
+                    fieldTitle: '',
+                    field: {
+                        Type: 'String',
+                        Mandatory: false,
+                        Indexed: false,
+                        Description: '',
+                        OptionalValues: ['store', 'on-line', 'rep'],
+                    },
+                },
+            ],
+            listings: [
+                { of_account: accountsUUIDs['Third Account'], best_seller_item: 'Daisy', max_quantity: 1500 },
+                {
+                    of_account: accountsUUIDs['Third Account'],
+                    best_seller_item: '',
+                    max_quantity: 100000,
+                    discount_rate: 0.1,
+                    offered_discount_location: [],
+                },
+                {
+                    of_account: accountsUUIDs['Second Account'],
+                    best_seller_item: 'Lily',
+                    max_quantity: 1,
+                    discount_rate: 0.1,
+                    offered_discount_location: ['rep'],
+                },
+                {
+                    of_account: accountsUUIDs['First Account'],
+                    best_seller_item: 'Rose',
+                    max_quantity: 0,
+                    discount_rate: 0.4,
+                    offered_discount_location: ['store', 'on-line', 'rep'],
+                },
+                {
+                    of_account: accountsUUIDs['Second Account'],
+                    best_seller_item: 'Iris',
+                    max_quantity: 40000,
+                    discount_rate: 0.15,
+                    offered_discount_location: ['store', 'on-line'],
+                },
+                {
+                    of_account: accountsUUIDs['Third Account'],
+                    max_quantity: 600,
+                    discount_rate: 0.1,
+                    offered_discount_location: [],
+                },
+                {
+                    of_account: accountsUUIDs['First Account'],
+                    best_seller_item: '',
+                    max_quantity: 55,
+                    discount_rate: 0.22,
+                },
+                {
+                    of_account: accountsUUIDs['Third Account'],
+                    best_seller_item: 'Tulip',
+                    discount_rate: 0.3,
+                    offered_discount_location: ['store'],
+                },
+                {
+                    of_account: accountsUUIDs['First Account'],
+                    best_seller_item: 'NO Amount',
+                    max_quantity: 111,
+                    discount_rate: 0.35,
+                    offered_discount_location: ['on-line'],
+                },
+                {
+                    of_account: accountsUUIDs['First Account'],
+                    best_seller_item: 'First Item',
+                    max_quantity: 1111,
+                    discount_rate: 0.11,
+                    offered_discount_location: ['store', 'on-line', 'rep'],
+                },
+                {
+                    of_account: accountsUUIDs['Second Account'],
+                    best_seller_item: 'Second Item',
+                    max_quantity: 2222,
+                    discount_rate: 0.22,
+                    offered_discount_location: ['on-line', 'rep', 'store'],
+                },
+                {
+                    of_account: accountsUUIDs['Third Account'],
+                    best_seller_item: 'Third Item',
+                    max_quantity: 3333,
+                    discount_rate: 0.33,
+                    offered_discount_location: ['rep', 'store', 'on-line'],
+                },
+            ],
         },
-        // Dataless: {
-        //     view_fields_names: ['Key', 'integerhavenodata'],
-        // },
+        SchemeOnlyObjectAuto: {
+            view_fields_names: ['name', 'age'],
+            view_fields: [
+                { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: true },
+            ],
+            collectionType: 'contained',
+            collectionFields: [
+                {
+                    classType: 'Primitive',
+                    fieldName: 'name',
+                    fieldTitle: 'Name',
+                    field: {
+                        Type: 'String',
+                        Description: '',
+                        AddonUUID: '',
+                        ApplySystemFilter: false,
+                        Mandatory: false,
+                        Indexed: false,
+                    },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'age',
+                    fieldTitle: 'Age',
+                    field: {
+                        Type: 'Integer',
+                        Description: '',
+                        AddonUUID: '',
+                        ApplySystemFilter: false,
+                        Mandatory: false,
+                        Indexed: false,
+                    },
+                },
+            ],
+        },
     };
 
     const simpleResources = [
@@ -286,181 +586,167 @@ export async function ResourceListTests(email: string, password: string, client:
 
         describe('UDCs Prep', async function () {
             it(`Upsert "${resource_name_sanity}" Collection`, async function () {
-                const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                    nameOfCollection: resource_name_sanity,
-                    descriptionOfCollection: 'Created with Automation',
-                    typeOfCollection: 'contained',
-                    syncDefinitionOfCollection: { Sync: false },
-                    fieldsOfCollection: [
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'name',
-                            fieldTitle: 'Name',
-                            field: {
-                                Type: 'String',
-                                Description: '',
-                                AddonUUID: '',
-                                ApplySystemFilter: false,
-                                Mandatory: false,
-                                Indexed: false,
-                            },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'age',
-                            fieldTitle: 'Age',
-                            field: {
-                                Type: 'Integer',
-                                Description: '',
-                                AddonUUID: '',
-                                ApplySystemFilter: false,
-                                Mandatory: false,
-                                Indexed: false,
-                            },
-                        },
-                    ],
+                if (
+                    detailsByResource[resource_name_sanity].collectionType &&
+                    detailsByResource[resource_name_sanity].collectionFields
+                ) {
+                    const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                        nameOfCollection: resource_name_sanity,
+                        descriptionOfCollection: 'Created with Automation',
+                        typeOfCollection: detailsByResource[resource_name_sanity].collectionType,
+                        syncDefinitionOfCollection: { Sync: false },
+                        fieldsOfCollection: detailsByResource[resource_name_sanity].collectionFields || [],
+                    });
+                    const upsertResponse = await udcService.postScheme(bodyOfCollection);
+                    console.info(`${resource_name_sanity} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
+                    expect(upsertResponse).to.be.an('object');
+                    Object.keys(upsertResponse).forEach((collectionProperty) => {
+                        expect(collectionProperty).to.be.oneOf(collectionProperties);
+                    });
+                    expect(upsertResponse.Name).to.equal(resource_name_sanity);
+                    expect(upsertResponse.Fields).to.be.an('object');
+                    if (upsertResponse.Fields) expect(Object.keys(upsertResponse.Fields)).to.eql(['name', 'age']);
+                }
+                addContext(this, {
+                    title: `Collection data for "${resource_name_sanity}" (CollectionType): `,
+                    value: detailsByResource[resource_name_sanity].collectionType,
                 });
-                const upsertResponse = await udcService.postScheme(bodyOfCollection);
-                console.info(`${resource_name_sanity} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
-                expect(upsertResponse).to.be.an('object');
-                Object.keys(upsertResponse).forEach((collectionProperty) => {
-                    expect(collectionProperty).to.be.oneOf(collectionProperties);
+                addContext(this, {
+                    title: `Collection data for "${resource_name_sanity}" (CollectionFields): `,
+                    value: detailsByResource[resource_name_sanity].collectionFields,
                 });
-                expect(upsertResponse.Name).to.equal(resource_name_sanity);
-                expect(upsertResponse.Fields).to.be.an('object');
-                if (upsertResponse.Fields) expect(Object.keys(upsertResponse.Fields)).to.eql(['name', 'age']);
             });
 
             it(`Upsert "${resource_name_pipeline}" Collection`, async function () {
-                const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                    nameOfCollection: resource_name_pipeline,
-                    descriptionOfCollection: 'Created with Automation',
-                    fieldsOfCollection: [
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'name',
-                            fieldTitle: '',
-                            field: { Type: 'String', Mandatory: false, Indexed: false, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'age',
-                            fieldTitle: '',
-                            field: { Type: 'Integer', Mandatory: false, Indexed: false, Description: '' },
-                        },
-                    ],
+                if (detailsByResource[resource_name_pipeline].collectionFields) {
+                    const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                        nameOfCollection: resource_name_pipeline,
+                        descriptionOfCollection: 'Created with Automation',
+                        fieldsOfCollection: detailsByResource[resource_name_pipeline].collectionFields || [],
+                    });
+                    const upsertResponse = await udcService.postScheme(bodyOfCollection);
+                    console.info(
+                        `${resource_name_pipeline} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`,
+                    );
+                    expect(upsertResponse).to.be.an('object');
+                    Object.keys(upsertResponse).forEach((collectionProperty) => {
+                        expect(collectionProperty).to.be.oneOf(collectionProperties);
+                    });
+                    expect(upsertResponse.Name).to.equal(resource_name_pipeline);
+                    expect(upsertResponse.Fields).to.be.an('object');
+                    if (upsertResponse.Fields) expect(Object.keys(upsertResponse.Fields)).to.eql(['name', 'age']);
+                }
+                addContext(this, {
+                    title: `Collection data for "${resource_name_pipeline}" (CollectionFields): `,
+                    value: detailsByResource[resource_name_pipeline].collectionFields,
                 });
-                const upsertResponse = await udcService.postScheme(bodyOfCollection);
-                console.info(`${resource_name_pipeline} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
-                expect(upsertResponse).to.be.an('object');
-                Object.keys(upsertResponse).forEach((collectionProperty) => {
-                    expect(collectionProperty).to.be.oneOf(collectionProperties);
-                });
-                expect(upsertResponse.Name).to.equal(resource_name_pipeline);
-                expect(upsertResponse.Fields).to.be.an('object');
-                if (upsertResponse.Fields) expect(Object.keys(upsertResponse.Fields)).to.eql(['name', 'age']);
             });
 
             it(`Upsert "${resource_name_from_account_dashborad}" Collection`, async function () {
-                const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                    nameOfCollection: resource_name_from_account_dashborad,
-                    descriptionOfCollection: 'Created with Automation',
-                    syncDefinitionOfCollection: { Sync: syncStatusOfReferenceAccount || false },
-                    fieldsOfCollection: [
-                        {
-                            classType: 'Resource',
-                            fieldName: 'of_account',
-                            fieldTitle: '',
-                            field: {
-                                Type: 'Resource',
-                                Resource: 'accounts',
-                                Description: '',
-                                Mandatory: false,
-                                Indexed: true,
-                                IndexedFields: {
-                                    Email: { Indexed: true, Type: 'String' },
-                                    Name: { Indexed: true, Type: 'String' },
-                                    UUID: { Indexed: true, Type: 'String' },
-                                },
-                                Items: { Description: '', Mandatory: false, Type: 'String' },
-                                OptionalValues: [],
-                                AddonUUID: coreResourcesUUID,
-                            },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'best_seller_item',
-                            fieldTitle: '',
-                            field: {
-                                Type: 'String',
-                                Description: '',
-                                AddonUUID: '',
-                                ApplySystemFilter: false,
-                                Mandatory: false,
-                                Indexed: false,
-                                IndexedFields: {},
-                                OptionalValues: [
-                                    'A',
-                                    'B',
-                                    'C',
-                                    'D',
-                                    'Hair dryer',
-                                    'Roller',
-                                    'Cart',
-                                    'Mask',
-                                    'Shirt',
-                                    '',
-                                ],
-                            },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'max_quantity',
-                            fieldTitle: '',
-                            field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
-                        },
-                        {
-                            classType: 'Primitive',
-                            fieldName: 'discount_rate',
-                            fieldTitle: '',
-                            field: { Type: 'Double', Mandatory: false, Indexed: false, Description: '' },
-                        },
-                        {
-                            classType: 'Array',
-                            fieldName: 'offered_discount_location',
-                            fieldTitle: '',
-                            field: {
-                                Type: 'String',
-                                Mandatory: false,
-                                Indexed: false,
-                                Description: '',
-                                OptionalValues: ['store', 'on-line', 'rep'],
-                            },
-                        },
-                    ],
+                if (detailsByResource[resource_name_from_account_dashborad].collectionFields) {
+                    const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                        nameOfCollection: resource_name_from_account_dashborad,
+                        descriptionOfCollection: 'Created with Automation',
+                        syncDefinitionOfCollection: { Sync: syncStatusOfReferenceAccount || false },
+                        fieldsOfCollection:
+                            detailsByResource[resource_name_from_account_dashborad].collectionFields || [],
+                    });
+                    const upsertResponse = await udcService.postScheme(bodyOfCollection);
+                    console.info(
+                        `${resource_name_from_account_dashborad} upsertResponse: ${JSON.stringify(
+                            upsertResponse,
+                            null,
+                            2,
+                        )}`,
+                    );
+                    expect(upsertResponse).to.be.an('object');
+                    Object.keys(upsertResponse).forEach((collectionProperty) => {
+                        expect(collectionProperty).to.be.oneOf(collectionProperties);
+                    });
+                    expect(upsertResponse.Name).to.equal(resource_name_from_account_dashborad);
+                    expect(upsertResponse.Fields).to.be.an('object');
+                    if (upsertResponse.Fields)
+                        expect(Object.keys(upsertResponse.Fields)).to.eql([
+                            'of_account',
+                            'best_seller_item',
+                            'max_quantity',
+                            'offered_discount_location',
+                            'discount_rate',
+                        ]);
+                }
+                addContext(this, {
+                    title: `Collection data for "${resource_name_from_account_dashborad}" (CollectionFields): `,
+                    value: detailsByResource[resource_name_from_account_dashborad].collectionFields,
                 });
-                const upsertResponse = await udcService.postScheme(bodyOfCollection);
-                console.info(
-                    `${resource_name_from_account_dashborad} upsertResponse: ${JSON.stringify(
-                        upsertResponse,
-                        null,
-                        2,
-                    )}`,
+            });
+
+            it(`Making Sure "${resource_name_pipeline}" Collection contain Values`, async function () {
+                const pipelineCollectionListings = await udcService.getDocuments(resource_name_pipeline);
+                const pipelineCollectionValues = detailsByResource[resource_name_pipeline].listings;
+                if (pipelineCollectionListings.length < 1 && pipelineCollectionValues) {
+                    const upsertingValues_Responses = await Promise.all(
+                        pipelineCollectionValues.map(async (listing) => {
+                            return await udcService.listingsInsertionToCollection(listing, resource_name_pipeline);
+                        }),
+                    );
+                    upsertingValues_Responses.forEach((upsertingValues_Response) => {
+                        console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+                        expect(upsertingValues_Response.Ok).to.be.true;
+                        expect(upsertingValues_Response.Status).to.equal(200);
+                        expect(upsertingValues_Response.Error).to.eql({});
+                    });
+                }
+            });
+
+            it(`Making Sure "${resource_name_from_account_dashborad}" Collection contain Values`, async function () {
+                const accountRefCollectionListings = await udcService.getDocuments(
+                    resource_name_from_account_dashborad,
                 );
-                expect(upsertResponse).to.be.an('object');
-                Object.keys(upsertResponse).forEach((collectionProperty) => {
-                    expect(collectionProperty).to.be.oneOf(collectionProperties);
+                const pipelineCollectionValues = detailsByResource[resource_name_from_account_dashborad].listings;
+                if (accountRefCollectionListings.length < 1 && pipelineCollectionValues) {
+                    const upsertingValues_Responses = await Promise.all(
+                        pipelineCollectionValues.map(async (listing) => {
+                            return (
+                                (await udcService.listingsInsertionToCollection(
+                                    listing,
+                                    resource_name_from_account_dashborad,
+                                )) || {
+                                    Ok: false,
+                                    Status: 500,
+                                    Body: {},
+                                    Error: { message: 'Object is undefined and Promise can not be fulfilled' },
+                                }
+                            );
+                        }),
+                    );
+                    upsertingValues_Responses.forEach((upsertingValues_Response) => {
+                        console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+                        expect(upsertingValues_Response.Ok).to.be.true;
+                        expect(upsertingValues_Response.Status).to.equal(200);
+                        expect(upsertingValues_Response.Error).to.eql({});
+                    });
+                }
+            });
+
+            it(`Num of listings at account "${accountName}"`, async function () {
+                const refAccListings = await udcService.getDocuments(resource_name_from_account_dashborad);
+                console.info(
+                    `Listings of collection "${resource_name_from_account_dashborad}": `,
+                    JSON.stringify(refAccListings, null, 2),
+                );
+                num_of_listings_at_account = refAccListings.filter((listing) => {
+                    if (listing.of_account && listing.of_account === accountsUUIDs[accountName]) {
+                        return listing;
+                    }
+                }).length;
+                addContext(this, {
+                    title: `Number of Listings in "${resource_name_from_account_dashborad}" conected to "${accountName}"`,
+                    value: num_of_listings_at_account,
                 });
-                expect(upsertResponse.Name).to.equal(resource_name_from_account_dashborad);
-                expect(upsertResponse.Fields).to.be.an('object');
-                if (upsertResponse.Fields)
-                    expect(Object.keys(upsertResponse.Fields)).to.eql([
-                        'of_account',
-                        'best_seller_item',
-                        'max_quantity',
-                        'offered_discount_location',
-                        'discount_rate',
-                    ]);
+                console.info(
+                    `Number of Listings in "${resource_name_from_account_dashborad}" conected to "${accountName}": `,
+                    num_of_listings_at_account,
+                );
             });
         });
 
@@ -1049,117 +1335,126 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 // bug: DI-27584
-                // it(`Changing Sync definition at ${resource_name_from_account_dashborad} from ${
-                //     syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'
-                // } to ${syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'}`, async () => {
-                //     previousSyncStatus = syncStatusOfReferenceAccount;
-                //     const newSyncDefinition = syncStatusOfReferenceAccount
-                //         ? { Sync: false }
-                //         : { Sync: true, SyncFieldLevel: false };
-                //     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
-                //     console.info('newSyncDefinition: ', newSyncDefinition);
-                //     const response = await udcService.postScheme({
-                //         Name: resource_name_from_account_dashborad,
-                //         SyncData: newSyncDefinition,
-                //     });
-                //     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
-                // });
+                it(`Changing Sync definition at ${resource_name_from_account_dashborad} from ${
+                    syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'
+                } to ${syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'}`, async () => {
+                    previousSyncStatus = syncStatusOfReferenceAccount;
+                    const newSyncDefinition = syncStatusOfReferenceAccount
+                        ? { Sync: false }
+                        : { Sync: true, SyncFieldLevel: false };
+                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                    console.info('newSyncDefinition: ', newSyncDefinition);
+                    // const response = await udcService.postScheme({ // bug: DI-27584
+                    //     Name: resource_name_from_account_dashborad,
+                    //     SyncData: newSyncDefinition,
+                    // });
+                    const referenceAccountCollection = await udcService.getSchemes({
+                        where: `Name='${resource_name_from_account_dashborad}'`,
+                    });
+                    console.info(
+                        `udcService.getScheme where Name=${resource_name_from_account_dashborad} response: `,
+                        JSON.stringify(referenceAccountCollection, null, 2),
+                    );
+                    referenceAccountCollection[0].SyncData = newSyncDefinition;
+                    const response = await udcService.postScheme(referenceAccountCollection[0]);
+                    console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
+                });
 
-                // it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async () => {
-                //     syncStatusOfReferenceAccount
-                //         ? await resourceListUtils.performManualResync(client)
-                //         : await resourceListUtils.performManualSync(client);
-                // });
+                it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async () => {
+                    syncStatusOfReferenceAccount
+                        ? await resourceListUtils.performManualResync(client)
+                        : await resourceListUtils.performManualSync(client);
+                });
 
-                // it(`Logout Login`, async () => {
-                //     await resourceListUtils.logOutLogIn(email, password);
-                //     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
-                // });
+                it(`Logout Login`, async () => {
+                    await resourceListUtils.logOutLogIn(email, password);
+                    await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+                });
 
-                // it('Validating Sync definition changed', async function () {
-                //     const getSchemesResponse = await udcService.getSchemes({
-                //         where: `Name=${resource_name_from_account_dashborad}`,
-                //     });
-                //     syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
-                //     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
-                //     expect(syncStatusOfReferenceAccount).to.not.equal(previousSyncStatus);
-                // });
+                it('Validating Sync definition changed', async function () {
+                    const getSchemesResponse = await udcService.getSchemes({
+                        where: `Name=${resource_name_from_account_dashborad}`,
+                    });
+                    syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                    expect(syncStatusOfReferenceAccount).to.not.equal(previousSyncStatus);
+                });
 
-                // it(`${
-                //     syncStatusOfReferenceAccount ? 'Online Only' : 'Offline & Online'
-                // }: Navigating to a specific Account (${accountName}) & Entering Resource View slug from Menu`, async function () {
-                //     await webAppHeader.goHome();
-                //     await webAppHomePage.isSpinnerDone();
-                //     await webAppHomePage.clickOnBtn('Accounts');
-                //     await resourceListUtils.selectAccountFromAccountList.bind(this)(driver, accountName, 'name');
-                //     await resourceList.isSpinnerDone();
-                //     driver.sleep(1 * 1000);
-                //     let base64ImageComponent = await driver.saveScreenshots();
-                //     addContext(this, {
-                //         title: `At "${accountName}" dashboard`,
-                //         value: 'data:image/png;base64,' + base64ImageComponent,
-                //     });
-                //     await resourceList.waitTillVisible(
-                //         accountDashboardLayout.AccountDashboard_HamburgerMenu_Button,
-                //         15000,
-                //     );
-                //     await resourceList.click(accountDashboardLayout.AccountDashboard_HamburgerMenu_Button);
-                //     resourceList.pause(0.2 * 1000);
-                //     base64ImageComponent = await driver.saveScreenshots();
-                //     addContext(this, {
-                //         title: `Hamburger Menu opened`,
-                //         value: 'data:image/png;base64,' + base64ImageComponent,
-                //     });
-                //     await resourceList.waitTillVisible(
-                //         accountDashboardLayout.AccountDashboard_HamburgerMenu_Content,
-                //         15000,
-                //     );
-                //     resourceList.pause(1 * 1000);
-                //     await resourceList.click(
-                //         accountDashboardLayout.getSelectorOfAccountHomePageHamburgerMenuItemByText(
-                //             slugDisplayNameAccountDashboard,
-                //         ),
-                //     );
-                //     resourceList.pause(1 * 1000);
-                //     base64ImageComponent = await driver.saveScreenshots();
-                //     addContext(this, {
-                //         title: `Clicked Wanted Slug at hamburger menu`,
-                //         value: 'data:image/png;base64,' + base64ImageComponent,
-                //     });
-                // });
+                it(`${
+                    syncStatusOfReferenceAccount ? 'Online Only' : 'Offline & Online'
+                }: Navigating to a specific Account (${accountName}) & Entering Resource View slug from Menu`, async function () {
+                    await webAppHeader.goHome();
+                    await webAppHomePage.isSpinnerDone();
+                    await webAppHomePage.clickOnBtn('Accounts');
+                    await resourceListUtils.selectAccountFromAccountList.bind(this)(driver, accountName, 'name');
+                    await resourceList.isSpinnerDone();
+                    driver.sleep(1 * 1000);
+                    let base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At "${accountName}" dashboard`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await resourceList.waitTillVisible(
+                        accountDashboardLayout.AccountDashboard_HamburgerMenu_Button,
+                        15000,
+                    );
+                    await resourceList.click(accountDashboardLayout.AccountDashboard_HamburgerMenu_Button);
+                    resourceList.pause(0.2 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Hamburger Menu opened`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await resourceList.waitTillVisible(
+                        accountDashboardLayout.AccountDashboard_HamburgerMenu_Content,
+                        15000,
+                    );
+                    resourceList.pause(1 * 1000);
+                    await resourceList.click(
+                        accountDashboardLayout.getSelectorOfAccountHomePageHamburgerMenuItemByText(
+                            slugDisplayNameAccountDashboard,
+                        ),
+                    );
+                    resourceList.pause(1 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Clicked Wanted Slug at hamburger menu`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
 
-                // it('At Block performing checks', async function () {
-                //     resourceListBlock = new ResourceListBlock(
-                //         driver,
-                //         `https://app.pepperi.com/${slug_path_account_dashboard}`,
-                //     );
-                //     await resourceListBlock.isSpinnerDone();
-                //     addContext(this, {
-                //         title: `Current URL`,
-                //         value: `${await driver.getCurrentUrl()}`,
-                //     });
-                //     let base64ImageComponent = await driver.saveScreenshots();
-                //     addContext(this, {
-                //         title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
-                //         value: 'data:image/png;base64,' + base64ImageComponent,
-                //     });
-                //     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-                //     driver.sleep(0.5 * 1000);
-                //     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                //     const expectedViewFieldsNames =
-                //         detailsByResource[resource_name_from_account_dashborad].view_fields_names;
-                //     expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
-                //     columnsTitles.forEach(async (columnTitle) => {
-                //         const columnTitleText = await columnTitle.getText();
-                //         expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
-                //     });
-                //     driver.sleep(0.5 * 1000);
-                //     base64ImageComponent = await driver.saveScreenshots();
-                //     addContext(this, {
-                //         title: `After Assertions`,
-                //         value: 'data:image/png;base64,' + base64ImageComponent,
-                //     });
-                // });
+                it('At Block performing checks', async function () {
+                    resourceListBlock = new ResourceListBlock(
+                        driver,
+                        `https://app.pepperi.com/${slug_path_account_dashboard}`,
+                    );
+                    await resourceListBlock.isSpinnerDone();
+                    addContext(this, {
+                        title: `Current URL`,
+                        value: `${await driver.getCurrentUrl()}`,
+                    });
+                    let base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
+                    driver.sleep(0.5 * 1000);
+                    const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
+                    const expectedViewFieldsNames =
+                        detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                    expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
+                    columnsTitles.forEach(async (columnTitle) => {
+                        const columnTitleText = await columnTitle.getText();
+                        expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
+                    });
+                    driver.sleep(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `After Assertions`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
 
                 it('Return to Home Page', async function () {
                     await webAppHeader.goHome();
@@ -1226,87 +1521,96 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 // bug: DI-27584
-                // it(`Changing Sync definition at ${resource_name_from_account_dashborad} from ${
-                //     syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'
-                // } to ${syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'}`, async () => {
-                //     previousSyncStatus = syncStatusOfReferenceAccount;
-                //     const newSyncDefinition = syncStatusOfReferenceAccount
-                //         ? { Sync: false }
-                //         : { Sync: true, SyncFieldLevel: false };
-                //     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
-                //     console.info('newSyncDefinition: ', newSyncDefinition);
-                //     const response = await udcService.postScheme({
-                //         Name: resource_name_from_account_dashborad,
-                //         SyncData: newSyncDefinition,
-                //     });
-                //     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
-                // });
+                it(`Changing Sync definition at ${resource_name_from_account_dashborad} from ${
+                    syncStatusOfReferenceAccount ? '"Online Only"' : '"Offline & Online"'
+                } to ${syncStatusOfReferenceAccount ? '"Offline & Online"' : '"Online Only"'}`, async () => {
+                    previousSyncStatus = syncStatusOfReferenceAccount;
+                    const newSyncDefinition = syncStatusOfReferenceAccount
+                        ? { Sync: false }
+                        : { Sync: true, SyncFieldLevel: false };
+                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                    console.info('newSyncDefinition: ', newSyncDefinition);
+                    const referenceAccountCollection = await udcService.getSchemes({
+                        where: `Name='${resource_name_from_account_dashborad}'`,
+                    });
+                    console.info(
+                        `udcService.getScheme where Name=${resource_name_from_account_dashborad} response: `,
+                        JSON.stringify(referenceAccountCollection, null, 2),
+                    );
+                    referenceAccountCollection[0].SyncData = newSyncDefinition;
+                    // const response = await udcService.postScheme({ // bug: DI-27584
+                    //     Name: resource_name_from_account_dashborad,
+                    //     SyncData: newSyncDefinition,
+                    // });
+                    const response = await udcService.postScheme(referenceAccountCollection[0]);
+                    console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
+                });
 
-                // it(`Manual ${syncStatusOfReferenceAccount ? 'Sync' : 'Resync'}`, async () => {
-                //     syncStatusOfReferenceAccount
-                //         ? await resourceListUtils.performManualResync(client)
-                //         : await resourceListUtils.performManualSync(client);
-                // });
+                it(`Manual ${syncStatusOfReferenceAccount ? 'Sync' : 'Resync'}`, async () => {
+                    syncStatusOfReferenceAccount
+                        ? await resourceListUtils.performManualResync(client)
+                        : await resourceListUtils.performManualSync(client);
+                });
 
-                // it(`Logout Login`, async () => {
-                //     await resourceListUtils.logOutLogIn(email, password);
-                //     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
-                // });
+                it(`Logout Login`, async () => {
+                    await resourceListUtils.logOutLogIn(email, password);
+                    await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+                });
 
-                // it('Validating Sync definition changed', async function () {
-                //     const getSchemesResponse = await udcService.getSchemes({
-                //         where: `Name=${resource_name_from_account_dashborad}`,
-                //     });
-                //     syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
-                //     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
-                //     expect(syncStatusOfReferenceAccount).to.not.equal(previousSyncStatus);
-                // });
+                it('Validating Sync definition changed', async function () {
+                    const getSchemesResponse = await udcService.getSchemes({
+                        where: `Name=${resource_name_from_account_dashborad}`,
+                    });
+                    syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                    expect(syncStatusOfReferenceAccount).to.not.equal(previousSyncStatus);
+                });
 
-                // it(`${
-                //     syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'
-                // } --> Navigating to ${baseUrl}/${slug_path_ref_acc}`, async function () {
-                //     await driver.navigate(`${baseUrl}/${slug_path_account_dashboard}`);
-                //     await resourceList.isSpinnerDone();
-                //     resourceList.pause(1 * 1000);
-                //     const base64ImageComponent = await driver.saveScreenshots();
-                //     addContext(this, {
-                //         title: `At ${baseUrl}/${slug_path_account_dashboard}`,
-                //         value: 'data:image/png;base64,' + base64ImageComponent,
-                //     });
-                // });
+                it(`${
+                    syncStatusOfReferenceAccount ? 'Offline & Online' : 'Online Only'
+                } --> Navigating to ${baseUrl}/${slug_path_ref_acc}`, async function () {
+                    await driver.navigate(`${baseUrl}/${slug_path_account_dashboard}`);
+                    await resourceList.isSpinnerDone();
+                    resourceList.pause(1 * 1000);
+                    const base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At ${baseUrl}/${slug_path_account_dashboard}`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
 
-                // it('At Block performing checks', async function () {
-                //     resourceListBlock = new ResourceListBlock(
-                //         driver,
-                //         `https://app.pepperi.com/${slug_path_account_dashboard}`,
-                //     );
-                //     await resourceListBlock.isSpinnerDone();
-                //     addContext(this, {
-                //         title: `Current URL`,
-                //         value: `${await driver.getCurrentUrl()}`,
-                //     });
-                //     let base64ImageComponent = await driver.saveScreenshots();
-                //     addContext(this, {
-                //         title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
-                //         value: 'data:image/png;base64,' + base64ImageComponent,
-                //     });
-                //     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
-                //     driver.sleep(0.5 * 1000);
-                //     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                //     const expectedViewFieldsNames =
-                //         detailsByResource[resource_name_from_account_dashborad].view_fields_names;
-                //     expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
-                //     columnsTitles.forEach(async (columnTitle) => {
-                //         const columnTitleText = await columnTitle.getText();
-                //         expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
-                //     });
-                //     driver.sleep(0.5 * 1000);
-                //     base64ImageComponent = await driver.saveScreenshots();
-                //     addContext(this, {
-                //         title: `After Assertions`,
-                //         value: 'data:image/png;base64,' + base64ImageComponent,
-                //     });
-                // });
+                it('At Block performing checks', async function () {
+                    resourceListBlock = new ResourceListBlock(
+                        driver,
+                        `https://app.pepperi.com/${slug_path_account_dashboard}`,
+                    );
+                    await resourceListBlock.isSpinnerDone();
+                    addContext(this, {
+                        title: `Current URL`,
+                        value: `${await driver.getCurrentUrl()}`,
+                    });
+                    let base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                    await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
+                    driver.sleep(0.5 * 1000);
+                    const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
+                    const expectedViewFieldsNames =
+                        detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                    expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
+                    columnsTitles.forEach(async (columnTitle) => {
+                        const columnTitleText = await columnTitle.getText();
+                        expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
+                    });
+                    driver.sleep(0.5 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `After Assertions`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
+                });
 
                 it('Return to Home Page', async function () {
                     await webAppHeader.goHome();
@@ -1667,6 +1971,19 @@ export async function ResourceListTests(email: string, password: string, client:
                     expect(findBlankPageAfterCleanup).to.be.undefined;
                 });
 
+                it(`Changing Sync definition at ${resource_name_from_account_dashborad} to { Sync: true }`, async () => {
+                    const referenceAccountCollection = await udcService.getSchemes({
+                        where: `Name='${resource_name_from_account_dashborad}'`,
+                    });
+                    console.info(
+                        `udcService.getScheme where Name=${resource_name_from_account_dashborad} response: `,
+                        JSON.stringify(referenceAccountCollection, null, 2),
+                    );
+                    referenceAccountCollection[0].SyncData = { Sync: true };
+                    const response = await udcService.postScheme(referenceAccountCollection[0]);
+                    console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
+                });
+
                 it('Remove Leftovers Buttons from home screen', async function () {
                     await webAppHeader.goHome();
                     await webAppHeader.openSettings();
@@ -1695,13 +2012,22 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it('Unconfiguring Slug from Account Dashboard', async () => {
-                    await accountDashboardLayout.unconfigureFromAccountSelectedSectionByProfile(
+                    await accountDashboardLayout.unconfigureFromAccountSelectedSectionByProfile.bind(this)(
                         driver,
                         slugDisplayNameAccountDashboard,
                         'Menu',
                         'Admin',
-                        resource_name_from_account_dashborad,
+                        `${resource_name_from_account_dashborad} `,
                     );
+                });
+
+                it('Validating Sync definition is True', async function () {
+                    const getSchemesResponse = await udcService.getSchemes({
+                        where: `Name=${resource_name_from_account_dashborad}`,
+                    });
+                    syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                    expect(syncStatusOfReferenceAccount).to.equal(true);
                 });
             });
         });
