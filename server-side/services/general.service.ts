@@ -63,7 +63,7 @@ export const testData = {
     //this also contains our testing addon - these addons are combined to become our basic upg. dep. set
     //please notice that this JSON extends "system addons" so of course its still fits open sync
     Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
-    'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //1.4.22 in the interim 1.4.X PFS version
+    'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.4.%'], //1.4.22 in the interim 1.4.X PFS version
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     ...systemAddons,
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON --
@@ -86,6 +86,7 @@ baseAddonsForNebula.Slugs = ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.3.7'];
 baseAddonsForNebula.configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.%'];
 baseAddonsForNebula['Cross Platform Engine Data'] = ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'];
 baseAddonsForNebula.sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
+baseAddonsForNebula['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.3.%']; //1.3.x is for neubla
 export const testDataForNebulaDists = {
     ...baseAddonsForNebula,
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
