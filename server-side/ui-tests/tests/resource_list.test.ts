@@ -58,6 +58,7 @@ export async function ResourceListTests(email: string, password: string, client:
     let pageKey: string;
     let createdPage;
     let deletePageResponse;
+    let refAccListings;
     let num_of_listings_at_account;
     let numberOfResultsAccountFilter;
 
@@ -730,7 +731,7 @@ export async function ResourceListTests(email: string, password: string, client:
             });
 
             it(`Num of listings at account "${accountName}"`, async function () {
-                const refAccListings = await udcService.getDocuments(resource_name_from_account_dashborad);
+                refAccListings = await udcService.getDocuments(resource_name_from_account_dashborad);
                 console.info(
                     `Listings of collection "${resource_name_from_account_dashborad}": `,
                     JSON.stringify(refAccListings, null, 2),
@@ -952,6 +953,10 @@ export async function ResourceListTests(email: string, password: string, client:
                     resourceViews.pause(0.5 * 1000);
                 });
 
+                it(`Manual Sync`, async () => {
+                    await resourceListUtils.performManualSync(client);
+                });
+
                 it('Create Page', async function () {
                     await resourceListUtils.navigateTo('Page Builder');
                     // debugger
@@ -1006,6 +1011,10 @@ export async function ResourceListTests(email: string, password: string, client:
                     expect(responseOfPublishPage.Status).to.equal(200);
                     pageBuilder.pause(1 * 1000);
                     await webAppHeader.goHome();
+                });
+
+                it(`Manual Sync`, async () => {
+                    await resourceListUtils.performManualSync(client);
                 });
 
                 it('Create & Map Slug', async function () {
@@ -1175,6 +1184,10 @@ export async function ResourceListTests(email: string, password: string, client:
                     resourceViews.pause(0.5 * 1000);
                 });
 
+                it(`Manual Sync`, async () => {
+                    await resourceListUtils.performManualSync(client);
+                });
+
                 it('Create Page', async function () {
                     await resourceListUtils.navigateTo('Page Builder');
                     // debugger
@@ -1231,6 +1244,10 @@ export async function ResourceListTests(email: string, password: string, client:
                     await webAppHeader.goHome();
                 });
 
+                it(`Manual Sync`, async () => {
+                    await resourceListUtils.performManualSync(client);
+                });
+
                 it('Create & Map Slug', async function () {
                     slugDisplayNameAccountDashboard = `${resource_name_from_account_dashborad} ${random_name}`;
                     slug_path_account_dashboard = `${resource_name_from_account_dashborad.toLowerCase()}_${random_name}`;
@@ -1253,10 +1270,10 @@ export async function ResourceListTests(email: string, password: string, client:
                     );
                 });
 
-                it(`Logout Login & Manual Sync`, async () => {
+                it(`Manual Sync & Logout Login`, async () => {
+                    await resourceListUtils.performManualSync(client);
                     await resourceListUtils.logOutLogIn(email, password);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
-                    await resourceListUtils.performManualSync(client);
                 });
 
                 it(`${
@@ -1312,7 +1329,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         title: `Current URL`,
                         value: `${await driver.getCurrentUrl()}`,
                     });
-                    let base64ImageComponent = await driver.saveScreenshots();
+                    const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
@@ -1328,14 +1345,19 @@ export async function ResourceListTests(email: string, password: string, client:
                         expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
                     });
                     driver.sleep(0.5 * 1000);
-                    base64ImageComponent = await driver.saveScreenshots();
+                });
+
+                it('Retrieving Number of Results from UI', async function () {
+                    await driver.untilIsVisible(resourceList.NumberOfItemsInList);
+                    numberOfResultsAccountFilter = (
+                        await driver.findElement(resourceList.NumberOfItemsInList)
+                    ).getText();
+                    driver.sleep(0.5 * 1000);
+                    const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `After Assertions`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
-                    numberOfResultsAccountFilter = (
-                        await driver.findElement(resourceList.NumberOfItemsInList)
-                    ).getText();
                 });
 
                 it('Making Sure Number Of Results is correct', async function () {
@@ -1347,7 +1369,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         title: `Number of Results from UI`,
                         value: numberOfResultsAccountFilter,
                     });
-                    expect(numberOfResultsAccountFilter).equals(num_of_listings_at_account);
+                    expect(Number(numberOfResultsAccountFilter)).equals(num_of_listings_at_account);
                 });
 
                 // bug: DI-27584
@@ -1439,7 +1461,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                 });
 
-                it('At Block performing checks', async function () {
+                it('At Block (Account Filter) performing checks', async function () {
                     resourceListBlock = new ResourceListBlock(
                         driver,
                         `https://app.pepperi.com/${slug_path_account_dashboard}`,
@@ -1449,7 +1471,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         title: `Current URL`,
                         value: `${await driver.getCurrentUrl()}`,
                     });
-                    let base64ImageComponent = await driver.saveScreenshots();
+                    const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
@@ -1465,11 +1487,31 @@ export async function ResourceListTests(email: string, password: string, client:
                         expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
                     });
                     driver.sleep(0.5 * 1000);
-                    base64ImageComponent = await driver.saveScreenshots();
+                });
+
+                it('Retrieving Number of Results from UI', async function () {
+                    await driver.untilIsVisible(resourceList.NumberOfItemsInList);
+                    numberOfResultsAccountFilter = (
+                        await driver.findElement(resourceList.NumberOfItemsInList)
+                    ).getText();
+                    driver.sleep(0.5 * 1000);
+                    const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `After Assertions`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
+                });
+
+                it('Making Sure Number Of Results is correct', async function () {
+                    addContext(this, {
+                        title: `Number of Listings in "${resource_name_from_account_dashborad}" conected to "${accountName}"`,
+                        value: num_of_listings_at_account,
+                    });
+                    addContext(this, {
+                        title: `Number of Results from UI`,
+                        value: numberOfResultsAccountFilter,
+                    });
+                    expect(Number(numberOfResultsAccountFilter)).equals(num_of_listings_at_account);
                 });
 
                 it('Return to Home Page', async function () {
@@ -1513,7 +1555,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         title: `Current URL`,
                         value: `${await driver.getCurrentUrl()}`,
                     });
-                    let base64ImageComponent = await driver.saveScreenshots();
+                    const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
@@ -1529,11 +1571,31 @@ export async function ResourceListTests(email: string, password: string, client:
                         expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
                     });
                     driver.sleep(0.5 * 1000);
-                    base64ImageComponent = await driver.saveScreenshots();
+                });
+
+                it('Retrieving Number of Results from UI', async function () {
+                    await driver.untilIsVisible(resourceList.NumberOfItemsInList);
+                    numberOfResultsAccountFilter = (
+                        await driver.findElement(resourceList.NumberOfItemsInList)
+                    ).getText();
+                    driver.sleep(0.5 * 1000);
+                    const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `After Assertions`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
+                });
+
+                it('Making Sure Number Of Results is correct', async function () {
+                    addContext(this, {
+                        title: `Number of Listings in "${resource_name_from_account_dashborad}" without account filter`,
+                        value: refAccListings.length,
+                    });
+                    addContext(this, {
+                        title: `Number of Results from UI`,
+                        value: numberOfResultsAccountFilter,
+                    });
+                    expect(Number(numberOfResultsAccountFilter)).equals(refAccListings.length);
                 });
 
                 // bug: DI-27584
@@ -1605,7 +1667,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         title: `Current URL`,
                         value: `${await driver.getCurrentUrl()}`,
                     });
-                    let base64ImageComponent = await driver.saveScreenshots();
+                    const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `In Block "${resource_name_from_account_dashborad}" - from Account Dashboard`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
@@ -1621,11 +1683,31 @@ export async function ResourceListTests(email: string, password: string, client:
                         expect(columnTitleText).to.be.oneOf(expectedViewFieldsNames);
                     });
                     driver.sleep(0.5 * 1000);
-                    base64ImageComponent = await driver.saveScreenshots();
+                });
+
+                it('Retrieving Number of Results from UI', async function () {
+                    await driver.untilIsVisible(resourceList.NumberOfItemsInList);
+                    numberOfResultsAccountFilter = (
+                        await driver.findElement(resourceList.NumberOfItemsInList)
+                    ).getText();
+                    driver.sleep(0.5 * 1000);
+                    const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `After Assertions`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
+                });
+
+                it('Making Sure Number Of Results is correct', async function () {
+                    addContext(this, {
+                        title: `Number of Listings in "${resource_name_from_account_dashborad}" without account filter`,
+                        value: refAccListings.length,
+                    });
+                    addContext(this, {
+                        title: `Number of Results from UI`,
+                        value: numberOfResultsAccountFilter,
+                    });
+                    expect(Number(numberOfResultsAccountFilter)).equals(refAccListings.length);
                 });
 
                 it('Return to Home Page', async function () {
