@@ -21,7 +21,7 @@ export async function PricingConfigUpload(
     const generalService = new GeneralService(client);
     const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
     const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'Pricing')?.Version;
-    const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
+    // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     let driver: Browser;
     let e2eUtils: E2EUtils;
     let webAppLoginPage: WebAppLoginPage;
@@ -43,16 +43,16 @@ export async function PricingConfigUpload(
 
         specificVersion === undefined &&
             it('Sending configuration object to end point', async function () {
-                switch (installedPricingVersionShort) {
-                    case '5':
+                switch (true) {
+                    case installedPricingVersion?.startsWith('0.5'):
                         console.info('AT installedPricingVersion CASE 5');
                         pricingConfig = pricingConfiguration.version05;
                         break;
-                    case '6':
+                    case installedPricingVersion?.startsWith('0.6'):
                         console.info('AT installedPricingVersion CASE 6');
                         pricingConfig = pricingConfiguration.version06;
                         break;
-                    case '7':
+                    case installedPricingVersion?.startsWith('0.7'):
                         console.info('AT installedPricingVersion CASE 7');
                         pricingConfig = pricingConfiguration.version07;
                         break;

@@ -110,19 +110,35 @@ ________________________________________________________________________________
     const installedPricingVersion = (await generalService.getInstalledAddons()).find(
         (addon) => addon.Addon.Name == 'Pricing',
     )?.Version;
-    const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
+    // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
 
     let ppmValues_content;
-    switch (installedPricingVersion) {
-        case '6':
-            console.info('AT installedPricingVersion CASE 6');
-            ppmValues_content = pricingRules[udtFirstTableName].features06;
+    switch (true) {
+        case installedPricingVersion?.startsWith('0.7'):
+            console.info('AT installedPricingVersion CASE 7');
+            ppmValues_content = {
+                ...pricingRules[udtFirstTableName].features05,
+                ...pricingRules[udtFirstTableName].features06,
+                ...pricingRules[udtFirstTableName].features07,
+            };
             break;
 
+        case installedPricingVersion?.startsWith('0.8'):
+            console.info('AT installedPricingVersion CASE 8');
+            ppmValues_content = {
+                ...pricingRules[udtFirstTableName].features05,
+                ...pricingRules[udtFirstTableName].features06,
+                ...pricingRules[udtFirstTableName].features07,
+                ...pricingRules[udtFirstTableName].features08,
+            };
+            break;
         default:
             console.info('AT installedPricingVersion Default');
-            ppmValues_content = pricingRules[udtFirstTableName].features07;
+            ppmValues_content = {
+                ...pricingRules[udtFirstTableName].features05,
+                ...pricingRules[udtFirstTableName].features06,
+            };
             break;
     }
 
@@ -162,7 +178,7 @@ ________________________________________________________________________________
 
     const priceExclusionDiscountFields = ['PriceDiscount2UnitPriceAfter1'];
 
-    if (installedPricingVersionShort !== '5') {
+    if (!installedPricingVersion?.startsWith('0.5')) {
         describe(`Pricing ** Exclusion Rules ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
@@ -270,9 +286,9 @@ ________________________________________________________________________________
 
                     it(`PERFORMANCE: making sure Sales Order Loading Duration is acceptable`, async function () {
                         let limit: number;
-                        switch (installedPricingVersionShort) {
-                            case '5':
-                            case '6':
+                        switch (true) {
+                            case installedPricingVersion?.startsWith('0.5'):
+                            case installedPricingVersion?.startsWith('0.6'):
                                 limit = 650;
                                 break;
 
@@ -283,7 +299,7 @@ ________________________________________________________________________________
                         duration = await (await driver.findElement(orderPage.Duration_Span)).getAttribute('title');
                         console.info(`DURATION at Sales Order Load: ${duration}`);
                         addContext(this, {
-                            title: `Sales Order - Loading Time, Version 0.${installedPricingVersionShort}`,
+                            title: `Sales Order - Loading Time, Version ${installedPricingVersion}`,
                             value: `Duration: ${duration} ms (limit: ${limit})`,
                         });
                         const duration_num = Number(duration);
