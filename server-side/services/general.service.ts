@@ -1367,7 +1367,9 @@ export default class GeneralService {
         const addonUUID = testData[addonName][0];
         const addonVersion = testData[addonName][1];
         const searchString = `AND Version Like ${
-            addonVersion !== '' && addonVersion !== '%' ? `'` + addonVersion + `'` : `'%' AND Available Like 1`
+            addonVersion !== '' && addonVersion !== '%'
+                ? `'` + addonVersion + `'` + ' AND Available Like 1'
+                : `'%' AND Available Like 1`
         }`;
         const fetchVarResponse = (
             await this.fetchStatus(

@@ -220,7 +220,6 @@ export class DevTest {
         debugger;
         const addonDep = await this.getDependenciesOfAddon(service, this.addonUUID, varPass);
         //3. install dependencys
-        //=>76fe8cf0-da3f-44d3-accf-e661cdaea235
         if (addonDep !== undefined && addonDep.length !== 0) {
             if (this.addonUUID === 'ad909780-0c23-401e-8e8e-f514cc4f6aa2') {
                 //assets
@@ -353,6 +352,7 @@ export class DevTest {
             }
             for (let index = 0; index < addonDep.length; index++) {
                 const addonToInstall = addonDep[index];
+                // debugger;
                 const currentAddonName = Object.entries(addonToInstall)[0][0];
                 const uuid = (Object.entries(addonToInstall)[0][1] as any)[0];
                 if (currentAddonName === 'papi' && this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
