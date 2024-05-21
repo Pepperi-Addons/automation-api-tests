@@ -128,35 +128,36 @@ ________________________________________________________________________________
     // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
 
-    let ppmValues_content;
+    const ppmValues_content = pricingRules[udtFirstTableName].features06;
 
-    switch (true) {
-        case installedPricingVersion?.startsWith('0.7'):
-            console.info('AT installedPricingVersion CASE 7');
-            ppmValues_content = {
-                ...pricingRules[udtFirstTableName].features05,
-                ...pricingRules[udtFirstTableName].features06,
-                ...pricingRules[udtFirstTableName].features07,
-            };
-            break;
+    // let ppmValues_content;
+    // switch (true) {
+    //     case installedPricingVersion?.startsWith('0.7'):
+    //         console.info('AT installedPricingVersion CASE 7');
+    //         ppmValues_content = {
+    //             ...pricingRules[udtFirstTableName].features05,
+    //             ...pricingRules[udtFirstTableName].features06,
+    //             ...pricingRules[udtFirstTableName].features07,
+    //         };
+    //         break;
 
-        case installedPricingVersion?.startsWith('0.8'):
-            console.info('AT installedPricingVersion CASE 8');
-            ppmValues_content = {
-                ...pricingRules[udtFirstTableName].features05,
-                ...pricingRules[udtFirstTableName].features06,
-                ...pricingRules[udtFirstTableName].features07,
-                ...pricingRules[udtFirstTableName].features08,
-            };
-            break;
-        default:
-            console.info('AT installedPricingVersion Default');
-            ppmValues_content = {
-                ...pricingRules[udtFirstTableName].features05,
-                ...pricingRules[udtFirstTableName].features06,
-            };
-            break;
-    }
+    //     case installedPricingVersion?.startsWith('0.8'):
+    //         console.info('AT installedPricingVersion CASE 8');
+    //         ppmValues_content = {
+    //             ...pricingRules[udtFirstTableName].features05,
+    //             ...pricingRules[udtFirstTableName].features06,
+    //             ...pricingRules[udtFirstTableName].features07,
+    //             ...pricingRules[udtFirstTableName].features08,
+    //         };
+    //         break;
+    //     default:
+    //         console.info('AT installedPricingVersion Default');
+    //         ppmValues_content = {
+    //             ...pricingRules[udtFirstTableName].features05,
+    //             ...pricingRules[udtFirstTableName].features06,
+    //         };
+    //         break;
+    // }
 
     let driver: Browser;
     let pricingService: PricingService;
