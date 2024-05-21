@@ -592,7 +592,7 @@ export async function ResourceListTests(email: string, password: string, client:
         });
 
         describe('UDCs Prep', async function () {
-            it(`Upsert "${resource_name_sanity}" Collection`, async function () {
+            it(`"${resource_name_sanity}" Collection Upsert`, async function () {
                 if (
                     detailsByResource[resource_name_sanity].collectionType &&
                     detailsByResource[resource_name_sanity].collectionFields
@@ -628,7 +628,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            it(`Upsert "${resource_name_pipeline}" Collection`, async function () {
+            it(`"${resource_name_pipeline}" Collection Upsert`, async function () {
                 if (detailsByResource[resource_name_pipeline].collectionFields) {
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
                         nameOfCollection: resource_name_pipeline,
@@ -657,7 +657,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            it(`Upsert "${resource_name_from_account_dashborad}" Collection`, async function () {
+            it(`"${resource_name_from_account_dashborad}" Collection Upsert`, async function () {
                 if (detailsByResource[resource_name_from_account_dashborad].collectionFields) {
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
                         nameOfCollection: resource_name_from_account_dashborad,
@@ -755,7 +755,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 }
             });
 
-            it(`Num of listings at account "${accountName}"`, async function () {
+            it(`Num of listings at collection "${resource_name_from_account_dashborad}" - conected to account "${accountName}"`, async function () {
                 refAccListings = await udcService.getDocuments(resource_name_from_account_dashborad);
                 console.info(
                     `Listings of collection "${resource_name_from_account_dashborad}": `,
