@@ -60,7 +60,11 @@ export async function ResourceListTests(email: string, password: string, client:
     let deletePageResponse;
     let refAccListings;
     let num_of_listings_at_account;
-    let numberOfResultsAccountFilter;
+    let numberOfResultsAccountFilter_beforeSyncChange;
+    let numberOfResultsAccountFilter_afterSyncChange;
+    let numberOfResultsWithoutAccountFilter_beforeSyncChange;
+    let numberOfResultsWithoutAccountFilter_afterSyncChange;
+    let upsertResponse;
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -600,7 +604,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         syncDefinitionOfCollection: { Sync: false },
                         fieldsOfCollection: detailsByResource[resource_name_sanity].collectionFields || [],
                     });
-                    const upsertResponse = await udcService.postScheme(bodyOfCollection);
+                    upsertResponse = await udcService.postScheme(bodyOfCollection);
                     console.info(`${resource_name_sanity} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
                     expect(upsertResponse).to.be.an('object');
                     Object.keys(upsertResponse).forEach((collectionProperty) => {
@@ -618,6 +622,10 @@ export async function ResourceListTests(email: string, password: string, client:
                     title: `Collection data for "${resource_name_sanity}" (CollectionFields): `,
                     value: detailsByResource[resource_name_sanity].collectionFields,
                 });
+                addContext(this, {
+                    title: `Upsert Response: `,
+                    value: JSON.stringify(upsertResponse, null, 2),
+                });
             });
 
             it(`Upsert "${resource_name_pipeline}" Collection`, async function () {
@@ -627,7 +635,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         descriptionOfCollection: 'Created with Automation',
                         fieldsOfCollection: detailsByResource[resource_name_pipeline].collectionFields || [],
                     });
-                    const upsertResponse = await udcService.postScheme(bodyOfCollection);
+                    upsertResponse = await udcService.postScheme(bodyOfCollection);
                     console.info(
                         `${resource_name_pipeline} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`,
                     );
@@ -643,6 +651,10 @@ export async function ResourceListTests(email: string, password: string, client:
                     title: `Collection data for "${resource_name_pipeline}" (CollectionFields): `,
                     value: detailsByResource[resource_name_pipeline].collectionFields,
                 });
+                addContext(this, {
+                    title: `Upsert Response: `,
+                    value: JSON.stringify(upsertResponse, null, 2),
+                });
             });
 
             it(`Upsert "${resource_name_from_account_dashborad}" Collection`, async function () {
@@ -654,7 +666,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         fieldsOfCollection:
                             detailsByResource[resource_name_from_account_dashborad].collectionFields || [],
                     });
-                    const upsertResponse = await udcService.postScheme(bodyOfCollection);
+                    upsertResponse = await udcService.postScheme(bodyOfCollection);
                     console.info(
                         `${resource_name_from_account_dashborad} upsertResponse: ${JSON.stringify(
                             upsertResponse,
@@ -681,6 +693,10 @@ export async function ResourceListTests(email: string, password: string, client:
                     title: `Collection data for "${resource_name_from_account_dashborad}" (CollectionFields): `,
                     value: detailsByResource[resource_name_from_account_dashborad].collectionFields,
                 });
+                addContext(this, {
+                    title: `Upsert Response: `,
+                    value: JSON.stringify(upsertResponse, null, 2),
+                });
             });
 
             it(`Making Sure "${resource_name_pipeline}" Collection contain Values`, async function () {
@@ -697,6 +713,10 @@ export async function ResourceListTests(email: string, password: string, client:
                         expect(upsertingValues_Response.Ok).to.be.true;
                         expect(upsertingValues_Response.Status).to.equal(200);
                         expect(upsertingValues_Response.Error).to.eql({});
+                    });
+                    addContext(this, {
+                        title: `Upsert Values Response: `,
+                        value: JSON.stringify(upsertingValues_Responses, null, 2),
                     });
                 }
             });
@@ -727,6 +747,10 @@ export async function ResourceListTests(email: string, password: string, client:
                         expect(upsertingValues_Response.Ok).to.be.true;
                         expect(upsertingValues_Response.Status).to.equal(200);
                         expect(upsertingValues_Response.Error).to.eql({});
+                    });
+                    addContext(this, {
+                        title: `Upsert Values Response: `,
+                        value: JSON.stringify(upsertingValues_Responses, null, 2),
                     });
                 }
             });
@@ -1354,7 +1378,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
                     );
-                    numberOfResultsAccountFilter = (await numberOfResultsAccountFilterElement.getText()).trim();
+                    numberOfResultsAccountFilter_beforeSyncChange = (
+                        await numberOfResultsAccountFilterElement.getText()
+                    ).trim();
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1370,9 +1396,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                     addContext(this, {
                         title: `Number of Results from UI`,
-                        value: numberOfResultsAccountFilter,
+                        value: numberOfResultsAccountFilter_beforeSyncChange,
                     });
-                    expect(Number(numberOfResultsAccountFilter)).equals(num_of_listings_at_account);
+                    expect(Number(numberOfResultsAccountFilter_beforeSyncChange)).equals(num_of_listings_at_account);
                 });
 
                 // bug: DI-27584
@@ -1498,7 +1524,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
                     );
-                    numberOfResultsAccountFilter = (await numberOfResultsAccountFilterElement.getText()).trim();
+                    numberOfResultsAccountFilter_afterSyncChange = (
+                        await numberOfResultsAccountFilterElement.getText()
+                    ).trim();
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1514,9 +1542,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                     addContext(this, {
                         title: `Number of Results from UI`,
-                        value: numberOfResultsAccountFilter,
+                        value: numberOfResultsAccountFilter_afterSyncChange,
                     });
-                    expect(Number(numberOfResultsAccountFilter)).equals(num_of_listings_at_account);
+                    expect(Number(numberOfResultsAccountFilter_afterSyncChange)).equals(num_of_listings_at_account);
                 });
 
                 it('Return to Home Page', async function () {
@@ -1584,7 +1612,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
                     );
-                    numberOfResultsAccountFilter = (await numberOfResultsAccountFilterElement.getText()).trim();
+                    numberOfResultsWithoutAccountFilter_beforeSyncChange = (
+                        await numberOfResultsAccountFilterElement.getText()
+                    ).trim();
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1600,9 +1630,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                     addContext(this, {
                         title: `Number of Results from UI`,
-                        value: numberOfResultsAccountFilter,
+                        value: numberOfResultsWithoutAccountFilter_beforeSyncChange,
                     });
-                    expect(Number(numberOfResultsAccountFilter)).equals(refAccListings.length);
+                    expect(Number(numberOfResultsWithoutAccountFilter_beforeSyncChange)).equals(refAccListings.length);
                 });
 
                 // bug: DI-27584
@@ -1698,7 +1728,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
                     );
-                    numberOfResultsAccountFilter = (await numberOfResultsAccountFilterElement.getText()).trim();
+                    numberOfResultsWithoutAccountFilter_afterSyncChange = (
+                        await numberOfResultsAccountFilterElement.getText()
+                    ).trim();
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1714,9 +1746,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                     addContext(this, {
                         title: `Number of Results from UI`,
-                        value: numberOfResultsAccountFilter,
+                        value: numberOfResultsWithoutAccountFilter_afterSyncChange,
                     });
-                    expect(Number(numberOfResultsAccountFilter)).equals(refAccListings.length);
+                    expect(Number(numberOfResultsWithoutAccountFilter_afterSyncChange)).equals(refAccListings.length);
                 });
 
                 it('Return to Home Page', async function () {
