@@ -111,14 +111,6 @@ export const testDataWithNewSyncAndNebula = {
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
 };
 
-//this may be redundant
-//this is done because sync installations are using "phased=false"
-export const testDataWithNewSyncNoNebula = {
-    // ...testData, // already has sync
-    'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
-    'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-};
-
 export const ConsoleColors = {
     MenuHeader: 'color: #FFFF00',
     MenuBackground: 'background-color: #000000',
@@ -1739,12 +1731,10 @@ export default class GeneralService {
     }
 
     async baseAddonVersionsInstallationNewSyncNoNebula(varPass: string, otherTestData?: any) {
-        const isInstalledArr = await this.areAddonsInstalled(
-            otherTestData ? otherTestData : testDataWithNewSyncNoNebula,
-        );
+        const isInstalledArr = await this.areAddonsInstalled(otherTestData ? otherTestData : testData);
         const chnageVersionResponseArr = await this.changeVersion(
             varPass,
-            otherTestData ? otherTestData : testDataWithNewSyncNoNebula,
+            otherTestData ? otherTestData : testData,
             true,
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
