@@ -815,6 +815,7 @@ export class UDCService {
                         scheme.field.Sync,
                         scheme.field.Unique,
                         scheme.field.Fields,
+                        scheme.field.ApplySystemFilter,
                     );
                     break;
 
