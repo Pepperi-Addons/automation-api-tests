@@ -1348,6 +1348,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it('Retrieving Number of Results from UI', async function () {
+                    await driver.refresh();
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
@@ -1491,6 +1492,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it('Retrieving Number of Results from UI', async function () {
+                    await driver.refresh();
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
@@ -1576,6 +1578,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it('Retrieving Number of Results from UI', async function () {
+                    await driver.refresh();
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
@@ -1689,6 +1692,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it('Retrieving Number of Results from UI', async function () {
+                    await driver.refresh();
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
