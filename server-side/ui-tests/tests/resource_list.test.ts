@@ -133,7 +133,7 @@ export async function ResourceListTests(email: string, password: string, client:
         'AddonUUID',
     ];
     const getSchemesResponse = await udcService.getSchemes({ where: `Name=${resource_name_from_account_dashborad}` });
-    let syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+    let syncStatusOfReferenceAccount = getSchemesResponse[0]?.SyncData?.Sync;
     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
 
     const detailsByResource: {
