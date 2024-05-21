@@ -70,7 +70,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //papi
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //pfs
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.4.%'], //pfs
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'],
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
