@@ -235,6 +235,7 @@ export async function CustomCollectionsUpsert(
                                     Type: 'Resource',
                                     Resource: 'accounts',
                                     Description: '',
+                                    ApplySystemFilter: true,
                                     Mandatory: false,
                                     Indexed: true,
                                     IndexedFields: {
@@ -407,6 +408,7 @@ export async function CustomCollectionsUpsert(
                                     Description: '',
                                     Mandatory: false,
                                     Indexed: true,
+                                    ApplySystemFilter: true,
                                     IndexedFields: {
                                         Email: { Indexed: true, Type: 'String' },
                                         Name: { Indexed: true, Type: 'String' },
@@ -467,6 +469,7 @@ export async function CustomCollectionsUpsert(
                                     Description: '',
                                     Mandatory: false,
                                     Indexed: true,
+                                    ApplySystemFilter: true,
                                     IndexedFields: {
                                         Email: { Indexed: true, Type: 'String' },
                                         Name: { Indexed: true, Type: 'String' },

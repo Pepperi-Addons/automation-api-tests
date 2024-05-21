@@ -388,6 +388,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         Description: '',
                         Mandatory: false,
                         Indexed: true,
+                        ApplySystemFilter: true,
                         IndexedFields: {
                             Email: { Indexed: true, Type: 'String' },
                             Name: { Indexed: true, Type: 'String' },
