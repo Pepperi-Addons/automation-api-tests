@@ -806,6 +806,11 @@ export async function ResourceListTests(email: string, password: string, client:
                     const addonSettingsTitle = await (
                         await driver.findElement(resourceList.PepTopArea_title)
                     ).getText();
+                    let base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At Resource Views - after load`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     expect(addonSettingsTitle).to.contain('Views & Editors');
 
                     // tabs are the right amount, the currect text and the right one (Views) is selected while the other isn't
@@ -832,6 +837,11 @@ export async function ResourceListTests(email: string, password: string, client:
                     // expect(Number(numberOfResults)).to.be.equal(0);
                     // const noData = (await (await driver.findElement(resourceList.List_NoDataFound)).getText()).trim();
                     // expect(noData).to.be.oneOf(['No Data Found', 'No results were found.']);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At Resource Views - after assertions`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
 
                 // it('Editors Tab', async function () {
@@ -849,11 +859,26 @@ export async function ResourceListTests(email: string, password: string, client:
                     await resourceEditors.clickTab('Editors_Tab');
                     await resourceEditors.isSpinnerDone();
                     await resourceEditors.validateEditorsListPageIsLoaded();
+                    let base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At Resource Views - Editors Tab`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await resourceEditors.addToResourceList(editorName, editor_decsription, resource_name_sanity);
                     await resourceEditors.verifyEditorEditPageOpen(editorName);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At Editors Tab - after "${editorName}" Editor added`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await resourceEditors.click(resourceEditors.EditPage_BackToList_Button);
                     await resourceEditors.clickTab('Editors_Tab');
                     await resourceEditors.deleteFromListByName(editorName);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At Editors Tab - after "${editorName}" Editor deleted`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                 });
 
                 it('Perform Manual Sync', async function () {
