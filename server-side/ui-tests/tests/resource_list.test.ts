@@ -592,6 +592,28 @@ export async function ResourceListTests(email: string, password: string, client:
         });
 
         describe('UDCs Prep', async function () {
+            it(`Truncate "${resource_name_pipeline}" Collection`, async function () {
+                const truncateResponse = await udcService.truncateScheme(resource_name_pipeline);
+                console.info(
+                    `${resource_name_pipeline} truncateResponse: ${JSON.stringify(truncateResponse, null, 2)}`,
+                );
+                addContext(this, {
+                    title: `Truncate Response: `,
+                    value: JSON.stringify(truncateResponse, null, 2),
+                });
+            });
+
+            it(`Purge "${resource_name_from_account_dashborad}" Collection`, async function () {
+                const purgeResponse = await udcService.purgeScheme(resource_name_from_account_dashborad);
+                console.info(
+                    `${resource_name_from_account_dashborad} purgeResponse: ${JSON.stringify(purgeResponse, null, 2)}`,
+                );
+                addContext(this, {
+                    title: `Purge Response: `,
+                    value: JSON.stringify(purgeResponse, null, 2),
+                });
+            });
+
             it(`"${resource_name_sanity}" Collection Upsert`, async function () {
                 if (
                     detailsByResource[resource_name_sanity].collectionType &&
