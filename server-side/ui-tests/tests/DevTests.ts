@@ -221,6 +221,26 @@ export class DevTest {
         const addonDep = await this.getDependenciesOfAddon(service, this.addonUUID, varPass);
         //3. install dependencys
         if (addonDep !== undefined && addonDep.length !== 0) {
+            if (this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a' && this.isSyncNebulaDist) {
+                //sync - nebula
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.pfs) {
+                        addonDep[index].pfs = ['00000000-0000-0000-0000-0000000f11e5', '1.3.%'];
+                        debugger;
+                    }
+                }
+            }
+            if (this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a' && !this.isSyncNebulaDist) {
+                //sync - open sync
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.pfs) {
+                        addonDep[index].pfs = ['00000000-0000-0000-0000-0000000f11e5', '1.4.%'];
+                        debugger;
+                    }
+                }
+            }
             if (this.addonUUID === 'ad909780-0c23-401e-8e8e-f514cc4f6aa2') {
                 //assets
                 const depObjSync = {};
@@ -968,7 +988,7 @@ export class DevTest {
         const bodyToSend = {
             Name: `The Results Of Intergration Tests Written By Developer For ${this.addonName} - (${this.addonUUID}), Version: ${this.addonVersion}`,
             Description: message,
-            Status: this.devPassingEnvs.length < 3 ? 'FAILED' : 'PASSED',
+            Status: this.devPassingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
             Message: failedTestsDesc === '' ? '√' : failedTestsDesc,
             UserWebhook: teamsURL,
         };
@@ -1185,7 +1205,7 @@ export class DevTest {
         const bodyToSend = {
             Name: `${this.addonName}, ${this.addonUUID}, ${this.addonVersion}`,
             Description: message,
-            Status: 'INFO',
+            Status: 'SUCCESS',
             Message: message,
             UserWebhook: teamsURL,
         };

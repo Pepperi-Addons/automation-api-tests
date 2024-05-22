@@ -3095,7 +3095,7 @@ export async function reportBuildStarted(addonName, addonUUID, addonVersion, ser
     const bodyToSend = {
         Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
         Description: message,
-        Status: 'INFO',
+        Status: 'SUCCESS',
         Message: message,
         UserWebhook: teamsURL,
     };
@@ -3127,7 +3127,7 @@ export async function reportBuildEnded(addonName, addonUUID, addonVersion, servi
     const bodyToSend = {
         Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
         Description: message,
-        Status: 'INFO',
+        Status: 'SUCCESS',
         Message: message,
         UserWebhook: teamsURL,
     };
