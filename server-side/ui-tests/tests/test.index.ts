@@ -51,6 +51,7 @@ import {
     PricingPartialValueTests,
     PricingMultipleValuesTests,
     PricingPerformanceUdtErrorsTests,
+    PricingPackagesTests,
     PricingNoUomTests,
     ResourceListAbiTests,
     InstallationsTest,
@@ -822,6 +823,17 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingConfigUpload(client, email, pass);
         await PricingUdtInsertion(client);
         await PricingExclusionTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'PricingPackages') {
+        await PricingUdtCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingConfigUpload(client, email, pass);
+        await PricingUdtInsertion(client);
+        await PricingPackagesTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;

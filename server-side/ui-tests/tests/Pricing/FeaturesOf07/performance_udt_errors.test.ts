@@ -75,7 +75,7 @@ _________________
     const testAccounts = ['Acc01', 'OtherAcc'];
 
     if (!installedPricingVersion?.startsWith('0.5') && !installedPricingVersion?.startsWith('0.6')) {
-        describe(`Pricing ** UOM ** UI tests  - ${
+        describe(`Pricing ** Performance and UDT Errors ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
