@@ -225,9 +225,9 @@ export class DevTest {
                 //sync - nebula
                 for (let index = 0; index < addonDep.length; index++) {
                     const dep = addonDep[index];
-                    if (dep['File Service Framework']) {
+                    if (dep.pfs) {
+                        addonDep[index].pfs = ['00000000-0000-0000-0000-0000000f11e5', '1.3.%'];
                         debugger;
-                        addonDep[index]['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.3.%'];
                     }
                 }
             }
