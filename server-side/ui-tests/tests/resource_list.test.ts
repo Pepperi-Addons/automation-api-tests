@@ -119,7 +119,8 @@ export async function ResourceListTests(email: string, password: string, client:
     const slug_path_ref_acc = 'reference_account_auto';
     const coreResourcesUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
     const test_generic_decsription = 'for RL automated testing';
-    const resource_name_from_account_dashborad = `ReferenceAccountAuto${testUniqueString}`;
+    const ref_account_resource = `ReferenceAccountAuto`;
+    const resource_name_from_account_dashborad = `${ref_account_resource}${testUniqueString}`;
     const collectionProperties = [
         'GenericResource',
         'ModificationDateTime',
@@ -670,13 +671,12 @@ export async function ResourceListTests(email: string, password: string, client:
             });
 
             it(`"${resource_name_from_account_dashborad}" Collection Upsert`, async function () {
-                if (detailsByResource[resource_name_from_account_dashborad].collectionFields) {
+                if (detailsByResource[ref_account_resource].collectionFields) {
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
                         nameOfCollection: resource_name_from_account_dashborad,
                         descriptionOfCollection: 'Created with Automation',
                         syncDefinitionOfCollection: { Sync: syncStatusOfReferenceAccount || false },
-                        fieldsOfCollection:
-                            detailsByResource[resource_name_from_account_dashborad].collectionFields || [],
+                        fieldsOfCollection: detailsByResource[ref_account_resource].collectionFields || [],
                     });
                     upsertResponse = await udcService.postScheme(bodyOfCollection);
                     console.info(
@@ -2219,6 +2219,10 @@ export async function ResourceListTests(email: string, password: string, client:
                         title: `Purge Response: `,
                         value: JSON.stringify(purgeResponse, null, 2),
                     });
+                    expect(purgeResponse.Ok).to.be.true;
+                    expect(purgeResponse.Status).to.equal(200);
+                    expect(purgeResponse.Error).to.eql({});
+                    // expect(Object.keys(purgeResponse.Body)).to.eql([]);
                 });
             });
         });
