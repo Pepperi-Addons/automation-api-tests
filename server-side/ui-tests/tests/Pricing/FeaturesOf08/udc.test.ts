@@ -59,7 +59,11 @@ _________________
 
     const testAccounts = ['Acc01', 'OtherAcc'];
 
-    if (!installedPricingVersion?.startsWith('0.5') && !installedPricingVersion?.startsWith('0.6')) {
+    if (
+        !installedPricingVersion?.startsWith('0.5') &&
+        !installedPricingVersion?.startsWith('0.6') &&
+        !installedPricingVersion?.startsWith('0.7')
+    ) {
         describe(`Pricing ** UOM ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
@@ -113,11 +117,6 @@ _________________
                     it(`PERFORMANCE: making sure Sales Order Loading Duration is acceptable`, async function () {
                         let limit: number;
                         switch (true) {
-                            case installedPricingVersion?.startsWith('0.5'):
-                            case installedPricingVersion?.startsWith('0.6'):
-                                limit = 650;
-                                break;
-
                             default:
                                 limit = 600;
                                 break;
