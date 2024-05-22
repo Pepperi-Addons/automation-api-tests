@@ -76,11 +76,11 @@ export async function ResourceListTests(email: string, password: string, client:
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // needed for filtering by account (ReferenceAccount collections)
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-        // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%'],
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%'],
         // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'], // Dependency of Nebula
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // Dependency of Nebula
+        // 'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // Dependency of Nebula
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -592,7 +592,7 @@ export async function ResourceListTests(email: string, password: string, client:
         });
 
         describe('UDCs Prep', async function () {
-            it(`Upsert "${resource_name_sanity}" Collection`, async function () {
+            it(`"${resource_name_sanity}" Collection Upsert`, async function () {
                 if (
                     detailsByResource[resource_name_sanity].collectionType &&
                     detailsByResource[resource_name_sanity].collectionFields
@@ -628,7 +628,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            it(`Upsert "${resource_name_pipeline}" Collection`, async function () {
+            it(`"${resource_name_pipeline}" Collection Upsert`, async function () {
                 if (detailsByResource[resource_name_pipeline].collectionFields) {
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
                         nameOfCollection: resource_name_pipeline,
@@ -657,7 +657,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            it(`Upsert "${resource_name_from_account_dashborad}" Collection`, async function () {
+            it(`"${resource_name_from_account_dashborad}" Collection Upsert`, async function () {
                 if (detailsByResource[resource_name_from_account_dashborad].collectionFields) {
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
                         nameOfCollection: resource_name_from_account_dashborad,
@@ -755,7 +755,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 }
             });
 
-            it(`Num of listings at account "${accountName}"`, async function () {
+            it(`Num of listings at collection "${resource_name_from_account_dashborad}" - conected to account "${accountName}"`, async function () {
                 refAccListings = await udcService.getDocuments(resource_name_from_account_dashborad);
                 console.info(
                     `Listings of collection "${resource_name_from_account_dashborad}": `,
