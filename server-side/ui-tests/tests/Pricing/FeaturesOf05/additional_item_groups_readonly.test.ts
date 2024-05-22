@@ -25,7 +25,7 @@ interface PriceTsaFields {
 
 chai.use(promised);
 
-export async function PricingAdditionalGroupsReadonlyTests(
+export async function PricingAdditionalItemGroupsReadonlyTests(
     email: string,
     password: string,
     client: Client,

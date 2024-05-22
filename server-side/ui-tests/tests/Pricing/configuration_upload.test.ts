@@ -15,7 +15,7 @@ export async function PricingConfigUpload(
     client: Client,
     email: string,
     password: string,
-    specificVersion: 'version07for05data' | undefined = undefined,
+    specificVersion: 'version07for05data' | 'noUom' | undefined = undefined,
 ) {
     const pricingConfiguration = new PricingConfiguration();
     const generalService = new GeneralService(client);
@@ -29,7 +29,7 @@ export async function PricingConfigUpload(
     let pricingConfig;
 
     describe(`Setting Configuration File - Pricing Version: ${installedPricingVersion} ${
-        specificVersion ? `| with 05 data` : ''
+        specificVersion === 'version07for05data' ? `| with 05 data` : specificVersion === 'noUom' ? `| with NO UOM` : ''
     }`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
@@ -56,10 +56,14 @@ export async function PricingConfigUpload(
                         console.info('AT installedPricingVersion CASE 7');
                         pricingConfig = pricingConfiguration.version07;
                         break;
+                    case installedPricingVersion?.startsWith('0.8'):
+                        console.info('AT installedPricingVersion CASE 8');
+                        pricingConfig = pricingConfiguration.version08;
+                        break;
 
                     default:
                         console.info('AT installedPricingVersion Default');
-                        pricingConfig = pricingConfiguration.version08;
+                        pricingConfig = pricingConfiguration.version1; // version 1.0 is not ready yet (May 2024)
                         break;
                 }
                 await uploadConfiguration(pricingConfig);
@@ -69,9 +73,20 @@ export async function PricingConfigUpload(
                 });
             });
 
-        specificVersion !== undefined &&
-            it('Sending version07 for 05data configuration object to end point', async function () {
-                pricingConfig = pricingConfiguration[specificVersion];
+        specificVersion === 'version07for05data' &&
+            it(`Sending version07 for 05data configuration object to end point`, async function () {
+                pricingConfig = pricingConfiguration.version07for05data;
+                await uploadConfiguration(pricingConfig);
+                addContext(this, {
+                    title: `Config =`,
+                    value: JSON.stringify(pricingConfig, null, 2),
+                });
+            });
+
+        specificVersion === 'noUom' &&
+            it('Sending configuration without UOM to end point', async function () {
+                const configVersion = installedPricingVersion?.startsWith('0.8') ? 'version08noUom' : 'version1noUom'; // version1noUom does not exist yet (May 2024)
+                pricingConfig = pricingConfiguration[configVersion];
                 await uploadConfiguration(pricingConfig);
                 addContext(this, {
                     title: `Config =`,
