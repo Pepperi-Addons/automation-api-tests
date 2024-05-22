@@ -33,6 +33,7 @@ import { PricingExclusionTests } from './Pricing/FeaturesOf06/exclusion.test';
 import { PricingPartialValueTests } from './Pricing/FeaturesOf06/partial_value.test';
 import { PricingMultipleValuesTests } from './Pricing/FeaturesOf06/multiple_values.test';
 import { PricingPerformanceUdtErrorsTests } from './Pricing/FeaturesOf07/performance_udt_errors.test';
+import { PricingPackagesTests } from './Pricing/FeaturesOf07/packages.test';
 import { PricingNoUomTests } from './Pricing/FeaturesOf08/no_uom.test';
 import { PricingUdcTests } from './Pricing/FeaturesOf08/udc.test';
 import { ResourceListAbiTests } from './rl_abi.test';
@@ -103,6 +104,7 @@ export {
     PricingPartialValueTests,
     PricingMultipleValuesTests,
     PricingPerformanceUdtErrorsTests,
+    PricingPackagesTests,
     PricingNoUomTests,
     PricingUdcTests,
     ResourceListAbiTests,
