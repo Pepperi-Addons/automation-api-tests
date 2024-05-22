@@ -988,7 +988,7 @@ export class DevTest {
         const bodyToSend = {
             Name: `The Results Of Intergration Tests Written By Developer For ${this.addonName} - (${this.addonUUID}), Version: ${this.addonVersion}`,
             Description: message,
-            Status: this.devPassingEnvs.length < 3 ? 'FAILED' : 'PASSED',
+            Status: this.devPassingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
             Message: failedTestsDesc === '' ? '√' : failedTestsDesc,
             UserWebhook: teamsURL,
         };
@@ -1205,7 +1205,7 @@ export class DevTest {
         const bodyToSend = {
             Name: `${this.addonName}, ${this.addonUUID}, ${this.addonVersion}`,
             Description: message,
-            Status: 'INFO',
+            Status: 'SUCCESS',
             Message: message,
             UserWebhook: teamsURL,
         };
