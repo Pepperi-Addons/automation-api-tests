@@ -1295,19 +1295,21 @@ export async function ResourceListTests(email: string, password: string, client:
                             selectedViewName: viewName,
                         },
                     ];
+                    const pageParameters = [
+                        // needed for a udc field of type 'Resource' (Reference Account)
+                        {
+                            type: 'String',
+                            consume: true,
+                            systemVariableName: 'AccountUUID',
+                            produce: false,
+                        },
+                    ];
                     const viewerBlock = new ResourceViewEditorBlock(
                         viewBlockKey,
                         'DataViewerBlock',
                         undefined,
                         selectedViews,
-                        [
-                            {
-                                type: 'String',
-                                consume: true,
-                                systemVariableName: 'AccountUUID',
-                                produce: false,
-                            },
-                        ],
+                        pageParameters,
                     );
                     console.info(`viewer block: ${JSON.stringify(viewerBlock, null, 2)}`);
                     addContext(this, {
