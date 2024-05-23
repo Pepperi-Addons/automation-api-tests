@@ -1081,6 +1081,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     createdPage.Blocks.push(viewerBlock);
                     createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(viewBlockKey);
                     createdPage.Layout.Sections[0].Columns.push(new BasePageLayoutSectionColumn(editorBlockKey));
+                    createdPage.Layout.Sections[0]['FillHeight'] = true;
 
                     const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
                     console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
@@ -1301,17 +1302,20 @@ export async function ResourceListTests(email: string, password: string, client:
                         'DataViewerBlock',
                         undefined,
                         selectedViews,
+                        [
+                            {
+                                type: 'String',
+                                consume: true,
+                                systemVariableName: 'AccountUUID',
+                                produce: false,
+                            },
+                        ],
                     );
                     console.info(`viewer block: ${JSON.stringify(viewerBlock, null, 2)}`);
-                    const editorBlock = new ResourceViewEditorBlock(editorBlockKey, 'DataConfigurationBlock', {
-                        collectionName: resource_name_from_account_dashborad,
-                        editorUUID: editorKey,
-                    });
-                    console.info(`editor block: ${JSON.stringify(editorBlock, null, 2)}`);
-                    createdPage.Blocks.push(editorBlock);
                     createdPage.Blocks.push(viewerBlock);
                     createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(viewBlockKey);
                     createdPage.Layout.Sections[0].Columns.push(new BasePageLayoutSectionColumn(editorBlockKey));
+                    createdPage.Layout.Sections[0]['FillHeight'] = true;
 
                     const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
                     console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
@@ -1406,10 +1410,18 @@ export async function ResourceListTests(email: string, password: string, client:
                         driver,
                         `https://app.pepperi.com/${slug_path_account_dashboard}`,
                     );
+                    const getSchemesResponse = await udcService.getSchemes({
+                        where: `Name=${resource_name_from_account_dashborad}`,
+                    });
+                    const syncStatus = getSchemesResponse[0].SyncData?.Sync;
                     await resourceListBlock.isSpinnerDone();
                     addContext(this, {
                         title: `Current URL`,
                         value: `${await driver.getCurrentUrl()}`,
+                    });
+                    addContext(this, {
+                        title: `Sync Status of "${resource_name_from_account_dashborad}"`,
+                        value: syncStatus,
                     });
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1551,10 +1563,18 @@ export async function ResourceListTests(email: string, password: string, client:
                         driver,
                         `https://app.pepperi.com/${slug_path_account_dashboard}`,
                     );
+                    const getSchemesResponse = await udcService.getSchemes({
+                        where: `Name=${resource_name_from_account_dashborad}`,
+                    });
+                    const syncStatus = getSchemesResponse[0].SyncData?.Sync;
                     await resourceListBlock.isSpinnerDone();
                     addContext(this, {
                         title: `Current URL`,
                         value: `${await driver.getCurrentUrl()}`,
+                    });
+                    addContext(this, {
+                        title: `Sync Status of "${resource_name_from_account_dashborad}"`,
+                        value: syncStatus,
                     });
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1638,10 +1658,18 @@ export async function ResourceListTests(email: string, password: string, client:
                         driver,
                         `https://app.pepperi.com/${slug_path_account_dashboard}`,
                     );
+                    const getSchemesResponse = await udcService.getSchemes({
+                        where: `Name=${resource_name_from_account_dashborad}`,
+                    });
+                    const syncStatus = getSchemesResponse[0].SyncData?.Sync;
                     await resourceListBlock.isSpinnerDone();
                     addContext(this, {
                         title: `Current URL`,
                         value: `${await driver.getCurrentUrl()}`,
+                    });
+                    addContext(this, {
+                        title: `Sync Status of "${resource_name_from_account_dashborad}"`,
+                        value: syncStatus,
                     });
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1753,10 +1781,18 @@ export async function ResourceListTests(email: string, password: string, client:
                         driver,
                         `https://app.pepperi.com/${slug_path_account_dashboard}`,
                     );
+                    const getSchemesResponse = await udcService.getSchemes({
+                        where: `Name=${resource_name_from_account_dashborad}`,
+                    });
+                    const syncStatus = getSchemesResponse[0].SyncData?.Sync;
                     await resourceListBlock.isSpinnerDone();
                     addContext(this, {
                         title: `Current URL`,
                         value: `${await driver.getCurrentUrl()}`,
+                    });
+                    addContext(this, {
+                        title: `Sync Status of "${resource_name_from_account_dashborad}"`,
+                        value: syncStatus,
                     });
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1935,6 +1971,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         console.info(`viewer block: ${JSON.stringify(viewerBlock, null, 2)}`);
                         createdPage.Blocks.push(viewerBlock);
                         createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(viewBlockKey);
+                        createdPage.Layout.Sections[0]['FillHeight'] = true;
 
                         const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
                         console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
