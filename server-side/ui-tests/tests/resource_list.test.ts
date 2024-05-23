@@ -1312,6 +1312,10 @@ export async function ResourceListTests(email: string, password: string, client:
                         ],
                     );
                     console.info(`viewer block: ${JSON.stringify(viewerBlock, null, 2)}`);
+                    addContext(this, {
+                        title: `viewer block:`,
+                        value: JSON.stringify(viewerBlock, null, 2),
+                    });
                     createdPage.Blocks.push(viewerBlock);
                     createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(viewBlockKey);
                     createdPage.Layout.Sections[0].Columns.push(new BasePageLayoutSectionColumn(editorBlockKey));
