@@ -1285,8 +1285,6 @@ export async function ResourceListTests(email: string, password: string, client:
                     pageKey = await resourceListUtils.getUUIDfromURL();
                     createdPage = await pageBuilder.getPageByUUID(pageKey, client);
                     console.info(`createdPage before blocks addition: ${JSON.stringify(createdPage, null, 2)}`);
-                    const editorBlockKey = uuidv4();
-                    console.info('Newly generated editor block key: ', editorBlockKey);
                     const viewBlockKey = uuidv4();
                     console.info('Newly generated view block key: ', viewBlockKey);
                     const selectedViews = [
@@ -1318,9 +1316,8 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                     createdPage.Blocks.push(viewerBlock);
                     createdPage.Layout.Sections[0].Columns[0] = new BasePageLayoutSectionColumn(viewBlockKey);
-                    createdPage.Layout.Sections[0].Columns.push(new BasePageLayoutSectionColumn(editorBlockKey));
                     createdPage.Layout.Sections[0]['FillHeight'] = true;
-
+                    console.info(`created page after changes: ${JSON.stringify(createdPage, null, 2)}`);
                     const responseOfPublishPage = await pageBuilder.publishPage(createdPage, client);
                     console.info(`RESPONSE: ${JSON.stringify(responseOfPublishPage, null, 2)}`);
                     const base64ImageComponent = await driver.saveScreenshots();
