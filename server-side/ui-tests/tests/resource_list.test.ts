@@ -78,10 +78,10 @@ export async function ResourceListTests(email: string, password: string, client:
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // needed for filtering by account (ReferenceAccount collections)
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%'],
-        // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'], // Dependency of Nebula
-        // 'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // Dependency of Nebula
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // Dependency of Nebula
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
@@ -119,7 +119,7 @@ export async function ResourceListTests(email: string, password: string, client:
     const slug_path_ref_acc = 'reference_account_auto';
     const coreResourcesUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
     const test_generic_decsription = 'for RL automated testing';
-    const ref_account_resource = `ReferenceAccountAuto`;
+    const ref_account_resource = 'ReferenceAccountAuto';
     const resource_name_from_account_dashborad = `${ref_account_resource}${testUniqueString}`;
     const collectionProperties = [
         'GenericResource',
@@ -671,12 +671,13 @@ export async function ResourceListTests(email: string, password: string, client:
             });
 
             it(`"${resource_name_from_account_dashborad}" Collection Upsert`, async function () {
-                if (detailsByResource[ref_account_resource].collectionFields) {
+                const fields = detailsByResource[ref_account_resource].collectionFields;
+                if (fields) {
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
                         nameOfCollection: resource_name_from_account_dashborad,
                         descriptionOfCollection: 'Created with Automation',
                         syncDefinitionOfCollection: { Sync: syncStatusOfReferenceAccount || false },
-                        fieldsOfCollection: detailsByResource[ref_account_resource].collectionFields || [],
+                        fieldsOfCollection: fields,
                     });
                     upsertResponse = await udcService.postScheme(bodyOfCollection);
                     console.info(
