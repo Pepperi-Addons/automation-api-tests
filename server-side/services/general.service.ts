@@ -2099,6 +2099,7 @@ export default class GeneralService {
             case 'PAGE-BUILDER':
             case 'PAGE BUILDER':
             case 'PAGE':
+            case 'PAGES':
             case 'PAGE-BUILDER':
                 return await this.getSecretfromKMS(email, pass, 'PageBuilderTeamsWebHook');
             case 'PAPI-DATA-INDEX':
