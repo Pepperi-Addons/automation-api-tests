@@ -244,6 +244,9 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
 
     //get secret key
     async function getSecretKey() {
+        console.log(
+            '\n################ RUNNING THE TEST OF SECOND TEST OUT OF 2: Doc DB Indexed Adal ################\n',
+        );
         //Oren added this to improve logs of failed tests
         try {
             logcash.secretKey = await generalService.getSecretKey(addonUUID, varKey);
