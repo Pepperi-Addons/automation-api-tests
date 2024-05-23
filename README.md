@@ -14,6 +14,7 @@ A template for creating a pepperi addon with an angular app for the client-side 
 
 `npm --version` > 6.0.0
 
+
 #### Install by running 
 ``` bash
 npm init @pepperi-addons
