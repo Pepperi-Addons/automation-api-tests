@@ -16,7 +16,7 @@ import PricingRules from '../../../pom/addons/PricingRules';
 
 chai.use(promised);
 
-export async function PricingBaseTests(
+export async function PricingCalculatedFieldsManualLineTests(
     email: string,
     password: string,
     client: Client,

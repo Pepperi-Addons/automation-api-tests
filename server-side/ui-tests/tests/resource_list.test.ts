@@ -27,6 +27,7 @@ export async function ResourceListTests(email: string, password: string, client:
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
+    const testUniqueString = generalService.generateRandomString(5);
     const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
     // const papi_resources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
 
@@ -76,8 +77,8 @@ export async function ResourceListTests(email: string, password: string, client:
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // needed for filtering by account (ReferenceAccount collections)
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-        // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%'],
-        // 'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%'],
+        'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'], // Dependency of Nebula
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // Dependency of Nebula
@@ -118,7 +119,8 @@ export async function ResourceListTests(email: string, password: string, client:
     const slug_path_ref_acc = 'reference_account_auto';
     const coreResourcesUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
     const test_generic_decsription = 'for RL automated testing';
-    const resource_name_from_account_dashborad = 'ReferenceAccountAuto';
+    const ref_account_resource = 'ReferenceAccountAuto';
+    const resource_name_from_account_dashborad = `${ref_account_resource}${testUniqueString}`;
     const collectionProperties = [
         'GenericResource',
         'ModificationDateTime',
@@ -139,6 +141,16 @@ export async function ResourceListTests(email: string, password: string, client:
     const getSchemesResponse = await udcService.getSchemes({ where: `Name=${resource_name_from_account_dashborad}` });
     let syncStatusOfReferenceAccount = getSchemesResponse[0]?.SyncData?.Sync;
     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+
+    const simpleResources = [
+        'accounts',
+        'items',
+        // 'users',
+        // 'catalogs',
+        // 'account_users',
+        'contacts',
+    ];
+    // const complexResources = ['ArraysOfPrimitivesAuto', 'FiltersAccRefAuto', 'IndexedFieldsAuto', 'IndexedNameAgeAuto', 'ReferenceAccountAuto'];
 
     const detailsByResource: {
         [key: string]: {
@@ -559,16 +571,6 @@ export async function ResourceListTests(email: string, password: string, client:
         },
     };
 
-    const simpleResources = [
-        'accounts',
-        'items',
-        // 'users',
-        // 'catalogs',
-        // 'account_users',
-        'contacts',
-    ];
-    // const complexResources = ['ArraysOfPrimitivesAuto', 'FiltersAccRefAuto', 'IndexedFieldsAuto', 'IndexedNameAgeAuto', 'ReferenceAccountAuto'];
-
     describe(`Resource List Tests Suite - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
     } || Ver ${installedResourceListVersion} || ${date}`, async function () {
@@ -592,7 +594,18 @@ export async function ResourceListTests(email: string, password: string, client:
         });
 
         describe('UDCs Prep', async function () {
-            it(`Upsert "${resource_name_sanity}" Collection`, async function () {
+            it(`Truncate "${resource_name_pipeline}" Collection`, async function () {
+                const truncateResponse = await udcService.truncateScheme(resource_name_pipeline);
+                console.info(
+                    `${resource_name_pipeline} truncateResponse: ${JSON.stringify(truncateResponse, null, 2)}`,
+                );
+                addContext(this, {
+                    title: `Truncate Response: `,
+                    value: JSON.stringify(truncateResponse, null, 2),
+                });
+            });
+
+            it(`"${resource_name_sanity}" Collection Upsert`, async function () {
                 if (
                     detailsByResource[resource_name_sanity].collectionType &&
                     detailsByResource[resource_name_sanity].collectionFields
@@ -628,7 +641,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            it(`Upsert "${resource_name_pipeline}" Collection`, async function () {
+            it(`"${resource_name_pipeline}" Collection Upsert`, async function () {
                 if (detailsByResource[resource_name_pipeline].collectionFields) {
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
                         nameOfCollection: resource_name_pipeline,
@@ -657,14 +670,14 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            it(`Upsert "${resource_name_from_account_dashborad}" Collection`, async function () {
-                if (detailsByResource[resource_name_from_account_dashborad].collectionFields) {
+            it(`"${resource_name_from_account_dashborad}" Collection Upsert`, async function () {
+                const fields = detailsByResource[ref_account_resource].collectionFields;
+                if (fields) {
                     const bodyOfCollection = udcService.prepareDataForUdcCreation({
                         nameOfCollection: resource_name_from_account_dashborad,
                         descriptionOfCollection: 'Created with Automation',
                         syncDefinitionOfCollection: { Sync: syncStatusOfReferenceAccount || false },
-                        fieldsOfCollection:
-                            detailsByResource[resource_name_from_account_dashborad].collectionFields || [],
+                        fieldsOfCollection: fields,
                     });
                     upsertResponse = await udcService.postScheme(bodyOfCollection);
                     console.info(
@@ -755,7 +768,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 }
             });
 
-            it(`Num of listings at account "${accountName}"`, async function () {
+            it(`Num of listings at collection "${resource_name_from_account_dashborad}" - conected to account "${accountName}"`, async function () {
                 refAccListings = await udcService.getDocuments(resource_name_from_account_dashborad);
                 console.info(
                     `Listings of collection "${resource_name_from_account_dashborad}": `,
@@ -2135,18 +2148,18 @@ export async function ResourceListTests(email: string, password: string, client:
                     expect(findBlankPageAfterCleanup).to.be.undefined;
                 });
 
-                it(`Changing Sync definition at ${resource_name_from_account_dashborad} to { Sync: true }`, async () => {
-                    const referenceAccountCollection = await udcService.getSchemes({
-                        where: `Name='${resource_name_from_account_dashborad}'`,
-                    });
-                    console.info(
-                        `udcService.getScheme where Name=${resource_name_from_account_dashborad} response: `,
-                        JSON.stringify(referenceAccountCollection, null, 2),
-                    );
-                    referenceAccountCollection[0].SyncData = { Sync: true };
-                    const response = await udcService.postScheme(referenceAccountCollection[0]);
-                    console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
-                });
+                // it(`Changing Sync definition at ${resource_name_from_account_dashborad} to { Sync: true }`, async () => {
+                //     const referenceAccountCollection = await udcService.getSchemes({
+                //         where: `Name='${resource_name_from_account_dashborad}'`,
+                //     });
+                //     console.info(
+                //         `udcService.getScheme where Name=${resource_name_from_account_dashborad} response: `,
+                //         JSON.stringify(referenceAccountCollection, null, 2),
+                //     );
+                //     referenceAccountCollection[0].SyncData = { Sync: true };
+                //     const response = await udcService.postScheme(referenceAccountCollection[0]);
+                //     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
+                // });
 
                 it('Remove Leftovers Buttons from home screen', async function () {
                     await webAppHeader.goHome();
@@ -2185,13 +2198,32 @@ export async function ResourceListTests(email: string, password: string, client:
                     );
                 });
 
-                it('Validating Sync definition is True', async function () {
-                    const getSchemesResponse = await udcService.getSchemes({
-                        where: `Name=${resource_name_from_account_dashborad}`,
+                // it('Validating Sync definition is True', async function () {
+                //     const getSchemesResponse = await udcService.getSchemes({
+                //         where: `Name=${resource_name_from_account_dashborad}`,
+                //     });
+                //     syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
+                //     console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
+                //     expect(syncStatusOfReferenceAccount).to.equal(true);
+                // });
+
+                it(`Purge "${resource_name_from_account_dashborad}" Collection`, async function () {
+                    const purgeResponse = await udcService.purgeScheme(resource_name_from_account_dashborad);
+                    console.info(
+                        `${resource_name_from_account_dashborad} purgeResponse: ${JSON.stringify(
+                            purgeResponse,
+                            null,
+                            2,
+                        )}`,
+                    );
+                    addContext(this, {
+                        title: `Purge Response: `,
+                        value: JSON.stringify(purgeResponse, null, 2),
                     });
-                    syncStatusOfReferenceAccount = getSchemesResponse[0].SyncData?.Sync;
-                    console.info('syncStatusOfReferenceAccount: ', syncStatusOfReferenceAccount);
-                    expect(syncStatusOfReferenceAccount).to.equal(true);
+                    expect(purgeResponse.Ok).to.be.true;
+                    expect(purgeResponse.Status).to.equal(200);
+                    expect(purgeResponse.Error).to.eql({});
+                    // expect(Object.keys(purgeResponse.Body)).to.eql([]);
                 });
             });
         });

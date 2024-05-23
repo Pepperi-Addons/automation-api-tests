@@ -86,7 +86,10 @@ _________________
     // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
 
-    const ppmValues_content = pricingRules[udtFirstTableName].features06;
+    const ppmValues_content = {
+        ...pricingRules[udtFirstTableName].features05,
+        ...pricingRules[udtFirstTableName].features06,
+    };
 
     // let ppmValues_content;
     // switch (true) {
