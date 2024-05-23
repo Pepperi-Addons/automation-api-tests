@@ -65,7 +65,6 @@ export async function ResourceListTests(email: string, password: string, client:
     let numberOfResultsAccountFilter_afterSyncChange;
     let numberOfResultsWithoutAccountFilter_beforeSyncChange;
     let numberOfResultsWithoutAccountFilter_afterSyncChange;
-    let upsertResponse;
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -120,7 +119,7 @@ export async function ResourceListTests(email: string, password: string, client:
     const coreResourcesUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
     const test_generic_decsription = 'for RL automated testing';
     const ref_account_resource = 'ReferenceAccountAuto';
-    const resource_name_from_account_dashborad = `${ref_account_resource}${testUniqueString}`;
+    const resource_name_from_account_dashborad = `${ref_account_resource}_${testUniqueString}`;
     const collectionProperties = [
         'GenericResource',
         'ModificationDateTime',
@@ -594,82 +593,6 @@ export async function ResourceListTests(email: string, password: string, client:
         });
 
         describe('UDCs Prep', async function () {
-            it(`Truncate "${resource_name_pipeline}" Collection`, async function () {
-                const truncateResponse = await udcService.truncateScheme(resource_name_pipeline);
-                console.info(
-                    `${resource_name_pipeline} truncateResponse: ${JSON.stringify(truncateResponse, null, 2)}`,
-                );
-                addContext(this, {
-                    title: `Truncate Response: `,
-                    value: JSON.stringify(truncateResponse, null, 2),
-                });
-            });
-
-            it(`"${resource_name_sanity}" Collection Upsert`, async function () {
-                if (
-                    detailsByResource[resource_name_sanity].collectionType &&
-                    detailsByResource[resource_name_sanity].collectionFields
-                ) {
-                    const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                        nameOfCollection: resource_name_sanity,
-                        descriptionOfCollection: 'Created with Automation',
-                        typeOfCollection: detailsByResource[resource_name_sanity].collectionType,
-                        syncDefinitionOfCollection: { Sync: false },
-                        fieldsOfCollection: detailsByResource[resource_name_sanity].collectionFields || [],
-                    });
-                    upsertResponse = await udcService.postScheme(bodyOfCollection);
-                    console.info(`${resource_name_sanity} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`);
-                    expect(upsertResponse).to.be.an('object');
-                    Object.keys(upsertResponse).forEach((collectionProperty) => {
-                        expect(collectionProperty).to.be.oneOf(collectionProperties);
-                    });
-                    expect(upsertResponse.Name).to.equal(resource_name_sanity);
-                    expect(upsertResponse.Fields).to.be.an('object');
-                    if (upsertResponse.Fields) expect(Object.keys(upsertResponse.Fields)).to.eql(['name', 'age']);
-                }
-                addContext(this, {
-                    title: `Collection data for "${resource_name_sanity}" (CollectionType): `,
-                    value: detailsByResource[resource_name_sanity].collectionType,
-                });
-                addContext(this, {
-                    title: `Collection data for "${resource_name_sanity}" (CollectionFields): `,
-                    value: detailsByResource[resource_name_sanity].collectionFields,
-                });
-                addContext(this, {
-                    title: `Upsert Response: `,
-                    value: JSON.stringify(upsertResponse, null, 2),
-                });
-            });
-
-            it(`"${resource_name_pipeline}" Collection Upsert`, async function () {
-                if (detailsByResource[resource_name_pipeline].collectionFields) {
-                    const bodyOfCollection = udcService.prepareDataForUdcCreation({
-                        nameOfCollection: resource_name_pipeline,
-                        descriptionOfCollection: 'Created with Automation',
-                        fieldsOfCollection: detailsByResource[resource_name_pipeline].collectionFields || [],
-                    });
-                    upsertResponse = await udcService.postScheme(bodyOfCollection);
-                    console.info(
-                        `${resource_name_pipeline} upsertResponse: ${JSON.stringify(upsertResponse, null, 2)}`,
-                    );
-                    expect(upsertResponse).to.be.an('object');
-                    Object.keys(upsertResponse).forEach((collectionProperty) => {
-                        expect(collectionProperty).to.be.oneOf(collectionProperties);
-                    });
-                    expect(upsertResponse.Name).to.equal(resource_name_pipeline);
-                    expect(upsertResponse.Fields).to.be.an('object');
-                    if (upsertResponse.Fields) expect(Object.keys(upsertResponse.Fields)).to.eql(['name', 'age']);
-                }
-                addContext(this, {
-                    title: `Collection data for "${resource_name_pipeline}" (CollectionFields): `,
-                    value: detailsByResource[resource_name_pipeline].collectionFields,
-                });
-                addContext(this, {
-                    title: `Upsert Response: `,
-                    value: JSON.stringify(upsertResponse, null, 2),
-                });
-            });
-
             it(`"${resource_name_from_account_dashborad}" Collection Upsert`, async function () {
                 const fields = detailsByResource[ref_account_resource].collectionFields;
                 if (fields) {
@@ -679,40 +602,136 @@ export async function ResourceListTests(email: string, password: string, client:
                         syncDefinitionOfCollection: { Sync: syncStatusOfReferenceAccount || false },
                         fieldsOfCollection: fields,
                     });
-                    upsertResponse = await udcService.postScheme(bodyOfCollection);
+                    const refAccountUpsertResponse = await udcService.postScheme(bodyOfCollection);
                     console.info(
-                        `${resource_name_from_account_dashborad} upsertResponse: ${JSON.stringify(
-                            upsertResponse,
+                        `${resource_name_from_account_dashborad} refAccountUpsertResponse: ${JSON.stringify(
+                            refAccountUpsertResponse,
                             null,
                             2,
                         )}`,
                     );
-                    expect(upsertResponse).to.be.an('object');
-                    Object.keys(upsertResponse).forEach((collectionProperty) => {
+                    expect(refAccountUpsertResponse).to.be.an('object');
+                    Object.keys(refAccountUpsertResponse).forEach((collectionProperty) => {
                         expect(collectionProperty).to.be.oneOf(collectionProperties);
                     });
-                    expect(upsertResponse.Name).to.equal(resource_name_from_account_dashborad);
-                    expect(upsertResponse.Fields).to.be.an('object');
-                    if (upsertResponse.Fields)
-                        expect(Object.keys(upsertResponse.Fields)).to.eql([
+                    expect(refAccountUpsertResponse.Name).to.equal(resource_name_from_account_dashborad);
+                    expect(refAccountUpsertResponse.Fields).to.be.an('object');
+                    if (refAccountUpsertResponse.Fields)
+                        expect(Object.keys(refAccountUpsertResponse.Fields)).to.eql([
                             'of_account',
                             'best_seller_item',
                             'max_quantity',
                             'offered_discount_location',
                             'discount_rate',
                         ]);
+
+                    addContext(this, {
+                        title: `Collection data for "${resource_name_from_account_dashborad}" (CollectionFields): `,
+                        value: detailsByResource[resource_name_from_account_dashborad].collectionFields,
+                    });
+                    addContext(this, {
+                        title: `Upsert Response: `,
+                        value: JSON.stringify(refAccountUpsertResponse, null, 2),
+                    });
                 }
-                addContext(this, {
-                    title: `Collection data for "${resource_name_from_account_dashborad}" (CollectionFields): `,
-                    value: detailsByResource[resource_name_from_account_dashborad].collectionFields,
-                });
-                addContext(this, {
-                    title: `Upsert Response: `,
-                    value: JSON.stringify(upsertResponse, null, 2),
-                });
             });
 
-            it(`Making Sure "${resource_name_pipeline}" Collection contain Values`, async function () {
+            it(`"${resource_name_pipeline}" Collection Upsert`, async function () {
+                const fields = detailsByResource[resource_name_pipeline].collectionFields;
+                if (fields) {
+                    const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                        nameOfCollection: resource_name_pipeline,
+                        descriptionOfCollection: 'Created with Automation',
+                        fieldsOfCollection: fields,
+                    });
+                    const pipelineUpsertResponse = await udcService.postScheme(bodyOfCollection);
+                    console.info(
+                        `${resource_name_pipeline} pipelineUpsertResponse: ${JSON.stringify(
+                            pipelineUpsertResponse,
+                            null,
+                            2,
+                        )}`,
+                    );
+                    expect(pipelineUpsertResponse).to.be.an('object');
+                    Object.keys(pipelineUpsertResponse).forEach((collectionProperty) => {
+                        expect(collectionProperty).to.be.oneOf(collectionProperties);
+                    });
+                    expect(pipelineUpsertResponse.Name).to.equal(resource_name_pipeline);
+                    expect(pipelineUpsertResponse.Fields).to.be.an('object');
+                    if (pipelineUpsertResponse.Fields)
+                        expect(Object.keys(pipelineUpsertResponse.Fields)).to.eql(['name', 'age']);
+
+                    addContext(this, {
+                        title: `Collection data for "${resource_name_pipeline}" (CollectionFields): `,
+                        value: detailsByResource[resource_name_pipeline].collectionFields,
+                    });
+                    addContext(this, {
+                        title: `Upsert Response: `,
+                        value: JSON.stringify(pipelineUpsertResponse, null, 2),
+                    });
+                }
+            });
+
+            it(`"${resource_name_sanity}" Collection Upsert`, async function () {
+                const type = detailsByResource[resource_name_sanity].collectionType;
+                const fields = detailsByResource[resource_name_sanity].collectionFields;
+                if (type && fields) {
+                    const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                        nameOfCollection: resource_name_sanity,
+                        descriptionOfCollection: 'Created with Automation',
+                        typeOfCollection: type,
+                        syncDefinitionOfCollection: { Sync: false },
+                        fieldsOfCollection: fields,
+                    });
+                    const sanityUpsertResponse = await udcService.postScheme(bodyOfCollection);
+                    console.info(
+                        `${resource_name_sanity} sanityUpsertResponse: ${JSON.stringify(
+                            sanityUpsertResponse,
+                            null,
+                            2,
+                        )}`,
+                    );
+                    expect(sanityUpsertResponse).to.be.an('object');
+                    Object.keys(sanityUpsertResponse).forEach((collectionProperty) => {
+                        expect(collectionProperty).to.be.oneOf(collectionProperties);
+                    });
+                    expect(sanityUpsertResponse.Name).to.equal(resource_name_sanity);
+                    expect(sanityUpsertResponse.Fields).to.be.an('object');
+                    if (sanityUpsertResponse.Fields)
+                        expect(Object.keys(sanityUpsertResponse.Fields)).to.eql(['name', 'age']);
+
+                    addContext(this, {
+                        title: `Collection data for "${resource_name_sanity}" (CollectionType): `,
+                        value: detailsByResource[resource_name_sanity].collectionType,
+                    });
+                    addContext(this, {
+                        title: `Collection data for "${resource_name_sanity}" (CollectionFields): `,
+                        value: detailsByResource[resource_name_sanity].collectionFields,
+                    });
+                    addContext(this, {
+                        title: `Upsert Response: `,
+                        value: JSON.stringify(sanityUpsertResponse, null, 2),
+                    });
+                }
+            });
+
+            it(`Truncate "${resource_name_pipeline}" Collection`, async function () {
+                const truncateResponse = await udcService.truncateScheme(resource_name_pipeline);
+                console.info(
+                    `${resource_name_pipeline} truncateResponse: ${JSON.stringify(truncateResponse, null, 2)}`,
+                );
+                addContext(this, {
+                    title: `Truncate Response: `,
+                    value: JSON.stringify(truncateResponse, null, 2),
+                });
+                expect(truncateResponse.Ok).to.be.true;
+                expect(truncateResponse.Status).to.equal(200);
+                expect(truncateResponse.Error).to.eql({});
+                expect(Object.keys(truncateResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
+                expect(truncateResponse.Body.Done).to.be.true;
+            });
+
+            it(`Inserting Values to "${resource_name_pipeline}" Collection`, async function () {
                 const pipelineCollectionListings = await udcService.getDocuments(resource_name_pipeline);
                 const pipelineCollectionValues = detailsByResource[resource_name_pipeline].listings;
                 if (pipelineCollectionListings.length < 1 && pipelineCollectionValues) {
@@ -734,7 +753,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 }
             });
 
-            it(`Making Sure "${resource_name_from_account_dashborad}" Collection contain Values`, async function () {
+            it(`Inserting Values to "${resource_name_from_account_dashborad}" Collection`, async function () {
                 const accountRefCollectionListings = await udcService.getDocuments(
                     resource_name_from_account_dashborad,
                 );
@@ -2223,7 +2242,8 @@ export async function ResourceListTests(email: string, password: string, client:
                     expect(purgeResponse.Ok).to.be.true;
                     expect(purgeResponse.Status).to.equal(200);
                     expect(purgeResponse.Error).to.eql({});
-                    // expect(Object.keys(purgeResponse.Body)).to.eql([]);
+                    expect(Object.keys(purgeResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
+                    expect(purgeResponse.Body.Done).to.be.true;
                 });
             });
         });
