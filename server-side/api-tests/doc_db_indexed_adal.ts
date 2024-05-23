@@ -7,7 +7,7 @@ export async function DocDBIndexedAdalTestser(generalService: GeneralService, re
 
 export async function DocDBIndexedAdal(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
-    const assert = tester.assert;
+    // const assert = tester.assert;
     const expect = tester.expect;
     const it = tester.it;
 
@@ -98,145 +98,145 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                 await getSecretKey();
             });
             it('Get schema from GR (type PAPI, name accounts', async () => {
-                assert(logcash.getPapiSchemaStatus, logcash.getPapiSchemaErrorMessage);
+                expect(logcash.getPapiSchemaStatus).to.equal(true); //, logcash.getPapiSchemaErrorMessage
             });
             it('Create Schema (name accounts) with owner not from white list and without indexed fields', async () => {
-                assert(logcash.createMainSchemaStatus, logcash.createMainSchemaErrorMessage);
+                expect(logcash.createMainSchemaStatus).to.equal(true); //, logcash.createMainSchemaErrorMessage
             }); //
             it('Insert data to created account schema', () => {
-                assert(logcash.insertDataToAccountsTableStatus, logcash.insertDataToAccountsTableError);
+                expect(logcash.insertDataToAccountsTableStatus).to.equal(true); //, logcash.insertDataToAccountsTableError
             }); //
             it('Create Schema (name survey) with white liste owner and indexeded fields with resource fields from accounts schema and resource field from PAPI type schema', () => {
-                assert(logcash.createSecondSchemaStatus, logcash.createSecondSchemaErrorMessage);
+                expect(logcash.createSecondSchemaStatus).to.equal(true); //, logcash.createSecondSchemaErrorMessage
             }); //
             it('Insert data to created survey schema ', () => {
-                assert(logcash.insertDataToSurveyTableStatus, logcash.insertDataToSurveyTableError);
+                expect(logcash.insertDataToSurveyTableStatus).to.equal(true); //, logcash.insertDataToSurveyTableError
             }); //
             it('Search on dot DI 23572 ', () => {
-                assert(logcash.getDataDI23572Status, logcash.getDataDI23572Error);
+                expect(logcash.getDataDI23572Status).to.equal(true); //, logcash.getDataDI23572Error
             }); //
             it('GET survey (second) schema with referance to account schema from ADAL', () => {
-                assert(logcash.getSurveySchemeStatus, logcash.getSurveySchemeErrorMessage);
+                expect(logcash.getSurveySchemeStatus).to.equal(true); //, logcash.getSurveySchemeErrorMessage
             }); //
             it('GET survey (second) schema with referance to account schema from Elastic', () => {
-                assert(logcash.getFromElasticStatus, logcash.getFromElasticMessage);
+                expect(logcash.getFromElasticStatus).to.equal(true); //, logcash.getFromElasticMessage
             }); //
             it('Update Account(main) schema Name field value(referanced field)', () => {
-                assert(logcash.updateSurveyTableStatus, logcash.updateSurveyTableError);
+                expect(logcash.updateSurveyTableStatus).to.equal(true); //, logcash.updateSurveyTableError
             }); //
             it('GET survey (second) schema with referance to account schema after update from ADAL', () => {
-                assert(logcash.getFromAdal2Status, logcash.getFromAdal2Error);
+                expect(logcash.getFromAdal2Status).to.equal(true); //, logcash.getFromAdal2Error
             }); //
             it('GET survey (second) schema with referance to account schema from Elastic', () => {
-                assert(logcash.getFromElastic2Status, logcash.getFromElastic2Error);
+                expect(logcash.getFromElastic2Status).to.equal(true); //, logcash.getFromElastic2Error
             }); //
             it('Insert new key + field value to Accounts(main) taible', () => {
-                assert(logcash.insertNewKeyToAccountsTableStatus, logcash.insertNewKeyToAccountsTableError);
+                expect(logcash.insertNewKeyToAccountsTableStatus).to.equal(true); //, logcash.insertNewKeyToAccountsTableError
             }); //
             it('Update survey table - change key value from account table (the value will be changed to new inserted value)', () => {
-                assert(logcash.updateSurveyAccountStatus, logcash.updateSurveyAccountError);
+                expect(logcash.updateSurveyAccountStatus).to.equal(true); //, logcash.updateSurveyAccountError
             }); //
             it('GET survey (second) schema with referance to account schema after update from ADAL', () => {
-                assert(logcash.getFromAdal3Status, logcash.getFromElastic3Error);
+                expect(logcash.getFromAdal3Status).to.equal(true); //, logcash.getFromElastic3Error
             }); //
             it('GET survey (second) schema with referance to account schema from Elastic', () => {
-                assert(logcash.getFromElastic3Status, logcash.getFromElastic3Error);
+                expect(logcash.getFromElastic3Status).to.equal(true); //, logcash.getFromElastic3Error
             }); //
             it('Update survey table - change test field value(not referenced from account))', () => {
-                assert(logcash.updateSurveyTestFieldStatus, logcash.updateSurveyTestFieldError);
+                expect(logcash.updateSurveyTestFieldStatus).to.equal(true); //, logcash.updateSurveyTestFieldError
             }); //
             it('GET survey (second) schema with referance to account schema after update from ADAL', () => {
-                assert(logcash.getFromAdal4Status, logcash.getFromAdal4Error);
+                expect(logcash.getFromAdal4Status).to.equal(true); //, logcash.getFromAdal4Error
             }); //
             it('GET survey (second) schema with referance to account schema from Elastic', () => {
-                assert(logcash.getFromElastic4Status, logcash.getFromElastic4Error);
+                expect(logcash.getFromElastic4Status).to.equal(true); //, logcash.getFromElastic4Error
             }); //
             it('Hard limit of numbers of indexed filelds (hard limit = 20)', () => {
-                assert(logcash.createSchemaHardLimitNegativeStatus, logcash.createSchemaHardLimitNegativeErrorMessage);
+                expect(logcash.createSchemaHardLimitNegativeStatus).to.equal(true); //, logcash.createSchemaHardLimitNegativeErrorMessage
             }); //
             it('Search URL verification', () => {
-                assert(logcash.searchURLStatus, logcash.searchURLError);
+                expect(logcash.searchURLStatus).to.equal(true); //, logcash.searchURLError
             }); //
         });
         describe('Drop created schemas of the end of test', () => {
             it('Drop account schema', () => {
-                assert(logcash.dropAccountsTableStatus, logcash.dropAccountsTableError);
+                expect(logcash.dropAccountsTableStatus).to.equal(true); //, logcash.dropAccountsTableError
             });
             it('Drop survey schema', () => {
-                assert(logcash.dropSurveyTableStatus, logcash.dropSurveyTableError);
+                expect(logcash.dropSurveyTableStatus).to.equal(true); //, logcash.dropSurveyTableError
             });
         });
         describe('Search by KeyList(on elastic) and SuperTypes verification', () => {
             it('DI-23434 verification - upsert schema without fields and verify by GET the created fields on previos POST not removed', () => {
-                assert(logcash.upsertSchema1Status, logcash.upsertSchema1ErrorMessage);
+                expect(logcash.upsertSchema1Status).to.equal(true); //, logcash.upsertSchema1ErrorMessage
             });
             it('Get dedicated schema - SuperTypes verification', () => {
-                assert(logcash.getFromDedicatedStatus, logcash.getFromDedicatedError);
+                expect(logcash.getFromDedicatedStatus).to.equal(true); //, logcash.getFromDedicatedError
             });
             it('Search by Keys', () => {
-                assert(logcash.searchPostStatus, logcash.searchPostError);
+                expect(logcash.searchPostStatus).to.equal(true); //, logcash.searchPostError
             });
             it('Drop created schems ', () => {
-                assert(logcash.dropTablesStatus, logcash.dropTablesError);
+                expect(logcash.dropTablesStatus).to.equal(true); //, logcash.dropTablesError
             });
         });
         describe('GET from doc DB on schema with references fields doesnt return the default fields (except Key) - DI-22546', () => {
             it('Get schema - fields and data verification', () => {
-                assert(logcash.getDataADAL2Status, logcash.getDataADAL2Error);
+                expect(logcash.getDataADAL2Status).to.equal(true); //, logcash.getDataADAL2Error
             });
             it('Get schema - get by referance fields', () => {
-                assert(logcash.getDataADAL3Status, logcash.getDataADAL3Error);
+                expect(logcash.getDataADAL3Status).to.equal(true); //, logcash.getDataADAL3Error
             });
             it('Drop created schems ', () => {
-                assert(logcash.dropTables1Status, logcash.dropTables1Error);
+                expect(logcash.dropTables1Status).to.equal(true); //, logcash.dropTables1Error
             });
         });
         describe('PageKey - search from elastic verification  ', () => {
             it('Get data with PageKey (NextPageKey)', () => {
-                assert(logcash.getDataPageKey3Status, logcash.getDataPageKey3Error);
+                expect(logcash.getDataPageKey3Status).to.equal(true); //, logcash.getDataPageKey3Error
             });
             it('Drop created schema ', () => {
-                assert(logcash.dropPageKeyTestTableStatus, logcash.dropPageKeyTestTableError);
+                expect(logcash.dropPageKeyTestTableStatus).to.equal(true); //, logcash.dropPageKeyTestTableError
             });
         });
         describe('PageKey verification - search from Dinamo ', () => {
             it('Get data with PageKey (NextPageKey)', () => {
-                assert(logcash.getDataPageKeyFromDinamo3Status, logcash.getDataPageKeyFromDinamo3Error);
+                expect(logcash.getDataPageKeyFromDinamo3Status).to.equal(true); //, logcash.getDataPageKeyFromDinamo3Error
             });
             it('Drop created schema ', () => {
-                assert(logcash.dropPageKeyTestTable1Status, logcash.dropPageKeyTestTable1Error);
+                expect(logcash.dropPageKeyTestTable1Status).to.equal(true); //, logcash.dropPageKeyTestTable1Error
             });
             it('Get data with PageKey (from PAPI type)', () => {
-                assert(logcash.getDataPageKeyFromPapiStatus, logcash.getDataPageKeyFromPapiError);
+                expect(logcash.getDataPageKeyFromPapiStatus).to.equal(true); //, logcash.getDataPageKeyFromPapiError
             });
         });
         describe('Nelt issues + bug fixes', () => {
             it('indexed ADAL pns on value change upload not indexed fields DI-24110', () => {
-                assert(logcash.createSchemaDI24110Status, logcash.createSchemaDI24110Message);
+                expect(logcash.createSchemaDI24110Status).to.equal(true); //, logcash.createSchemaDI24110Message
             });
             it('Insert data (one indexed field and one not indexed)', () => {
-                assert(logcash.insertDataToTestTableStatus, logcash.insertDataToTestTableError);
+                expect(logcash.insertDataToTestTableStatus).to.equal(true); //, logcash.insertDataToTestTableError
             });
             it('Search by not indexed field DI-20949', () => {
-                assert(logcash.getByNotIndexedFieldNegativeStatus, logcash.getByNotIndexedFieldNegativeError);
+                expect(logcash.getByNotIndexedFieldNegativeStatus).to.equal(true); //, logcash.getByNotIndexedFieldNegativeError
             });
             it('Drop Temp table(table with same index and field name(indexed)', () => {
-                assert(logcash.dropTestTableTmpStatus, logcash.dropTestTableTmpError);
+                expect(logcash.dropTestTableTmpStatus).to.equal(true); //, logcash.dropTestTableTmpError
             });
             it('Get from elastic (jus indexed field)', () => {
-                assert(logcash.getFromElasticTableStatus, logcash.getFromElasticTableError);
+                expect(logcash.getFromElasticTableStatus).to.equal(true); //, logcash.getFromElasticTableError
             });
             it('update values (index and not indexed)', () => {
-                assert(logcash.updateTestTableStatus, logcash.updateTestTableError);
+                expect(logcash.updateTestTableStatus).to.equal(true); //, logcash.updateTestTableError
             });
             it('Get from elastic (jus indexed field) - verify updated value', () => {
-                assert(logcash.getFromElasticTableSecStatus, logcash.getFromElasticTableSecError);
+                expect(logcash.getFromElasticTableSecStatus).to.equal(true); //, logcash.getFromElasticTableSecError
             });
             it('Post after rebuild DI-20949', () => {
-                assert(logcash.getFromElasticTable3Status, logcash.getFromElasticTable3Error);
+                expect(logcash.getFromElasticTable3Status).to.equal(true); //, logcash.getFromElasticTable3Error
             });
             it('Drop created schema ', () => {
-                assert(logcash.dropTestTableStatus, logcash.dropTestTableError);
+                expect(logcash.dropTestTableStatus).to.equal(true); //, logcash.dropTestTableError
             });
         });
     });
