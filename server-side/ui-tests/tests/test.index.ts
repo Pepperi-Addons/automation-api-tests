@@ -1388,6 +1388,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
     }
 
     if (tests === 'second_part_adal_cli') {
+        console.log('\n################ RUNNING FIRST TEST: Adal Big Data ################\n');
         await AdalBigDataTestser(
             generalService,
             {
@@ -1399,6 +1400,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
             },
             { describe, expect, it } as TesterFunctions,
         );
+        console.log('\n################ RUNNING SECOND TEST: Doc DB Indexed Adal ################\n');
         await DocDBIndexedAdalTestser(
             generalService,
             {
