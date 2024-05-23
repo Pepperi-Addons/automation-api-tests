@@ -1386,6 +1386,34 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         run();
         return;
     }
+
+    if (tests === 'second_part_adal_cli') {
+        await AdalBigDataTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await DocDBIndexedAdalTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
     ///////////////////////~~~CI/CD Flow~~~///////////////////////////////////
     //****EVGENY: this code (VVV**DOWN-HERE**VVV) is ****temporary**** !!!!!! ---> once we will realize how nebula should work - with neptune or neo4J this will become redundant and nebula will run as any-other addon
     if (tests === 'Jenkins_Neptune') {
