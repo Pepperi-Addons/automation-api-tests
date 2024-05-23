@@ -95,7 +95,7 @@ export async function AdalBigDataTests(generalService: GeneralService, request, 
 
     //get secret key
     async function getSecretKey() {
-        console.log('\n################ RUNNING THE TEST OF FIRST TEST OUT OF 2: Adal Bg Data ################\n');
+        console.log('\n################ RUNNING THE TEST OF FIRST TEST OUT OF 2: Adal Big Data ################\n');
         //Oren added this to improve logs of failed tests
         try {
             logcash.secretKey = await generalService.getSecretKey(addonUUID, varKey);
