@@ -627,7 +627,7 @@ export async function ResourceListTests(email: string, password: string, client:
 
                     addContext(this, {
                         title: `Collection data for "${resource_name_from_account_dashborad}" (CollectionFields): `,
-                        value: detailsByResource[resource_name_from_account_dashborad].collectionFields,
+                        value: fields,
                     });
                     addContext(this, {
                         title: `Upsert Response: `,
@@ -663,7 +663,7 @@ export async function ResourceListTests(email: string, password: string, client:
 
                     addContext(this, {
                         title: `Collection data for "${resource_name_pipeline}" (CollectionFields): `,
-                        value: detailsByResource[resource_name_pipeline].collectionFields,
+                        value: fields,
                     });
                     addContext(this, {
                         title: `Upsert Response: `,
@@ -702,11 +702,11 @@ export async function ResourceListTests(email: string, password: string, client:
 
                     addContext(this, {
                         title: `Collection data for "${resource_name_sanity}" (CollectionType): `,
-                        value: detailsByResource[resource_name_sanity].collectionType,
+                        value: type,
                     });
                     addContext(this, {
                         title: `Collection data for "${resource_name_sanity}" (CollectionFields): `,
-                        value: detailsByResource[resource_name_sanity].collectionFields,
+                        value: fields,
                     });
                     addContext(this, {
                         title: `Upsert Response: `,
@@ -757,7 +757,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 const accountRefCollectionListings = await udcService.getDocuments(
                     resource_name_from_account_dashborad,
                 );
-                const pipelineCollectionValues = detailsByResource[resource_name_from_account_dashborad].listings;
+                const pipelineCollectionValues = detailsByResource[ref_account_resource].listings;
                 if (accountRefCollectionListings.length < 1 && pipelineCollectionValues) {
                     const upsertingValues_Responses = await Promise.all(
                         pipelineCollectionValues.map(async (listing) => {
@@ -1224,7 +1224,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            describe(`Resource View (${resource_name_from_account_dashborad}) from Account Dashboard`, async function () {
+            describe(`Resource View (${ref_account_resource}) from Account Dashboard`, async function () {
                 // conditions for this section: tested user must have UDC = ReferenceAccountAuto
                 afterEach(async function () {
                     driver.sleep(500);
@@ -1233,7 +1233,7 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Add & Configure View', async function () {
                     // Add View
-                    viewName = `${resource_name_from_account_dashborad} View _(${random_name})`;
+                    viewName = `${ref_account_resource} View _(${random_name})`;
                     view_decsription = `View of resource: ${resource_name_from_account_dashborad} - ${test_generic_decsription}`;
                     await resourceListUtils.addView({
                         nameOfView: viewName,
@@ -1249,7 +1249,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     await resourceViews.customViewConfig(client, {
                         matchingEditorName: '',
                         viewKey: viewKey,
-                        fieldsToConfigureInView: detailsByResource[resource_name_from_account_dashborad].view_fields,
+                        fieldsToConfigureInView: detailsByResource[ref_account_resource].view_fields,
                     });
                     let base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -1275,7 +1275,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     // debugger
                     await pageBuilder.validatePageBuilderIsLoaded();
                     // await pageBuilder.deleteAll();
-                    pageName = `${resource_name_from_account_dashborad} Page Auto_(${random_name})`;
+                    pageName = `${ref_account_resource} Page Auto_(${random_name})`;
                     await pageBuilder.addBlankPage(
                         pageName,
                         `Automation Testing Page for resource ${resource_name_from_account_dashborad}`,
@@ -1331,8 +1331,8 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it('Create & Map Slug', async function () {
-                    slugDisplayNameAccountDashboard = `${resource_name_from_account_dashborad} ${random_name}`;
-                    slug_path_account_dashboard = `${resource_name_from_account_dashborad.toLowerCase()}_${random_name}`;
+                    slugDisplayNameAccountDashboard = `${ref_account_resource} ${random_name}`;
+                    slug_path_account_dashboard = `${ref_account_resource.toLowerCase()}_${random_name}`;
                     await resourceListUtils.createSlug(
                         slugDisplayNameAccountDashboard,
                         slug_path_account_dashboard,
@@ -1419,8 +1419,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(0.5 * 1000);
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    const expectedViewFieldsNames =
-                        detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                    const expectedViewFieldsNames = detailsByResource[ref_account_resource].view_fields_names;
                     expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
                     columnsTitles.forEach(async (columnTitle) => {
                         const columnTitleText = await columnTitle.getText();
@@ -1565,8 +1564,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(0.5 * 1000);
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    const expectedViewFieldsNames =
-                        detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                    const expectedViewFieldsNames = detailsByResource[ref_account_resource].view_fields_names;
                     expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
                     columnsTitles.forEach(async (columnTitle) => {
                         const columnTitleText = await columnTitle.getText();
@@ -1653,8 +1651,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(0.5 * 1000);
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    const expectedViewFieldsNames =
-                        detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                    const expectedViewFieldsNames = detailsByResource[ref_account_resource].view_fields_names;
                     expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
                     columnsTitles.forEach(async (columnTitle) => {
                         const columnTitleText = await columnTitle.getText();
@@ -1769,8 +1766,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     await driver.untilIsVisible(resourceListBlock.dataViewerBlockTableHeader);
                     driver.sleep(0.5 * 1000);
                     const columnsTitles = await driver.findElements(resourceListBlock.dataViewerBlockTableColumnTitle);
-                    const expectedViewFieldsNames =
-                        detailsByResource[resource_name_from_account_dashborad].view_fields_names;
+                    const expectedViewFieldsNames = detailsByResource[ref_account_resource].view_fields_names;
                     expect(columnsTitles.length).to.equal(expectedViewFieldsNames.length);
                     columnsTitles.forEach(async (columnTitle) => {
                         const columnTitleText = await columnTitle.getText();
