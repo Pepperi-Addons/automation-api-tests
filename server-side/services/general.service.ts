@@ -44,7 +44,7 @@ export const systemAddons: any = {
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
     'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
     'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-    ADAL: ['00000000-0000-0000-0000-00000000ada1', '1.7.38'],
+    ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.%.%'],
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.58'], //cpapi

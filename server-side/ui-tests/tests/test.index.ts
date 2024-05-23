@@ -123,6 +123,7 @@ import { SyncE2ETester } from './syncE2ETester.test';
 import { TestDataTestsNewSyncNoNebula } from '../../api-tests/test-service/test_data_new_syn_no_nebula';
 import { UDCLimitationTestser } from '../../api-tests/user_defined_collections_limitations_data_creator';
 import { UDCTestserPermission } from '../../api-tests/user_defined_collections_buyer_permission';
+import { DocDBIndexedAdalTestser } from '../../api-tests/doc_db_indexed_adal';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -1035,6 +1036,22 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
     if (tests === 'MockTest') {
         await MockTest(email, pass, client);
         // await ResourceListTests(email, pass, varPass, client);
+        run();
+        return;
+    }
+
+    if (tests === 'DocDBIndexedAdal') {
+        await DocDBIndexedAdalTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
         run();
         return;
     }
