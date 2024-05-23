@@ -1,6 +1,10 @@
 import GeneralService, { TesterFunctions } from '../services/general.service';
 //import { v4 as newUuid } from 'uuid';
 
+export async function DocDBIndexedAdalTestser(generalService: GeneralService, request, tester: TesterFunctions) {
+    await DocDBIndexedAdal(generalService, request, tester);
+}
+
 export async function DocDBIndexedAdal(generalService: GeneralService, request, tester: TesterFunctions) {
     const describe = tester.describe;
     const assert = tester.assert;
