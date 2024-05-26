@@ -7,6 +7,7 @@ A template for creating a pepperi addon with an angular app for the client-side 
 * a publish script for uploading the addon
 
 
+
 ## Installation
 ---
 #### System Requirements
