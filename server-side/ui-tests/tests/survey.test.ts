@@ -39,6 +39,7 @@ const surveySpesificTestData = {
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi --
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.31.%'], //CPAS --
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+    'Key Management Service': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''], // evgeny - 24/3/24; new CPI Data addon versions

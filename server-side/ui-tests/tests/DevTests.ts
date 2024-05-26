@@ -64,7 +64,9 @@ export class DevTest {
         this.adminBaseUserGeneralService = adminBaseUserGeneralService;
         this.adminBaseUserEmail = adminBaseUserEmail;
         this.adminBaseUserPass = adminBaseUserPass;
-        if (this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a' && version.includes('1.')) {
+        const addonVersionSplit = version.split('.');
+        debugger;
+        if (this.addonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a' && addonVersionSplit[0].includes('1')) {
             //sync
             this.isSyncNebulaDist = true;
         } else {
