@@ -94,6 +94,7 @@ export class AccountDashboardLayout extends AddonPage {
     }
 
     public async configureToAccountSelectedSectionByProfile(
+        this: Context,
         driver: Browser,
         textOfItemToAdd: string,
         selectedSection: 'Menu' = 'Menu', // TOBE expended upon need
@@ -106,7 +107,8 @@ export class AccountDashboardLayout extends AddonPage {
             selectedSection == 'Menu'
                 ? 'AccountDashboardLayout_MenuRow_Container'
                 : 'AccountDashboardLayout_MenuRow_Container'; // TOBE expended upon need
-        for (let i = 0; i < 2; i++) {
+        let quit = false;
+        do {
             try {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
@@ -122,6 +124,11 @@ export class AccountDashboardLayout extends AddonPage {
                 await this.waitTillVisible(this.AccountDashboardLayout_Title, 5000);
                 await this.waitTillVisible(this.AccountDashboardLayout_ListContainer, 5000);
                 await this.waitTillVisible(this[selectedSectionUnderAccount], 5000);
+                let screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Account Dashboar Layout`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 await this.clickElement(selectedSectionUnderAccount);
                 await this.waitTillVisible(
                     this.getSelectorOfPencilButtonOfSelectedSection(selectedSectionUnderAccount),
@@ -129,12 +136,22 @@ export class AccountDashboardLayout extends AddonPage {
                 );
                 await this.click(this.getSelectorOfPencilButtonOfSelectedSection(selectedSectionUnderAccount));
                 await this.waitTillVisible(this.AccountDashboardLayout_ConfigPage_Title, 5000);
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Pencil button of ${selectedSectionUnderAccount} was clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 expect(
                     await (await driver.findElement(this.AccountDashboardLayout_ConfigPage_Title)).getText(),
                 ).to.equal(selectedSection);
                 await this.waitTillVisible(this.getSelectorOfEditCardByProfile(profile), 5000);
                 await this.click(this.getSelectorOfEditCardByProfile(profile));
                 await this.waitTillVisible(this.SearchBankFields_input, 5000);
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Profile ${profile} was selected`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 await this.insertTextToInputElement(textOfItemToAdd, this.SearchBankFields_input);
                 await this.click(
                     this.getSelectorOfSearchResultListRowPlusButtonByPartialTextAtCardEdit(textOfItemToAdd),
@@ -143,22 +160,41 @@ export class AccountDashboardLayout extends AddonPage {
                     this.getSelectorOfItemConfiguredToCardByTextAtCardEdit(textOfItemToAdd),
                     5000,
                 );
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `${textOfItemToAdd} was added`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 await this.click(this.getSelectorOfFooterButtonByText('Save'));
                 driver.sleep(5 * 1000);
                 await this.waitTillVisible(this.getSelectorOfEditCardByProfile(profile), 5000);
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Save button was clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 await this.clickElement('AccountDashboardLayout_Menu_CancelButton');
                 await this.waitTillVisible(this[selectedSectionUnderAccount], 5000);
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Cancel button was clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 driver.sleep(2 * 1000);
-                await driver.switchToDefaultContent();
-                driver.sleep(2 * 1000);
-                await webAppHeader.goHome();
-                break;
+                quit = true;
             } catch (error) {
-                await driver.switchToDefaultContent();
+                const err = error as Error;
                 console.error(error);
+                addContext(this, {
+                    title: `At Catch of configureToAccountSelectedSectionByProfile function, the Error:`,
+                    value: err,
+                });
+            } finally {
+                await driver.switchToDefaultContent();
+                driver.sleep(2 * 1000);
                 await webAppHeader.goHome();
             }
-        }
+        } while (!quit);
     }
 
     public async unconfigureFromAccountSelectedSectionByProfile(
@@ -314,8 +350,18 @@ export class AccountDashboardLayout extends AddonPage {
                 await this.waitTillVisible(this.AccountDashboardLayout_Title, 15000);
                 await this.waitTillVisible(this.AccountDashboardLayout_ListContainer, 15000);
                 await this.waitTillVisible(this.AccountDashboardLayout_MenuRow_Container, 15000);
+                let screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Account Dashboar Layout`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 await this.clickElement('AccountDashboardLayout_MenuRow_Container');
                 await this.waitTillVisible(this.AccountDashboardLayout_MenuRow_PencilButton, 15000);
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Pencil button of Menu was clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 await this.clickElement('AccountDashboardLayout_MenuRow_PencilButton');
                 await this.waitTillVisible(this.AccountDashboardLayout_ConfigPage_Title, 15000);
                 expect(
