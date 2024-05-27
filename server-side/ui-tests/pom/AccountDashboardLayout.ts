@@ -215,11 +215,11 @@ export class AccountDashboardLayout extends AddonPage {
                 quit = true;
             } catch (error) {
                 const err = error as Error;
-                console.error(error);
                 addContext(this, {
                     title: `At Catch of configureToAccountSelectedSectionByProfile function, the Error:`,
                     value: err,
                 });
+                console.error(error);
             } finally {
                 await driver.switchToDefaultContent();
                 driver.sleep(2 * 1000);
@@ -245,29 +245,23 @@ export class AccountDashboardLayout extends AddonPage {
                 ? 'AccountDashboardLayout_MenuRow_Container'
                 : 'AccountDashboardLayout_MenuRow_Container'; // TOBE expended upon need
 
-        for (let i = 0; i < 2; i++) {
+        let quit = false;
+        do {
+            await webAppHeader.goHome();
+            await webAppHomePage.isSpinnerDone();
+            await webAppHeader.openSettings();
+            await webAppHeader.isSpinnerDone();
+            accountDashboardLayout.pause(0.5 * 1000);
+            await settingsSidePanel.selectSettingsByID('Accounts');
+            await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
+            accountDashboardLayout.pause(10 * 1000);
+            await accountDashboardLayout.isSpinnerDone();
             try {
-                await webAppHeader.goHome();
-                await webAppHomePage.isSpinnerDone();
-                await webAppHeader.openSettings();
-                await webAppHeader.isSpinnerDone();
-                accountDashboardLayout.pause(0.5 * 1000);
-                await settingsSidePanel.selectSettingsByID('Accounts');
-                await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
-                for (let i = 0; i < 2; i++) {
-                    accountDashboardLayout.pause(10 * 1000);
-                    try {
-                        await accountDashboardLayout.isSpinnerDone();
-                        await driver.switchTo(accountDashboardLayout.AddonContainerIframe);
-                        await accountDashboardLayout.waitTillVisible(
-                            accountDashboardLayout.AccountDashboardLayout_Container,
-                            5 * 1000,
-                        );
-                        break;
-                    } catch (error) {
-                        console.error(error);
-                    }
-                }
+                await driver.switchTo(accountDashboardLayout.AddonContainerIframe);
+                await accountDashboardLayout.waitTillVisible(
+                    accountDashboardLayout.AccountDashboardLayout_Container,
+                    5 * 1000,
+                );
                 await accountDashboardLayout.waitTillVisible(
                     accountDashboardLayout.AccountDashboardLayout_Title,
                     5 * 1000,
@@ -280,6 +274,12 @@ export class AccountDashboardLayout extends AddonPage {
                     accountDashboardLayout[selectedSectionUnderAccount],
                     5 * 1000,
                 );
+                let screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Account Dashboar Layout`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+                console.info(`At Account Dashboar Layout`);
                 await accountDashboardLayout.clickElement(selectedSectionUnderAccount);
                 await accountDashboardLayout.waitTillVisible(
                     accountDashboardLayout.getSelectorOfPencilButtonOfSelectedSection(selectedSectionUnderAccount),
@@ -292,6 +292,12 @@ export class AccountDashboardLayout extends AddonPage {
                     accountDashboardLayout.AccountDashboardLayout_ConfigPage_Title,
                     5 * 1000,
                 );
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Pencil button of ${selectedSectionUnderAccount} was clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+                console.info(`After Pencil button of ${selectedSectionUnderAccount} was clicked`);
                 expect(
                     await (
                         await driver.findElement(accountDashboardLayout.AccountDashboardLayout_ConfigPage_Title)
@@ -306,6 +312,12 @@ export class AccountDashboardLayout extends AddonPage {
                     accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(deletionText),
                     5 * 1000,
                 );
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Profile ${profile} was selected`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+                console.info(`After Profile ${profile} was selected`);
                 await accountDashboardLayout.click(
                     accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(deletionText),
                 );
@@ -322,6 +334,12 @@ export class AccountDashboardLayout extends AddonPage {
                             cleanupText,
                         ),
                     );
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At Clenup Section for text - ${cleanupText}`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
+                    console.info(`At Clenup Section for text - ${cleanupText}`);
                     configuredSlugsLeftovers.forEach(async (leftoverSlugDeleteButton) => {
                         await leftoverSlugDeleteButton.click();
                     });
@@ -340,20 +358,20 @@ export class AccountDashboardLayout extends AddonPage {
                     5 * 1000,
                 );
                 driver.sleep(2 * 1000);
-                await driver.switchToDefaultContent();
-                driver.sleep(7 * 1000);
-                break;
+                quit = true;
             } catch (error) {
                 const err = error as Error;
-                await driver.switchToDefaultContent();
-                console.error(error);
                 addContext(this, {
                     title: `At Catch of unconfigureFromAccountSelectedSectionByProfile function, the Error:`,
                     value: err,
                 });
+                console.error(error);
+            } finally {
+                await driver.switchToDefaultContent();
+                driver.sleep(2 * 1000);
                 await webAppHeader.goHome();
             }
-        }
+        } while (!quit);
     }
 
     public async configureToAccountMenuRepCard(
