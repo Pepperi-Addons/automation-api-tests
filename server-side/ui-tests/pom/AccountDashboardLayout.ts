@@ -109,16 +109,16 @@ export class AccountDashboardLayout extends AddonPage {
                 : 'AccountDashboardLayout_MenuRow_Container'; // TOBE expended upon need
         let quit = false;
         do {
+            await webAppHeader.goHome();
+            await webAppHomePage.isSpinnerDone();
+            await webAppHeader.openSettings();
+            await webAppHeader.isSpinnerDone();
+            driver.sleep(0.5 * 1000);
+            await settingsSidePanel.selectSettingsByID('Accounts');
+            await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
+            await webAppHeader.isSpinnerDone();
+            driver.sleep(20 * 1000);
             try {
-                await webAppHeader.goHome();
-                await webAppHomePage.isSpinnerDone();
-                await webAppHeader.openSettings();
-                await webAppHeader.isSpinnerDone();
-                driver.sleep(0.5 * 1000);
-                await settingsSidePanel.selectSettingsByID('Accounts');
-                await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
-                await webAppHeader.isSpinnerDone();
-                driver.sleep(20 * 1000);
                 await driver.switchTo(this.AddonContainerIframe);
                 await this.waitTillVisible(this.AccountDashboardLayout_Container, 5000);
                 await this.waitTillVisible(this.AccountDashboardLayout_Title, 5000);
