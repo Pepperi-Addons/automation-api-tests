@@ -1350,7 +1350,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     );
                 });
 
-                it('Admin: Navigating to Account Dashboard Layout -> Menu (Pencil) -> Admin (Pencil) -> Configuring Slug', async () => {
+                it('Admin: Navigating to Account Dashboard Layout -> Menu (Pencil) -> Admin (Pencil) -> Configuring Slug', async function () {
                     await accountDashboardLayout.configureToAccountSelectedSectionByProfile.bind(this)(
                         driver,
                         slugDisplayNameAccountDashboard,
@@ -2243,7 +2243,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                 });
 
-                it('Unconfiguring Slug from Account Dashboard', async () => {
+                it('Unconfiguring Slug from Account Dashboard', async function () {
                     await accountDashboardLayout.unconfigureFromAccountSelectedSectionByProfile.bind(this)(
                         driver,
                         slugDisplayNameAccountDashboard,
