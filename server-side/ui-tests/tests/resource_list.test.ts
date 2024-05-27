@@ -1351,7 +1351,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it('Admin: Navigating to Account Dashboard Layout -> Menu (Pencil) -> Admin (Pencil) -> Configuring Slug', async () => {
-                    await accountDashboardLayout.configureToAccountSelectedSectionByProfile(
+                    await accountDashboardLayout.configureToAccountSelectedSectionByProfile.bind(this)(
                         driver,
                         slugDisplayNameAccountDashboard,
                         'Menu',
