@@ -117,7 +117,7 @@ export class AccountDashboardLayout extends AddonPage {
                 driver.sleep(0.5 * 1000);
                 await settingsSidePanel.selectSettingsByID('Accounts');
                 await settingsSidePanel.clickSettingsSubCategory('account_dashboard_layout', 'Accounts');
-                await this.isSpinnerDone();
+                await webAppHeader.isSpinnerDone();
                 driver.sleep(20 * 1000);
                 await driver.switchTo(this.AddonContainerIframe);
                 await this.waitTillVisible(this.AccountDashboardLayout_Container, 5000);
@@ -129,6 +129,7 @@ export class AccountDashboardLayout extends AddonPage {
                     title: `At Account Dashboar Layout`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
+                console.info(`At Account Dashboar Layout`);
                 await this.clickElement(selectedSectionUnderAccount);
                 await this.waitTillVisible(
                     this.getSelectorOfPencilButtonOfSelectedSection(selectedSectionUnderAccount),
@@ -141,6 +142,7 @@ export class AccountDashboardLayout extends AddonPage {
                     title: `After Pencil button of ${selectedSectionUnderAccount} was clicked`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
+                console.info(`After Pencil button of ${selectedSectionUnderAccount} was clicked`);
                 expect(
                     await (await driver.findElement(this.AccountDashboardLayout_ConfigPage_Title)).getText(),
                 ).to.equal(selectedSection);
@@ -152,6 +154,7 @@ export class AccountDashboardLayout extends AddonPage {
                     title: `After Profile ${profile} was selected`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
+                console.info(`After Profile ${profile} was selected`);
                 await this.insertTextToInputElement(textOfItemToAdd, this.SearchBankFields_input);
                 await this.click(
                     this.getSelectorOfSearchResultListRowPlusButtonByPartialTextAtCardEdit(textOfItemToAdd),
@@ -165,6 +168,7 @@ export class AccountDashboardLayout extends AddonPage {
                     title: `${textOfItemToAdd} was added`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
+                console.info(`${textOfItemToAdd} was added`);
                 await this.click(this.getSelectorOfFooterButtonByText('Save'));
                 driver.sleep(5 * 1000);
                 await this.waitTillVisible(this.getSelectorOfEditCardByProfile(profile), 5000);
@@ -173,6 +177,7 @@ export class AccountDashboardLayout extends AddonPage {
                     title: `After Save button was clicked`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
+                console.info(`After Save button was clicked`);
                 await this.clickElement('AccountDashboardLayout_Menu_CancelButton');
                 await this.waitTillVisible(this[selectedSectionUnderAccount], 5000);
                 screenShot = await driver.saveScreenshots();
@@ -180,6 +185,7 @@ export class AccountDashboardLayout extends AddonPage {
                     title: `After Cancel button was clicked`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
+                console.info(`After Cancel button was clicked`);
                 driver.sleep(2 * 1000);
                 quit = true;
             } catch (error) {
