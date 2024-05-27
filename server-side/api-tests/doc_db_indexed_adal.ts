@@ -2402,6 +2402,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
                     Authorization: 'Bearer ' + token,
                     //'X-Pepperi-OwnerID': whaitOwnerUUID,  // ownerID will be removed when BUG https://pepperi.atlassian.net/browse/DI-20949
                     'X-Pepperi-SecretKey': whaitSecretKey,
+                    'x-pepperi-await-indexing': 'true',
                 },
                 body: JSON.stringify({
                     Key: '0',
@@ -2417,7 +2418,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.updateTestTableStatus = false;
             logcash.updateTestTableError = 'Update data to Accounts table failed';
         }
-        generalService.sleep(3000);
+        //generalService.sleep(3000); // added 'x-pepperi-await-indexing' instead sleep 27-05-24
         await getFromElasticTableSec();
     }
 
