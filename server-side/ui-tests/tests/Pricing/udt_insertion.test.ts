@@ -12,6 +12,7 @@ chai.use(promised);
 
 export async function PricingUdtInsertion(
     client: Client,
+    testingFeatures: '0.5' | '0.6' | '0.7' | '0.8' | '1.0',
     specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
 ) {
     const generalService = new GeneralService(client);
@@ -42,69 +43,88 @@ export async function PricingUdtInsertion(
 
     describe('UDT Upsert - Test Suite', () => {
         describe(`UDT: "${udtFirstTableName}" insertion`, () => {
-            it('getting data object according to installed version', async function () {
-                switch (true) {
-                    case installedPricingVersion?.startsWith('0.5'):
-                        console.info('AT installedPricingVersion CASE 5');
-                        ppmValues_content = pricingRules[udtFirstTableName].features05;
-                        break;
+            specialVersion === undefined &&
+                it('getting data object according to installed version', async function () {
+                    switch (testingFeatures) {
+                        case '0.5':
+                            console.info('AT installedPricingVersion CASE 5');
+                            ppmValues_content = pricingRules[udtFirstTableName].features05;
+                            break;
 
-                    case installedPricingVersion?.startsWith('0.6'):
-                        console.info('AT installedPricingVersion CASE 6');
-                        ppmValues_content = {
-                            ...pricingRules[udtFirstTableName].features05,
-                            ...pricingRules[udtFirstTableName].features06,
-                        };
-                        break;
+                        case '0.6':
+                            console.info('AT installedPricingVersion CASE 6');
+                            ppmValues_content = {
+                                ...pricingRules[udtFirstTableName].features05,
+                                ...pricingRules[udtFirstTableName].features06,
+                            };
+                            break;
 
-                    case installedPricingVersion?.startsWith('0.7'):
-                        console.info('AT installedPricingVersion CASE 7');
-                        ppmValues_content =
-                            specialVersion === 'version07for05data'
-                                ? pricingRules[udtFirstTableName].features05
-                                : {
-                                      ...pricingRules[udtFirstTableName].features05,
-                                      ...pricingRules[udtFirstTableName].features06,
-                                      ...pricingRules[udtFirstTableName].features07,
-                                  };
-                        break;
+                        case '0.7':
+                            console.info('AT installedPricingVersion CASE 7');
+                            ppmValues_content = {
+                                ...pricingRules[udtFirstTableName].features05,
+                                ...pricingRules[udtFirstTableName].features06,
+                                ...pricingRules[udtFirstTableName].features07,
+                            };
+                            break;
 
-                    case installedPricingVersion?.startsWith('0.8'):
-                        console.info('AT installedPricingVersion CASE 8');
-                        ppmValues_content =
-                            specialVersion === 'version08for07data'
-                                ? {
-                                      ...pricingRules[udtFirstTableName].features05,
-                                      ...pricingRules[udtFirstTableName].features06,
-                                      ...pricingRules[udtFirstTableName].features07,
-                                  }
-                                : {
-                                      ...pricingRules[udtFirstTableName].features05,
-                                      ...pricingRules[udtFirstTableName].features06,
-                                      ...pricingRules[udtFirstTableName].features07,
-                                      ...pricingRules[udtFirstTableName].features08,
-                                  };
-                        break;
+                        case '0.8':
+                            console.info('AT installedPricingVersion CASE 8');
+                            ppmValues_content = {
+                                ...pricingRules[udtFirstTableName].features05,
+                                ...pricingRules[udtFirstTableName].features06,
+                                ...pricingRules[udtFirstTableName].features07,
+                                ...pricingRules[udtFirstTableName].features08,
+                            };
+                            break;
 
-                    default:
-                        console.info('AT installedPricingVersion Default');
-                        ppmValues_content = {
-                            ...pricingRules[udtFirstTableName].features05,
-                            ...pricingRules[udtFirstTableName].features06,
-                            ...pricingRules[udtFirstTableName].features07,
-                            ...pricingRules[udtFirstTableName].features08,
-                        };
-                        break;
-                }
-                addContext(this, {
-                    title: `ppmValues_content length`,
-                    value: Object.keys(ppmValues_content).length,
+                        default:
+                            console.info('AT installedPricingVersion Default');
+                            ppmValues_content = {
+                                ...pricingRules[udtFirstTableName].features05,
+                                ...pricingRules[udtFirstTableName].features06,
+                                ...pricingRules[udtFirstTableName].features07,
+                                ...pricingRules[udtFirstTableName].features08,
+                            };
+                            break;
+                    }
+                    addContext(this, {
+                        title: `ppmValues_content length`,
+                        value: Object.keys(ppmValues_content).length,
+                    });
+                    addContext(this, {
+                        title: `ppmValues_content`,
+                        value: JSON.stringify(ppmValues_content, null, 2),
+                    });
                 });
-                addContext(this, {
-                    title: `ppmValues_content`,
-                    value: JSON.stringify(ppmValues_content, null, 2),
+
+            specialVersion &&
+                it('getting data object according to special version', async function () {
+                    switch (specialVersion) {
+                        case 'version07for05data':
+                            pricingRules[udtFirstTableName].features05;
+                            break;
+
+                        case 'version08for07data':
+                            ppmValues_content = {
+                                ...pricingRules[udtFirstTableName].features05,
+                                ...pricingRules[udtFirstTableName].features06,
+                                ...pricingRules[udtFirstTableName].features07,
+                            };
+                            break;
+
+                        default:
+                            break;
+                    }
+                    addContext(this, {
+                        title: `ppmValues_content length`,
+                        value: Object.keys(ppmValues_content).length,
+                    });
+                    addContext(this, {
+                        title: `ppmValues_content`,
+                        value: JSON.stringify(ppmValues_content, null, 2),
+                    });
                 });
-            });
 
             it(`inserting valid rules to the UDT "${udtFirstTableName}"`, async function () {
                 Object.keys(ppmValues_content).forEach((mainKey) => {
