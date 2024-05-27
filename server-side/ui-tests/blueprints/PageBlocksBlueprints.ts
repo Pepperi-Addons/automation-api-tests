@@ -187,9 +187,18 @@ export class ResourceViewEditorBlock {
             selectedViewUUID: string;
             selectedViewName: string;
         }[],
+        parametersOnPage?: {
+            type: string;
+            consume: boolean;
+            systemVariableName: string;
+            produce: boolean;
+        }[],
     ) {
         this.Key = blockKey;
         this.Relation = new ResourceListBlockRelation(blockResource);
+        if (parametersOnPage) {
+            this.PageConfiguration = new ResourceListBlockPageConfiguration(parametersOnPage);
+        }
         switch (blockResource) {
             case 'DataViewerBlock':
                 if (selectedViews) {
@@ -209,6 +218,7 @@ export class ResourceViewEditorBlock {
         }
     }
     public Configuration: ResourceListBlockConfiguration | any;
+    public PageConfiguration: ResourceListBlockPageConfiguration | any;
     public Key: string;
     public Relation: ResourceListBlockRelation;
 }
@@ -250,6 +260,23 @@ export class ResourceListBlockConfiguration extends BaseBlockConfiguration {
     public Data: ResourceListBlockConfigurationDataView | ResourceListBlockConfigurationDataEditor | any;
 }
 
+export class ResourceListBlockPageConfiguration {
+    constructor(
+        parametersOnPage?: {
+            type: string;
+            consume: boolean;
+            systemVariableName: string;
+            produce: boolean;
+        }[],
+    ) {
+        parametersOnPage?.forEach((pageParams) => {
+            const paramObj = new ResourceListBlockPageConfigurationParameters(pageParams);
+            this.Parameters.push(paramObj);
+        });
+    }
+    public Parameters: ResourceListBlockPageConfigurationParameters[] = [];
+}
+
 export class ResourceListBlockConfigurationDataEditor {
     constructor(editorUUID: string, collectionName: string) {
         this.currentEditorKey = editorUUID;
@@ -274,6 +301,19 @@ export class ResourceListBlockConfigurationDataView {
         });
     }
     public viewsList: ResourceListBlockConfigurationDataViewInViewsList[] = [];
+}
+
+export class ResourceListBlockPageConfigurationParameters {
+    constructor(pageParams: { type: string; consume: boolean; systemVariableName: string; produce: boolean }) {
+        this.Type = pageParams.type;
+        this.Consume = pageParams.consume;
+        this.Key = pageParams.systemVariableName;
+        this.Produce = pageParams.produce;
+    }
+    public Type: string;
+    public Consume: boolean;
+    public Key: string;
+    public Produce: boolean;
 }
 
 export class ResourceListBlockConfigurationDataViewInViewsList {

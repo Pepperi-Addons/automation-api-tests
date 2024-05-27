@@ -12,7 +12,7 @@ export class WebAppHeader extends Page {
     public CompanyLogo: By = By.css('[data-qa="orgLogo"]'); //'app-root header pepperi-header #header'
     public Settings: By = By.css('[data-qa="systemSettings"]');
     public Help: By = By.css('[data-qa="systemSuppot"]');
-    public UserBtn: By = By.css('[data-qa="systemAvatar"]');
+    public UserBtn: By = By.xpath('//*[contains(@data-qa,"Avatar")]');
     public Home: By = By.css('[data-qa="systemHome"]');
 
     // User Details Popup
@@ -26,9 +26,15 @@ export class WebAppHeader extends Page {
     }
 
     public async goHome() {
-        if (!(await this.browser.getCurrentUrl()).includes('HomePage')) {
-            await this.browser.click(this.Home);
-            this.browser.sleep(1000);
+        try {
+            if (!(await this.browser.getCurrentUrl()).includes('HomePage')) {
+                await this.browser.click(this.Home);
+                this.browser.sleep(1000);
+            }
+        } catch (error) {
+            // bug: DI-27559
+            console.error(error);
+            await this.browser.navigate(`${this.url}/HomePage`);
         }
         return;
     }

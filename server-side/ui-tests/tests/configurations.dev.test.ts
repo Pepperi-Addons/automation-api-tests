@@ -10,7 +10,7 @@ chai.use(promised);
 export async function ConfigurationTests(email: string, password: string, client: Client, varPass) {
     const generalService = new GeneralService(client);
     const addonVersion = (
-        await generalService.getAddonLatestAvailableVersion('84c999c3-84b7-454e-9a86-71b7abc96554', varPass)
+        await generalService.getAddonsLatestAvailableVersion('84c999c3-84b7-454e-9a86-71b7abc96554', varPass)
     ).latestVersion;
     let env;
     let testNames: string[] = [];
@@ -34,6 +34,7 @@ export async function ConfigurationTests(email: string, password: string, client
     );
     await generalService.baseAddonVersionsInstallation(varPass);
     const testData = {
+        automation_template_addon: ['d541b959-87af-4d18-9215-1b30dbe1bcf4', ''],
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],

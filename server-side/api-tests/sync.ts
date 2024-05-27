@@ -532,8 +532,19 @@ export async function ExecuteSyncTests(generalService: GeneralService, tester: T
     async function cleanUpTest() {
         let countHiddenTransactions = 0;
         let countFailedToHideTransactions = 0;
+        //three months back from today date creation:
+        const d = new Date();
+        d.setMonth(d.getMonth() - 3);
+        const dateSplittedWithZeros = d
+            .toLocaleDateString('en-GB', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            })
+            .split('/');
+        const dateFormmated = `${dateSplittedWithZeros[2]}-${dateSplittedWithZeros[1]}-${dateSplittedWithZeros[0]}`;
         const allActivitiesArr: GeneralActivity | Transaction = await service.papiClient.allActivities.find({
-            where: "CreationDateTime>'2023-07-07Z'", //Changed date from '2020-07-07Z' (Yoni)
+            where: `CreationDateTime>'${dateFormmated}Z'`, //EVGENY - 18/4/24: Changed date from hard coded date to 3 months back to make the test more stable
             page_size: -1,
             order_by: 'ModificationDateTime DESC',
         });

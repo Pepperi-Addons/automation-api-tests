@@ -15,6 +15,8 @@ export abstract class Page extends BasePomObject {
 
     public PepperiHiddenLoadingSpinner: By = By.css('#loadingSpinnerModal[hidden]');
     public HtmlBody: By = By.css('html body');
+    public TopBarContainer: By = By.xpath('//div[contains(@class,"top-bar-container")]');
+    public SearchBankFields_input: By = By.xpath('//input[@id="txtSearchBankFields"]');
 
     public getSelectorOfCardContainerByProfile(profile: 'Rep' | 'Admin' | 'Buyer' = 'Rep') {
         return By.xpath(`//span[@title="${profile}"]/parent::div/parent::div`);
@@ -37,6 +39,12 @@ export abstract class Page extends BasePomObject {
     public getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(text: string) {
         return By.xpath(
             `//div[text()="Layout"]/following-sibling::ul//div[@title="${text}"]/ancestor::li//span[contains(@class,"trashCanIcon")]`,
+        );
+    }
+
+    public getSelectorOfItemConfiguredToCardDeleteButtonByPartialTextAtCardEdit(text: string) {
+        return By.xpath(
+            `//div[text()="Layout"]/following-sibling::ul//div[contains(@title,"${text}")]/ancestor::li//span[contains(@class,"trashCanIcon")]`,
         );
     }
 

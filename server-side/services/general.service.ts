@@ -20,234 +20,96 @@ import { execFileSync } from 'child_process';
 import tester from '../tester';
 import * as path from 'path';
 
-export const testData = {
-    'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON --
-    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version --
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.50'], //cpapi --
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.30.%'], //CPAS --
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //EVGENY 21/12/23: new node version
-    'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+export const systemAddons: any = {
+    //these are the system addons of pepperi, i.e. every dist starts with them regardless - all these are configured by: Type = 1
+    //this JSON is built for open-sync, because I cant start from installing Nebula -
+    //it requires KMS permission, so if you need Nebula: create the dist THEN set KMS permission then run upg. dep. for nebula dists
+    Crawler: ['f489d076-381f-4cf7-aa63-33c6489eb017', ''], // evgeny: 27/3/24 - cpi data dep.
+    'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
-    'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], // evgeny: since 23/2 - PFS (version 1.2.9 and above) is now dependent on CPI DATA 0.6.12 and above
-    'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //1.4.22 in the interim 1.4.X PFS version
-    'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''],
-    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.16.%'], //NG14 latest webapp
-    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', ''],
-    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
-    'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
-    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+    'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.%.%'], //CPAS
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'], //open-sync
+    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+    'Key Management Service': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
+    'Resource Tracer': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
+    'Operation Invoker': ['f8d964d7-aad0-4d29-994b-5977a8f22dca', ''],
+    'Push Notifications': ['95025423-9096-4a4f-a8cd-d0a17548e42e', ''],
+    Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
-    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
-    ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-    'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
-    'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', '1.0.2'],
-    'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'], //hardcoded because newest isn't phased and otherwise wont match new webapp
-    'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-    'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
-    'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
-    'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
-    'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-    'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''],
+    Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%.%'],
+    'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
+    'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
+    'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
+    'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
+    'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+    ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+    'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.%.%'],
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.58'], //cpapi
+    'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
+    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', ''],
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node (Cross Platform Engine)
+    'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', '2.2.%'],
+    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', ''],
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version --
+    'Custom Login': ['529b0de5-4640-4e78-83d0-b630a819db3b', ''],
+    'Custom Domain': ['529b0de5-4640-4e78-83d0-b630a819db3b', ''],
+};
+
+export const testData = {
+    //these are the addons which all the "regular" dists in pepperi work with, we need them to work on latest versions -
+    //this also contains our testing addon - these addons are combined to become our basic upg. dep. set
+    //please notice that this JSON extends "system addons" so of course its still fits open sync
+    Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
+    'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.4.%'], //1.4.22 in the interim 1.4.X PFS version
+    'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+    ...systemAddons,
+    'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON --
+    'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+    'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
 };
 
-//this is done because sync installations are using "phased=false"
-const testDataWithSyncForCpi = testData;
-testDataWithSyncForCpi['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''];
-testDataWithSyncForCpi['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.2.28'];
+//this may be redundant
+const testDataWithNoSync = { ...testData };
+delete testDataWithNoSync.sync;
+export const testDataNoSyncNoNebula = {
+    ...testDataWithNoSync,
+};
+
+//this is the upg. dep. for nebula dists - containing nebula and locked on sync, cpi data and config versions
+const baseAddonsForNebula = { ...testData };
+baseAddonsForNebula.Slugs = ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.3.7'];
+baseAddonsForNebula.configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.%'];
+baseAddonsForNebula['Cross Platform Engine Data'] = ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'];
+baseAddonsForNebula.sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
+baseAddonsForNebula['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.3.%']; //1.3.x is for neubla
+export const testDataForNebulaDists = {
+    ...baseAddonsForNebula,
+    Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+    'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
+};
 
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
 export const testDataWithNewSyncForCpiRegression = {
-    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-    ...testDataWithSyncForCpi,
+    ...testData,
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
 };
 
-//this is done because sync installations are using "phased=false"
-const testDataWithSync = testData;
-testDataWithSync['Pages'] = ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''];
-testDataWithSync['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', ''];
-
+//this may be redundant
 //this includes the NEW Sync, Nebula, UDC, Cpi-Node-Automation & Generic Resource - for tests that are related to CPI
-export const testDataWithNewSync = {
-    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
-    ...testDataWithSync,
-    'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
+export const testDataWithNewSyncAndNebula = {
+    ...testData, // already has sync
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
     'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
 };
-
-export const testDataForInitUser = {
-    'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON
-    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.5.%'], //PAPI locked on newest
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.50'], //cpapi
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.20.%'], //CPAS //hardcoded version because there are CPAS .80 versions only for CPI team testing - this one is phased
-    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node (Cross Platform Engine)
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.15.%'], //NG14 latest webapp
-    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', '9.5.%'],
-    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '0.'],
-    'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', '1.'],
-    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
-    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
-    ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
-    'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
-    'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
-    'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', ''],
-    'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
-    // 'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
-    'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
-    'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
-    Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
-    'Key Management Service': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
-    'Operation Invoker': ['f8d964d7-aad0-4d29-994b-5977a8f22dca', '9.5.%'],
-    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
-    Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
-    'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', '1.2.%'],
-    'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
-    'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
-    'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', ''],
-};
-
-const setOfAddonsForCpiNodeTesting = [
-    // Hagit, July 2023
-    // { addonName: string, addonUUID: string, setToVersion?: string, setToLatestAvailable?: boolean, setToLatestPhased?: boolean, }
-    {
-        addonName: 'API Testing Framework',
-        addonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Services Framework', addonUUID: '00000000-0000-0000-0000-000000000a91', setToVersion: '9.6.%' },
-    { addonName: 'Cross Platforms API', addonUUID: '00000000-0000-0000-0000-000000abcdef', setToVersion: '9.6.%' },
-    { addonName: 'WebApp API Framework', addonUUID: '00000000-0000-0000-0000-0000003eba91', setToLatestPhased: true },
-    { addonName: 'Cross Platform Engine', addonUUID: 'bb6ee826-1c6b-4a11-9758-40a46acb69c5', setToLatestPhased: true },
-    {
-        addonName: 'Cross Platform Engine Data',
-        addonUUID: 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b',
-        setToLatestPhased: true,
-    },
-    { addonName: 'Async Task Execution', addonUUID: '00000000-0000-0000-0000-0000000a594c', setToLatestPhased: true },
-    {
-        addonName: 'Core Data Source Interface',
-        addonUUID: '00000000-0000-0000-0000-00000000c07e',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Core Resources', addonUUID: 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f', setToLatestPhased: true },
-    { addonName: 'Generic Resource', addonUUID: 'df90dba6-e7cc-477b-95cf-2c70114e44e0', setToLatestAvailable: true },
-    {
-        addonName: 'File Service Framework',
-        addonUUID: '00000000-0000-0000-0000-0000000f11e5',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'WebApp Platform', addonUUID: '00000000-0000-0000-1234-000000000b2b', setToLatestPhased: true },
-    { addonName: 'System Health', addonUUID: 'f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', setToLatestPhased: true },
-    { addonName: 'Settings Framework', addonUUID: '354c5123-a7d0-4f52-8fce-3cf1ebc95314', setToLatestPhased: true },
-    { addonName: 'Addons Manager', addonUUID: 'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', setToLatestPhased: true },
-    { addonName: 'Data Views API', addonUUID: '484e7f22-796a-45f8-9082-12a734bac4e8', setToLatestAvailable: true },
-    {
-        addonName: 'Data Index Framework',
-        addonUUID: '00000000-0000-0000-0000-00000e1a571c',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Activity Data Index', addonUUID: '10979a11-d7f4-41df-8993-f06bfd778304', setToLatestAvailable: true },
-    { addonName: 'ADAL', addonUUID: '00000000-0000-0000-0000-00000000ada1', setToLatestAvailable: true },
-    {
-        addonName: 'User Defined Collections',
-        addonUUID: '122c0e9d-c240-4865-b446-f37ece866c22',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Automated Jobs', addonUUID: 'fcb7ced2-4c81-4705-9f2b-89310d45e6c7', setToLatestAvailable: true },
-    { addonName: 'Relations Framework', addonUUID: '5ac7d8c3-0249-4805-8ce9-af4aecd77794', setToLatestPhased: true },
-    { addonName: 'Object Types Editor', addonUUID: '04de9428-8658-4bf7-8171-b59f6327bbf1', setToLatestPhased: true },
-    {
-        addonName: 'Notification Service',
-        addonUUID: '00000000-0000-0000-0000-000000040fa9',
-        setToLatestAvailable: true,
-    },
-    {
-        addonName: 'Item Trade Promotions',
-        addonUUID: 'b5c00007-0941-44ab-9f0e-5da2773f2f04',
-        setToLatestAvailable: true,
-    },
-    {
-        addonName: 'Order Trade Promotions',
-        addonUUID: '375425f5-cd2f-4372-bb88-6ff878f40630',
-        setToLatestAvailable: true,
-    },
-    {
-        addonName: 'Package Trade Promotions',
-        addonUUID: '90b11a55-b36d-48f1-88dc-6d8e06d08286',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Audit Log', addonUUID: '00000000-0000-0000-0000-00000da1a109', setToLatestPhased: true },
-    {
-        addonName: 'Export and Import Framework (DIMX)',
-        addonUUID: '44c97115-6d14-4626-91dc-83f176e9a0fc',
-        setToLatestAvailable: true,
-    },
-    { addonName: 'Nebula', addonUUID: '00000000-0000-0000-0000-000000006a91', setToLatestAvailable: true },
-    { addonName: 'sync', addonUUID: '5122dc6d-745b-4f46-bb8e-bd25225d350a', setToVersion: '0.7.%' },
-    { addonName: 'cpi-node-automation', addonUUID: '2b39d63e-0982-4ada-8cbb-737b03b9ee58', setToVersion: '%' },
-];
-
-const setOfAddonsForE2EusersWithNewSync = [
-    // Hagit, July 2023
-    // { addonName: string, addonUUID: string, setToVersion?: string, setToLatestAvailable?: boolean, setToLatestPhased?: boolean, }
-    // { addonName: 'API Testing Framework', addonUUID: 'eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', setToLatestAvailable: true, },
-    { addonName: 'Services Framework', addonUUID: '00000000-0000-0000-0000-000000000a91', setToLatestPhased: true },
-    { addonName: 'Cross Platforms API', addonUUID: '00000000-0000-0000-0000-000000abcdef', setToLatestPhased: true },
-    { addonName: 'WebApp API Framework', addonUUID: '00000000-0000-0000-0000-0000003eba91', setToLatestPhased: true },
-    { addonName: 'Cross Platform Engine', addonUUID: 'bb6ee826-1c6b-4a11-9758-40a46acb69c5', setToLatestPhased: true },
-    {
-        addonName: 'Cross Platform Engine Data',
-        addonUUID: 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b',
-        setToLatestPhased: true,
-    },
-    { addonName: 'Async Task Execution', addonUUID: '00000000-0000-0000-0000-0000000a594c', setToLatestPhased: true },
-    {
-        addonName: 'Core Data Source Interface',
-        addonUUID: '00000000-0000-0000-0000-00000000c07e',
-        setToLatestPhased: true,
-    },
-    { addonName: 'Core Resources', addonUUID: 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f', setToLatestPhased: true },
-    { addonName: 'Generic Resource', addonUUID: 'df90dba6-e7cc-477b-95cf-2c70114e44e0', setToLatestPhased: true },
-    { addonName: 'File Service Framework', addonUUID: '00000000-0000-0000-0000-0000000f11e5', setToLatestPhased: true },
-    { addonName: 'WebApp Platform', addonUUID: '00000000-0000-0000-1234-000000000b2b', setToLatestPhased: true },
-    { addonName: 'System Health', addonUUID: 'f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', setToLatestPhased: true },
-    { addonName: 'Settings Framework', addonUUID: '354c5123-a7d0-4f52-8fce-3cf1ebc95314', setToLatestPhased: true },
-    { addonName: 'Addons Manager', addonUUID: 'bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', setToLatestPhased: true },
-    { addonName: 'Data Views API', addonUUID: '484e7f22-796a-45f8-9082-12a734bac4e8', setToLatestPhased: true },
-    { addonName: 'Data Index Framework', addonUUID: '00000000-0000-0000-0000-00000e1a571c', setToLatestPhased: true },
-    { addonName: 'Activity Data Index', addonUUID: '10979a11-d7f4-41df-8993-f06bfd778304', setToLatestPhased: true },
-    { addonName: 'ADAL', addonUUID: '00000000-0000-0000-0000-00000000ada1', setToLatestPhased: true },
-    {
-        addonName: 'User Defined Collections',
-        addonUUID: '122c0e9d-c240-4865-b446-f37ece866c22',
-        setToLatestPhased: true,
-    },
-    // { addonName: 'Automated Jobs', addonUUID: 'fcb7ced2-4c81-4705-9f2b-89310d45e6c7', setToLatestPhased: true, },
-    { addonName: 'Relations Framework', addonUUID: '5ac7d8c3-0249-4805-8ce9-af4aecd77794', setToLatestPhased: true },
-    { addonName: 'Object Types Editor', addonUUID: '04de9428-8658-4bf7-8171-b59f6327bbf1', setToLatestPhased: true },
-    // { addonName: 'Notification Service', addonUUID: '00000000-0000-0000-0000-000000040fa9', setToLatestPhased: true, },
-    // { addonName: 'Item Trade Promotions', addonUUID: 'b5c00007-0941-44ab-9f0e-5da2773f2f04', setToLatestPhased: true, },
-    // { addonName: 'Order Trade Promotions', addonUUID: '375425f5-cd2f-4372-bb88-6ff878f40630', setToLatestPhased: true, },
-    // { addonName: 'Package Trade Promotions', addonUUID: '90b11a55-b36d-48f1-88dc-6d8e06d08286', setToLatestPhased: true, },
-    { addonName: 'Audit Log', addonUUID: '00000000-0000-0000-0000-00000da1a109', setToLatestPhased: true },
-    {
-        addonName: 'Export and Import Framework (DIMX)',
-        addonUUID: '44c97115-6d14-4626-91dc-83f176e9a0fc',
-        setToLatestPhased: true,
-    },
-    { addonName: 'Nebula', addonUUID: '00000000-0000-0000-0000-000000006a91', setToLatestPhased: true },
-    { addonName: 'sync', addonUUID: '5122dc6d-745b-4f46-bb8e-bd25225d350a', setToLatestAvailable: true },
-];
 
 export const ConsoleColors = {
     MenuHeader: 'color: #FFFF00',
@@ -286,6 +148,7 @@ console.log('%c#00FF00\t\tSuccess\t\t\t', `${ConsoleColors.MenuBackground}; ${Co
  * The process will end
  */
 process.on('unhandledRejection', async (error) => {
+    debugger;
     if (error instanceof Error && JSON.stringify(error.stack).includes('selenium-webdriver\\lib\\http.js')) {
         console.log(`%cError in Chrome API: ${error}`, ConsoleColors.Error);
         console.log('Wait 10 seconds before trying to call the browser api again');
@@ -293,6 +156,60 @@ process.on('unhandledRejection', async (error) => {
         msSleep(10000);
     } else if (error instanceof Error && JSON.stringify(error.message).includes('Error')) {
         console.log(`%Unhandled Rejection: ${error.message}`, ConsoleColors.Error);
+        console.log(
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
+    } else if (error && typeof error === 'string' && error.includes(`SyntaxError: Unexpected token '<', "<html>`)) {
+        console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
+        console.log(
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
+    } else if (error && typeof error === 'string' && error.includes(`Error`)) {
+        console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
+        console.log(
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
+    } else if (error && typeof error === 'string' && error.includes(`doesn't have any phased available version`)) {
+        console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
+        console.log(
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
+    } else if (
+        error &&
+        typeof error === 'object' &&
+        'message' in error &&
+        typeof (error as any).message === 'string' &&
+        (error as any).message.includes(`doesn't have any phased available version`)
+    ) {
+        console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
+        console.log(
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
+    } else if (typeof error === 'string' && (error.includes('Error') || error.includes('502'))) {
+        console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
+        console.log(
+            `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
+            ConsoleColors.SystemInformation,
+        );
+        process.exit(1);
+    } else if (
+        error &&
+        typeof error === 'object' &&
+        'message' in error &&
+        (JSON.stringify((error as any).message).includes('Error') ||
+            JSON.stringify((error as any).message).includes('502'))
+    ) {
+        console.log(`%Unhandled Rejection: ${JSON.stringify((error as any).message)}`, ConsoleColors.Error);
         console.log(
             `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
             ConsoleColors.SystemInformation,
@@ -380,16 +297,12 @@ export default class GeneralService {
         });
         this.adalService = new ADALService(this.papiClient);
         this.assetsBaseUrl = client.AssetsBaseUrl;
-        this.setOfAddonsForE2EusersWithNewSync = setOfAddonsForE2EusersWithNewSync;
-        this.setOfAddonsForCpiNodeTesting = setOfAddonsForCpiNodeTesting;
         this.testData = testData;
         this.testDataWithNewSyncForCpiRegression = testDataWithNewSyncForCpiRegression;
-        this.testDataWithNewSync = testDataWithNewSync;
-        this.testDataForInitUser = testDataForInitUser;
+        this.testDataWithNewSync = testDataWithNewSyncAndNebula;
+        this.testDataForInitUser = systemAddons;
         this.ConsoleColors = ConsoleColors;
     }
-    public setOfAddonsForE2EusersWithNewSync;
-    public setOfAddonsForCpiNodeTesting;
     public testData;
     public testDataWithNewSync;
     public testDataWithNewSyncForCpiRegression;
@@ -1223,6 +1136,8 @@ export default class GeneralService {
                 version === '' ? '%' : version
             }' AND Available Like 1 AND Phased Like 1`;
             if (
+                addonName == 'cpi-node-automation' || //cpi automation will never be phased
+                addonName == 'Cross Platform Engine Data' ||
                 addonName == 'Services Framework' ||
                 addonName == 'Cross Platforms API' ||
                 addonName == 'API Testing Framework' ||
@@ -1243,6 +1158,9 @@ export default class GeneralService {
                 addonName == 'sync' || //new sync addons
                 addonName == 'Core Data Source Interface' || //new sync addons
                 addonName == 'Core Resources' || //new sync addons
+                addonName == 'Nebula' || //new sync addons
+                addonName == 'configurations' || //new sync addons
+                addonName == 'File Service Framework' || //PFS needed for sync
                 !isPhased
             ) {
                 searchString = `AND Version Like '${version === '' ? '%' : version}' AND Available Like 1`;
@@ -1388,7 +1306,7 @@ export default class GeneralService {
         return { latestPhasedVersion: latestPhasedVersion || '', message: informativeMessage };
     }
 
-    async getAddonLatestAvailableVersion(
+    async getAddonsLatestAvailableVersion(
         addonUUID: string,
         varKey: string,
         version?: string,
@@ -1441,7 +1359,9 @@ export default class GeneralService {
         const addonUUID = testData[addonName][0];
         const addonVersion = testData[addonName][1];
         const searchString = `AND Version Like ${
-            addonVersion !== '' && addonVersion !== '%' ? `'` + addonVersion + `'` : `'%' AND Available Like 1`
+            addonVersion !== '' && addonVersion !== '%'
+                ? `'` + addonVersion + `'` + ' AND Available Like 1'
+                : `'%' AND Available Like 1`
         }`;
         const fetchVarResponse = (
             await this.fetchStatus(
@@ -1589,7 +1509,7 @@ export default class GeneralService {
                 }
             }
         } else if (requested.setToLatestAvailable) {
-            const availableVersionResponse = await this.getAddonLatestAvailableVersion(requested.addonUUID, varKey);
+            const availableVersionResponse = await this.getAddonsLatestAvailableVersion(requested.addonUUID, varKey);
             if (availableVersionResponse.message.includes('retrieved successfully')) {
                 changeResponseObject['latestAvailableVersion'] = availableVersionResponse.latestVersion;
                 const setToLatestAvailableResponse = await this.setAddonToVersion(
@@ -1793,17 +1713,29 @@ export default class GeneralService {
         const chnageVersionResponseArr = await this.changeVersion(
             varPass,
             otherTestData ? otherTestData : testDataWithNewSyncForCpiRegression,
-            false,
+            true,
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
 
     async baseAddonVersionsInstallationNewSync(varPass: string, otherTestData?: any) {
-        const isInstalledArr = await this.areAddonsInstalled(otherTestData ? otherTestData : testDataWithNewSync);
+        const isInstalledArr = await this.areAddonsInstalled(
+            otherTestData ? otherTestData : testDataWithNewSyncAndNebula,
+        );
         const chnageVersionResponseArr = await this.changeVersion(
             varPass,
-            otherTestData ? otherTestData : testDataWithNewSync,
-            false,
+            otherTestData ? otherTestData : testDataWithNewSyncAndNebula,
+            true,
+        );
+        return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
+    }
+
+    async baseAddonVersionsInstallationNewSyncNoNebula(varPass: string, otherTestData?: any) {
+        const isInstalledArr = await this.areAddonsInstalled(otherTestData ? otherTestData : testData);
+        const chnageVersionResponseArr = await this.changeVersion(
+            varPass,
+            otherTestData ? otherTestData : testData,
+            true,
         );
         return { chnageVersionResponseArr: chnageVersionResponseArr, isInstalledArr: isInstalledArr };
     }
@@ -2143,6 +2075,91 @@ export default class GeneralService {
         //         }
         //     }
         // }
+    }
+
+    async handleTeamsURL(addonName, email, pass) {
+        //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
+        // handle teams URL for reporting of cicd - evgeny: add new addons here
+        switch (addonName) {
+            case 'QA':
+                return await this.getSecretfromKMS(email, pass, 'QAWebHook');
+            case 'ASSETS_MANAGER_CLIENT':
+            case 'ASSETS MANAGER':
+            case 'ASSETS-MANAGER':
+            case 'ASSETS':
+                return await this.getSecretfromKMS(email, pass, 'AssetsManagerWebHook');
+            case 'SYNC-SCHEDULER':
+            case 'SYNC SCHEDULER':
+                return await this.getSecretfromKMS(email, pass, 'SyncSchedulerWebHook');
+            case 'SUPPORT-TOOLS':
+            case 'SUPPORT TOOLS':
+                return await this.getSecretfromKMS(email, pass, 'SupportToolsWebHook');
+            case 'KMS':
+                return await this.getSecretfromKMS(email, pass, 'KMSTeamsWebHook');
+            case 'PAGE-BUILDER':
+            case 'PAGE BUILDER':
+            case 'PAGE':
+            case 'PAGES':
+            case 'PAGE-BUILDER':
+                return await this.getSecretfromKMS(email, pass, 'PageBuilderTeamsWebHook');
+            case 'PAPI-DATA-INDEX':
+            case 'PAPI INDEX': //evgeny todo
+                return await this.getSecretfromKMS(email, pass, 'PapiDataIndexWebHook');
+            case 'JOURNEY':
+            case 'JOURNEY-TRACKER':
+                return await this.getSecretfromKMS(email, pass, 'JourneyTeamsWebHook');
+            case 'SYNC':
+                return await this.getSecretfromKMS(email, pass, 'SyncTeamsWebHook');
+            case 'ADAL':
+                return await this.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
+            case 'NEBULA':
+            case 'FEBULA':
+                return await this.getSecretfromKMS(email, pass, 'NebulaTeamsWebHook');
+            case 'DIMX':
+                return await this.getSecretfromKMS(email, pass, 'DIMXTeamsWebHook');
+            case 'DATA INDEX':
+            case 'DATA-INDEX':
+                return await this.getSecretfromKMS(email, pass, 'DataIndexTeamsWebHook');
+            case 'PFS':
+            case 'PEPPERI-FILE-STORAGE':
+                return await this.getSecretfromKMS(email, pass, 'PFSTeamsWebHook');
+            case 'PNS':
+                return await this.getSecretfromKMS(email, pass, 'PNSTeamsWebHook');
+            case 'USER-DEFINED-COLLECTIONS':
+            case 'UDC':
+                return await this.getSecretfromKMS(email, pass, 'UDCTeamsWebHook');
+            case 'SCHEDULER':
+                return await this.getSecretfromKMS(email, pass, 'SchedulerTeamsWebHook');
+            case 'CPI-DATA':
+            case 'CPI DATA':
+            case 'ADDONS-CPI-DATA':
+                return await this.getSecretfromKMS(email, pass, 'CPIDataTeamsWebHook');
+            case 'CORE':
+            case 'CORE-GENERIC-RESOURCES':
+                return await this.getSecretfromKMS(email, pass, 'CORETeamsWebHook');
+            case 'RESOURCE-LIST':
+            case 'RESOURCE LIST':
+                return await this.getSecretfromKMS(email, pass, 'ResourceListTeamsWebHook');
+            case 'UDB':
+            case 'USER DEFINED BLOCKS':
+                return await this.getSecretfromKMS(email, pass, 'UDBTeamsWebHook');
+            case 'CONFIGURATIONS':
+                return await this.getSecretfromKMS(email, pass, 'CONFIGURATIONSTeamsWebHook');
+            case 'RELATED-ITEMS':
+                return await this.getSecretfromKMS(email, pass, 'RelatedItemsTeamsWebHook');
+            case 'GENERIC-RESOURCE':
+            case 'GENERIC RESOURCE':
+                return await this.getSecretfromKMS(email, pass, 'GenericResourceTeamsWebHook');
+            case 'NODE':
+            case 'CPI-NODE':
+                return await this.getSecretfromKMS(email, pass, 'CPINodeTeamsWebHook');
+            case 'CRAWLER':
+                return await this.getSecretfromKMS(email, pass, 'CRAWLERTeamsWebHook');
+            case 'ASYNCADDON':
+                return await this.getSecretfromKMS(email, pass, 'ASYNCTeamsWebHook');
+            case 'TRANSLATION':
+                return await this.getSecretfromKMS(email, pass, 'TRANSLATIONTeamsWebHook');
+        }
     }
 
     extractSchema(schema, key: string, filterAttributes: FilterAttributes) {

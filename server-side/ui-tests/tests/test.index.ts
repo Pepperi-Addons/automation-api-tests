@@ -2,7 +2,7 @@ import GeneralService, {
     ConsoleColors,
     TesterFunctions,
     ResourceTypes,
-    testDataForInitUser,
+    systemAddons,
     initiateTester,
 } from '../../services/general.service';
 import fs from 'fs';
@@ -40,14 +40,19 @@ import {
     PricingAddonsUpsert,
     PricingConfigUpload,
     PricingUdtInsertion,
-    PricingBaseTests,
-    PricingAdditionalGroupsReadonlyTests,
+    PricingUdtCleanup,
+    PricingUdcInsertion,
+    PricingUdcCleanup,
+    PricingCalculatedFieldsManualLineTests,
+    PricingAdditionalItemGroupsReadonlyTests,
     PricingUomTests,
     PricingTotalsTests,
-    PricingMultipleValuesTests,
-    PricingPartialValueTests,
     PricingExclusionTests,
-    PricingUdtCleanup,
+    PricingPartialValueTests,
+    PricingMultipleValuesTests,
+    PricingPerformanceUdtErrorsTests,
+    PricingPackagesTests,
+    PricingNoUomTests,
     ResourceListAbiTests,
     InstallationsTest,
     StorybookColorPickerTests,
@@ -74,7 +79,11 @@ import {
     StorybookSliderTests,
     StorybookTextareaTests,
     StorybookTextboxTests,
+    StorybookQueryBuilderTests,
+    StorybookSmartFiltersTests,
     NeltPerformanceTests,
+    ListsAbiTests,
+    CustomCollectionsUpsert,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -110,6 +119,11 @@ import { CreateDistributorSystemTests } from './create_distributor_SYSTEM.test';
 import { ConfigurationTests } from './configurations.dev.test';
 import { SyncTests as SyncDevTests } from './sync.dev.test';
 import { DevTestReporter } from './dev.test.repoerter';
+import { SyncE2ETester } from './syncE2ETester.test';
+import { TestDataTestsNewSyncNoNebula } from '../../api-tests/test-service/test_data_new_syn_no_nebula';
+import { UDCLimitationTestser } from '../../api-tests/user_defined_collections_limitations_data_creator';
+import { UDCTestserPermission } from '../../api-tests/user_defined_collections_buyer_permission';
+import { DocDBIndexedAdalTestser } from '../../api-tests/doc_db_indexed_adal';
 
 /**
  * To run this script from CLI please replace each <> with the correct user information:
@@ -139,15 +153,21 @@ const passCreate = process.env.npm_config_pass_create as string;
 const whichEnvToRun = process.env.npm_config_envs as string;
 const whichAddonToUninstall = process.env.npm_config_which_addon as string;
 const XForSyncTimes = Number(process.env.npm_config_x as any);
+const acc01UUID = process.env.npm_config_acc1 as string;
+const acc02UUID = process.env.npm_config_acc2 as string;
+const acc03UUID = process.env.npm_config_acc3 as string;
 // const neltTestParams = process.env.npm_config_nelt_test_params as string;
 const burgerMenuVisitFlowName = process.env.npm_config_nelt_burger_vf_name as string;
-const visitFlowName = process.env.npm_config_nelt_vf_name as string;
+const divisionName = process.env.npm_config_nelt_division_name as string;
 const nearExpiryVisitGroupName = process.env.npm_config_nelt_expiry_vf_group as string;
 const nearExpiryVisitStepName = process.env.npm_config_nelt_expiry_vf_step as string;
 const orderOfReturnsVisitGroupName = process.env.npm_config_nelt_returns_vf_group as string;
 const orderOfReturnsVisitStepName = process.env.npm_config_nelt_returns_vf_step as string;
 const orderVisitGroupName = process.env.npm_config_nelt_order_vf_group as string;
 const orderVisitStepName = process.env.npm_config_nelt_order_vf_step as string;
+const surveyVisitGroupName = process.env.npm_config_nelt_survey_vf_group as string;
+const surveyVisitStepName = process.env.npm_config_nelt_survey_vf_step as string;
+const chooseAccountBy = process.env.npm_config_nelt_choose_account_by as 'name' | 'ID';
 const orderAccountName = process.env.npm_config_nelt_order_account as string;
 const originalFilterName = process.env.npm_config_nelt_original_filter as string;
 const filterCategoryName = process.env.npm_config_nelt_filter as string;
@@ -158,7 +178,16 @@ const nonBundlePromotionString = process.env.npm_config_nelt_promotion as string
 const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
 // const nonPromotionItemsIndices = process.env.npm_config_nelt_items_indices ? JSON.parse(process.env.npm_config_nelt_items_indices as string) as number[] : undefined;
 // const nonPromotionItemsQuantities = process.env.npm_config_nelt_items_qty ? JSON.parse(process.env.npm_config_nelt_items_qty as string) as number[] : undefined;
-// const nonBundlePromotionItemsIndices = process.env.npm_config_nelt_promotion_indices ? JSON.parse(process.env.npm_config_nelt_promotion_indices as string) as number[] : undefined;
+// const bundlePromotionItemsIndices = process.env.npm_config_nelt_promotion_indices ? JSON.parse(process.env.npm_config_nelt_promotion_indices as string) as number[] : undefined;
+const udcNameAge = process.env.npm_config_udc_name_age as string;
+const udcIndexedNameAge = process.env.npm_config_udc_indexed_name_age as string;
+const udcIndexedFields = process.env.npm_config_udc_indexed_fields as string;
+const udcArrays = process.env.npm_config_udc_arrays as string;
+const udcReferenceAccount = process.env.npm_config_udc_reference_account as string;
+const udcAccountFilter = process.env.npm_config_udc_account_filter as string;
+const udcFiltersRefAccount = process.env.npm_config_udc_filters_ref_account as string;
+const udcBigDataRefAccount = process.env.npm_config_udc_big_data_ref_account as string;
+const udcContainedArray = process.env.npm_config_udc_contained_array as string;
 
 (async function () {
     const tempGeneralService = new GeneralService({
@@ -255,7 +284,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         //Verify all items exist or replace them
         await replaceItemsTests(generalService);
 
-        await newUserDependenciesTests(generalService, varPass);
+        await newlyCretedDistDependenciesTests(generalService, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -283,7 +312,24 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                 varKeyEU: varPassEU,
             },
         });
-        await TestDataTestsNewSync(generalService, { describe, expect, it } as TesterFunctions);
+        await TestDataTestsNewSyncNoNebula(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'UDC_limitation') {
+        await UDCLimitationTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTestsNewSyncNoNebula(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
     }
@@ -486,6 +532,27 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         return;
     }
 
+    if (tests === 'UdcsToUser') {
+        await CustomCollectionsUpsert(
+            email,
+            client,
+            acc01UUID,
+            acc02UUID,
+            acc03UUID,
+            udcNameAge,
+            udcIndexedNameAge,
+            udcIndexedFields,
+            udcArrays,
+            udcReferenceAccount,
+            udcAccountFilter,
+            udcFiltersRefAccount,
+            udcBigDataRefAccount,
+            udcContainedArray,
+        );
+        run();
+        return;
+    }
+
     if (tests === 'Uom') {
         await UomTests(email, pass, varPass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
@@ -521,7 +588,8 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
 
     if (tests === 'ResourceList') {
         // await RLdataPrep(client);
-        await ResourceListTests(email, pass, varPass, client);
+        await ResourceListTests(email, pass, client, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
     }
@@ -533,9 +601,16 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         return;
     }
 
+    if (tests === 'ListsAbi') {
+        await ListsAbiTests(email, pass, client, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
     if (tests === 'VisitFlow') {
-        await VFdataPrep(varPass, client);
-        await VisitFlowTests(email, pass, client);
+        // await VFdataPrep(varPass, client);
+        await VisitFlowTests(varPass, client, email, pass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -545,7 +620,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
+        await PricingUdtInsertion(client, '1.0');
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -567,32 +642,9 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
-        await PricingBaseTests(email, pass, client);
-        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
-        await PricingUomTests(email, pass, client);
-        await PricingTotalsTests(email, pass, client);
-        await PricingExclusionTests(email, pass, client);
-        await PricingPartialValueTests(email, pass, client);
-        // await PricingMultipleValuesTests(email, pass, client);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-        run();
-        return;
-    }
-
-    if (tests === 'Pricing05') {
-        await PricingUdtCleanup(client);
-        await PricingAddonsUpsert(varPass, client, prcVer);
-        await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
-        await PricingBaseTests(email, pass, client);
-        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
-        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
-        run();
-        return;
-    }
-
-    if (tests === 'Pricing06') {
+        await PricingUdtInsertion(client, '1.0');
+        await PricingCalculatedFieldsManualLineTests(email, pass, client);
+        await PricingAdditionalItemGroupsReadonlyTests(email, pass, client);
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingExclusionTests(email, pass, client);
@@ -603,13 +655,99 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         return;
     }
 
+    if (tests === 'Pricing05Features') {
+        let installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        let installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtCleanup(client, installedPricingVersion == '8' ? 'version08for07data' : undefined);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingConfigUpload(client, email, pass);
+        installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        installedPricingVersion = installedPricingVersionLong?.split('.')[1];
+        await PricingUdtInsertion(client, '0.5', installedPricingVersion == '8' ? 'version08for07data' : undefined);
+        await PricingCalculatedFieldsManualLineTests(
+            email,
+            pass,
+            client,
+            installedPricingVersion == '8' ? 'version08for07data' : undefined,
+        );
+        await PricingAdditionalItemGroupsReadonlyTests(
+            email,
+            pass,
+            client,
+            installedPricingVersion == '8' ? 'version08for07data' : undefined,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'Pricing06Features') {
+        let installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        await PricingUdtCleanup(
+            client,
+            installedPricingVersionLong?.startsWith('0.8') ? 'version08for07data' : undefined,
+        );
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingConfigUpload(client, email, pass);
+        installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        await PricingUdtInsertion(
+            client,
+            '0.6',
+            installedPricingVersionLong?.startsWith('0.8') ? 'version08for07data' : undefined,
+        );
+        await PricingUomTests(email, pass, client);
+        await PricingTotalsTests(email, pass, client);
+        await PricingExclusionTests(email, pass, client);
+        await PricingPartialValueTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'Pricing07Features') {
+        await PricingUdtCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingUdtInsertion(client, '0.6');
+        await PricingConfigUpload(client, email, pass);
+        await PricingMultipleValuesTests(email, pass, client);
+        await PricingUdtInsertion(client, '0.7');
+        await PricingPerformanceUdtErrorsTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'Pricing08Features') {
+        await PricingUdtCleanup(client);
+        await PricingUdcCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingUdtInsertion(client, '0.8', 'version08for07data');
+        await PricingConfigUpload(client, email, pass, 'noUom');
+        await PricingNoUomTests(email, pass, client);
+        await PricingUdtCleanup(client, 'version08for07data');
+        await PricingUdcInsertion(client);
+        await PricingConfigUpload(client, email, pass);
+        await PricingAdditionalItemGroupsReadonlyTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
     if (tests === 'Pricing07with05data') {
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, '0.7.%');
         await PricingConfigUpload(client, email, pass, 'version07for05data');
-        await PricingUdtInsertion(client, 'version07for05data');
-        await PricingBaseTests(email, pass, client, 'version07for05data');
-        await PricingAdditionalGroupsReadonlyTests(email, pass, client, 'version07for05data');
+        await PricingUdtInsertion(client, '0.5', 'version07for05data');
+        await PricingCalculatedFieldsManualLineTests(email, pass, client, 'version07for05data');
+        await PricingAdditionalItemGroupsReadonlyTests(email, pass, client, 'version07for05data');
         await PricingUdtCleanup(client, 'version07for05data');
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
@@ -620,8 +758,8 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
-        await PricingBaseTests(email, pass, client);
+        await PricingUdtInsertion(client, '0.5');
+        await PricingCalculatedFieldsManualLineTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -631,8 +769,8 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
-        await PricingAdditionalGroupsReadonlyTests(email, pass, client);
+        await PricingUdtInsertion(client, '0.5');
+        await PricingAdditionalItemGroupsReadonlyTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -642,7 +780,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
+        await PricingUdtInsertion(client, '0.6');
         await PricingUomTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
@@ -653,7 +791,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
+        await PricingUdtInsertion(client, '0.6');
         await PricingTotalsTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
@@ -664,7 +802,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
+        await PricingUdtInsertion(client, '0.6');
         await PricingMultipleValuesTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
@@ -675,7 +813,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
+        await PricingUdtInsertion(client, '0.6');
         await PricingPartialValueTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
@@ -686,8 +824,19 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client);
+        await PricingUdtInsertion(client, '0.6');
         await PricingExclusionTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'PricingPackages') {
+        await PricingUdtCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingConfigUpload(client, email, pass);
+        await PricingUdtInsertion(client, '0.7');
+        await PricingPackagesTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -837,6 +986,18 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         return;
     }
 
+    if (tests === 'StorybookQueryBuilder') {
+        await StorybookQueryBuilderTests();
+        run();
+        return;
+    }
+
+    if (tests === 'StorybookSmartFilters') {
+        await StorybookSmartFiltersTests();
+        run();
+        return;
+    }
+
     if (tests === 'NeltPerformance') {
         // await NeltPerformanceTests(email, pass);
         await NeltPerformanceTests(
@@ -844,13 +1005,16 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
             pass,
             client,
             burgerMenuVisitFlowName,
-            visitFlowName,
+            divisionName,
             nearExpiryVisitGroupName,
             nearExpiryVisitStepName,
             orderOfReturnsVisitGroupName,
             orderOfReturnsVisitStepName,
             orderVisitGroupName,
             orderVisitStepName,
+            surveyVisitGroupName,
+            surveyVisitStepName,
+            chooseAccountBy,
             orderAccountName,
             originalFilterName,
             filterCategoryName,
@@ -863,6 +1027,10 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
             // nonPromotionItemsQuantities,
             // nonBundlePromotionItemsIndices,
         );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions, {
+            IsAllAddons: false,
+            IsUUID: false,
+        });
         run();
         return;
     }
@@ -870,6 +1038,22 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     if (tests === 'MockTest') {
         await MockTest(email, pass, client);
         // await ResourceListTests(email, pass, varPass, client);
+        run();
+        return;
+    }
+
+    if (tests === 'DocDBIndexedAdal') {
+        await DocDBIndexedAdalTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
         run();
         return;
     }
@@ -933,6 +1117,23 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
 
     if (tests === 'ApiUDC') {
         await UDCTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'PermissionsApiUDC') {
+        await UDCTestserPermission(
             generalService,
             {
                 body: {
@@ -1058,6 +1259,12 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         run();
         return;
     }
+    if (tests === 'SyncE2ETester') {
+        await SyncE2ETester(email, pass, client, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
     if (tests === 'IdoPapi') {
         await IdosPapiTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
@@ -1167,6 +1374,38 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     }
     if (tests === 'big_data_adal') {
         await AdalBigDataTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'second_part_adal_cli') {
+        console.log('\n################ RUNNING UPGRADE DEP. OF FIRST TEST OUT OF 2: Adal Big Data ################\n');
+        await AdalBigDataTestser(
+            generalService,
+            {
+                body: {
+                    varKeyStage: varPass,
+                    varKeyPro: varPass,
+                    varKeyEU: varPassEU,
+                },
+            },
+            { describe, expect, it } as TesterFunctions,
+        );
+        console.log(
+            '\n################ RUNNING UPGRADE DEP. OF SECOND TEST OUT OF 2: Doc DB Indexed Adal ################\n',
+        );
+        await DocDBIndexedAdalTestser(
             generalService,
             {
                 body: {
@@ -1530,7 +1769,28 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
         const base64VARCredentialsEU = Buffer.from(varPassEU).toString('base64');
         const base64VARCredentialsSB = Buffer.from(varPassSB).toString('base64');
         const service = new GeneralService(client);
-        const devTest = new DevTest(addonName, varPass, varPassEU, varPassSB, generalService, email, pass); // adding new addons tests should be done using this 'DevTest' class
+        const initialAddonUUID = DevTest.convertAddonNameToUUIDForDevTests(addonName);
+        let versionOfAddon = '';
+        if (initialAddonUUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a') {
+            versionOfAddon = (
+                await service.getAddonsLatestAvailableVersion('5122dc6d-745b-4f46-bb8e-bd25225d350a', varPass)
+            ).latestVersion;
+        }
+        if (initialAddonUUID === '00000000-0000-0000-0000-0000000f11e5') {
+            versionOfAddon = (
+                await service.getAddonsLatestAvailableVersion('00000000-0000-0000-0000-0000000f11e5', varPass)
+            ).latestVersion;
+        }
+        const devTest = new DevTest(
+            addonName,
+            varPass,
+            varPassEU,
+            varPassSB,
+            generalService,
+            email,
+            pass,
+            versionOfAddon,
+        ); // adding new addons tests should be done using this 'DevTest' class
         let testsList: any;
         if (devTest.addonUUID === 'none') {
             //if we cant find the addon uuid - it means we dont have *DEV* tests for it (might have approvement)
@@ -1550,8 +1810,8 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
             await reportBuildStarted(devTest.addonName, devTest.addonUUID, devTest.addonVersion, generalService);
             debugger;
             // 3. install all dependencys of tested addon latest available version on testing users then finaly install tested addon
-            await devTest.installDependencies();
-            await devTest.valdateTestedAddonLatestVersionIsInstalled();
+            await devTest.installTestedAddonsDependencies();
+            await devTest.valdateTestedAddonLatestAvaliVersionIsInstalled();
             console.log(
                 `####################### Finished Installing: ${devTest.addonName} - (${devTest.addonUUID}), version: ${
                     devTest.addonVersion
@@ -1564,7 +1824,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                 `####################### Calling GET:/tests/tests Of ${devTest.addonName} - (${devTest.addonUUID}) To Get All Test Names #######################`,
             );
             try {
-                testsList = await devTest.getTestNames();
+                testsList = await devTest.getDevTestNames();
             } catch (error) {
                 debugger;
                 const errorString = `Error: Got Exception Trying To Get Test Names By Calling /tests/tests On: ${
@@ -1598,7 +1858,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
             //4. iterate on all test names and call each
             await devTest.runDevTest(testsList);
             //5. parse the response we got from the tests, print & report to Teams
-            const didPass = await devTest.calculateAndReportResults(isLocal, numOfTests);
+            const didPass = await devTest.parseReportResults(isLocal, numOfTests);
             //6. no point in running app. tests after dev failed
             if (didPass !== undefined && didPass === false) {
                 console.log(
@@ -1717,8 +1977,6 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1763,8 +2021,6 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1809,8 +2065,6 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -1833,53 +2087,54 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                 addonVersionSbEx = addonVersionSb;
                 break;
             }
-            case 'CPI DATA':
-            case 'ADDONS-CPI-DATA':
-            case 'CPI-DATA': {
-                addonUUID = 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b';
-                const buildToken = 'CPIDATAApprovmentTests';
-                const jobPathPROD =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Production%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
-                const jobPathEU =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20EU%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
-                const jobPathSB =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Staging%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
-                const {
-                    JenkinsBuildResultsAllEnvs,
-                    latestRunProd,
-                    latestRunEU,
-                    latestRunSB,
-                    addonEntryUUIDProd,
-                    addonEntryUUIDEu,
-                    addonEntryUUIDSb,
-                    addonVersionProd,
-                    addonVersionEU,
-                    addonVersionSb,
-                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
-                    addonName,
-                    addonUUID,
-                    jobPathPROD,
-                    jobPathEU,
-                    jobPathSB,
-                    buildToken,
-                );
-                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
-                latestRunProdEx = latestRunProd;
-                latestRunEUEx = latestRunEU;
-                latestRunSBEx = latestRunSB;
-                pathProdEx = jobPathPROD;
-                pathEUEx = jobPathEU;
-                pathSBEx = jobPathSB;
-                addonEntryUUIDProdEx = addonEntryUUIDProd;
-                addonEntryUUIDEuEx = addonEntryUUIDEu;
-                addonEntryUUIDSbEx = addonEntryUUIDSb;
-                addonVersionProdEx = addonVersionProd;
-                addonVersionEUEx = addonVersionEU;
-                addonVersionSbEx = addonVersionSb;
-                break;
-            }
+            //these tests (CPI-DATAs) are deprecated - because it has to run on Nebula
+            // case 'CPI DATA':
+            // case 'ADDONS-CPI-DATA':
+            // case 'CPI-DATA': {
+            //     addonUUID = 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b';
+            //     const buildToken = 'CPIDATAApprovmentTests';
+            //     const jobPathPROD =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Production%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
+            //     const jobPathEU =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20EU%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
+            //     const jobPathSB =
+            //         'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Staging%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
+            //     const {
+            //         JenkinsBuildResultsAllEnvs,
+            //         latestRunProd,
+            //         latestRunEU,
+            //         latestRunSB,
+            //         addonEntryUUIDProd,
+            //         addonEntryUUIDEu,
+            //         addonEntryUUIDSb,
+            //         addonVersionProd,
+            //         addonVersionEU,
+            //         addonVersionSb,
+            //     } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
+            //         email,
+            //         pass,
+            //         addonName,
+            //         addonUUID,
+            //         jobPathPROD,
+            //         jobPathEU,
+            //         jobPathSB,
+            //         buildToken,
+            //     );
+            //     JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
+            //     latestRunProdEx = latestRunProd;
+            //     latestRunEUEx = latestRunEU;
+            //     latestRunSBEx = latestRunSB;
+            //     pathProdEx = jobPathPROD;
+            //     pathEUEx = jobPathEU;
+            //     pathSBEx = jobPathSB;
+            //     addonEntryUUIDProdEx = addonEntryUUIDProd;
+            //     addonEntryUUIDEuEx = addonEntryUUIDEu;
+            //     addonEntryUUIDSbEx = addonEntryUUIDSb;
+            //     addonVersionProdEx = addonVersionProd;
+            //     addonVersionEUEx = addonVersionEU;
+            //     addonVersionSbEx = addonVersionSb;
+            // //     break;
+            // }
             case 'PNS': {
                 addonUUID = '00000000-0000-0000-0000-000000040fa9';
                 const buildToken = 'PNSApprovmentTests';
@@ -1901,8 +2156,6 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -2113,8 +2366,6 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -2159,8 +2410,6 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -2194,38 +2443,32 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                 const jobPathSB =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20D1%20Stage%20-%20PFS';
                 const buildToken = 'PFSApprovmentTests';
-                const jobPathPROD2 =
-                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20D2%20Production%20-%20CPI%20PFS';
                 const {
+                    JenkinsBuildResultsAllEnvs,
+                    latestRunProd,
+                    latestRunEU,
+                    latestRunSB,
                     addonEntryUUIDProd,
                     addonEntryUUIDEu,
                     addonEntryUUIDSb,
-                    latestRunProdReturn,
-                    latestRunEUReturn,
-                    latestRunSBReturn,
-                    JenkinsBuildResultsAllEnvsToReturn,
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                    jobPathToReturnProd,
-                    jobPathToReturnSB,
-                    jobPathToReturnEU,
-                } = await appTestsRunnnerService.jenkinsDoubleJobTestRunner(
+                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
                     addonName,
                     addonUUID,
                     jobPathPROD,
                     jobPathEU,
                     jobPathSB,
                     buildToken,
-                    jobPathPROD2,
                 );
-                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvsToReturn;
-                latestRunProdEx = latestRunProdReturn;
-                latestRunEUEx = latestRunEUReturn;
-                latestRunSBEx = latestRunSBReturn;
-                pathProdEx = jobPathToReturnProd;
-                pathEUEx = jobPathToReturnEU;
-                pathSBEx = jobPathToReturnSB;
+                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
+                latestRunProdEx = latestRunProd;
+                latestRunEUEx = latestRunEU;
+                latestRunSBEx = latestRunSB;
+                pathProdEx = jobPathPROD;
+                pathEUEx = jobPathEU;
+                pathSBEx = jobPathSB;
                 addonEntryUUIDProdEx = addonEntryUUIDProd;
                 addonEntryUUIDEuEx = addonEntryUUIDEu;
                 addonEntryUUIDSbEx = addonEntryUUIDSb;
@@ -2257,8 +2500,6 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                     addonVersionEU,
                     addonVersionSb,
                 } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
-                    email,
-                    pass,
                     addonName,
                     addonUUID,
                     jobPathPROD,
@@ -2286,7 +2527,7 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
                 console.log(`no approvement tests for addon: ${addonName}`);
                 return;
         }
-        await appTestsRunnnerService.resultParser(
+        await appTestsRunnnerService.resultParserAndReporter(
             JenkinsBuildResultsAllEnvsEx,
             addonEntryUUIDEuEx,
             addonEntryUUIDProdEx,
@@ -2310,75 +2551,10 @@ const nonPromotionItemsString = process.env.npm_config_nelt_items as string;
     }
 })();
 
-export async function handleTeamsURL(addonName, service, email, pass) {
-    //-->eb26afcd-3cf2-482e-9ab1-b53c41a6adbe
-    switch (addonName) {
-        case 'QA':
-            return await service.getSecretfromKMS(email, pass, 'QAWebHook');
-        case 'PAPI-DATA-INDEX':
-        case 'PAPI INDEX': //evgeny todo
-            return await service.getSecretfromKMS(email, pass, 'PapiDataIndexWebHook');
-        case 'JOURNEY':
-        case 'JOURNEY-TRACKER':
-            return await service.getSecretfromKMS(email, pass, 'JourneyTeamsWebHook');
-        case 'SYNC':
-            return await service.getSecretfromKMS(email, pass, 'SyncTeamsWebHook');
-        case 'ADAL':
-            return await service.getSecretfromKMS(email, pass, 'ADALTeamsWebHook');
-        case 'NEBULA':
-        case 'FEBULA':
-            return await service.getSecretfromKMS(email, pass, 'NebulaTeamsWebHook');
-        case 'DIMX':
-            return await service.getSecretfromKMS(email, pass, 'DIMXTeamsWebHook');
-        case 'DATA INDEX':
-        case 'DATA-INDEX':
-            return await service.getSecretfromKMS(email, pass, 'DataIndexTeamsWebHook');
-        case 'PFS':
-        case 'PEPPERI-FILE-STORAGE':
-            return await service.getSecretfromKMS(email, pass, 'PFSTeamsWebHook');
-        case 'PNS':
-            return await service.getSecretfromKMS(email, pass, 'PNSTeamsWebHook');
-        case 'USER-DEFINED-COLLECTIONS':
-        case 'UDC':
-            return await service.getSecretfromKMS(email, pass, 'UDCTeamsWebHook');
-        case 'SCHEDULER':
-            return await service.getSecretfromKMS(email, pass, 'SchedulerTeamsWebHook');
-        case 'CPI-DATA':
-        case 'CPI DATA':
-        case 'ADDONS-CPI-DATA':
-            return await service.getSecretfromKMS(email, pass, 'CPIDataTeamsWebHook');
-        case 'CORE':
-        case 'CORE-GENERIC-RESOURCES':
-            return await service.getSecretfromKMS(email, pass, 'CORETeamsWebHook');
-        case 'RESOURCE-LIST':
-        case 'RESOURCE LIST':
-            return await service.getSecretfromKMS(email, pass, 'ResourceListTeamsWebHook');
-        case 'UDB':
-        case 'USER DEFINED BLOCKS':
-            return await service.getSecretfromKMS(email, pass, 'UDBTeamsWebHook');
-        case 'CONFIGURATIONS':
-            return await service.getSecretfromKMS(email, pass, 'CONFIGURATIONSTeamsWebHook');
-        case 'RELATED-ITEMS':
-            return await service.getSecretfromKMS(email, pass, 'RelatedItemsTeamsWebHook');
-        case 'GENERIC-RESOURCE':
-        case 'GENERIC RESOURCE':
-            return await service.getSecretfromKMS(email, pass, 'GenericResourceTeamsWebHook');
-        case 'NODE':
-        case 'CPI-NODE':
-            return await service.getSecretfromKMS(email, pass, 'CPINodeTeamsWebHook');
-        case 'CRAWLER':
-            return await service.getSecretfromKMS(email, pass, 'CRAWLERTeamsWebHook');
-        case 'ASYNCADDON':
-            return await service.getSecretfromKMS(email, pass, 'ASYNCTeamsWebHook');
-        case 'TRANSLATION':
-            return await service.getSecretfromKMS(email, pass, 'TRANSLATIONTeamsWebHook');
-    }
-}
-
-export async function newUserDependenciesTests(generalService: GeneralService, varPass: string) {
+export async function newlyCretedDistDependenciesTests(generalService: GeneralService, varPass: string) {
     const baseAddonVersionsInstallationResponseObj = await generalService.baseAddonVersionsInstallation(
         varPass,
-        testDataForInitUser,
+        systemAddons,
     );
     const chnageVersionResponseArr = baseAddonVersionsInstallationResponseObj.chnageVersionResponseArr;
     const isInstalledArr = baseAddonVersionsInstallationResponseObj.isInstalledArr;
@@ -2388,14 +2564,14 @@ export async function newUserDependenciesTests(generalService: GeneralService, v
         this.retries(1);
 
         isInstalledArr.forEach((isInstalled, index) => {
-            it(`Validate That Needed Addon Is Installed: ${Object.keys(testDataForInitUser)[index]}`, () => {
+            it(`Validate That Needed Addon Is Installed: ${Object.keys(systemAddons)[index]}`, () => {
                 expect(isInstalled).to.be.true;
             });
         });
 
-        for (const addonName in testDataForInitUser) {
-            const addonUUID = testDataForInitUser[addonName][0];
-            const version = testDataForInitUser[addonName][1];
+        for (const addonName in systemAddons) {
+            const addonUUID = systemAddons[addonName][0];
+            const version = systemAddons[addonName][1];
             const varLatestVersion = chnageVersionResponseArr[addonName][2];
             const changeType = chnageVersionResponseArr[addonName][3];
             describe(`${addonName}`, function () {
@@ -2781,13 +2957,17 @@ export async function reportToTeams(
                 message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console<br><br>Failed Tests:<br>ARE TOO MANY - CANNOT SEND SO MUCH DATA VIA TEAMS PLEASE CHECK JENKINS!`;
         }
     }
+    const teamsURL = await generalService.handleTeamsURL(addonName, email, pass);
     const bodyToSend = {
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
         Status: passingEnvs.length < 3 ? 'ERROR' : 'SUCCESS',
         Message: message2 === '' ? '~' : message2.trim(),
-        UserWebhook: await handleTeamsURL(addonName, generalService, email, pass),
+        UserWebhook: teamsURL,
     };
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications': ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await generalService.fetchStatus(
         'https://papi.pepperi.com/v1.0/system_health/notifications',
         {
@@ -2799,37 +2979,29 @@ export async function reportToTeams(
             body: JSON.stringify(bodyToSend),
         },
     );
-    if (monitoringResponse.Ok !== true) {
-        throw new Error(
-            `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(
-            `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(
-            `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
+        const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
+        await generalService.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
     }
 }
 
 export async function genericReportToTeams(addonName, env, uuid, message, user, version, generalService) {
+    const teamsURL = await generalService.handleTeamsURL(addonName, email, pass);
     const bodyToSend = {
         Name: `Nightly Regression Failure: ${addonName}, ${version}`,
         Description: `${env} user: ${user}`,
         Status: 'ERROR',
         Message: message,
-        UserWebhook: await handleTeamsURL(addonName, generalService, email, pass),
+        UserWebhook: teamsURL,
     };
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications':\n ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await generalService.fetchStatus(
         'https://papi.pepperi.com/v1.0/system_health/notifications',
         {
@@ -2841,26 +3013,14 @@ export async function genericReportToTeams(addonName, env, uuid, message, user, 
             body: JSON.stringify(bodyToSend),
         },
     );
-    if (monitoringResponse.Ok !== true) {
-        throw new Error(
-            `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(
-            `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(
-            `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
+        const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
+        await generalService.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
     }
 }
 
@@ -2907,13 +3067,17 @@ export async function reportToTeamsNeptune(
         }  ${failingEnvs.length === 0 ? '' : 'Failed On: ' + failingEnvs.join(', ')}`;
         message2 = `Test Link:<br>PROD:   https://admin-box.pepperi.com/job/${jobPathPROD}/${latestRunProd}/console<br>EU:    https://admin-box.pepperi.com/job/${jobPathEU}/${latestRunEU}/console<br>SB:    https://admin-box.pepperi.com/job/${jobPathSB}/${latestRunSB}/console`;
     }
+    const teamsURL = await generalService.handleTeamsURL(addonName, email, pass);
     const bodyToSend = {
         Name: isDev ? `${addonName} Dev Test Result Status` : `${addonName} Approvment Tests Status`,
         Description: message,
         Status: passingEnvs.length < 1 ? 'ERROR' : 'SUCCESS',
         Message: message2 === '' ? '~' : message2,
-        UserWebhook: await handleTeamsURL(addonName, generalService, email, pass),
+        UserWebhook: teamsURL,
     };
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications': ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await generalService.fetchStatus(
         'https://papi.pepperi.com/v1.0/system_health/notifications',
         {
@@ -2925,42 +3089,33 @@ export async function reportToTeamsNeptune(
             body: JSON.stringify(bodyToSend),
         },
     );
-    if (monitoringResponse.Ok !== true) {
-        throw new Error(
-            `Error: system monitor returned error OK: ${monitoringResponse.Ok}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(
-            `Error: system monitor returned error STATUS: ${monitoringResponse.Status}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(
-            `Error: system monitor returned ERROR: ${monitoringResponse.Error}, Response: ${JSON.stringify(
-                monitoringResponse,
-            )}`,
-        );
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
+        const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
+        await generalService.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
     }
 }
 
 export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, error, service: GeneralService) {
     await reportBuildEnded(addonName, addonUUID, addonVersion, service);
     const message = `${error}`;
+    const teamsURL = await service.handleTeamsURL(addonName, email, pass);
     const bodyToSend = {
         Name: `${addonName} Approvment Tests Status: Failed Due CI/CD Process Exception`,
         Description: `${addonName} - (${addonUUID}), Version:${addonVersion}, Failed!`,
         Status: 'ERROR',
         Message: message,
-        UserWebhook: await handleTeamsURL(addonName, service, email, pass),
+        UserWebhook: teamsURL,
     };
     const testAddonSecretKey = await service.getSecret()[1];
     const testAddonUUID = await service.getSecret()[0];
-    debugger;
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications':\n ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
         headers: {
@@ -2969,31 +3124,34 @@ export async function reportToTeamsMessage(addonName, addonUUID, addonVersion, e
         },
         body: JSON.stringify(bodyToSend),
     });
-    debugger;
-    if (monitoringResponse.Ok !== true) {
-        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
-    }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
+        const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
+        await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
     }
 }
 
 export async function reportToTeamsMessageNeptune(addonName, addonUUID, addonVersion, error, service: GeneralService) {
     await reportBuildEnded(addonName, addonUUID, addonVersion, service);
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Failed On: ${error}`;
+    const teamsURL = await service.handleTeamsURL(addonName, email, pass);
     const bodyToSend = {
         Name: `${addonName} - NEPTUNE Approvment Tests Status: Failed Due CI/CD Process Exception`,
         Description: message,
         Status: 'ERROR',
         Message: message,
-        UserWebhook: await handleTeamsURL(addonName, service, email, pass),
+        UserWebhook: teamsURL,
     };
     const testAddonSecretKey = await service.getSecret()[1];
     const testAddonUUID = await service.getSecret()[0];
     debugger;
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications': ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
         headers: {
@@ -3002,27 +3160,31 @@ export async function reportToTeamsMessageNeptune(addonName, addonUUID, addonVer
         },
         body: JSON.stringify(bodyToSend),
     });
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
     debugger;
-    if (monitoringResponse.Ok !== true) {
-        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
-    }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
+        const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
+        await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
     }
 }
 
 export async function reportBuildStarted(addonName, addonUUID, addonVersion, service: GeneralService) {
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Started Building`;
+    const teamsURL = await service.handleTeamsURL('QA', email, pass);
     const bodyToSend = {
         Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
         Description: message,
-        Status: 'INFO',
+        Status: 'SUCCESS',
         Message: message,
-        UserWebhook: await handleTeamsURL('QA', service, email, pass),
+        UserWebhook: teamsURL,
     };
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications': ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
         headers: {
@@ -3031,26 +3193,30 @@ export async function reportBuildStarted(addonName, addonUUID, addonVersion, ser
         },
         body: JSON.stringify(bodyToSend),
     });
-    if (monitoringResponse.Ok !== true) {
-        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
-    }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
+        const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
+        await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
     }
 }
 
 export async function reportBuildEnded(addonName, addonUUID, addonVersion, service: GeneralService) {
     const message = `${addonName} - (${addonUUID}), Version:${addonVersion}, Ended Testing`;
+    const teamsURL = await service.handleTeamsURL('QA', email, pass);
     const bodyToSend = {
         Name: `${addonName}, ${addonUUID}, ${addonVersion}`,
         Description: message,
-        Status: 'INFO',
+        Status: 'SUCCESS',
         Message: message,
-        UserWebhook: await handleTeamsURL('QA', service, email, pass),
+        UserWebhook: teamsURL,
     };
+    console.log(
+        `\n====> About To Send This Message To '/system_health/notifications': ${JSON.stringify(bodyToSend)}\n`,
+    );
     const monitoringResponse = await service.fetchStatus('https://papi.pepperi.com/v1.0/system_health/notifications', {
         method: 'POST',
         headers: {
@@ -3059,14 +3225,14 @@ export async function reportBuildEnded(addonName, addonUUID, addonVersion, servi
         },
         body: JSON.stringify(bodyToSend),
     });
-    if (monitoringResponse.Ok !== true) {
-        throw new Error(`Error: system monitor returned error OK: ${monitoringResponse.Ok}`);
-    }
-    if (monitoringResponse.Status !== 200) {
-        throw new Error(`Error: system monitor returned error STATUS: ${monitoringResponse.Status}`);
-    }
-    if (Object.keys(monitoringResponse.Error).length !== 0) {
-        throw new Error(`Error: system monitor returned ERROR: ${monitoringResponse.Error}`);
+    console.log('system health respone -> ' + JSON.stringify(monitoringResponse));
+    if (
+        monitoringResponse.Ok !== true ||
+        monitoringResponse.Status !== 200 ||
+        Object.keys(monitoringResponse.Error).length !== 0
+    ) {
+        const body = `<b> /system_health/notifications call FAILED! </b> </br> <b> Name: </b> ${bodyToSend.Name} </br> <b> Description: </b> ${bodyToSend.Description} </br> <b> Status: </b> ${bodyToSend.Status} </br> <b> Message: </b> ${bodyToSend.Message}`;
+        await service.fetchStatus(teamsURL, { method: 'POST', body: JSON.stringify({ Text: body }) });
     }
 }
 

@@ -19,11 +19,23 @@ import { RLdataPrep } from './rl_data_prep.test';
 import { VisitFlowTests } from './visit_flow.test';
 import { VFdataPrep } from './vf_data_prep.test';
 import { SurveyTests } from './survey.test';
-import { PricingBaseTests } from './Pricing/FeaturesOf05/pricing_base.test';
-import { PricingAdditionalGroupsReadonlyTests } from './Pricing/FeaturesOf05/pricing_additional_groups_readonly.test';
-import { PricingUomTests } from './Pricing/FeaturesOf06/pricing_uom.test';
-import { PricingTotalsTests } from './Pricing/FeaturesOf06/pricing_totals.test';
-import { PricingMultipleValuesTests } from './Pricing/FeaturesOf06/pricing_multiple_values.test';
+import { PricingAddonsUpsert } from './Pricing/addons_installation.test';
+import { PricingConfigUpload } from './Pricing/configuration_upload.test';
+import { PricingUdtInsertion } from './Pricing/udt_insertion.test';
+import { PricingUdtCleanup } from './Pricing/udt_cleanup.test';
+import { PricingUdcInsertion } from './Pricing/udc_insertion.test';
+import { PricingUdcCleanup } from './Pricing/udc_cleanup.test';
+import { PricingCalculatedFieldsManualLineTests } from './Pricing/FeaturesOf05/calculated_fields_manual_line.test';
+import { PricingAdditionalItemGroupsReadonlyTests } from './Pricing/FeaturesOf05/additional_item_groups_readonly.test';
+import { PricingUomTests } from './Pricing/FeaturesOf06/uom.test';
+import { PricingTotalsTests } from './Pricing/FeaturesOf06/totals.test';
+import { PricingExclusionTests } from './Pricing/FeaturesOf06/exclusion.test';
+import { PricingPartialValueTests } from './Pricing/FeaturesOf06/partial_value.test';
+import { PricingMultipleValuesTests } from './Pricing/FeaturesOf06/multiple_values.test';
+import { PricingPerformanceUdtErrorsTests } from './Pricing/FeaturesOf07/performance_udt_errors.test';
+import { PricingPackagesTests } from './Pricing/FeaturesOf07/packages.test';
+import { PricingNoUomTests } from './Pricing/FeaturesOf08/no_uom.test';
+import { PricingUdcTests } from './Pricing/FeaturesOf08/udc.test';
 import { ResourceListAbiTests } from './rl_abi.test';
 import { InstallationsTest } from './installations.test';
 import { StorybookColorPickerTests } from './storybook/storybook_color_picker.test';
@@ -50,13 +62,11 @@ import { StorybookSkeletonLoaderTests } from './storybook/storybook_skeleton_loa
 import { StorybookSliderTests } from './storybook/storybook_slider.test';
 import { StorybookTextareaTests } from './storybook/storybook_textarea.test';
 import { StorybookTextboxTests } from './storybook/storybook_textbox.test';
+import { StorybookQueryBuilderTests } from './storybook/storybook_query_builder.test';
+import { StorybookSmartFiltersTests } from './storybook/storybook_smart_filters.test';
 import { NeltPerformanceTests } from './Nelt_performance/nelt_performance.test';
-import { PricingPartialValueTests } from './Pricing/FeaturesOf06/pricing_partial_value.test';
-import { PricingExclusionTests } from './Pricing/FeaturesOf06/pricing_exclusion.test';
-import { PricingAddonsUpsert } from './Pricing/pricing_addons_installation.test';
-import { PricingConfigUpload } from './Pricing/pricing_configuration_upload.test';
-import { PricingUdtCleanup } from './Pricing/pricing_udt_cleanup.test';
-import { PricingUdtInsertion } from './Pricing/pricing_udt_insertion.test';
+import { ListsAbiTests } from './lists_abi.test';
+import { CustomCollectionsUpsert } from './custom_collections_upsert.test';
 
 export {
     LoginTests,
@@ -83,15 +93,22 @@ export {
     PricingAddonsUpsert,
     PricingConfigUpload,
     PricingUdtInsertion,
-    PricingBaseTests,
-    PricingAdditionalGroupsReadonlyTests,
+    PricingUdtCleanup,
+    PricingUdcInsertion,
+    PricingUdcCleanup,
+    PricingCalculatedFieldsManualLineTests,
+    PricingAdditionalItemGroupsReadonlyTests,
     PricingUomTests,
     PricingTotalsTests,
-    PricingMultipleValuesTests,
-    PricingPartialValueTests,
     PricingExclusionTests,
-    PricingUdtCleanup,
+    PricingPartialValueTests,
+    PricingMultipleValuesTests,
+    PricingPerformanceUdtErrorsTests,
+    PricingPackagesTests,
+    PricingNoUomTests,
+    PricingUdcTests,
     ResourceListAbiTests,
+    ListsAbiTests,
     InstallationsTest,
     StorybookAttachmentTests,
     StorybookButtonTests,
@@ -117,5 +134,8 @@ export {
     StorybookSliderTests,
     StorybookTextareaTests,
     StorybookTextboxTests,
+    StorybookQueryBuilderTests,
+    StorybookSmartFiltersTests,
     NeltPerformanceTests,
+    CustomCollectionsUpsert,
 };

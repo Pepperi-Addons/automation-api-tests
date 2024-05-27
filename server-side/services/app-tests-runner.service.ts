@@ -26,6 +26,7 @@ export class AppTest {
         this.kmsSecret = addonSK;
     }
 
+    //some addons need to run TWO tests as their approovment
     async jenkinsDoubleJobTestRunner(
         addonName: string,
         addonUUID: string,
@@ -48,16 +49,7 @@ export class AppTest {
             addonVersionProd,
             addonVersionEU,
             addonVersionSb,
-        } = await this.jenkinsSingleJobTestRunner(
-            this.adminUser,
-            this.adminPass,
-            addonName,
-            addonUUID,
-            jobPathPROD,
-            jobPathEU,
-            jobPathSB,
-            buildToken,
-        );
+        } = await this.jenkinsSingleJobTestRunner(addonName, addonUUID, jobPathPROD, jobPathEU, jobPathSB, buildToken);
         let didFailFirstTest = false;
         for (let index = 0; index < JenkinsBuildResultsAllEnvs.length; index++) {
             const resultAndEnv = JenkinsBuildResultsAllEnvs[index];
@@ -137,9 +129,8 @@ export class AppTest {
         };
     }
 
+    //some addons run only ONE test
     async jenkinsSingleJobTestRunner(
-        email,
-        pass,
         addonName: string,
         addonUUID: string,
         jobPathPROD,
@@ -350,7 +341,7 @@ export class AppTest {
         ]);
     }
 
-    async resultParser(
+    async resultParserAndReporter(
         JenkinsBuildResultsAllEnvs,
         addonEntryUUIDEu,
         addonEntryUUIDProd,
@@ -444,30 +435,30 @@ export class AppTest {
         );
 
         //4. run again on prev version to make tests green again
-        if (failingEnvs.includes('Production') || failingEnvs.includes('EU') || failingEnvs.includes('Stage')) {
-            const response = await this.getLatestAvailableVersionAndValidateAllEnvsAreSimilar(addonUUID, this.service);
-            console.log(
-                `Runnig: '${addonName}' (${addonUUID}), AGAIN AS IT FAILED ON VERSION: ${addonVersionProd} , THIS TIME On Version: ${response[0]}`,
-            );
-            const addonJenkToken = this.convertAddonNameToToken(addonName);
-            JenkinsBuildResultsAllEnvs = await Promise.all([
-                this.service.runJenkinsJobRemotely(
-                    this.kmsSecret,
-                    `${jobPathPROD}/build?token=${addonJenkToken}ApprovmentTests`,
-                    `Re-Run Of ${addonName}`,
-                ),
-                this.service.runJenkinsJobRemotely(
-                    this.kmsSecret,
-                    `${jobPathEU}/build?token=${addonJenkToken}ApprovmentTests`,
-                    `Re-Run Of ${addonName}`,
-                ),
-                this.service.runJenkinsJobRemotely(
-                    this.kmsSecret,
-                    `${jobPathSB}/build?token=${addonJenkToken}ApprovmentTests`,
-                    `Re-Run Of ${addonName}`,
-                ),
-            ]);
-        }
+        // if (failingEnvs.includes('Production') || failingEnvs.includes('EU') || failingEnvs.includes('Stage')) {
+        //     const response = await this.getLatestAvailableVersionAndValidateAllEnvsAreSimilar(addonUUID, this.service);
+        //     console.log(
+        //         `Runnig: '${addonName}' (${addonUUID}), AGAIN AS IT FAILED ON VERSION: ${addonVersionProd} , THIS TIME On Version: ${response[0]}`,
+        //     );
+        //     const addonJenkToken = this.convertAddonNameToToken(addonName);
+        //     JenkinsBuildResultsAllEnvs = await Promise.all([
+        //         this.service.runJenkinsJobRemotely(
+        //             this.kmsSecret,
+        //             `${jobPathPROD}/build?token=${addonJenkToken}ApprovmentTests`,
+        //             `Re-Run Of ${addonName}`,
+        //         ),
+        //         this.service.runJenkinsJobRemotely(
+        //             this.kmsSecret,
+        //             `${jobPathEU}/build?token=${addonJenkToken}ApprovmentTests`,
+        //             `Re-Run Of ${addonName}`,
+        //         ),
+        //         this.service.runJenkinsJobRemotely(
+        //             this.kmsSecret,
+        //             `${jobPathSB}/build?token=${addonJenkToken}ApprovmentTests`,
+        //             `Re-Run Of ${addonName}`,
+        //         ),
+        //     ]);
+        // }
     }
 
     async unavailableVersionAfterAppTestFail(

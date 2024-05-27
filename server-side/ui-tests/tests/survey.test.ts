@@ -33,6 +33,41 @@ import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
+const surveySpesificTestData = {
+    'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON --
+    'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version --
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi --
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.31.%'], //CPAS --
+    'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
+    'Key Management Service': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
+    'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
+    'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
+    'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''], // evgeny - 24/3/24; new CPI Data addon versions
+    'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //1.4.22 in the interim 1.4.X PFS version
+    'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''],
+    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.%'], //locked for survey
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'], //sync is now public
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.0.%'],
+    'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', ''],
+    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
+    'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
+    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
+    'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
+    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+    ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
+    'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
+    'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', '1.0.2'],
+    'Object Types Editor': ['04de9428-8658-4bf7-8171-b59f6327bbf1', '1.0.134'], //hardcoded because newest isn't phased and otherwise wont match new webapp
+    'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
+    'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
+    'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
+    'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
+    'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
+    'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+    'Theme Editor': ['95501678-6687-4fb3-92ab-1155f47f839e', '2.2.%'],
+    Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
+};
+
 export async function SurveyTests(email: string, password: string, client: Client, varPass) {
     const generalService = new GeneralService(client);
     let driver: Browser;
@@ -160,33 +195,35 @@ export async function SurveyTests(email: string, password: string, client: Clien
         buyerEmail = buyerEmailProd;
         buyerPass = buyerPassProd;
     }
-    await generalService.baseAddonVersionsInstallationNewSync(varPass);
+    await generalService.baseAddonVersionsInstallation(varPass, surveySpesificTestData);
     // #region Upgrade survey dependencies
 
     const testData = {
+        // using special testData object because survey users are special - they are locked on nebula versions
         'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''],
         'application-header': ['9bc8af38-dd67-4d33-beb0-7d6b39a6e98d', ''],
-        configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+        configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.%'], //locked because config 1.x.y is for open sync
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
-        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.50'],
+        'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'],
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], //locked because cpi-data 1.x.y is for open sync
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+        Crawler: ['f489d076-381f-4cf7-aa63-33c6489eb017', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'], //locked because sync 2.x.y is for open sync
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', ''],
         survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', ''],
-        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
+        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.3.7'], //slugs above 1.3.7 (1.3.8 and so on) require config  >=1.0.18 but we cant upgrade as its for open sync
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'pepperi-pack': ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''],
-        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', '0.8.%'],
+        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', '0.8.%'], //15/5/24: phased version is 0.7.50, once we'll phase 0.8.x and avaliable 0.9.x this has to change
         Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', ''],
     };
 
@@ -243,8 +280,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it(`1. Create A UDC Which Extends 'surveys' Scheme Before Creating A Survey`, async function () {
+                debugger;
                 const udcService = new UDCService(generalService);
                 const newSurveyUDCName = 'NewSurveyCollection' + generalService.generateRandomString(4);
+                console.log('about to create a new UDC named: ' + newSurveyUDCName);
                 const response = await udcService.createUDCWithFields(
                     newSurveyUDCName,
                     [],
@@ -254,6 +293,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     undefined,
                     { AddonUUID: 'dd0a85ea-7ef0-4bc1-b14f-959e0372877a', Name: 'surveys' },
                 );
+                console.log('got the response from : ' + newSurveyUDCName);
                 if (
                     generalService.papiClient['options'].baseURL.includes('staging') &&
                     response.hasOwnProperty('Fail') &&
@@ -1051,7 +1091,7 @@ async function CreateSlug(
     await webAppHeader.goHome();
 }
 
-async function CreateSlug_Web18(
+export async function CreateSlug_Web18(
     email: string,
     password: string,
     driver: Browser,

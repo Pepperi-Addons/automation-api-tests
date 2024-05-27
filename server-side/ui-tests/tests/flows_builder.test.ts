@@ -115,7 +115,7 @@ export async function FlowTests(email: string, password: string, client: Client,
         Value: 10,
     };
     const expectedResult = 'evgenyosXXX';
-    await generalService.baseAddonVersionsInstallationNewSync(varKey);
+    await generalService.baseAddonVersionsInstallationNewSyncNoNebula(varKey);
     // #region Upgrade survey dependencies
 
     const testData = {
@@ -459,4 +459,94 @@ export async function FlowTests(email: string, password: string, client: Client,
             });
         });
     });
+}
+
+export async function createFlowUsingE2E(
+    driver,
+    generalService,
+    email,
+    password,
+    scriptArray: any[],
+    newFlowSteps: any[],
+    flowToAdd: Flow,
+) {
+    //1. configure the scripts
+    const webAppLoginPage = new WebAppLoginPage(driver);
+    await webAppLoginPage.login(email, password);
+    const scriptEditor = new ScriptEditor(driver);
+    const scriptUUIDsArray: any[] = [];
+    for (let index = 0; index < scriptArray.length; index++) {
+        const script = scriptArray[index];
+        scriptUUIDsArray.push(
+            await scriptEditor.configureScript(
+                script.actualScript,
+                script.scriptName,
+                script.scriptDesc,
+                [],
+                generalService,
+            ),
+        );
+        newFlowSteps[index].Configuration.runScriptData.ScriptKey = scriptUUIDsArray[index];
+    }
+    const webAppHomePage = new WebAppHomePage(driver);
+    await webAppHomePage.returnToHomePage();
+    //2. create the flow
+    //enter flows from settings
+    const flowService = new FlowService(driver);
+    const isFlowBuilderMainPageShown = await flowService.enterFlowBuilderSettingsPage();
+    expect(isFlowBuilderMainPageShown).to.equal(true);
+    //add flow modal
+    const isAddFlowModalOpened = await flowService.openAddFlowPage();
+    expect(isAddFlowModalOpened).to.equal(true);
+    const [isIternalPageOfFlowShown, flowKey_] = await flowService.enterNewFlowPage(flowToAdd);
+    const flowKey = flowKey_;
+    expect(isIternalPageOfFlowShown).to.equal(true);
+    expect(flowKey).to.be.a.string;
+    expect(flowKey.length).to.equal(36);
+    const isGeneralDataShownCorrectly = await flowService.enterGeneralTabAndSeeValues(flowToAdd);
+    expect(isGeneralDataShownCorrectly).to.equal(true);
+    //3. add parameters by given flow
+    const isParamTabShown = await flowService.enterParamTab();
+    expect(isParamTabShown).to.equal(true);
+    if (flowToAdd.Params.length !== 0) {
+        const [isModalShownCorrectly, saveButtonDisability, areValuesSimilar] = await flowService.addParam(flowToAdd);
+        expect(isModalShownCorrectly).to.equal(true);
+        expect(saveButtonDisability).to.equal('true');
+        expect(areValuesSimilar).to.equal(true);
+    }
+    const isFlowPagePresentedAfterSaving = await flowService.saveFlow();
+    expect(isFlowPagePresentedAfterSaving).to.equal(true);
+    //4. add steps using API and validate by UI
+    const stepsResponse = await flowService.addStepViaAPI(generalService, flowKey, flowToAdd.Name, newFlowSteps);
+    expect(stepsResponse.Ok).to.equal(true);
+    expect(stepsResponse.Status).to.equal(200);
+    const stepsObjectFromAPI = stepsResponse.Body.Steps;
+    for (let index = 0; index < stepsObjectFromAPI.length; index++) {
+        const stepFromAPI = stepsObjectFromAPI[index];
+        const stepInput = newFlowSteps[index];
+        expect(stepFromAPI.Type).to.equal(stepInput.Type);
+        expect(stepFromAPI.Name).to.equal(stepInput.Name);
+        expect(stepFromAPI.Disabled).to.equal(stepInput.Disabled);
+        expect(stepFromAPI.Relation).to.deep.equal(stepInput.Relation);
+        expect(stepFromAPI.Configuration).to.deep.equal(stepInput.Configuration);
+    }
+    driver.sleep(10000); //wait for eveything to sync or whatever
+    //-> enter flow
+    await flowService.enterFlowBySearchingName(flowToAdd.Name);
+    //->validate all steps are there with correct names
+    for (let index = 0; index < newFlowSteps.length; index++) {
+        const step = newFlowSteps[index];
+        const isCreatedSecsefully = await flowService.validateStepCreatedByApi(step.Name, index + 1);
+        expect(isCreatedSecsefully).to.equal(true);
+    }
+    //-> validate the script inside the step and its params
+    for (let index = 0; index < newFlowSteps.length; index++) {
+        const step = newFlowSteps[index];
+        const isCreatedSuccessfully = await flowService.validateStepScript(index + 1, step, generalService);
+        expect(isCreatedSuccessfully).to.equal(true);
+        await flowService.closeScriptModal();
+    }
+    //->save
+    await flowService.saveFlow();
+    return [flowKey, flowToAdd.Name];
 }

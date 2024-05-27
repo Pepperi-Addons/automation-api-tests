@@ -27,6 +27,7 @@ export class NeltPerformance extends AddonPage {
     public Image_Label: By = By.xpath(`//pep-list//label[@id="Image"]`);
     public ListNumberOfResults: By = By.xpath(`//list-total//span[contains(@class,"bold number")]`);
     public PepList: By = By.xpath(`//pep-list`);
+    public PepList_title_no_data: By = By.xpath(`//pep-list//p[contains(@class,"title")][contains(@class,"no-data")]`);
     public ListRow: By = By.xpath(`//pep-list//virtual-scroller//fieldset[contains(@class,"table-row-fieldset")]`);
     public Search_Input: By = By.xpath('//input[@id="searchInput"]');
     public Search_Magnifier_Button: By = By.xpath('//search//pep-icon[@name="system_search"]');
@@ -97,12 +98,18 @@ export class NeltPerformance extends AddonPage {
     public PepDialog_buttonsContainer: By = By.xpath(
         `${this.PepDialog.value}//div[contains(@class,"mat-dialog-actions")]/div`,
     );
-    public PepDialog_Cancel_button: By = By.xpath(
-        '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Cancel")]/parent::button',
-    );
-    public PepDialog_Continue_button: By = By.xpath(
-        '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Continue")]/parent::button',
-    );
+    public PepDialog_Cancel_button: By = this.getPepDialogButtonByText('Cancel');
+    //By.xpath(
+    // '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Cancel")]/parent::button',
+    // );
+    public PepDialog_Continue_button: By = this.getPepDialogButtonByText('Continue');
+    // By.xpath(
+    //     '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"Continue")]/parent::button',
+    // );
+    public PepDialog_OK_button: By = this.getPepDialogButtonByText('OK');
+    // By.xpath(
+    //     '//mat-dialog-container//pep-dialog/div[3]//span[contains(text(),"OK")]/parent::button',
+    // );
 
     // Specific selectors for Nelt //
     public NeltLogo_Home: By = By.xpath('//pepperi-header//nav//a[@id="navImgLogo"]');
@@ -116,6 +123,10 @@ export class NeltPerformance extends AddonPage {
     public Broj_dana_trajanja_ekstenzije_Field: By = By.xpath(
         '//mat-label[contains(@title,"Broj ")]/ancestor::pep-textbox//mat-form-field//input',
     );
+    public Razlog_za_van_rute_selectButton: By = By.xpath(
+        '//span[@title="Razlog za van rute"]/ancestor::pep-select/div',
+    );
+    public Valuta_placanja_selectButton: By = By.xpath('//span[@title="Valuta placanja"]/ancestor::pep-select/div');
     public Razlog_povrata_selectButton: By = By.xpath('//span[@id="TSAReturnReasonSelector"]/ancestor::pep-select/div');
     public Razlog_povecanja_DropdownOptionsField: By = By.xpath('//mat-select[@id="TSAReason"]');
 
@@ -187,6 +198,20 @@ export class NeltPerformance extends AddonPage {
     public SmartFilter_Principal_ApplyButton: By = By.xpath(
         `${this.SmartFilter_Principal_Nestle_label.value}//span[contains(@class,"mat-checkbox-label")]/div[contains(@class,"title")]/span[2]`,
     );
+
+    // Survey
+    public Survey_container: By = By.xpath('//survey-builder-internal');
+    public Survey_question: By = By.xpath('//survey-question-generator');
+    public Survey_question_input: By = By.xpath('//pep-textbox//input');
+
+    public getSurveyQuestionInputByIndex(index: number) {
+        return By.xpath(`${this.Survey_question.value}[${index}]${this.Survey_question_input.value}`);
+    }
+    public getSurveyButtonByText(text: string) {
+        return By.xpath(
+            `${this.Survey_container.value}//pep-top-bar//span[contains(@title,"${text}")]/ancestor::pep-button`,
+        );
+    }
 
     public getPepDialogButtonByText(text: string) {
         return By.xpath(`${this.PepDialog_buttonsContainer.value}//span[contains(text(),"${text}")]/parent::button`);

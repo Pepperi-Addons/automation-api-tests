@@ -91,7 +91,9 @@ export class OrderPage extends WebAppList {
 
     public PricePartial_Value: By = By.xpath('//span[@id="TSAPricePartial"]');
 
-    public Cart_ContinueOrdering_Button: By = By.xpath('//button[@data-qa="Continue ordering"]');
+    public Cart_ContinueOrdering_Button: By = By.xpath(
+        '//pep-top-bar//button[@data-qa="Continue ordering"]/parent::pep-button',
+    );
     public Cart_Headline_Results: By = By.xpath('//list-total');
     public Cart_Headline_Results_Number: By = By.xpath('//pep-list-total//span[contains(@class,"bold number")]');
     public OrderCenter_Headline_Results_Number: By = By.xpath('//list-total//span[contains(@class,"bold number")]');
@@ -240,7 +242,7 @@ export class OrderPage extends WebAppList {
         //1. click on btn to open drop down
         await this.clickViewMenu();
         //2. pick wanted view
-        const injectedViewType = this.ViewTypeOption.value.slice().replace('|textToFill|', viewType);
+        const injectedViewType = this.ViewTypeOption.value.replace('|textToFill|', viewType);
         await this.browser.click(By.xpath(injectedViewType));
         await this.isSpinnerDone();
     }
@@ -250,7 +252,7 @@ export class OrderPage extends WebAppList {
         //1. click on btn to open drop down
         await this.clickViewMenu();
         //2. pick wanted view
-        const injectedViewType = this.ViewTypeOption.value.slice().replace('|textToFill|', viewType);
+        const injectedViewType = this.ViewTypeOption.value.replace('|textToFill|', viewType);
         await this.browser.click(By.xpath(injectedViewType));
         await this.browser.click(this.Cart_Headline_Results_Number);
         await this.isSpinnerDone();

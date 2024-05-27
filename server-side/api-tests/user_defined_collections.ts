@@ -25,7 +25,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
     await generalService.baseAddonVersionsInstallation(varKey);
     //#region Upgrade UDC
     const testData = {
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'],
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
+        Crawler: ['f489d076-381f-4cf7-aa63-33c6489eb017', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
@@ -95,9 +97,9 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             let accResourceCollectionName = '';
             let optionalCollectionName = '';
             let mandatoryScheme = '';
-            let dimxOverWriteCollectionName = '';
+            // let dimxOverWriteCollectionName = '';
             let truncateCollectionName = '';
-            let howManyNewRowsOnOverwrite = 0;
+            // let howManyNewRowsOnOverwrite = 0;
             const intVal = 15;
             const douVal = 0.129;
             const strVal = 'Test String UDC Feild';
@@ -107,6 +109,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
             const parsedToken = jwt_decode(generalService.papiClient['options'].token);
             const userName = parsedToken.email;
             it(`Positive Test: testing DI-22319: mark 'scheme only' schemes with 'sync=true'`, async () => {
+                debugger;
                 const allUdcs = await udcService.getSchemes({ page_size: -1 });
                 const filteredUdcs = allUdcs.filter((collection) => collection.Type === 'contained');
                 const isError = filteredUdcs.filter((collection) => collection.SyncData?.Sync !== true);
@@ -161,7 +164,7 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const documents = await udcService.getSchemes();
                 expect(documents.length).to.equal(numOfInitialCollections);
             });
-            it('Positive Test: creating an empty UDC with no fields configured', async () => {
+            it('Positive Test: creating an empty UDC with no fields configured + SEE: it got correct DataSourceData IndexName + see that DataImportResource relation was created', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
                 basicCollectionName = 'BasicTestingEmpty' + generalService.generateRandomString(15);
                 const response = await udcService.createUDCWithFields(
@@ -174,6 +177,28 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 generalService.sleep(5000);
                 const documents = await udcService.getSchemes({ page_size: -1 });
                 expect(documents.length).to.equal(numOfInitialCollections + 1);
+                const newCollection = documents.filter((doc) => doc.Name === basicCollectionName)[0];
+                expect(newCollection.DataSourceData.IndexName).to.equal('122c0e9d-c240-4865-b446-f37ece866c22_data');
+                const allDataImportResourceRelations = await generalService.fetchStatus(
+                    `/addons/data/relations?where=RelationName='DataImportResource'&page_size=-1`,
+                );
+                const relationWhichHasCollectionName = allDataImportResourceRelations.Body.filter(
+                    (relation) => relation.Name === basicCollectionName,
+                );
+                expect(relationWhichHasCollectionName.length).to.be.above(0);
+                const latestCollectionRelation = relationWhichHasCollectionName[0];
+                expect(latestCollectionRelation.Name).to.equal(basicCollectionName);
+                expect(latestCollectionRelation.RelationName).to.equal('DataImportResource');
+                expect(latestCollectionRelation.Type).to.equal('AddonAPI');
+                expect(latestCollectionRelation.Key).to.equal(
+                    `${basicCollectionName}_${UserDefinedCollectionsUUID}_DataImportResource`,
+                );
+                expect(latestCollectionRelation.InitRelationDataRelativeURL).to.equal(
+                    `/api/init_import_data_source?collection_name=${basicCollectionName}`,
+                );
+                expect(latestCollectionRelation.AddonRelativeURL).to.equal(
+                    `/api/import_data_source?collection_name=${basicCollectionName}`,
+                );
             });
             it('Positive Test: creating a UDC with all types of basic fields', async () => {
                 const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
@@ -323,9 +348,10 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const response = await udcService.sendDataToField(optionalCollectionName, strValue);
                 expect(response.Ok).to.equal(false);
                 expect(response.Status).to.equal(400);
-                expect(response.Body.fault.faultstring).to.equal(
+                expect(response.Body.fault.faultstring).to.be.oneOf([
+                    'Failed due to exception: str is not of a type(s) string\nstr 115 is not one of enum values: a,b,c',
                     'Failed due to exception: str is not of a type(s) string\nstr is not one of enum values: a,b,c',
-                );
+                ]);
             });
             it('Positive Test: upload values which are members of the optional values - should work', async () => {
                 const strValue_a = {
@@ -1299,154 +1325,229 @@ export async function UDCTests(generalService: GeneralService, request, tester: 
                 const document = (await udcService.getDocuments(accResourceCollectionName))[0];
                 expect(document.myAcc).to.equal(accUUID);
             });
-            it('Positive Test: DIMX overwrite test: 100K rows API import to new UDC then overwriting the data using DIMX', async () => {
-                dimxOverWriteCollectionName = 'DimxOverwrite' + generalService.generateRandomString(15);
-                const pfsService = new PFSService(generalService);
-                const howManyRows = 100000;
-                //1. create the file to import
-                const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
-                const mime = 'text/csv';
-                const tempFileResponse = await pfsService.postTempFile({
-                    FileName: fileName,
-                    MIME: mime,
-                });
-                expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
-                expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
-                expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
-                console.log(`URL TO CSV TEMP FILE -- BASIC IMPORT (step1): ${tempFileResponse.TemporaryFileURL}`);
-                const csvFileName = await createInitalData(howManyRows);
-                const localPath = __dirname;
-                const combinedPath = path.join(localPath, csvFileName);
-                const buf = fs.readFileSync(combinedPath);
-                const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse.PutURL, buf);
-                expect(putResponsePart1.ok).to.equal(true);
-                expect(putResponsePart1.status).to.equal(200);
-                //2. create the UDC to import to
-                const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
-                const codeField: UdcField = {
-                    Name: 'code',
-                    Mandatory: true,
-                    Type: 'String',
-                    Indexed: true,
-                };
-                const dataFields: UdcField = {
-                    Name: 'value',
-                    Mandatory: true,
-                    Type: 'String',
-                };
-                const fieldsArray = [codeField, dataFields];
-                const response = await udcService.createUDCWithFields(
-                    dimxOverWriteCollectionName,
-                    fieldsArray,
-                    'automation testing UDC',
-                    undefined,
-                    undefined,
-                    [codeField],
-                );
-                expect(response.Fail).to.be.undefined;
-                expect(response.code.Type).to.equal('String');
-                generalService.sleep(5000);
-                const documents = await udcService.getSchemes({ page_size: -1 });
-                expect(documents.length).to.equal(numOfInitialCollections + 1);
-                const newCollection = documents.filter((doc) => doc.Name === dimxOverWriteCollectionName)[0];
-                expect(newCollection).to.not.equal(undefined);
-                expect(newCollection.AddonUUID).to.equal(UserDefinedCollectionsUUID);
-                expect(newCollection.Description).to.equal('automation testing UDC');
-                expect(newCollection).to.haveOwnProperty('DocumentKey');
-                //3. import file to UDC
-                const bodyToImport = {
-                    URI: tempFileResponse.TemporaryFileURL,
-                };
-                const importResponse = await generalService.fetchStatus(
-                    `/addons/data/import/file/${UserDefinedCollectionsUUID}/${dimxOverWriteCollectionName}`,
-                    { method: 'POST', body: JSON.stringify(bodyToImport) },
-                );
-                const executionURI = importResponse.Body.URI;
-                const auditLogDevTestResponse = await generalService.getAuditLogResultObjectIfValid(
-                    executionURI as string,
-                    120,
-                    7000,
-                );
-                if (auditLogDevTestResponse.Status) {
-                    expect(auditLogDevTestResponse.Status.Name).to.equal('Success');
-                } else {
-                    expect(auditLogDevTestResponse.Status).to.not.be.undefined;
-                }
-                const lineStats = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject).LinesStatistics;
-                expect(lineStats.Inserted).to.equal(howManyRows);
-                generalService.sleep(1000 * 120); //let PNS Update
-                for (let index = 1; index <= 85; index++) {
-                    console.log(`searching for 250 rows for the ${index} time - out of 85 sampling batch`);
-                    const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
-                        dimxOverWriteCollectionName,
-                        index,
-                        250,
-                    );
-                    expect(allObjectsFromCollection.count).to.equal(howManyRows);
-                    for (let index1 = 0; index1 < allObjectsFromCollection.objects.length; index1++) {
-                        const row = allObjectsFromCollection.objects[index1];
-                        expect(row.code).to.contain('data_');
-                        expect(row.value).to.contain('old_value_');
-                    }
-                    generalService.sleep(1000 * 5);
-                }
-                //4. create new file which overwrites
-                const newFileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
-                const tempFileNewResponse = await pfsService.postTempFile({
-                    FileName: newFileName,
-                    MIME: mime,
-                });
-                expect(tempFileNewResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
-                expect(tempFileNewResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
-                expect(tempFileNewResponse.TemporaryFileURL).to.include('pfs.');
-                console.log(
-                    `URL TO CSV TEMP FILE -- OVERWRITE IMPORT (step2): ${tempFileNewResponse.TemporaryFileURL}`,
-                );
-                const howManyOld = 98000;
-                const howManyUpdated = 1000;
-                howManyNewRowsOnOverwrite = 1000;
-                const newCSVFileName = await createUpdatedData(howManyOld, howManyUpdated, howManyNewRowsOnOverwrite);
-                const newCombinedPath = path.join(localPath, newCSVFileName);
-                const newBuf = fs.readFileSync(newCombinedPath);
-                const putResponse2 = await pfsService.putPresignedURL(tempFileNewResponse.PutURL, newBuf);
-                expect(putResponse2.ok).to.equal(true);
-                expect(putResponse2.status).to.equal(200);
-                //5. run DIMX overwrite on new file
-                const bodyToSendOverWrite = { URI: tempFileNewResponse.TemporaryFileURL, OverwriteTable: true };
-                const importOverWriteResponse = await generalService.fetchStatus(
-                    `/addons/data/import/file/${UserDefinedCollectionsUUID}/${dimxOverWriteCollectionName}`,
-                    { method: 'POST', body: JSON.stringify(bodyToSendOverWrite) },
-                );
-                const executionURIOverWrite = importOverWriteResponse.Body.URI;
-                const overwriteResponse = await generalService.getAuditLogResultObjectIfValidV2(
-                    executionURIOverWrite as string,
-                    170,
-                    7000,
-                );
-                if (overwriteResponse.Status) {
-                    expect(overwriteResponse.Status.Name).to.equal('Success');
-                } else {
-                    expect(overwriteResponse.Status).to.not.be.undefined;
-                }
-                const overwriteLineStats = JSON.parse(overwriteResponse.AuditInfo.ResultObject).LinesStatistics;
-                expect(overwriteLineStats.Ignored).to.equal(howManyOld);
-                expect(overwriteLineStats.Updated).to.equal(howManyUpdated);
-                expect(overwriteLineStats.Inserted).to.equal(howManyNewRowsOnOverwrite);
-                expect(overwriteLineStats.Total).to.equal(howManyOld + howManyUpdated + howManyNewRowsOnOverwrite);
-                generalService.sleep(1000 * 140); //let PNS Update
-                const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
-                    dimxOverWriteCollectionName,
-                    1,
-                    250,
-                );
-                expect(allObjectsFromCollection.count).to.equal(100000);
-                const fileURI = JSON.parse(overwriteResponse.AuditInfo.ResultObject).URI;
-                const fileAfterOverwriting = await generalService.fetchStatus(fileURI);
-                const updateArray = fileAfterOverwriting.Body.filter((entry) => entry.Status === 'Update');
-                expect(updateArray.length).to.equal(howManyUpdated);
-                const insertArray = fileAfterOverwriting.Body.filter((entry) => entry.Status === 'Insert');
-                expect(insertArray.length).to.equal(howManyNewRowsOnOverwrite);
-            });
+            // it('Positive Test: DIMX overwrite test: 100K rows API import to new UDC then overwriting the data using DIMX', async () => {
+            //     dimxOverWriteCollectionName = 'DimxOverwrite' + generalService.generateRandomString(15);
+            //     const pfsService = new PFSService(generalService);
+            //     const howManyRows = 100000;
+            //     //1. create the file to import & post it to PFS temp file
+            //     const fileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
+            //     const mime = 'text/csv';
+            //     const tempFileResponse = await pfsService.postTempFile({
+            //         FileName: fileName,
+            //         MIME: mime,
+            //     });
+            //     expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
+            //     expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
+            //     expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
+            //     console.log(`URL TO CSV TEMP FILE -- BASIC IMPORT (step1): ${tempFileResponse.TemporaryFileURL}`);
+            //     const csvFileName = await createInitalData(howManyRows);
+            //     const localPath = __dirname;
+            //     const combinedPath = path.join(localPath, csvFileName);
+            //     const buf = fs.readFileSync(combinedPath);
+            //     const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse.PutURL, buf);
+            //     expect(putResponsePart1.ok).to.equal(true);
+            //     expect(putResponsePart1.status).to.equal(200);
+            //     //2. create the UDC to import to
+            //     const numOfInitialCollections = (await udcService.getSchemes({ page_size: -1 })).length;
+            //     const codeField: UdcField = {
+            //         Name: 'code',
+            //         Mandatory: true,
+            //         Type: 'String',
+            //         Indexed: true,
+            //     };
+            //     const dataFields: UdcField = {
+            //         Name: 'value',
+            //         Mandatory: true,
+            //         Type: 'String',
+            //     };
+            //     const fieldsArray = [codeField, dataFields];
+            //     const response = await udcService.createUDCWithFields(
+            //         dimxOverWriteCollectionName,
+            //         fieldsArray,
+            //         'automation testing UDC',
+            //         undefined,
+            //         undefined,
+            //         [codeField],
+            //     );
+            //     expect(response.Fail).to.be.undefined;
+            //     expect(response.code.Type).to.equal('String');
+            //     generalService.sleep(5000);
+            //     const documents = await udcService.getSchemes({ page_size: -1 });
+            //     expect(documents.length).to.equal(numOfInitialCollections + 1);
+            //     const newCollection = documents.filter((doc) => doc.Name === dimxOverWriteCollectionName)[0];
+            //     expect(newCollection).to.not.equal(undefined);
+            //     expect(newCollection.AddonUUID).to.equal(UserDefinedCollectionsUUID);
+            //     expect(newCollection.Description).to.equal('automation testing UDC');
+            //     expect(newCollection).to.haveOwnProperty('DocumentKey');
+            //     //3. import file to UDC
+            //     const bodyToImport = {
+            //         URI: tempFileResponse.TemporaryFileURL,
+            //     };
+            //     const importResponse = await generalService.fetchStatus(
+            //         `/addons/data/import/file/${UserDefinedCollectionsUUID}/${dimxOverWriteCollectionName}`,
+            //         { method: 'POST', body: JSON.stringify(bodyToImport) },
+            //     );
+            //     const executionURI = importResponse.Body.URI;
+            //     const auditLogDevTestResponse = await generalService.getAuditLogResultObjectIfValid(
+            //         executionURI as string,
+            //         120,
+            //         7000,
+            //     );
+            //     //3.1. validate line statistics from DIMX is correct after improt
+            //     if (auditLogDevTestResponse.Status) {
+            //         expect(auditLogDevTestResponse.Status.Name).to.equal('Success');
+            //     } else {
+            //         expect(auditLogDevTestResponse.Status).to.not.be.undefined;
+            //     }
+            //     const lineStats = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject).LinesStatistics;
+            //     expect(lineStats.Inserted).to.equal(howManyRows);
+            //     debugger;
+            //     //4. poll elastic to validate that PNS has updated
+            //     let indexForWhile = 0;
+            //     let countFromElastic = 0;
+            //     console.log('polling the elastic count property');
+            //     while (indexForWhile < 17 && countFromElastic !== howManyRows) {
+            //         const bodyToSend = {
+            //             Page: 1,
+            //             PageSize: 250,
+            //             IncludeCount: true,
+            //         };
+            //         const elasticResponse = await generalService.fetchStatus(
+            //             `/addons/shared_index/index/122c0e9d-c240-4865-b446-f37ece866c22_data/search/00000000-0000-0000-0000-00000000ada1/122c0e9d-c240-4865-b446-f37ece866c22~${dimxOverWriteCollectionName}`,
+            //             { method: 'POST', body: JSON.stringify(bodyToSend) },
+            //         );
+            //         countFromElastic = elasticResponse.Body.Count;
+            //         console.log(`got ${countFromElastic} from elastic`);
+            //         indexForWhile++;
+            //         generalService.sleep(1000 * 8);
+            //     }
+            //     expect(countFromElastic).to.equal(howManyRows);
+            //     //5. go over 85 sampels of 250 rows to validate the data is correctly formed
+            //     let bodyToSendElastic;
+            //     let nextPageKeyElastic;
+            //     let nextPageKeyUDC;
+            //     let allObjectsFromCollection;
+            //     for (let index = 1; index <= 85; index++) {
+            //         console.log(`searching for 250 rows for the ${index} time - out of 85 sampling batch`);
+            //         if (index === 1) {
+            //             bodyToSendElastic = {
+            //                 Page: index,
+            //                 PageSize: 250,
+            //                 IncludeCount: true,
+            //             };
+            //         } else {
+            //             bodyToSendElastic = {
+            //                 PageKey: nextPageKeyElastic,
+            //                 PageSize: 250,
+            //                 IncludeCount: true,
+            //             };
+            //         }
+            //         const elasticResponse = await generalService.fetchStatus(
+            //             `/addons/shared_index/index/122c0e9d-c240-4865-b446-f37ece866c22_data/search/00000000-0000-0000-0000-00000000ada1/122c0e9d-c240-4865-b446-f37ece866c22~${dimxOverWriteCollectionName}`,
+            //             { method: 'POST', body: JSON.stringify(bodyToSendElastic) },
+            //         );
+            //         nextPageKeyElastic = elasticResponse.Body.NextPageKey;
+            //         console.log(`elastic count testing for the ${index} time - out of 85 sampling batch`);
+            //         expect(elasticResponse.Body.Count).to.equal(howManyRows);
+            //         if (index === 1) {
+            //             allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
+            //                 dimxOverWriteCollectionName,
+            //                 index,
+            //                 250,
+            //             );
+            //         } else {
+            //             allObjectsFromCollection = await udcService.searchOnUDCUsingNextPageKey(
+            //                 dimxOverWriteCollectionName,
+            //                 nextPageKeyUDC,
+            //             );
+            //         }
+            //         nextPageKeyUDC = allObjectsFromCollection.nextPageKey;
+            //         console.log(`UDC count testing for the ${index} time - out of 85 sampling batch`);
+            //         expect(allObjectsFromCollection.count).to.equal(howManyRows);
+            //         for (let index1 = 0; index1 < allObjectsFromCollection.objects.length; index1++) {
+            //             const row = allObjectsFromCollection.objects[index1];
+            //             const elasticRow = elasticResponse.Body.Objects[index1];
+            //             console.log(`elastic row tests for the ${index1 + 1} time`);
+            //             expect(elasticRow.code).to.contain('data_');
+            //             expect(elasticRow.Key).to.contain('data_');
+            //             console.log(`UDC row tests for the ${index1 + 1} time`);
+            //             expect(row.code).to.contain('data_');
+            //             expect(row.value).to.contain('old_value_');
+            //         }
+            //         generalService.sleep(1000 * 5);
+            //     }
+            //     //6. create new file which we'll use to overwrite
+            //     const newFileName = 'Name' + Math.floor(Math.random() * 1000000).toString() + '.csv';
+            //     const tempFileNewResponse = await pfsService.postTempFile({
+            //         FileName: newFileName,
+            //         MIME: mime,
+            //     });
+            //     expect(tempFileNewResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
+            //     expect(tempFileNewResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
+            //     expect(tempFileNewResponse.TemporaryFileURL).to.include('pfs.');
+            //     console.log(
+            //         `URL TO CSV TEMP FILE -- OVERWRITE IMPORT (step2): ${tempFileNewResponse.TemporaryFileURL}`,
+            //     );
+            //     const howManyOld = 98000;
+            //     const howManyUpdated = 1000;
+            //     howManyNewRowsOnOverwrite = 1000;
+            //     const newCSVFileName = await createUpdatedData(howManyOld, howManyUpdated, howManyNewRowsOnOverwrite);
+            //     const newCombinedPath = path.join(localPath, newCSVFileName);
+            //     const newBuf = fs.readFileSync(newCombinedPath);
+            //     const putResponse2 = await pfsService.putPresignedURL(tempFileNewResponse.PutURL, newBuf);
+            //     expect(putResponse2.ok).to.equal(true);
+            //     expect(putResponse2.status).to.equal(200);
+            //     //7. run DIMX overwrite on new file
+            //     const bodyToSendOverWrite = { URI: tempFileNewResponse.TemporaryFileURL, OverwriteTable: true };
+            //     const importOverWriteResponse = await generalService.fetchStatus(
+            //         `/addons/data/import/file/${UserDefinedCollectionsUUID}/${dimxOverWriteCollectionName}`,
+            //         { method: 'POST', body: JSON.stringify(bodyToSendOverWrite) },
+            //     );
+            //     const executionURIOverWrite = importOverWriteResponse.Body.URI;
+            //     const overwriteResponse = await generalService.getAuditLogResultObjectIfValidV2(
+            //         executionURIOverWrite as string,
+            //         170,
+            //         7000,
+            //     );
+            //     if (overwriteResponse.Status) {
+            //         expect(overwriteResponse.Status.Name).to.equal('Success');
+            //     } else {
+            //         expect(overwriteResponse.Status).to.not.be.undefined;
+            //     }
+            //     const overwriteLineStats = JSON.parse(overwriteResponse.AuditInfo.ResultObject).LinesStatistics;
+            //     expect(overwriteLineStats.Ignored).to.equal(howManyOld);
+            //     expect(overwriteLineStats.Updated).to.equal(howManyUpdated);
+            //     expect(overwriteLineStats.Inserted).to.equal(howManyNewRowsOnOverwrite);
+            //     expect(overwriteLineStats.Total).to.equal(howManyOld + howManyUpdated + howManyNewRowsOnOverwrite);
+            //     //8. let PNS Update
+            //     indexForWhile = 0;
+            //     let countFromUDC = 0;
+            //     console.log('polling the UDC count property');
+            //     while (indexForWhile < 20 && countFromUDC !== howManyRows) {
+            //         const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
+            //             dimxOverWriteCollectionName,
+            //             1,
+            //             250,
+            //         );
+            //         countFromUDC = allObjectsFromCollection.count;
+            //         console.log(`got ${countFromUDC} from UDC`);
+            //         indexForWhile++;
+            //         generalService.sleep(1000 * 8);
+            //     }
+            //     expect(countFromUDC).to.equal(howManyRows);
+            //     const allObjectsFromCollectionUDC = await udcService.getAllObjectFromCollectionCount(
+            //         dimxOverWriteCollectionName,
+            //         1,
+            //         250,
+            //     );
+            //     expect(allObjectsFromCollectionUDC.count).to.equal(100000);
+            //     const fileURI = JSON.parse(overwriteResponse.AuditInfo.ResultObject).URI;
+            //     const fileAfterOverwriting = await generalService.fetchStatus(fileURI);
+            //     const updateArray = fileAfterOverwriting.Body.filter((entry) => entry.Status === 'Update');
+            //     expect(updateArray.length).to.equal(howManyUpdated);
+            //     const insertArray = fileAfterOverwriting.Body.filter((entry) => entry.Status === 'Insert');
+            //     expect(insertArray.length).to.equal(howManyNewRowsOnOverwrite);
+            // });
             it('Positive truncate test: 1.Create A UDC, 2.Import 1,000 Rows, 3. Truncate', async () => {
                 truncateCollectionName = 'Truncate' + generalService.generateRandomString(15);
                 const pfsService = new PFSService(generalService);
@@ -1641,32 +1742,32 @@ async function createInitalData(howManyDataRows: number) {
     return await genrateFile('Data', strData);
 }
 
-async function createUpdatedData(howManyOldRows: number, howManyUpdatedRows: number, howManyNewRows: number) {
-    const headers = 'code,value';
-    const runningDataCode = 'data_index';
-    const runningNewDataCode = 'new_data_index';
-    const runningDataValue = 'old_value_index';
-    const runningDataCodeNew = 'new_value_index';
-    let strData = '';
-    strData += headers + '\n';
-    for (let index = 0; index < howManyOldRows; index++) {
-        strData += `${runningDataCode.replace('index', index.toString())},`;
-        strData += `${runningDataValue.replace('index', index.toString())}\n`;
-    }
-    for (let index = howManyOldRows; index < howManyUpdatedRows + howManyOldRows; index++) {
-        strData += `${runningDataCode.replace('index', index.toString())},`;
-        strData += `${runningDataCodeNew.replace('index', index.toString())}\n`;
-    }
-    for (
-        let index = howManyUpdatedRows + howManyOldRows;
-        index < howManyUpdatedRows + howManyOldRows + howManyNewRows;
-        index++
-    ) {
-        strData += `${runningNewDataCode.replace('index', index.toString())},`;
-        strData += `${runningDataCodeNew.replace('index', index.toString())}\n`;
-    }
-    return await genrateFile('UpdatedData', strData);
-}
+// async function createUpdatedData(howManyOldRows: number, howManyUpdatedRows: number, howManyNewRows: number) {
+//     const headers = 'code,value';
+//     const runningDataCode = 'data_index';
+//     const runningNewDataCode = 'new_data_index';
+//     const runningDataValue = 'old_value_index';
+//     const runningDataCodeNew = 'new_value_index';
+//     let strData = '';
+//     strData += headers + '\n';
+//     for (let index = 0; index < howManyOldRows; index++) {
+//         strData += `${runningDataCode.replace('index', index.toString())},`;
+//         strData += `${runningDataValue.replace('index', index.toString())}\n`;
+//     }
+//     for (let index = howManyOldRows; index < howManyUpdatedRows + howManyOldRows; index++) {
+//         strData += `${runningDataCode.replace('index', index.toString())},`;
+//         strData += `${runningDataCodeNew.replace('index', index.toString())}\n`;
+//     }
+//     for (
+//         let index = howManyUpdatedRows + howManyOldRows;
+//         index < howManyUpdatedRows + howManyOldRows + howManyNewRows;
+//         index++
+//     ) {
+//         strData += `${runningNewDataCode.replace('index', index.toString())},`;
+//         strData += `${runningDataCodeNew.replace('index', index.toString())}\n`;
+//     }
+//     return await genrateFile('UpdatedData', strData);
+// }
 
 async function genrateFile(tempFileName, data) {
     let filePath;

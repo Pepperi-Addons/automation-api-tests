@@ -8,6 +8,7 @@ import promised from 'chai-as-promised';
 import { WebAppAPI } from '../WebAppAPI';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { WebAppPage } from './base/WebAppPage';
+import { Context } from 'vm';
 
 chai.use(promised);
 
@@ -21,9 +22,13 @@ export class WebAppHomePage extends WebAppPage {
     public HomeScreenSpesificButton: By = By.xpath(`//button[@title='|textToFill|']`);
 
     // supportmenu popup
-    public SupportMenuPopup_Container: By = By.xpath('//div[contains(@class,"supportMenu")]');
+    public SupportMenuPopup_Container: By = By.xpath('//div[contains(@class,"supportMenu")]'); //nav[@role="navigation"]
     public SupportMenuPopup_Refresh: By = By.xpath('//a[@data-toggle="dropdown"][contains(text(),"Refresh")]');
     public SupportMenuPopup_RefreshData: By = By.xpath('//a[text()="Refresh Data"]');
+
+    public getSelectorOfHomeScreenButtonByPartialText(text: string) {
+        return By.xpath(`//button[contains(@title,"${text}")]`);
+    }
 
     public async clickOnBtn(btnTxt: string): Promise<void> {
         await this.browser.ClickByText(this.HomeScreenButtonArr, btnTxt);
@@ -239,6 +244,27 @@ export class WebAppHomePage extends WebAppPage {
             isFound = false;
         }
         return !isFound;
+    }
+
+    public async buttonsApearingOnHomeScreenByPartialText(
+        this: Context,
+        driver: Browser,
+        text: string,
+    ): Promise<boolean> {
+        const webappHomePage = new WebAppHomePage(driver);
+        try {
+            const buttonsByPartialText = await driver.findElements(
+                webappHomePage.getSelectorOfHomeScreenButtonByPartialText(text),
+            );
+            return buttonsByPartialText.length > 0 ? true : false;
+        } catch (error) {
+            console.error(error);
+            addContext(this, {
+                title: `Buttons Containing "${text}" are not found`,
+                value: error,
+            });
+        }
+        return false;
     }
 
     public async returnToHomePage(): Promise<void> {

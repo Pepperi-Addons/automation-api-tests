@@ -7,12 +7,14 @@ A template for creating a pepperi addon with an angular app for the client-side 
 * a publish script for uploading the addon
 
 
+
 ## Installation
 ---
 #### System Requirements
 `node --version` > 12.0.0
 
 `npm --version` > 6.0.0
+
 
 #### Install by running 
 ``` bash

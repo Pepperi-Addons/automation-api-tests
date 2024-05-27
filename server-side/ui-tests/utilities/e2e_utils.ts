@@ -1,6 +1,8 @@
+import addContext from 'mochawesome/addContext';
+import { Context } from 'vm';
 import { Browser } from './browser';
 import { WebAppHeader } from '../pom/WebAppHeader';
-import { BrandedApp, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
+import { BrandedApp, WebAppAPI, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews, ViewConfiguration } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
@@ -25,6 +27,7 @@ import { expect } from 'chai';
 import { CollectionDefinition, UDCService } from '../../services/user-defined-collections.service';
 import { SelectedView, ViewerBlock, BasePageLayoutSectionColumn } from '../blueprints/PageBlocksBlueprints';
 import { AddonLoadCondition } from '../pom/addons/base/AddonPage';
+import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 
 export default class E2EUtils extends BasePomObject {
     public constructor(protected browser: Browser) {
@@ -45,14 +48,24 @@ export default class E2EUtils extends BasePomObject {
                     const resourceList: ResourceList = new ResourceList(this.browser);
                     await settingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
                     this.browser.sleep(0.2 * 1000);
+                    if (await this.browser.isElementVisible(resourceList.EditPage_BackToList_Button)) {
+                        await this.browser.click(resourceList.EditPage_BackToList_Button);
+                        await resourceList.isSpinnerDone();
+                    }
                     await this.browser.refresh();
                     await resourceList.waitTillVisible(resourceList.PepTopArea_title, 30000);
+                    await resourceList.waitTillVisible(resourceList.Views_Tab_selected, 3000);
                     break;
                 case 'Slugs':
                     await settingsSidePanel.clickSettingsSubCategory('slugs', 'Pages');
                     break;
                 case 'Page Builder':
                     await settingsSidePanel.clickSettingsSubCategory('pages', 'Pages');
+                    await header.isSpinnerDone();
+                    this.browser.sleep(0.2 * 1000);
+                    await this.browser.refresh();
+                    await header.isSpinnerDone();
+                    this.browser.sleep(0.2 * 1000);
                     break;
                 default:
                     throw new Error('Incorrect Path Chosen!');
@@ -155,12 +168,14 @@ export default class E2EUtils extends BasePomObject {
         const resourceEditors: ResourceEditors = new ResourceEditors(this.browser);
         await this.navigateTo('Resource Views');
         await resourceEditors.clickTab('Editors_Tab');
+        await resourceEditors.searchForEditorByName(editorName);
         await resourceEditors.gotoEditPageOfEditor(editorName);
     }
 
     public async gotoEditPageOfSelectedViewByName(viewName: string) {
         const resourceViews: ResourceViews = new ResourceViews(this.browser);
         await this.navigateTo('Resource Views');
+        await resourceViews.searchForViewByName(viewName);
         await resourceViews.gotoEditPageOfView(viewName);
     }
 
@@ -354,34 +369,34 @@ export default class E2EUtils extends BasePomObject {
         await webAppHeader.goHome();
         await webAppHomePage.manualResync(client);
         await webAppList.isSpinnerDone(); // just for the use of webAppList so that fix-lint won't get angry
-        // for (let index = 0; index < 4; index++) {
-        //     await webAppHeader.goHome();
-        //     await webAppHomePage.isSpinnerDone();
-        //     await webAppHomePage.clickOnBtn('Accounts');
-        //     await webAppList.isSpinnerDone();
-        //     await webAppList.validateListRowElements();
-        // }
-        // await webAppHeader.goHome();
-        // await webAppHomePage.isSpinnerDone();
     }
 
-    public async performManualResync() {
+    public async performManualResync(client: Client) {
         const webAppHeader: WebAppHeader = new WebAppHeader(this.browser);
         const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
+        const webAppAPI: WebAppAPI = new WebAppAPI(this.browser, client);
+        const accessToken = await webAppAPI.getAccessToken();
         await webAppHeader.goHome();
         await webAppHomePage.isSpinnerDone();
-        await this.browser.navigate(`${await this.browser.getCurrentUrl()}/supportmenu`);
+        const homePageURL = await this.browser.getCurrentUrl();
+        await this.browser.navigate(`${homePageURL}/supportmenu`);
         await this.browser.untilIsVisible(webAppHomePage.SupportMenuPopup_Container);
         await this.browser.click(webAppHomePage.SupportMenuPopup_Refresh);
         await this.browser.untilIsVisible(webAppHomePage.SupportMenuPopup_RefreshData);
+        this.browser.sleep(0.25 * 1000);
         await this.browser.click(webAppHomePage.SupportMenuPopup_RefreshData);
-        this.browser.sleep(5 * 60 * 1000);
-        let spinnerDone = await webAppHomePage.isSpinnerDone();
+        await webAppAPI.pollForResyncResponse(accessToken, 100);
+        let spinnerDone = false;
         do {
-            await webAppHomePage.isDialogOnHomePAge('Error');
             spinnerDone = await webAppHomePage.isSpinnerDone();
+            try {
+                await webAppHomePage.isDialogOnHomePAge('Error');
+            } catch (error) {
+                console.error(error);
+            }
         } while (!spinnerDone);
-        await webAppHeader.goHome();
+        await webAppAPI.pollForResyncResponse(accessToken);
+        await this.browser.navigate(homePageURL);
     }
 
     public async logOutLogIn(email: string, password: string) {
@@ -686,5 +701,97 @@ export default class E2EUtils extends BasePomObject {
 
         await webAppHomePage.returnToHomePage();
         return;
+    }
+
+    public async removeHomePageButtonsLeftoversByProfile(
+        stringOfLeftoversToRemove: string,
+        profile: 'Admin' | 'Rep' | 'Buyer' = 'Rep',
+    ): Promise<void> {
+        const webAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
+        const webAppHomePage = new WebAppHomePage(this.browser);
+        const brandedApp: BrandedApp = new BrandedApp(this.browser);
+        await webAppSettingsSidePanel.selectSettingsByID('Company Profile');
+        await this.browser.click(webAppSettingsSidePanel.SettingsFrameworkHomeButtons);
+
+        try {
+            await brandedApp.isSpinnerDone();
+            await this.browser.switchTo(brandedApp.AddonContainerIframe);
+            await brandedApp.isAddonFullyLoaded(AddonLoadCondition.Content);
+        } catch (error) {
+            this.browser.refresh();
+            this.browser.sleep(6500);
+            await brandedApp.isSpinnerDone();
+            await this.browser.switchTo(brandedApp.AddonContainerIframe);
+            await brandedApp.isAddonFullyLoaded(AddonLoadCondition.Content);
+        }
+
+        await this.browser.click(brandedApp.getSelectorOfEditCardByProfile(profile));
+        try {
+            const leftoversToRemove = await this.browser.findElements(
+                brandedApp.getSelectorOfItemConfiguredToCardDeleteButtonByPartialTextAtCardEdit(
+                    stringOfLeftoversToRemove,
+                ),
+            );
+            leftoversToRemove.forEach(async (toBeRemovedItem) => {
+                await toBeRemovedItem.click();
+            });
+        } catch (error) {
+            console.error(error);
+            addContext(this, {
+                title: `Buttons Containing "${stringOfLeftoversToRemove}" are not found`,
+                value: error,
+            });
+        }
+        await this.browser.click(brandedApp.getSelectorOfFooterButtonByText('Save'));
+
+        await webAppHomePage.returnToHomePage();
+        return;
+    }
+
+    public async selectAccountFromAccountList(
+        this: Context,
+        driver: Browser,
+        accountID: string,
+        searchBy: 'ID' | 'name' = 'ID',
+    ): Promise<void> {
+        const accountDashboardLayout = new AccountDashboardLayout(driver);
+        await accountDashboardLayout.isSpinnerDone();
+        let base64Image = await driver.saveScreenshots();
+        addContext(this, {
+            title: `At Accounts`,
+            value: 'data:image/png;base64,' + base64Image,
+        });
+        const searchInput = await driver.findElement(accountDashboardLayout.Search_Input);
+        await searchInput.clear();
+        driver.sleep(0.1 * 1000);
+        accountID && (await searchInput.sendKeys(accountID + '\n'));
+        driver.sleep(0.5 * 1000);
+        // await driver.click(neltPerformanceSelectors.HtmlBody);
+        await driver.click(accountDashboardLayout.TopBarContainer);
+        driver.sleep(0.1 * 1000);
+        accountID && (await driver.click(accountDashboardLayout.Search_Magnifier_Button));
+        driver.sleep(0.1 * 1000);
+        await accountDashboardLayout.isSpinnerDone();
+        base64Image = await driver.saveScreenshots();
+        addContext(this, {
+            title: `At Accounts - after Search for "${accountID}"`,
+            value: 'data:image/png;base64,' + base64Image,
+        });
+        const selector =
+            accountID === ''
+                ? accountDashboardLayout.FirstAccountInList
+                : searchBy === 'name'
+                ? accountDashboardLayout.getSelectorOfAccountHyperlinkByName(accountID)
+                : accountDashboardLayout.getSelectorOfAccountHyperlinkByID(Number(accountID));
+        await driver.click(selector);
+        await accountDashboardLayout.isSpinnerDone();
+        base64Image = await driver.saveScreenshots();
+        addContext(this, {
+            title: `At Account Dashboard`,
+            value: 'data:image/png;base64,' + base64Image,
+        });
+        await driver.untilIsVisible(accountDashboardLayout.AccountDashboard_PlusButton);
+        await driver.untilIsVisible(accountDashboardLayout.AccountDashboard_HamburgerMenu_Button);
+        await driver.untilIsVisible(accountDashboardLayout.AccountDetails_component);
     }
 }

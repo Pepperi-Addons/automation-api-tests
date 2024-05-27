@@ -10,7 +10,7 @@ chai.use(promised);
 export async function SyncTests(email: string, password: string, client: Client, varPass) {
     const generalService = new GeneralService(client);
     const addonVersion = (
-        await generalService.getAddonLatestAvailableVersion('5122dc6d-745b-4f46-bb8e-bd25225d350a', varPass)
+        await generalService.getAddonsLatestAvailableVersion('5122dc6d-745b-4f46-bb8e-bd25225d350a', varPass)
     ).latestVersion;
     let env;
     let testNames: string[] = [];
@@ -32,14 +32,13 @@ export async function SyncTests(email: string, password: string, client: Client,
         addonVersion,
         varPass,
     );
-    await generalService.baseAddonVersionsInstallationNewSync(varPass);
+    await generalService.baseAddonVersionsInstallationNewSyncNoNebula(varPass);
     const testData = {
         automation_template_addon: ['d541b959-87af-4d18-9215-1b30dbe1bcf4', ''],
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', ''],
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
-        Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''],
