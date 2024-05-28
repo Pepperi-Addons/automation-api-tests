@@ -108,8 +108,11 @@ export class AccountDashboardLayout extends AddonPage {
             selectedSection == 'Menu'
                 ? 'AccountDashboardLayout_MenuRow_Container'
                 : 'AccountDashboardLayout_MenuRow_Container'; // TOBE expended upon need
+
         let quit = false;
+        let count = 6;
         do {
+            count--;
             await webAppHeader.goHome();
             await webAppHomePage.isSpinnerDone();
             await webAppHeader.openSettings();
@@ -225,7 +228,7 @@ export class AccountDashboardLayout extends AddonPage {
                 driver.sleep(2 * 1000);
                 await webAppHeader.goHome();
             }
-        } while (!quit);
+        } while (!quit && count);
     }
 
     public async unconfigureFromAccountSelectedSectionByProfile(
@@ -246,7 +249,9 @@ export class AccountDashboardLayout extends AddonPage {
                 : 'AccountDashboardLayout_MenuRow_Container'; // TOBE expended upon need
 
         let quit = false;
+        let count = 4;
         do {
+            count--;
             await webAppHeader.goHome();
             await webAppHomePage.isSpinnerDone();
             await webAppHeader.openSettings();
@@ -294,10 +299,10 @@ export class AccountDashboardLayout extends AddonPage {
                 );
                 screenShot = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `After Pencil button of ${selectedSectionUnderAccount} was clicked`,
+                    title: `After Pencil button of ${selectedSection} was clicked`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
-                console.info(`After Pencil button of ${selectedSectionUnderAccount} was clicked`);
+                console.info(`After Pencil button of ${selectedSection} was clicked`);
                 expect(
                     await (
                         await driver.findElement(accountDashboardLayout.AccountDashboardLayout_ConfigPage_Title)
@@ -321,9 +326,34 @@ export class AccountDashboardLayout extends AddonPage {
                 await accountDashboardLayout.click(
                     accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(deletionText),
                 );
+                driver.sleep(1 * 1000);
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After ${deletionText} was removed`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+                console.info(`After ${deletionText} was removed`);
+                await accountDashboardLayout.click(accountDashboardLayout.getSelectorOfFooterButtonByText('Save'));
+                driver.sleep(3 * 1000);
+                // await accountDashboardLayout.isSpinnerDone();
+                await accountDashboardLayout.waitTillVisible(
+                    accountDashboardLayout.getSelectorOfEditCardByProfile(profile),
+                    5 * 1000,
+                );
+                quit = true;
+
                 let leftoversFound = false;
                 try {
                     if (cleanupText !== undefined) {
+                        await accountDashboardLayout.click(
+                            accountDashboardLayout.getSelectorOfEditCardByProfile(profile),
+                        );
+                        screenShot = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `After Profile ${profile} was selected for cleanup of text: ${cleanupText}`,
+                            value: 'data:image/png;base64,' + screenShot,
+                        });
+                        console.info(`After Profile ${profile} was selected for cleanup of text: ${cleanupText}`);
                         leftoversFound = await driver.isElementVisible(
                             accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(
                                 cleanupText,
@@ -338,43 +368,48 @@ export class AccountDashboardLayout extends AddonPage {
                             );
                             screenShot = await driver.saveScreenshots();
                             addContext(this, {
-                                title: `At Clenup Section for text - ${cleanupText}`,
+                                title: `At Clenup Section for text - ${cleanupText} - leftovers found`,
                                 value: 'data:image/png;base64,' + screenShot,
                             });
-                            console.info(`At Clenup Section for text - ${cleanupText}`);
+                            console.info(`At Clenup Section for text - ${cleanupText} - leftovers found`);
                             configuredSlugsLeftovers.forEach(async (leftoverSlugDeleteButton) => {
                                 await leftoverSlugDeleteButton.click();
                             });
+                            driver.sleep(0.2 * 1000);
+                            await accountDashboardLayout.click(
+                                accountDashboardLayout.getSelectorOfFooterButtonByText('Save'),
+                            );
                             driver.sleep(2 * 1000);
+                            await accountDashboardLayout.waitTillVisible(
+                                accountDashboardLayout.getSelectorOfPencilButtonOfSelectedSection(
+                                    selectedSectionUnderAccount,
+                                ),
+                                15 * 1000,
+                            );
                         }
                     }
+                    driver.sleep(2 * 1000);
+                    await accountDashboardLayout.click(
+                        accountDashboardLayout.getSelectorOfProfileCardsContainerButtonByText('Cancel'),
+                    );
+                    await accountDashboardLayout.waitTillVisible(
+                        accountDashboardLayout[selectedSectionUnderAccount],
+                        15 * 1000,
+                    );
+                    driver.sleep(2 * 1000);
                 } catch (error) {
-                    const err = error as Error;
+                    const er = error as Error;
                     addContext(this, {
                         title: `At Catch of unconfigureFromAccountSelectedSectionByProfile function, the Error:`,
-                        value: err,
+                        value: er.message,
                     });
                     console.error(error);
                 }
-                await accountDashboardLayout.click(accountDashboardLayout.getSelectorOfFooterButtonByText('Save'));
-                driver.sleep(3 * 1000);
-                // await accountDashboardLayout.isSpinnerDone();
-                await accountDashboardLayout.waitTillVisible(
-                    accountDashboardLayout.getSelectorOfPencilButtonOfSelectedSection(selectedSectionUnderAccount),
-                    10 * 1000,
-                );
-                await accountDashboardLayout.click(accountDashboardLayout.getSelectorOfFooterButtonByText('Cancel'));
-                await accountDashboardLayout.waitTillVisible(
-                    accountDashboardLayout[selectedSectionUnderAccount],
-                    5 * 1000,
-                );
-                driver.sleep(2 * 1000);
-                quit = true;
             } catch (error) {
                 const err = error as Error;
                 addContext(this, {
                     title: `At Catch of unconfigureFromAccountSelectedSectionByProfile function, the Error:`,
-                    value: err,
+                    value: err.message,
                 });
                 console.error(error);
             } finally {
@@ -382,7 +417,7 @@ export class AccountDashboardLayout extends AddonPage {
                 driver.sleep(2 * 1000);
                 await webAppHeader.goHome();
             }
-        } while (!quit);
+        } while (!quit && count > 0);
     }
 
     public async configureToAccountMenuRepCard(
