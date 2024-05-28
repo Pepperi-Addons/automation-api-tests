@@ -321,29 +321,40 @@ export class AccountDashboardLayout extends AddonPage {
                 await accountDashboardLayout.click(
                     accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(deletionText),
                 );
-                if (
-                    cleanupText &&
-                    (await driver.isElementVisible(
-                        accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(
-                            cleanupText,
-                        ),
-                    ))
-                ) {
-                    const configuredSlugsLeftovers = await driver.findElements(
-                        accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(
-                            cleanupText,
-                        ),
-                    );
-                    screenShot = await driver.saveScreenshots();
+                let leftoversFound = false;
+                try {
+                    if (cleanupText !== undefined) {
+                        leftoversFound = await driver.isElementVisible(
+                            accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(
+                                cleanupText,
+                            ),
+                        );
+
+                        if (leftoversFound) {
+                            const configuredSlugsLeftovers = await driver.findElements(
+                                accountDashboardLayout.getSelectorOfItemConfiguredToCardDeleteButtonByTextAtCardEdit(
+                                    cleanupText,
+                                ),
+                            );
+                            screenShot = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At Clenup Section for text - ${cleanupText}`,
+                                value: 'data:image/png;base64,' + screenShot,
+                            });
+                            console.info(`At Clenup Section for text - ${cleanupText}`);
+                            configuredSlugsLeftovers.forEach(async (leftoverSlugDeleteButton) => {
+                                await leftoverSlugDeleteButton.click();
+                            });
+                            driver.sleep(2 * 1000);
+                        }
+                    }
+                } catch (error) {
+                    const err = error as Error;
                     addContext(this, {
-                        title: `At Clenup Section for text - ${cleanupText}`,
-                        value: 'data:image/png;base64,' + screenShot,
+                        title: `At Catch of unconfigureFromAccountSelectedSectionByProfile function, the Error:`,
+                        value: err,
                     });
-                    console.info(`At Clenup Section for text - ${cleanupText}`);
-                    configuredSlugsLeftovers.forEach(async (leftoverSlugDeleteButton) => {
-                        await leftoverSlugDeleteButton.click();
-                    });
-                    driver.sleep(2 * 1000);
+                    console.error(error);
                 }
                 await accountDashboardLayout.click(accountDashboardLayout.getSelectorOfFooterButtonByText('Save'));
                 driver.sleep(3 * 1000);
