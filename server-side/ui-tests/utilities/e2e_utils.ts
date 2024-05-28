@@ -225,7 +225,7 @@ export default class E2EUtils extends BasePomObject {
         await slugs.mapPageToSlugEVGENY(slugPath, pageName);
     }
 
-    public async createSlug(
+    public async createAndMapSlug(
         slugDisplayName: string,
         slug_path: string,
         keyOfMappedPage: string,
@@ -616,7 +616,7 @@ export default class E2EUtils extends BasePomObject {
             await webAppHeader.goHome();
         }
         if (resourceData.slug) {
-            await this.createSlug(
+            await this.createAndMapSlug(
                 resourceData.slug.slugDisplayName,
                 resourceData.slug.slug_path,
                 resourceData.slug.keyOfMappedPage || pageUUID,
