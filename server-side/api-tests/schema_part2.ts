@@ -85,7 +85,7 @@ export async function DBSchemaTestsPart2(generalService: GeneralService, request
 
         describe('Create Schema_Part2', () => {
             it('Test Initiation', async () => {
-                debugger;
+                //debugger;
                 // this will run the first test that will run the second and so on..Its test initiation
                 await getSecretKey();
                 //await getSecretKeyGR();

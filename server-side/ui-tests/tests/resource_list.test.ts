@@ -76,7 +76,7 @@ export async function ResourceListTests(email: string, password: string, client:
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // needed for filtering by account (ReferenceAccount collections)
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%'],
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'], // Dependency of Nebula
@@ -1103,7 +1103,14 @@ export async function ResourceListTests(email: string, password: string, client:
                 it('Create & Map Slug', async function () {
                     slugDisplayName = `${resource_name_pipeline} ${random_name}`;
                     slug_path = `${resource_name_pipeline.toLowerCase()}_${random_name}`;
-                    await resourceListUtils.createSlug(slugDisplayName, slug_path, pageKey, email, password, client);
+                    await resourceListUtils.createAndMapSlug(
+                        slugDisplayName,
+                        slug_path,
+                        pageKey,
+                        email,
+                        password,
+                        client,
+                    );
                 });
 
                 it(`Create A Button On Homepage`, async function () {
@@ -1295,19 +1302,21 @@ export async function ResourceListTests(email: string, password: string, client:
                             selectedViewName: viewName,
                         },
                     ];
+                    const pageParameters = [
+                        // needed for a udc field of type 'Resource' (Reference Account)
+                        {
+                            type: 'String',
+                            consume: true,
+                            systemVariableName: 'AccountUUID',
+                            produce: false,
+                        },
+                    ];
                     const viewerBlock = new ResourceViewEditorBlock(
                         viewBlockKey,
                         'DataViewerBlock',
                         undefined,
                         selectedViews,
-                        [
-                            {
-                                type: 'String',
-                                consume: true,
-                                systemVariableName: 'AccountUUID',
-                                produce: false,
-                            },
-                        ],
+                        pageParameters,
                     );
                     console.info(`viewer block: ${JSON.stringify(viewerBlock, null, 2)}`);
                     addContext(this, {
@@ -1338,7 +1347,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 it('Create & Map Slug', async function () {
                     slugDisplayNameAccountDashboard = `${ref_account_resource} ${random_name}`;
                     slug_path_account_dashboard = `${ref_account_resource.toLowerCase()}_${random_name}`;
-                    await resourceListUtils.createSlug(
+                    await resourceListUtils.createAndMapSlug(
                         slugDisplayNameAccountDashboard,
                         slug_path_account_dashboard,
                         pageKey,
@@ -1348,8 +1357,8 @@ export async function ResourceListTests(email: string, password: string, client:
                     );
                 });
 
-                it('Admin: Navigating to Account Dashboard Layout -> Menu (Pencil) -> Admin (Pencil) -> Configuring Slug', async () => {
-                    await accountDashboardLayout.configureToAccountSelectedSectionByProfile(
+                it('Admin: Navigating to Account Dashboard Layout -> Menu (Pencil) -> Admin (Pencil) -> Adding Slug', async function () {
+                    await accountDashboardLayout.configureToAccountSelectedSectionByProfile.bind(this)(
                         driver,
                         slugDisplayNameAccountDashboard,
                         'Menu',
@@ -1443,6 +1452,8 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.refresh();
+                    await resourceList.isSpinnerDone();
+                    resourceList.pause(0.25 * 1000);
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
@@ -1596,6 +1607,8 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.refresh();
+                    await resourceList.isSpinnerDone();
+                    resourceList.pause(0.25 * 1000);
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
@@ -1691,6 +1704,8 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.refresh();
+                    await resourceList.isSpinnerDone();
+                    resourceList.pause(0.25 * 1000);
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
@@ -1814,6 +1829,8 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.refresh();
+                    await resourceList.isSpinnerDone();
+                    resourceList.pause(0.25 * 1000);
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
@@ -1821,7 +1838,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     numberOfResultsWithoutAccountFilter_afterSyncChange = (
                         await numberOfResultsAccountFilterElement.getText()
                     ).trim();
-                    driver.sleep(0.5 * 1000);
+                    resourceList.pause(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `After Assertions`,
@@ -2241,13 +2258,13 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                 });
 
-                it('Unconfiguring Slug from Account Dashboard', async () => {
+                it('Unconfiguring Slug from Account Dashboard', async function () {
                     await accountDashboardLayout.unconfigureFromAccountSelectedSectionByProfile.bind(this)(
                         driver,
                         slugDisplayNameAccountDashboard,
                         'Menu',
                         'Admin',
-                        `${resource_name_from_account_dashborad} `,
+                        `${ref_account_resource} `,
                     );
                 });
 
