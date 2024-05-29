@@ -154,10 +154,10 @@ export class AccountDashboardLayout extends AddonPage {
                 );
                 screenShot = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `After Pencil button of ${selectedSectionUnderAccount} was clicked`,
+                    title: `After Pencil button of ${selectedSection} was clicked`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
-                console.info(`After Pencil button of ${selectedSectionUnderAccount} was clicked`);
+                console.info(`After Pencil button of ${selectedSection} was clicked`);
                 expect(
                     await (
                         await driver.findElement(accountDashboardLayout.AccountDashboardLayout_ConfigPage_Title)
@@ -220,7 +220,7 @@ export class AccountDashboardLayout extends AddonPage {
                 const err = error as Error;
                 addContext(this, {
                     title: `At Catch of configureToAccountSelectedSectionByProfile function, the Error:`,
-                    value: err,
+                    value: err.message,
                 });
                 console.error(error);
             } finally {
@@ -375,23 +375,26 @@ export class AccountDashboardLayout extends AddonPage {
                             configuredSlugsLeftovers.forEach(async (leftoverSlugDeleteButton) => {
                                 await leftoverSlugDeleteButton.click();
                             });
-                            driver.sleep(0.2 * 1000);
-                            await accountDashboardLayout.click(
-                                accountDashboardLayout.getSelectorOfFooterButtonByText('Save'),
-                            );
-                            driver.sleep(2 * 1000);
-                            await accountDashboardLayout.waitTillVisible(
-                                accountDashboardLayout.getSelectorOfPencilButtonOfSelectedSection(
-                                    selectedSectionUnderAccount,
-                                ),
-                                15 * 1000,
-                            );
                         }
+                        driver.sleep(0.2 * 1000);
+                        await accountDashboardLayout.click(
+                            accountDashboardLayout.getSelectorOfFooterButtonByText('Save'),
+                        );
+                        driver.sleep(2 * 1000);
+                        await accountDashboardLayout.waitTillVisible(
+                            accountDashboardLayout.getSelectorOfEditCardByProfile(profile),
+                            15 * 1000,
+                        );
+                        await accountDashboardLayout.click(
+                            accountDashboardLayout.getSelectorOfProfileCardsContainerButtonByText('Cancel'),
+                        );
+                        await accountDashboardLayout.waitTillVisible(
+                            accountDashboardLayout.getSelectorOfPencilButtonOfSelectedSection(
+                                selectedSectionUnderAccount,
+                            ),
+                            15 * 1000,
+                        );
                     }
-                    driver.sleep(2 * 1000);
-                    await accountDashboardLayout.click(
-                        accountDashboardLayout.getSelectorOfProfileCardsContainerButtonByText('Cancel'),
-                    );
                     await accountDashboardLayout.waitTillVisible(
                         accountDashboardLayout[selectedSectionUnderAccount],
                         15 * 1000,

@@ -686,23 +686,10 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
     }
 
     if (tests === 'Pricing06Features') {
-        let installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
-            (addon) => addon.Addon.Name == 'Pricing',
-        )?.Version;
-        await PricingUdtCleanup(
-            client,
-            installedPricingVersionLong?.startsWith('0.8') ? 'version08for07data' : undefined,
-        );
+        await PricingUdtCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
-            (addon) => addon.Addon.Name == 'Pricing',
-        )?.Version;
-        await PricingUdtInsertion(
-            client,
-            '0.6',
-            installedPricingVersionLong?.startsWith('0.8') ? 'version08for07data' : undefined,
-        );
+        await PricingUdtInsertion(client, '0.6');
         await PricingUomTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingExclusionTests(email, pass, client);
