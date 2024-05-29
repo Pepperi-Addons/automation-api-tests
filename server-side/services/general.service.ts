@@ -195,7 +195,10 @@ process.on('unhandledRejection', async (error) => {
             ConsoleColors.SystemInformation,
         );
         process.exit(1);
-    } else if (typeof error === 'string' && (error.includes('Error') || error.includes('502'))) {
+    } else if (
+        typeof error === 'string' &&
+        (error.includes('Error') || error.includes('502') || error.includes('401') || error.includes('error'))
+    ) {
         console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
         console.log(
             `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
