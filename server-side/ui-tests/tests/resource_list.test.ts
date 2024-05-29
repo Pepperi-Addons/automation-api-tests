@@ -593,6 +593,32 @@ export async function ResourceListTests(email: string, password: string, client:
         });
 
         describe('UDCs Prep', async function () {
+            it(`Remove Leftovers Collections that starts with "${ref_account_resource}_"`, async function () {
+                const allUdcs = await udcService.getSchemes();
+                const leftoversUdcs = allUdcs.filter((collection) => {
+                    if (collection.Name.startsWith(`${ref_account_resource}_`)) {
+                        return collection;
+                    }
+                });
+                const purgeResponses = await Promise.all(
+                    leftoversUdcs.map(async (leftoverUdc) => {
+                        return await udcService.purgeScheme(leftoverUdc.Name);
+                    }),
+                );
+                purgeResponses.forEach((purgeResponse) => {
+                    console.info(`${ref_account_resource}_ purgeResponse: ${JSON.stringify(purgeResponse, null, 2)}`);
+                    addContext(this, {
+                        title: `Purge Response: `,
+                        value: JSON.stringify(purgeResponse, null, 2),
+                    });
+                    expect(purgeResponse.Ok).to.be.true;
+                    expect(purgeResponse.Status).to.equal(200);
+                    expect(purgeResponse.Error).to.eql({});
+                    expect(Object.keys(purgeResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
+                    expect(purgeResponse.Body.Done).to.be.true;
+                });
+            });
+
             it(`"${resource_name_from_account_dashborad}" Collection Upsert`, async function () {
                 const fields = detailsByResource[ref_account_resource].collectionFields;
                 if (fields) {
@@ -1464,7 +1490,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `After Assertions`,
+                        title: `At block - after getting number of results from the UI`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
@@ -1619,7 +1645,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `After Assertions`,
+                        title: `At block - after getting number of results from the UI`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
@@ -1716,7 +1742,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `After Assertions`,
+                        title: `At block - after getting number of results from the UI`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
@@ -1841,7 +1867,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     resourceList.pause(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `After Assertions`,
+                        title: `At block - after getting number of results from the UI`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
