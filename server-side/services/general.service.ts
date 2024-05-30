@@ -89,7 +89,7 @@ baseAddonsForNebula.sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
 baseAddonsForNebula['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.3.%']; //1.3.x is for neubla
 export const testDataForNebulaDists = {
     ...baseAddonsForNebula,
-    Nebula: ['00000000-0000-0000-0000-000000006a91', '1.5.%'],
+    Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
     'cpi-node-automation': ['2b39d63e-0982-4ada-8cbb-737b03b9ee58', '%'],
 };
 
