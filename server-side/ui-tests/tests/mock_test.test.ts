@@ -2772,7 +2772,7 @@ export async function MockTest(email: string, password: string, client: Client) 
             it('Deleting the View "ReferenceAccountAuto View" with API', async () => {
                 await e2eUiService.navigateTo('Resource Views');
                 await resourceViews.validateViewsListPageIsLoaded();
-                await resourceViews.deleteFromListByName('IndexedFieldsAuto View');
+                await resourceViews.deleteFromListByName.bind(this)('IndexedFieldsAuto View', driver);
                 resourceViews.pause(10 * 1000);
                 // expect(deleteViewResponse.Ok).to.equal(true);
                 // expect(deleteViewResponse.Status).to.equal(200);

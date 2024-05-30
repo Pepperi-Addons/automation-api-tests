@@ -931,7 +931,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                     await resourceEditors.click(resourceEditors.EditPage_BackToList_Button);
                     await resourceEditors.clickTab('Editors_Tab');
-                    await resourceEditors.deleteFromListByName(editorName);
+                    await resourceEditors.deleteFromListByName.bind(this)(editorName, driver);
                     base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `At Editors Tab - after "${editorName}" Editor deleted`,

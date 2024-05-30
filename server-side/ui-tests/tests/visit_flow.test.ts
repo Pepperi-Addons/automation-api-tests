@@ -988,7 +988,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     await pageBuilder.waitTillVisible(pageBuilder.PagesList_NumberOfItemsInList, 15000);
                     await pageBuilder.searchForPageByName(pageName);
                     pageBuilder.pause(0.2 * 1000);
-                    await pageBuilder.deleteFromListByName(pageName);
+                    await pageBuilder.deleteFromListByName.bind(this)(pageName, driver);
                     pageBuilder.pause(3 * 1000);
                     await pageBuilder.isSpinnerDone();
                     await pageBuilder.searchForPageByName(pageName);
