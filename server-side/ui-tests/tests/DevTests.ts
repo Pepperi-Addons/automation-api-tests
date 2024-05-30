@@ -248,6 +248,13 @@ export class DevTest {
                 const depObjSync = {};
                 depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
                 addonDep.push(depObjSync);
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.pfs) {
+                        addonDep[index].pfs = ['00000000-0000-0000-0000-0000000f11e5', '1.4.%'];
+                        debugger;
+                    }
+                }
                 debugger;
             }
             if (this.addonUUID === '50062e0c-9967-4ed4-9102-f2bc50602d41') {
