@@ -840,11 +840,11 @@ export async function ResourceListTests(email: string, password: string, client:
                 await webAppLoginPage.login(email, password);
             });
 
-            it('Manual Resync', async () => {
-                await resourceListUtils.performManualResync(client);
+            it('Manual Resync', async function () {
+                await resourceListUtils.performManualResync.bind(this)(client, driver);
             });
 
-            it(`Logout Login`, async () => {
+            it(`Logout Login`, async function () {
                 await resourceListUtils.logOutLogIn(email, password);
                 await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
             });
@@ -1533,9 +1533,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
                 });
 
-                it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async () => {
+                it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async function () {
                     syncStatusOfReferenceAccount
-                        ? await resourceListUtils.performManualResync(client)
+                        ? await resourceListUtils.performManualResync.bind(this)(client, driver)
                         : await resourceListUtils.performManualSync(client);
                 });
 
@@ -1785,9 +1785,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
                 });
 
-                it(`Manual ${syncStatusOfReferenceAccount ? 'Sync' : 'Resync'}`, async () => {
+                it(`Manual ${syncStatusOfReferenceAccount ? 'Sync' : 'Resync'}`, async function () {
                     syncStatusOfReferenceAccount
-                        ? await resourceListUtils.performManualResync(client)
+                        ? await resourceListUtils.performManualResync.bind(this)(client, driver)
                         : await resourceListUtils.performManualSync(client);
                 });
 
