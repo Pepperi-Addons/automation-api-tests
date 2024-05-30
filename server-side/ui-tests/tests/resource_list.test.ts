@@ -605,12 +605,12 @@ export async function ResourceListTests(email: string, password: string, client:
                         return await udcService.purgeScheme(leftoverUdc.Name);
                     }),
                 );
+                addContext(this, {
+                    title: `Purge Responses: `,
+                    value: JSON.stringify(purgeResponses, null, 2),
+                });
                 purgeResponses.forEach((purgeResponse) => {
                     console.info(`${ref_account_resource}_ purgeResponse: ${JSON.stringify(purgeResponse, null, 2)}`);
-                    addContext(this, {
-                        title: `Purge Response: `,
-                        value: JSON.stringify(purgeResponse, null, 2),
-                    });
                     expect(purgeResponse.Ok).to.be.true;
                     expect(purgeResponse.Status).to.equal(200);
                     expect(purgeResponse.Error).to.eql({});
