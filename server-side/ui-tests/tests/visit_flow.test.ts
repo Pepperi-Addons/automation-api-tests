@@ -169,8 +169,8 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                 await webAppLoginPage.login(email, password);
             });
 
-            it('Manual Resync', async () => {
-                await e2eUtils.performManualResync(client);
+            it('Manual Resync', async function () {
+                await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 
             it('Pages Leftovers Cleanup (starting with "VisitFlow Page Auto_")', async () => {
@@ -988,7 +988,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     await pageBuilder.waitTillVisible(pageBuilder.PagesList_NumberOfItemsInList, 15000);
                     await pageBuilder.searchForPageByName(pageName);
                     pageBuilder.pause(0.2 * 1000);
-                    await pageBuilder.deleteFromListByName(pageName);
+                    await pageBuilder.deleteFromListByName.bind(this)(pageName, driver);
                     pageBuilder.pause(3 * 1000);
                     await pageBuilder.isSpinnerDone();
                     await pageBuilder.searchForPageByName(pageName);

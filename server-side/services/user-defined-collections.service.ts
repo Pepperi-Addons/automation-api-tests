@@ -2,6 +2,7 @@ import { PapiClient, FindOptions, DataViewFieldType, CollectionField } from '@pe
 import { DataViewBaseField, UpsertUdcGridDataView } from '../ui-tests/blueprints/DataViewBlueprints';
 import {
     ArrayOfPrimitiveTypeUdcField,
+    BodyToUpsertExtendedUdc,
     BodyToUpsertUdcWithFields,
     ContainedArrayUdcField,
     PrimitiveTypeUdcField,
@@ -26,7 +27,7 @@ export interface UdcField {
 export interface CollectionDefinition {
     nameOfCollection: string;
     fieldsOfCollection: {
-        classType: 'Primitive' | 'Array' | 'Contained' | 'Resource' | 'ContainedArray';
+        classType: 'Primitive' | 'Array' | 'Resource' | 'ContainedArray';
         fieldName: string;
         fieldTitle: string;
         field: CollectionField;
@@ -45,6 +46,7 @@ export interface CollectionDefinition {
         | 'contained'
         | 'papi'
         | 'abstract';
+    inherits?: 'pricing_table' | '';
 }
 
 const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -752,94 +754,101 @@ export class UDCService {
     }
 
     prepareDataForUdcCreation(collectionData: CollectionDefinition) {
-        const collectionFields = {};
-        const udcListViewFields = collectionData.fieldsOfCollection.map((scheme) => {
-            switch (scheme.classType) {
-                case 'Primitive':
-                    collectionFields[scheme.fieldName] = new PrimitiveTypeUdcField(
-                        scheme.field.Description ? scheme.field.Description : '',
-                        scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
-                        scheme.field.Type ? scheme.field.Type : 'String',
-                        scheme.field.hasOwnProperty('Indexed') ? scheme.field.Indexed : false,
-                    );
-                    break;
-                case 'Array':
-                    collectionFields[scheme.fieldName] = new ArrayOfPrimitiveTypeUdcField(
-                        scheme.field.Description ? scheme.field.Description : '',
-                        scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
-                        scheme.field.Type
-                            ? scheme.field.Type !== 'String'
-                                ? scheme.field.Type !== 'Integer'
-                                    ? scheme.field.Type !== 'Double'
-                                        ? undefined
+        if (collectionData.inherits) {
+            return new BodyToUpsertExtendedUdc(
+                collectionData.nameOfCollection,
+                collectionData.descriptionOfCollection,
+                collectionData.syncDefinitionOfCollection,
+                'pricing_table', // collectionData.inherits
+            );
+        } else {
+            const collectionFields = {};
+            const udcListViewFields = collectionData.fieldsOfCollection.map((scheme) => {
+                switch (scheme.classType) {
+                    case 'Primitive':
+                        collectionFields[scheme.fieldName] = new PrimitiveTypeUdcField(
+                            scheme.field.Description ? scheme.field.Description : '',
+                            scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
+                            scheme.field.Type ? scheme.field.Type : 'String',
+                            scheme.field.hasOwnProperty('Indexed') ? scheme.field.Indexed : false,
+                        );
+                        break;
+                    case 'Array':
+                        collectionFields[scheme.fieldName] = new ArrayOfPrimitiveTypeUdcField(
+                            scheme.field.Description ? scheme.field.Description : '',
+                            scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
+                            scheme.field.Type
+                                ? scheme.field.Type !== 'String'
+                                    ? scheme.field.Type !== 'Integer'
+                                        ? scheme.field.Type !== 'Double'
+                                            ? undefined
+                                            : scheme.field.Type
                                         : scheme.field.Type
                                     : scheme.field.Type
-                                : scheme.field.Type
-                            : undefined,
-                    );
-                    break;
-                case 'Contained':
-                    break;
-                case 'ContainedArray':
-                    collectionFields[scheme.fieldName] = new ContainedArrayUdcField(
-                        scheme.field.Resource || '',
-                        scheme.field.Description || '',
-                        scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
-                        undefined, // itemsDescription
-                        undefined, // itemsMandatory
-                        undefined, // itemsOptionalValues
-                        undefined, // itemsIndexed
-                        undefined, // itemsIndexedFields
-                        scheme.field.OptionalValues,
-                        scheme.field.AddonUUID,
-                        scheme.field.Indexed, // indexed
-                        scheme.field.IndexedFields, // indexedFields
-                        scheme.field.Keyword, // keyword
-                        scheme.field.Sync,
-                        scheme.field.Unique,
-                        scheme.field.Fields,
-                    );
-                    break;
-                case 'Resource':
-                    collectionFields[scheme.fieldName] = new ResourceUdcField(
-                        scheme.field.Resource || '',
-                        scheme.field.Description,
-                        scheme.field.Mandatory,
-                        scheme.field.Type || 'Resource',
-                        scheme.field.OptionalValues,
-                        scheme.field.Items,
-                        scheme.field.AddonUUID,
-                        scheme.field.Indexed,
-                        scheme.field.IndexedFields,
-                        scheme.field.Keyword,
-                        scheme.field.Sync,
-                        scheme.field.Unique,
-                        scheme.field.Fields,
-                        scheme.field.ApplySystemFilter,
-                    );
-                    break;
+                                : undefined,
+                        );
+                        break;
+                    case 'ContainedArray':
+                        collectionFields[scheme.fieldName] = new ContainedArrayUdcField(
+                            scheme.field.Resource || '',
+                            scheme.field.Description || '',
+                            scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
+                            undefined, // itemsDescription
+                            undefined, // itemsMandatory
+                            undefined, // itemsOptionalValues
+                            undefined, // itemsIndexed
+                            undefined, // itemsIndexedFields
+                            scheme.field.OptionalValues,
+                            scheme.field.AddonUUID,
+                            scheme.field.Indexed, // indexed
+                            scheme.field.IndexedFields, // indexedFields
+                            scheme.field.Keyword, // keyword
+                            scheme.field.Sync,
+                            scheme.field.Unique,
+                            scheme.field.Fields,
+                        );
+                        break;
+                    case 'Resource':
+                        collectionFields[scheme.fieldName] = new ResourceUdcField(
+                            scheme.field.Resource || '',
+                            scheme.field.Description,
+                            scheme.field.Mandatory,
+                            scheme.field.Type || 'Resource',
+                            scheme.field.OptionalValues,
+                            scheme.field.Items,
+                            scheme.field.AddonUUID,
+                            scheme.field.Indexed,
+                            scheme.field.IndexedFields,
+                            scheme.field.Keyword,
+                            scheme.field.Sync,
+                            scheme.field.Unique,
+                            scheme.field.Fields,
+                            scheme.field.ApplySystemFilter,
+                        );
+                        break;
 
-                default:
-                    break;
-            }
-            return new DataViewBaseField(
-                scheme.fieldName,
-                scheme.dataViewType ? scheme.dataViewType : 'TextBox',
-                scheme.fieldTitle,
-                scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
-                scheme.hasOwnProperty('readonly') ? scheme.readonly : true,
+                    default:
+                        break;
+                }
+                return new DataViewBaseField(
+                    scheme.fieldName,
+                    scheme.dataViewType ? scheme.dataViewType : 'TextBox',
+                    scheme.fieldTitle,
+                    scheme.field.hasOwnProperty('Mandatory') ? scheme.field.Mandatory : false,
+                    scheme.hasOwnProperty('readonly') ? scheme.readonly : true,
+                );
+            });
+            const udcListView = new UpsertUdcGridDataView(udcListViewFields);
+            const bodyOfCollectionWithFields = new BodyToUpsertUdcWithFields(
+                collectionData.nameOfCollection,
+                collectionFields,
+                udcListView,
+                collectionData.descriptionOfCollection,
+                collectionData.syncDefinitionOfCollection,
+                collectionData.typeOfCollection,
             );
-        });
-        const udcListView = new UpsertUdcGridDataView(udcListViewFields);
-        const bodyOfCollectionWithFields = new BodyToUpsertUdcWithFields(
-            collectionData.nameOfCollection,
-            collectionFields,
-            udcListView,
-            collectionData.descriptionOfCollection,
-            collectionData.syncDefinitionOfCollection,
-            collectionData.typeOfCollection,
-        );
 
-        return bodyOfCollectionWithFields;
+            return bodyOfCollectionWithFields;
+        }
     }
 }

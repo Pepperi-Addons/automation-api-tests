@@ -1,3 +1,4 @@
+import addContext from 'mochawesome/addContext';
 import { Browser } from '../../../utilities/browser';
 import { Page } from '../../Pages/base/Page';
 import config from '../../../../config';
@@ -9,6 +10,7 @@ import promised from 'chai-as-promised';
 import { OrderPageItem } from '../../Pages/OrderPage';
 import { ConsoleColors } from '../../../../services/general.service';
 import { PepperiStatus } from '../../Enumerations/PepperiStatus';
+import { Context } from 'vm';
 // import { Context } from 'mocha';
 // import addContext from 'mochawesome/addContext';
 
@@ -350,16 +352,28 @@ export class AddonPage extends Page {
         }
     }
 
-    public async checkThatElementIsNotFound(elem: string): Promise<void> {
-        if (this[elem]) {
+    public async checkThatElementIsNotFound(this: Context, elem: string, driver: Browser): Promise<void> {
+        let screenShot;
+        const addonPage = new AddonPage(driver);
+        if (addonPage[elem]) {
             try {
-                await this.browser.findElement(this[elem]);
+                await driver.findElement(addonPage[elem]);
             } catch (error) {
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At catch - element: ${elem} not found`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 expect(`ERROR -> The element: ${elem} is not visible`).to.be.undefined;
             }
         } else {
             console.info(`Element: ${elem} - is NOT declared in the Addon file`);
-            expect(`${this[elem]} to be in the Addon file, but is NOT`).to.be.undefined;
+            screenShot = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Element: ${elem} is not defined on AddonPage.ts`,
+                value: 'data:image/png;base64,' + screenShot,
+            });
+            expect(`${addonPage[elem]} to be in the Addon file, but is NOT`).to.be.undefined;
         }
     }
 

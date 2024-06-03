@@ -70,12 +70,7 @@ export async function PricingUdtInsertion(
 
                         case '0.8':
                             console.info('AT installedPricingVersion CASE 8');
-                            ppmValues_content = {
-                                ...pricingRules[udtFirstTableName].features05,
-                                ...pricingRules[udtFirstTableName].features06,
-                                ...pricingRules[udtFirstTableName].features07,
-                                ...pricingRules[udtFirstTableName].features08,
-                            };
+                            ppmValues_content = pricingRules[udtFirstTableName].features08;
                             break;
 
                         default:

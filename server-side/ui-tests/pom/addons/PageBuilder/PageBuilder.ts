@@ -4,6 +4,8 @@ import { By } from 'selenium-webdriver';
 import GeneralService from '../../../../services/general.service';
 import { AddonPage } from '../base/AddonPage';
 import { v4 as newUuid } from 'uuid';
+import { Browser } from '../../../utilities/browser';
+import { Context } from 'vm';
 
 export class PageBuilder extends AddonPage {
     public PageBuilder_Title: By = By.xpath('//span[@title="Page Builder"]');
@@ -175,13 +177,14 @@ export class PageBuilder extends AddonPage {
         await this.selectUnderPencil('Delete');
     }
 
-    public async confirmDeleteClickRedButton() {
+    public async confirmDeleteClickRedButton(this: Context, driver: Browser) {
+        const pageBuilder = new PageBuilder(driver);
         try {
-            this.pause(500);
-            const redDeleteButton = await this.browser.findElement(this.DeletePopup_Delete_Button);
+            pageBuilder.pause(500);
+            const redDeleteButton = await driver.findElement(pageBuilder.DeletePopup_Delete_Button);
             redDeleteButton.click();
-            this.pause(1000);
-            await this.checkThatElementIsNotFound('DeletePopup_Delete_Button');
+            pageBuilder.pause(1000);
+            await pageBuilder.checkThatElementIsNotFound.bind(this)('DeletePopup_Delete_Button', driver);
         } catch (error) {
             console.info('RED DELETE Button NOT CLICKED!');
             console.error(error);
@@ -259,11 +262,12 @@ export class PageBuilder extends AddonPage {
     //     await this.selectFromList(selector, name);
     // }
 
-    public async deleteFromListByName(name: string) {
-        await this.selectFromListByName(name);
-        await this.openPencilMenu();
-        await this.selectUnderPencil('Delete');
-        await this.confirmDeleteClickRedButton();
+    public async deleteFromListByName(this: Context, name: string, driver: Browser) {
+        const pageBuilder = new PageBuilder(driver);
+        await pageBuilder.selectFromListByName(name);
+        await pageBuilder.openPencilMenu();
+        await pageBuilder.selectUnderPencil('Delete');
+        await pageBuilder.confirmDeleteClickRedButton.bind(this)(driver);
     }
 
     public async searchForPageByName(name: string) {
