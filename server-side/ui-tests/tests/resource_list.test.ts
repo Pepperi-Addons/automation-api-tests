@@ -162,7 +162,7 @@ export async function ResourceListTests(email: string, password: string, client:
             }[];
             collectionType?: 'contained' | 'data';
             collectionFields?: {
-                classType: 'Primitive' | 'Array' | 'Contained' | 'Resource' | 'ContainedArray';
+                classType: 'Primitive' | 'Array' | 'Resource' | 'ContainedArray';
                 fieldName: string;
                 fieldTitle: string;
                 field: CollectionField;
