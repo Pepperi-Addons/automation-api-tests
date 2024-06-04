@@ -195,7 +195,7 @@ export class PageBuilder extends AddonPage {
             pageBuilder.pause(500);
             const redDeleteButton = await driver.findElement(pageBuilder.DeletePopup_Delete_Button);
             redDeleteButton.click();
-            pageBuilder.pause(1000);
+            pageBuilder.pause(5 * 1000);
             screenShot = await driver.saveScreenshots();
             addContext(this, {
                 title: `After Red Delete button is clicked`,

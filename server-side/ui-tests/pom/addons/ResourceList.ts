@@ -249,12 +249,13 @@ export class ResourceList extends AddonPage {
             resourceList.pause(500);
             const redDeleteButton = await driver.findElement(resourceList.DeletePopup_Delete_Button);
             await redDeleteButton.click();
-            resourceList.pause(1000);
+            resourceList.pause(3 * 1000);
             screenShot = await driver.saveScreenshots();
             addContext(this, {
                 title: `Delete Confirmation Popup button clicked`,
                 value: 'data:image/png;base64,' + screenShot,
             });
+            resourceList.pause(2 * 1000);
             await resourceList.checkThatElementIsNotFound.bind(this)('DeletePopup_Delete_Button', driver);
         } catch (error) {
             const err = error as Error;
