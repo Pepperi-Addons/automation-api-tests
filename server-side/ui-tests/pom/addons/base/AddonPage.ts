@@ -378,6 +378,8 @@ export class AddonPage extends Page {
                     value: er.message,
                 });
                 // expect(`ERROR -> The element: ${elem} is not visible`).to.be.undefined;
+                expect(er.message).to.contain('After wait time of: ');
+                expect(er.message).to.contain(', The test must end, The element is not visible');
             }
         } else {
             console.info(`Element: ${elem} - is NOT declared in the Addon file`);

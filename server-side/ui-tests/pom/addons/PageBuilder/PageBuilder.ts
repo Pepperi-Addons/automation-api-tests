@@ -185,11 +185,22 @@ export class PageBuilder extends AddonPage {
 
     public async confirmDeleteClickRedButton(this: Context, driver: Browser) {
         const pageBuilder = new PageBuilder(driver);
+        let screenShot;
         try {
+            screenShot = await driver.saveScreenshots();
+            addContext(this, {
+                title: `At "confirmDeleteClickRedButton" function - Before Red Delete button is clicked`,
+                value: 'data:image/png;base64,' + screenShot,
+            });
             pageBuilder.pause(500);
             const redDeleteButton = await driver.findElement(pageBuilder.DeletePopup_Delete_Button);
             redDeleteButton.click();
             pageBuilder.pause(1000);
+            screenShot = await driver.saveScreenshots();
+            addContext(this, {
+                title: `After Red Delete button is clicked`,
+                value: 'data:image/png;base64,' + screenShot,
+            });
             await pageBuilder.checkThatElementIsNotFound.bind(this)('DeletePopup_Delete_Button', driver);
         } catch (error) {
             const err = error as Error;
