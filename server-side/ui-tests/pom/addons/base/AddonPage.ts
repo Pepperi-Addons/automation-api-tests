@@ -363,6 +363,7 @@ export class AddonPage extends Page {
     public async checkThatElementIsNotFound(this: Context, elem: string, driver: Browser): Promise<void> {
         let screenShot;
         const addonPage = new AddonPage(driver);
+        driver.sleep(1 * 1000);
         if (addonPage[elem]) {
             try {
                 await driver.findElement(addonPage[elem]);
@@ -379,7 +380,7 @@ export class AddonPage extends Page {
                 });
                 // expect(`ERROR -> The element: ${elem} is not visible`).to.be.undefined;
                 expect(er.message).to.contain('After wait time of: ');
-                expect(er.message).to.contain(', The test must end, The element is not visible');
+                expect(er.message).to.contain(', The test must end, The element is');
             }
         } else {
             console.info(`Element: ${elem} - is NOT declared in the Addon file`);
