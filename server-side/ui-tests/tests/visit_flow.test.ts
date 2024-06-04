@@ -988,10 +988,20 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     await pageBuilder.waitTillVisible(pageBuilder.PagesList_NumberOfItemsInList, 15000);
                     await pageBuilder.searchForPageByName(pageName);
                     pageBuilder.pause(0.2 * 1000);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Search for ${pageName} before deletion`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     await pageBuilder.deleteFromListByName.bind(this)(pageName, driver);
                     pageBuilder.pause(3 * 1000);
                     await pageBuilder.isSpinnerDone();
                     await pageBuilder.searchForPageByName(pageName);
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Search for ${pageName} after deletion`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     expect(
                         await (await driver.findElement(pageBuilder.PagesList_EmptyList_Paragraph)).getText(),
                     ).to.contain('No results were found.');
