@@ -8,169 +8,169 @@ export class PricingData05 {
                         baseline: [],
                         '1unit': [],
                         '3units': [
-                            {
-                                Name: 'MultipleValuesCategory',
-                                Base: 83.25,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM2_A007',
-                                        Type: '%',
-                                        Value: -5,
-                                        Amount: -4.1625,
-                                    },
-                                ],
-                                New: 79.0875,
-                                Amount: -4.1625,
-                            },
-                            {
-                                Name: 'MultipleValues',
-                                Base: 83.25,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM2_A007 Category_EA_Contract3',
-                                        Type: '%',
-                                        Value: -10,
-                                        Amount: -8.325,
-                                        Uom: ['EA'],
-                                    },
-                                ],
-                                New: 74.925,
-                                Amount: -8.325,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesCategory',
+                            //     Base: 83.25,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM2_A007',
+                            //             Type: '%',
+                            //             Value: -5,
+                            //             Amount: -4.1625,
+                            //         },
+                            //     ],
+                            //     New: 79.0875,
+                            //     Amount: -4.1625,
+                            // },
+                            // {
+                            //     Name: 'MultipleValues',
+                            //     Base: 83.25,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM2_A007 Category_EA_Contract3',
+                            //             Type: '%',
+                            //             Value: -10,
+                            //             Amount: -8.325,
+                            //             Uom: ['EA'],
+                            //         },
+                            //     ],
+                            //     New: 74.925,
+                            //     Amount: -8.325,
+                            // },
                         ],
                         '1case(6units)': [],
                         '4cases(24units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory',
-                                Base: 83.25,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM2_A007',
-                                        Type: '%',
-                                        Value: -5,
-                                        Amount: -4.1625,
-                                    },
-                                ],
-                                New: 79.0875,
-                                Amount: -4.1625,
-                            },
-                            {
-                                Name: 'MultipleValues',
-                                Base: 666,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -199.8,
-                                    },
-                                    {
-                                        Name: 'ZDM2_A007 Category_CS_Contract1',
-                                        Type: '%',
-                                        Value: -5,
-                                        Amount: -33.3,
-                                        Uom: ['CS'],
-                                    },
-                                ],
-                                New: 432.9,
-                                Amount: -233.1,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
+                            // {
+                            //     Name: 'MultipleValuesCategory',
+                            //     Base: 83.25,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM2_A007',
+                            //             Type: '%',
+                            //             Value: -5,
+                            //             Amount: -4.1625,
+                            //         },
+                            //     ],
+                            //     New: 79.0875,
+                            //     Amount: -4.1625,
+                            // },
+                            // {
+                            //     Name: 'MultipleValues',
+                            //     Base: 666,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                            //             Type: '%',
+                            //             Value: -30,
+                            //             Amount: -199.8,
+                            //         },
+                            //         {
+                            //             Name: 'ZDM2_A007 Category_CS_Contract1',
+                            //             Type: '%',
+                            //             Value: -5,
+                            //             Amount: -33.3,
+                            //             Uom: ['CS'],
+                            //         },
+                            //     ],
+                            //     New: 432.9,
+                            //     Amount: -233.1,
+                            // },
                         ],
                     },
                     OtherAcc: {
                         baseline: [],
                         '1unit': [],
                         '3units': [
-                            {
-                                Name: 'MultipleValuesCategory',
-                                Base: 83.25,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM2_A007',
-                                        Type: '%',
-                                        Value: -5,
-                                        Amount: -4.1625,
-                                    },
-                                ],
-                                New: 79.0875,
-                                Amount: -4.1625,
-                            },
-                            {
-                                Name: 'MultipleValues',
-                                Base: 83.25,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM2_A007 Category_EA_Contract2',
-                                        Type: '%',
-                                        Value: -5,
-                                        Amount: -4.1625,
-                                        Uom: ['EA'],
-                                    },
-                                ],
-                                New: 79.0875,
-                                Amount: -4.1625,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesCategory',
+                            //     Base: 83.25,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM2_A007',
+                            //             Type: '%',
+                            //             Value: -5,
+                            //             Amount: -4.1625,
+                            //         },
+                            //     ],
+                            //     New: 79.0875,
+                            //     Amount: -4.1625,
+                            // },
+                            // {
+                            //     Name: 'MultipleValues',
+                            //     Base: 83.25,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM2_A007 Category_EA_Contract2',
+                            //             Type: '%',
+                            //             Value: -5,
+                            //             Amount: -4.1625,
+                            //             Uom: ['EA'],
+                            //         },
+                            //     ],
+                            //     New: 79.0875,
+                            //     Amount: -4.1625,
+                            // },
                         ],
                         '1case(6units)': [],
                         '4cases(24units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory',
-                                Base: 83.25,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM2_A007',
-                                        Type: '%',
-                                        Value: -5,
-                                        Amount: -4.1625,
-                                    },
-                                ],
-                                New: 79.0875,
-                                Amount: -4.1625,
-                            },
-                            {
-                                Name: 'MultipleValues',
-                                Base: 666,
-                                Conditions: [
-                                    { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -99.9 },
-                                    {
-                                        Name: 'ZDM2_A007 Category_CS_Contract1',
-                                        Type: '%',
-                                        Value: -5,
-                                        Amount: -33.3,
-                                        Uom: ['CS'],
-                                    },
-                                ],
-                                New: 532.8,
-                                Amount: -133.2,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
+                            // {
+                            //     Name: 'MultipleValuesCategory',
+                            //     Base: 83.25,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM2_A007',
+                            //             Type: '%',
+                            //             Value: -5,
+                            //             Amount: -4.1625,
+                            //         },
+                            //     ],
+                            //     New: 79.0875,
+                            //     Amount: -4.1625,
+                            // },
+                            // {
+                            //     Name: 'MultipleValues',
+                            //     Base: 666,
+                            //     Conditions: [
+                            //         { Name: 'ZDM3_A006 Contract2_ALL_UOMS', Type: '%', Value: -15, Amount: -99.9 },
+                            //         {
+                            //             Name: 'ZDM2_A007 Category_CS_Contract1',
+                            //             Type: '%',
+                            //             Value: -5,
+                            //             Amount: -33.3,
+                            //             Uom: ['CS'],
+                            //         },
+                            //     ],
+                            //     New: 532.8,
+                            //     Amount: -133.2,
+                            // },
                         ],
                     },
                 },
@@ -327,20 +327,20 @@ export class PricingData05 {
                                     ],
                                 ],
                             },
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 648,
@@ -416,20 +416,20 @@ export class PricingData05 {
                                     ],
                                 ],
                             },
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 648,
@@ -569,20 +569,20 @@ export class PricingData05 {
                         '3units': [],
                         '1case(6units)': [],
                         '4cases(24units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 630,
@@ -605,20 +605,20 @@ export class PricingData05 {
                         '3units': [],
                         '1case(6units)': [],
                         '4cases(24units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 630,
@@ -760,20 +760,20 @@ export class PricingData05 {
                         '3units': [],
                         '1case(6units)': [],
                         '4cases(24units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 798,
@@ -810,20 +810,20 @@ export class PricingData05 {
                         '3units': [],
                         '1case(6units)': [],
                         '4cases(24units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 798,
@@ -991,20 +991,20 @@ export class PricingData05 {
                                     ],
                                 ],
                             },
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 708,
@@ -1082,20 +1082,20 @@ export class PricingData05 {
                                     ],
                                 ],
                             },
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 708,
@@ -1222,20 +1222,20 @@ export class PricingData05 {
                         '3units': [],
                         '1case(6units)': [],
                         '4cases(24units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 726,
@@ -1258,20 +1258,20 @@ export class PricingData05 {
                         '3units': [],
                         '1case(6units)': [],
                         '4cases(24units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 726,
@@ -1398,20 +1398,20 @@ export class PricingData05 {
                         '3units': [],
                         '1case(6units)': [],
                         '4cases(24units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 774,
@@ -1434,20 +1434,20 @@ export class PricingData05 {
                         '3units': [],
                         '1case(6units)': [],
                         '4cases(24units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 760,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -114,
-                                    },
-                                ],
-                                New: 646,
-                                Amount: -114,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 760,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -114,
+                            //         },
+                            //     ],
+                            //     New: 646,
+                            //     Amount: -114,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 774,
@@ -1596,20 +1596,20 @@ export class PricingData05 {
                                     ],
                                 ],
                             },
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 585,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -175.5,
-                                    },
-                                ],
-                                New: 409.5,
-                                Amount: -175.5,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 585,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -30,
+                            //             Amount: -175.5,
+                            //         },
+                            //     ],
+                            //     New: 409.5,
+                            //     Amount: -175.5,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 585,
@@ -1630,20 +1630,20 @@ export class PricingData05 {
                         baseline: [],
                         '5units': [],
                         '20units': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 585,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -175.5,
-                                    },
-                                ],
-                                New: 409.5,
-                                Amount: -175.5,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 585,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -175.5,
+                            //         },
+                            //     ],
+                            //     New: 409.5,
+                            //     Amount: -175.5,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 774,
@@ -1752,20 +1752,20 @@ export class PricingData05 {
                             },
                         ],
                         '9case(54units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 585,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -175.5,
-                                    },
-                                ],
-                                New: 409.5,
-                                Amount: -175.5,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 585,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -30,
+                            //             Amount: -175.5,
+                            //         },
+                            //     ],
+                            //     New: 409.5,
+                            //     Amount: -175.5,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 1620,
@@ -1796,20 +1796,20 @@ export class PricingData05 {
                                     ],
                                 ],
                             },
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 585,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -175.5,
-                                    },
-                                ],
-                                New: 409.5,
-                                Amount: -175.5,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 585,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -30,
+                            //             Amount: -175.5,
+                            //         },
+                            //     ],
+                            //     New: 409.5,
+                            //     Amount: -175.5,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 1800,
@@ -1829,20 +1829,20 @@ export class PricingData05 {
                     OtherAcc: {
                         baseline: [],
                         '9case(54units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 585,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -175.5,
-                                    },
-                                ],
-                                New: 409.5,
-                                Amount: -175.5,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 585,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -175.5,
+                            //         },
+                            //     ],
+                            //     New: 409.5,
+                            //     Amount: -175.5,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 1620,
@@ -1868,20 +1868,20 @@ export class PricingData05 {
                                     ],
                                 ],
                             },
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 585,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -175.5,
-                                    },
-                                ],
-                                New: 409.5,
-                                Amount: -175.5,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 585,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -175.5,
+                            //         },
+                            //     ],
+                            //     New: 409.5,
+                            //     Amount: -175.5,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 1800,
@@ -1996,20 +1996,20 @@ export class PricingData05 {
                             },
                         ],
                         '2case(12units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 585,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -175.5,
-                                    },
-                                ],
-                                New: 409.5,
-                                Amount: -175.5,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 585,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -30,
+                            //             Amount: -175.5,
+                            //         },
+                            //     ],
+                            //     New: 409.5,
+                            //     Amount: -175.5,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 360,
@@ -2040,20 +2040,20 @@ export class PricingData05 {
                                     ],
                                 ],
                             },
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 585,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -175.5,
-                                    },
-                                ],
-                                New: 409.5,
-                                Amount: -175.5,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 585,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -30,
+                            //             Amount: -175.5,
+                            //         },
+                            //     ],
+                            //     New: 409.5,
+                            //     Amount: -175.5,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 540,
@@ -2073,20 +2073,20 @@ export class PricingData05 {
                     OtherAcc: {
                         baseline: [],
                         '2case(12units)': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 585,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -175.5,
-                                    },
-                                ],
-                                New: 409.5,
-                                Amount: -175.5,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 585,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -175.5,
+                            //         },
+                            //     ],
+                            //     New: 409.5,
+                            //     Amount: -175.5,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 360,
@@ -2112,20 +2112,20 @@ export class PricingData05 {
                                     ],
                                 ],
                             },
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 585,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A006',
-                                        Type: '%',
-                                        Value: -15,
-                                        Amount: -175.5,
-                                    },
-                                ],
-                                New: 409.5,
-                                Amount: -175.5,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 585,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A006',
+                            //             Type: '%',
+                            //             Value: -15,
+                            //             Amount: -175.5,
+                            //         },
+                            //     ],
+                            //     New: 409.5,
+                            //     Amount: -175.5,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 540,
@@ -2420,20 +2420,20 @@ export class PricingData05 {
                                 New: 246,
                                 Amount: -61.5,
                             },
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 307.5,
-                                Conditions: [
-                                    {
-                                        Name: 'ZDM3_A009',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -92.25,
-                                    },
-                                ],
-                                New: 215.25,
-                                Amount: -92.25,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 307.5,
+                            //     Conditions: [
+                            //         {
+                            //             Name: 'ZDM3_A009',
+                            //             Type: '%',
+                            //             Value: -30,
+                            //             Amount: -92.25,
+                            //         },
+                            //     ],
+                            //     New: 215.25,
+                            //     Amount: -92.25,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 307.5,
@@ -2455,13 +2455,13 @@ export class PricingData05 {
                         '3units': [],
                         '7units': [],
                         '10units': [
-                            {
-                                Name: 'MultipleValuesAccount',
-                                Base: 585,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -46.125 }],
-                                New: 409.5,
-                                Amount: -175.5,
-                            },
+                            // {
+                            //     Name: 'MultipleValuesAccount',
+                            //     Base: 585,
+                            //     Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -46.125 }],
+                            //     New: 409.5,
+                            //     Amount: -175.5,
+                            // },
                             // {
                             //     Name: 'MultipleValues',
                             //     Base: 307.5,

@@ -169,6 +169,14 @@ export async function PricingUdtCleanup(
                     where: `MapDataExternalID='${udtFirstTableName}'`,
                     page_size: -1,
                 });
+                addContext(this, {
+                    title: `Expected Length`,
+                    value: pricingRules.dummyPPM_Values_length,
+                });
+                addContext(this, {
+                    title: `Actual Length`,
+                    value: ppmValuesEnd.length,
+                });
                 expect(ppmValuesEnd.length).equals(pricingRules.dummyPPM_Values_length);
             });
         });
@@ -201,7 +209,7 @@ export async function PricingUdtCleanup(
                     page_size: -1,
                 });
                 addContext(this, {
-                    title: `ppmAccountValuesEnd.length`,
+                    title: `ppmAccountValues.length before deletion`,
                     value: ppmAccountValuesEnd.length,
                 });
             });
@@ -263,6 +271,14 @@ export async function PricingUdtCleanup(
                 ppmAccountValuesEnd = await objectsService.getUDT({
                     where: `MapDataExternalID='${udtSecondTableName}'`,
                     page_size: -1,
+                });
+                addContext(this, {
+                    title: `Expected Length`,
+                    value: pricingRules.dummyPPM_AccountValues_length,
+                });
+                addContext(this, {
+                    title: `Actual Length`,
+                    value: ppmAccountValuesEnd.length,
                 });
                 expect(ppmAccountValuesEnd.length).equals(pricingRules.dummyPPM_AccountValues_length);
             });
