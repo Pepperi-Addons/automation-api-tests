@@ -160,7 +160,15 @@ _________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    describe('Udc', () => {
+                    describe(`${
+                        account == 'Acc01'
+                            ? 'UDT "PPM_AccountValues"'
+                            : account == 'Acc02'
+                            ? 'UDC "PricingTest1"'
+                            : account == 'Acc03'
+                            ? 'UDC "PricingTest2"'
+                            : 'UDT "PPM_Values"'
+                    }`, () => {
                         it('Navigating to "Great Perfumes" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(
