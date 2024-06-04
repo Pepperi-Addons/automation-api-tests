@@ -367,12 +367,17 @@ export class AddonPage extends Page {
             try {
                 await driver.findElement(addonPage[elem]);
             } catch (error) {
+                const er = error as Error;
                 screenShot = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `At catch - element: ${elem} not found`,
+                    title: `At catch of checkThatElementIsNotFound - element: ${elem} NOT found`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
-                expect(`ERROR -> The element: ${elem} is not visible`).to.be.undefined;
+                addContext(this, {
+                    title: `Error Message:`,
+                    value: er.message,
+                });
+                // expect(`ERROR -> The element: ${elem} is not visible`).to.be.undefined;
             }
         } else {
             console.info(`Element: ${elem} - is NOT declared in the Addon file`);
