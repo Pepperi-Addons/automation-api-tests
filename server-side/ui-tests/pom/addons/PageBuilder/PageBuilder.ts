@@ -154,21 +154,33 @@ export class PageBuilder extends AddonPage {
         }
     }
 
-    public async selectUnderPencil(buttonTitle: string) {
+    public async selectUnderPencil(this: Context, buttonTitle: string, driver: Browser) {
+        const pageBuilder = new PageBuilder(driver);
         try {
-            await this.browser.untilIsVisible(this[`Pencil_${buttonTitle}`], 500);
-            await this.clickElement(`Pencil_${buttonTitle}`);
-            await this.browser.untilIsVisible(this.DeletePopup_Dialog, 500);
+            await driver.untilIsVisible(pageBuilder[`Pencil_${buttonTitle}`], 500);
+            await pageBuilder.clickElement(`Pencil_${buttonTitle}`);
+            await driver.untilIsVisible(pageBuilder.DeletePopup_Dialog, 500);
+            const screenShot = await driver.saveScreenshots();
+            addContext(this, {
+                title: `"${buttonTitle}" Selected from Pencil Menu`,
+                value: 'data:image/png;base64,' + screenShot,
+            });
         } catch (error) {
+            const err = error as Error;
             console.info(`UNABLE TO SELECT: ${buttonTitle}`);
             console.error(error);
+            addContext(this, {
+                title: 'Error Message:',
+                value: err.message,
+            });
             expect(`ERROR -> UNABLE TO SELECT: ${buttonTitle}`).to.be.undefined;
         }
     }
 
-    public async openPencilChooseDelete() {
-        await this.openPencilMenu();
-        await this.selectUnderPencil('Delete');
+    public async openPencilChooseDelete(this: Context, driver: Browser) {
+        const pageBuilder = new PageBuilder(driver);
+        await pageBuilder.openPencilMenu();
+        await pageBuilder.selectUnderPencil.bind(this)('Delete', driver);
     }
 
     public async confirmDeleteClickRedButton(this: Context, driver: Browser) {
@@ -265,7 +277,7 @@ export class PageBuilder extends AddonPage {
         const pageBuilder = new PageBuilder(driver);
         await pageBuilder.selectFromListByName(name);
         await pageBuilder.openPencilMenu();
-        await pageBuilder.selectUnderPencil('Delete');
+        await pageBuilder.selectUnderPencil.bind(this)('Delete', driver);
         await pageBuilder.confirmDeleteClickRedButton.bind(this)(driver);
     }
 
