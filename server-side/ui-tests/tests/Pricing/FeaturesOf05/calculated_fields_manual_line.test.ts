@@ -20,7 +20,7 @@ export async function PricingCalculatedFieldsManualLineTests(
     email: string,
     password: string,
     client: Client,
-    specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
+    // specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
 ) {
     /*
 _________________ 
@@ -93,64 +93,66 @@ _________________
     const udtFirstTableName = 'PPM_Values';
     // const udtSecondTableName = 'PPM_AccountValues';
 
-    let testItemsData = 'testItemsValues';
-    let ppmValues_content;
+    const ppmValues_content = pricingRules[udtFirstTableName].features05;
 
-    switch (true) {
-        case installedPricingVersionLong?.startsWith('0.5'):
-            console.info('AT installedPricingVersion CASE 5');
-            testItemsData = 'testItemsValues_version05';
-            ppmValues_content = pricingRules[udtFirstTableName].features05;
-            break;
+    const testItemsData = 'testItemsValues';
 
-        case installedPricingVersionLong?.startsWith('0.6'):
-            console.info('AT installedPricingVersion CASE 6');
-            ppmValues_content = {
-                ...pricingRules[udtFirstTableName].features05,
-                ...pricingRules[udtFirstTableName].features06,
-            };
-            break;
+    // let ppmValues_content;
+    // switch (true) {
+    //     case installedPricingVersionLong?.startsWith('0.5'):
+    //         console.info('AT installedPricingVersion CASE 5');
+    //         testItemsData = 'testItemsValues_version05';
+    //         ppmValues_content = pricingRules[udtFirstTableName].features05;
+    //         break;
 
-        case installedPricingVersionLong?.startsWith('0.7'):
-            console.info('AT installedPricingVersion CASE 7');
-            testItemsData = specialVersion === 'version07for05data' ? 'testItemsValues_version05' : 'testItemsValues';
-            ppmValues_content =
-                specialVersion === 'version07for05data'
-                    ? pricingRules[udtFirstTableName].features05
-                    : {
-                          ...pricingRules[udtFirstTableName].features05,
-                          ...pricingRules[udtFirstTableName].features06,
-                          ...pricingRules[udtFirstTableName].features07,
-                      };
-            break;
+    //     case installedPricingVersionLong?.startsWith('0.6'):
+    //         console.info('AT installedPricingVersion CASE 6');
+    //         ppmValues_content = {
+    //             ...pricingRules[udtFirstTableName].features05,
+    //             ...pricingRules[udtFirstTableName].features06,
+    //         };
+    //         break;
 
-        case installedPricingVersionLong?.startsWith('0.8'):
-            console.info('AT installedPricingVersion CASE 8');
-            ppmValues_content =
-                specialVersion === 'version08for07data'
-                    ? {
-                          ...pricingRules[udtFirstTableName].features05,
-                          ...pricingRules[udtFirstTableName].features06,
-                          ...pricingRules[udtFirstTableName].features07,
-                      }
-                    : {
-                          ...pricingRules[udtFirstTableName].features05,
-                          ...pricingRules[udtFirstTableName].features06,
-                          ...pricingRules[udtFirstTableName].features07,
-                          ...pricingRules[udtFirstTableName].features08,
-                      };
-            break;
+    //     case installedPricingVersionLong?.startsWith('0.7'):
+    //         console.info('AT installedPricingVersion CASE 7');
+    //         testItemsData = specialVersion === 'version07for05data' ? 'testItemsValues_version05' : 'testItemsValues';
+    //         ppmValues_content =
+    //             specialVersion === 'version07for05data'
+    //                 ? pricingRules[udtFirstTableName].features05
+    //                 : {
+    //                       ...pricingRules[udtFirstTableName].features05,
+    //                       ...pricingRules[udtFirstTableName].features06,
+    //                       ...pricingRules[udtFirstTableName].features07,
+    //                   };
+    //         break;
 
-        default:
-            console.info('AT installedPricingVersion Default');
-            ppmValues_content = {
-                ...pricingRules[udtFirstTableName].features05,
-                ...pricingRules[udtFirstTableName].features06,
-                ...pricingRules[udtFirstTableName].features07,
-                ...pricingRules[udtFirstTableName].features08,
-            };
-            break;
-    }
+    //     case installedPricingVersionLong?.startsWith('0.8'):
+    //         console.info('AT installedPricingVersion CASE 8');
+    //         ppmValues_content =
+    //             specialVersion === 'version08for07data'
+    //                 ? {
+    //                       ...pricingRules[udtFirstTableName].features05,
+    //                       ...pricingRules[udtFirstTableName].features06,
+    //                       ...pricingRules[udtFirstTableName].features07,
+    //                   }
+    //                 : {
+    //                       ...pricingRules[udtFirstTableName].features05,
+    //                       ...pricingRules[udtFirstTableName].features06,
+    //                       ...pricingRules[udtFirstTableName].features07,
+    //                       ...pricingRules[udtFirstTableName].features08,
+    //                   };
+    //         break;
+
+    //     default:
+    //         console.info('AT installedPricingVersion Default');
+    //         ppmValues_content = {
+    //             ...pricingRules[udtFirstTableName].features05,
+    //             ...pricingRules[udtFirstTableName].features06,
+    //             ...pricingRules[udtFirstTableName].features07,
+    //             ...pricingRules[udtFirstTableName].features08,
+    //         };
+    //         break;
+    // }
 
     let driver: Browser;
     let pricingService: PricingService;
