@@ -1,3 +1,4 @@
+import addContext from 'mochawesome/addContext';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
@@ -41,10 +42,7 @@ export class PageBuilder extends AddonPage {
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu/div/button');
     public Pencil_Edit: By = this.getSelectorOfButtonUnderPencilMenu('Edit');
     public Pencil_Delete: By = this.getSelectorOfButtonUnderPencilMenu('Delete');
-    // Delete Pop-up
-    public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
-    public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
-    public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
+
     // Edit a Page
     public EditPage_SideBar_PageTitle: By = By.xpath('//pep-side-bar/div/div/div[1]/div[1]/div/div/div/span');
     public EditPage_EditMenu_Button_Publish: By = this.getSelectorOfButtonAtEditPageByDataQa('Publish'); //By.xpath('//button[@data-qa="Publish"]');
@@ -77,10 +75,6 @@ export class PageBuilder extends AddonPage {
 
     private getSelectorOfButtonUnderPencilMenu(title: string) {
         return By.xpath(`//span[@title="${title}"]/parent::button`);
-    }
-
-    private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
-        return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
     }
 
     private getSelectorOfButtonAtEditPageByDataQa(title: string) {
@@ -186,8 +180,13 @@ export class PageBuilder extends AddonPage {
             pageBuilder.pause(1000);
             await pageBuilder.checkThatElementIsNotFound.bind(this)('DeletePopup_Delete_Button', driver);
         } catch (error) {
+            const err = error as Error;
             console.info('RED DELETE Button NOT CLICKED!');
             console.error(error);
+            addContext(this, {
+                title: 'Error Message:',
+                value: err.message,
+            });
             expect('RED DELETE Button NOT CLICKED!').to.be.null;
         }
     }

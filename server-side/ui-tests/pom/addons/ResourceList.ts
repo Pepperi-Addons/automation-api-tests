@@ -79,10 +79,6 @@ export class ResourceList extends AddonPage {
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu/div/button');
     public Pencil_Edit: By = this.getSelectorOfButtonUnderPencilMenu('Edit');
     public Pencil_Delete: By = this.getSelectorOfButtonUnderPencilMenu('Delete');
-    // Delete Pop-up
-    public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
-    public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
-    public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
     // Add Pop-up
     public AddPopup_Title: By = By.xpath('//span[contains(@class,"dialog-title")]');
     public AddPopup_Name: By = By.xpath('//input[@id="Name"]');
@@ -130,10 +126,6 @@ export class ResourceList extends AddonPage {
 
     public getSelectorOfResourceListSettingsTab(title: string) {
         return By.xpath(`//div[contains(@class,"mat-tab-labels")] //div[text()="${title}"]/parent::div[@role="tab"]`);
-    }
-
-    private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
-        return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
     }
 
     private getSelectorOfButtonUnderPencilMenu(title: string) {

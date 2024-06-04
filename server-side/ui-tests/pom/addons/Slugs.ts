@@ -52,10 +52,6 @@ export class Slugs extends AddonPage {
     public Info_Popup_Close_Button: By = By.xpath(
         '//span[contains(text(),"Info")]/ancestor::pep-dialog //span[contains(text(),"Close")]/parent::button',
     );
-    // Delete Pop-up
-    public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
-    public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
-    public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
 
     private getSelectorOfTabByText(title: string) {
         return By.xpath(`//div[text()="${title}"]/parent::div[@role="tab"][contains(@id,"mat-tab-label-")]`);
@@ -95,10 +91,6 @@ export class Slugs extends AddonPage {
 
     private getSelectorOfSlugCheckboxByPartialName(title: string) {
         return By.xpath(`//a[@id="Name"][contains(text(),"${title}")]/ancestor::fieldset/mat-checkbox/label/span`);
-    }
-
-    private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
-        return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
     }
 
     public getSelectorOfMappedSlugInRepCardSmallDisplayByText(text: string) {

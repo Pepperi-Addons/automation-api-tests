@@ -113,6 +113,14 @@ export class AddonPage extends Page {
     public EditPage_ConfigProfileCard_Rep_EmptyContent: By = By.xpath(
         '//span[contains(text(),"No fields were assigned")]',
     );
+    // Delete Pop-up
+    public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
+    public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
+    public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
+
+    private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
+        return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
+    }
 
     private getSelectorOfConfigProfileCardByName(name: string) {
         return By.xpath(`//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card`);
