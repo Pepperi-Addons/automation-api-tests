@@ -1212,10 +1212,18 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Delete Page', async function () {
                     deletePageResponse = await pageBuilder.removePageByUUID(pageKey, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deletePageResponse,
+                    });
                 });
 
                 it('Delete Slug', async function () {
                     const deleteSlugResponse = await slugs.deleteSlugByName(slug_path, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deleteSlugResponse,
+                    });
                     expect(deleteSlugResponse.Ok).to.equal(true);
                     expect(deleteSlugResponse.Status).to.equal(200);
                     expect(deleteSlugResponse.Body.success).to.equal(true);
@@ -1223,6 +1231,10 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Delete Editor Via API', async function () {
                     const deleteEditorResponse = await resourceEditors.deleteEditorViaAPI(editorKey, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deleteEditorResponse,
+                    });
                     expect(deleteEditorResponse.Ok).to.equal(true);
                     expect(deleteEditorResponse.Status).to.equal(200);
                     expect(deleteEditorResponse.Body.Name).to.equal(editorName);
@@ -1231,6 +1243,10 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Delete View Via API', async function () {
                     const deleteViewResponse = await resourceViews.deleteViewViaApiByUUID(viewKey, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deleteViewResponse,
+                    });
                     expect(deleteViewResponse.Ok).to.equal(true);
                     expect(deleteViewResponse.Status).to.equal(200);
                     expect(deleteViewResponse.Body.Name).to.equal(viewName);
@@ -1245,11 +1261,20 @@ export async function ResourceListTests(email: string, password: string, client:
                     await resourceListUtils.removeHomePageButtonByProfile(slugDisplayName, 'Rep');
                     await webAppHomePage.manualResync(client);
                     const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugDisplayName);
+                    const screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At Home Page`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
                     expect(isNotFound).to.equal(true);
                 });
 
                 it('Validating Deletion of Page', async function () {
                     console.info(`deletePageResponse: ${JSON.stringify(deletePageResponse, null, 2)}`);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deletePageResponse,
+                    });
                     driver.sleep(0.5 * 1000);
                     expect(deletePageResponse.Ok).to.equal(true);
                     expect(deletePageResponse.Status).to.equal(200);
