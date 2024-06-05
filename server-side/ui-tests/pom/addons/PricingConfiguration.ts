@@ -2623,7 +2623,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
                         },
                     },
                     {
@@ -2635,7 +2634,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
                         },
                     },
                     {
@@ -2647,7 +2645,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
                         },
                     },
                     {
@@ -2659,7 +2656,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
                         },
                     },
                     {
@@ -2671,7 +2667,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
                         },
                     },
                     {
@@ -2683,7 +2678,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
                         },
                     },
                     {
@@ -2695,7 +2689,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
                         },
                     },
                     {
@@ -2707,7 +2700,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
                         },
                     },
                     {
@@ -2719,7 +2711,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
                         },
                     },
                     {
@@ -2731,7 +2722,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
                         },
                     },
                     {
@@ -2743,7 +2733,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
                         },
                     },
                     {
@@ -2755,7 +2744,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
                         },
                     },
                     {
@@ -2767,7 +2755,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
                         },
                     },
                     {
@@ -2779,7 +2766,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
                         },
                     },
                     {
@@ -2791,7 +2777,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
                         },
                     },
                     {
@@ -2803,7 +2788,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
                         },
                     },
                     {
@@ -2815,7 +2799,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
                         },
                     },
                     {
@@ -2827,7 +2810,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 2,
                         },
                     },
                     {
@@ -2884,7 +2866,6 @@ export default class PricingConfiguration {
                         },
                         BlockPriceField: {
                             Type: 'Unit',
-                            UomIndex: 1,
                         },
                     },
                 ],
