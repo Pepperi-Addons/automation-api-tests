@@ -151,25 +151,129 @@ export class PricingData08 {
                 ItemPrice: 42.25,
                 NPMCalcMessage: {
                     OtherAcc: {
-                        baseline: [],
-                        '1 Each': [],
-                        '5 Case': [],
-                        '3 Box': [],
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A001', Type: 'S', Value: 11, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A001', Type: 'S', Value: 1, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                        '1 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 42.25,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 1, Amount: -41.25 }],
+                                New: 1,
+                                Amount: -41.25,
+                            },
+                        ],
+                        '5 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 211.25,
+                                Conditions: [
+                                    { Name: 'ZBASE_A001', Type: 'S', Value: 11, Amount: -156.25, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A001', Type: 'S', Value: 1, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 55,
+                                Amount: -156.25,
+                            },
+                        ],
+                        '3 Box': [
+                            {
+                                Name: 'Base',
+                                Base: 126.75,
+                                Conditions: [
+                                    { Name: 'ZBASE_A001', Type: 'S', Value: 111, Amount: 206.25, Uom: ['BOX'] },
+                                    { Name: 'ZBASE_A001', Type: 'S', Value: 1, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 333,
+                                Amount: 206.25,
+                            },
+                        ],
                     },
                     Acc01: {
-                        baseline: [],
-                        '1 Each': [],
-                        '5 Case': [],
-                        '3 Box': [],
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 22, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 2, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                        '1 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 42.25,
+                                Conditions: [{ Name: 'ZBASE_A002', Type: 'S', Value: 2, Amount: -40.25 }],
+                                New: 2,
+                                Amount: -40.25,
+                            },
+                        ],
+                        '5 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 211.25,
+                                Conditions: [
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 22, Amount: -101.25, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 2, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 110,
+                                Amount: -101.25,
+                            },
+                        ],
+                        '3 Box': [
+                            {
+                                Name: 'Base',
+                                Base: 126.75,
+                                Conditions: [
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 222, Amount: 539.25, Uom: ['BOX'] },
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 2, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 666,
+                                Amount: 539.25,
+                            },
+                        ],
                     },
                     Acc02: {
-                        baseline: [],
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 33, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 3, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
                         '1 Each': [],
                         '5 Case': [],
                         '3 Box': [],
                     },
                     Acc03: {
-                        baseline: [],
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 44, Amount: 0, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 4, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
                         '1 Each': [],
                         '5 Case': [],
                         '3 Box': [],
