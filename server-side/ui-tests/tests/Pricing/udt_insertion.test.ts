@@ -185,10 +185,7 @@ export async function PricingUdtInsertion(
 
                     default:
                         console.info('AT testingFeatures for ppmAccountValues_content Default');
-                        ppmAccountValues_content = {
-                            ...pricingRules[udtSecondTableName].features07,
-                            ...pricingRules[udtSecondTableName].features08,
-                        };
+                        ppmAccountValues_content = {};
                         break;
                 }
                 addContext(this, {
