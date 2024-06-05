@@ -28,6 +28,7 @@ export async function PricingUdcCleanup(client: Client, tablesNames?: tableNames
                     nameOfCollection: udcTable,
                     fieldsOfCollection: [],
                     descriptionOfCollection: 'created with automation',
+                    syncDefinitionOfCollection: { Sync: true },
                     inherits: 'pricing_table',
                 });
                 upsert_response = await udcService.postScheme(bodyOfUdc);
