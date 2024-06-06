@@ -164,7 +164,7 @@ export async function PricingUdtCleanup(
                 });
             });
 
-            it(`validating "${udtFirstTableName}" UDT length after deletion via API`, async () => {
+            it(`validating "${udtFirstTableName}" UDT length after deletion via API`, async function () {
                 ppmValuesEnd = await objectsService.getUDT({
                     where: `MapDataExternalID='${udtFirstTableName}'`,
                     page_size: -1,
@@ -267,7 +267,7 @@ export async function PricingUdtCleanup(
                 });
             });
 
-            it(`validating "${udtSecondTableName}" UDT length after deletion via API`, async () => {
+            it(`validating "${udtSecondTableName}" UDT length after deletion via API`, async function () {
                 ppmAccountValuesEnd = await objectsService.getUDT({
                     where: `MapDataExternalID='${udtSecondTableName}'`,
                     page_size: -1,

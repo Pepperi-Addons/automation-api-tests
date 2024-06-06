@@ -257,9 +257,39 @@ export class PricingData08 {
                                 Amount: 0,
                             },
                         ],
-                        '1 Each': [],
-                        '5 Case': [],
-                        '3 Box': [],
+                        '1 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 42.25,
+                                Conditions: [{ Name: 'ZBASE_A002', Type: 'S', Value: 3, Amount: -39.25 }],
+                                New: 3,
+                                Amount: -39.25,
+                            },
+                        ],
+                        '5 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 211.25,
+                                Conditions: [
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 33, Amount: -46.25, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 3, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 165,
+                                Amount: -46.25,
+                            },
+                        ],
+                        '3 Box': [
+                            {
+                                Name: 'Base',
+                                Base: 126.75,
+                                Conditions: [
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 333, Amount: 872.25, Uom: ['BOX'] },
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 3, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 999,
+                                Amount: 872.25,
+                            },
+                        ],
                     },
                     Acc03: {
                         baseline: [
@@ -274,9 +304,39 @@ export class PricingData08 {
                                 Amount: 0,
                             },
                         ],
-                        '1 Each': [],
-                        '5 Case': [],
-                        '3 Box': [],
+                        '1 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 42.25,
+                                Conditions: [{ Name: 'ZBASE_A002', Type: 'S', Value: 4, Amount: -38.25 }],
+                                New: 4,
+                                Amount: -38.25,
+                            },
+                        ],
+                        '5 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 211.25,
+                                Conditions: [
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 44, Amount: 8.75, Uom: ['CS'] },
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 4, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 220,
+                                Amount: 8.75,
+                            },
+                        ],
+                        '3 Box': [
+                            {
+                                Name: 'Base',
+                                Base: 126.75,
+                                Conditions: [
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 444, Amount: 1205.25, Uom: ['BOX'] },
+                                    { Name: 'ZBASE_A002', Type: 'S', Value: 4, Amount: 0, Uom: ['EA'] },
+                                ],
+                                New: 1332,
+                                Amount: 1205.25,
+                            },
+                        ],
                     },
                 },
                 PriceBaseUnitPriceAfter1: {
