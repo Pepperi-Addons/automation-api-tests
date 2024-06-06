@@ -31,6 +31,35 @@ export async function PricingAdditionalItemGroupsReadonlyTests(
     client: Client,
     // specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
 ) {
+    /*
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'GroupDiscount' -> ['ZGD1', 'ZGD2']
+. 'ManualLine' -> []
+. 'Tax' -> ['MTAX']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZDS2' -> ['A002']
+. 'ZDS3' -> ['A001']
+. 'ZGD1' -> ['A002', 'A003']
+. 'ZGD2' -> ['A004', 'A003', 'A002']
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A003' -> ['TransactionAccountExternalID', 'ItemMainCategory']
+. 'A004' -> ['TransactionAccountExternalID']
+
+_________________ 
+_________________ 
+ */
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const pricingRules = new PricingRules();

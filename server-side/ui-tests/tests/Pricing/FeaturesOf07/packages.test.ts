@@ -17,15 +17,54 @@ chai.use(promised);
 
 export async function PricingPackagesTests(email: string, password: string, client: Client) {
     /*
-_________________ 
+________________________ 
 _________________ Brief:
           
-* Pricing Promotion Packages test
+* Pricing Promotion Packages test 
+    TODO
 
 * DI-27332 :
     1. Package transaction - test for pricing in package
 
     2. Sales order - test for group pricing calculation using packages lines
+_________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'GroupDiscount' -> ['ZGD1', 'ZGD2']
+. 'ManualLine' -> []
+. 'Tax' -> ['MTAX']
+
+_________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZBASE' -> ['A002', 'A001', 'A003', 'A005', 'A004']
+. 'ZDS1' -> ['A001', 'A002', 'A003']
+. 'ZDS2' -> ['A002']
+. 'ZDS3' -> ['A001']
+. 'ZDS4' -> ['A001']
+. 'ZDS5' -> ['A001']
+. 'ZDS6' -> ['A003', 'A004', 'A001']
+. 'ZDS7' -> ['A002', 'A004', 'A005']
+. 'ZGD1' -> ['A002', 'A003']
+. 'ZGD2' -> ['A004', 'A003', 'A002']
+. 'MTAX' -> ['A002', 'A004']
+
+_________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A003' -> ['TransactionAccountExternalID', 'ItemMainCategory']
+. 'A004' -> ['TransactionAccountExternalID']
+. 'A005' -> ['ItemMainCategory']
+. 'A006' -> ['TransactionAccountTSAPricingContracts']
+. 'A007' -> ['TransactionAccountTSAPricingContracts', 'ItemMainCategory']
+. 'A008' -> ['TransactionAccountTSAPricingContracts', 'ItemExternalID']
+. 'A009' -> ['TransactionAccountExternalID', 'TransactionAccountTSAPricingContracts']
+. 'A010' -> ['TransactionAccountExternalID', 'TransactionAccountTSAPricingContracts', 'ItemExternalID']
+. 'A011' -> ['TransactionAccountTSAPricingHierarchy', 'ItemExternalID']
 _________________ 
 _________________ The Relevant Rules:
           

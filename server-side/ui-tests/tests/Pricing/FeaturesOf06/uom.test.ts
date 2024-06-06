@@ -17,14 +17,37 @@ chai.use(promised);
 
 export async function PricingUomTests(email: string, password: string, client: Client) {
     /*
-_________________ 
+________________________ 
 _________________ Brief:
           
 * Pricing Per UOM
 * in previous version there was set price to only one Unit Of Measure, and the others were multiplication by the UOM factor 
 * now a set price is available for each UOM separately
 * the test agenda is to make sure calculations per each UOM are performed correctly
-_________________ 
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'GroupDiscount' -> ['ZGD1', 'ZGD2']
+. 'ManualLine' -> []
+. 'Tax' -> ['MTAX']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZBASE' -> ['A002', 'A001', 'A003', 'A005', 'A004']
+. 'ZDS1' -> ['A001', 'A002', 'A003']
+. 'ZDS2' -> ['A002']
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A003' -> ['TransactionAccountExternalID', 'ItemMainCategory']
+
+_____________________________________ 
 _________________ The Relevant Rules:
           
 . 'ZBASE@A003@Acc01@Hair4You':

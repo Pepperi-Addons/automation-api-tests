@@ -23,14 +23,39 @@ export async function PricingCalculatedFieldsManualLineTests(
     // specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
 ) {
     /*
-_________________ 
+________________________ 
 _________________ Brief:
             
 * Basic Pricing tests
 * Pricing is calculated according to Configuration and matching rules that are hosted at "PPM_Values" UDT
 * 7 selected test items (some has rules applied to them and other don't), 2 test accounts, 5 test states, 5 pricing fields (Base, Discount, Group Discount, Manual Line, Tax)
 * for each of the accounts, then each of the states - every one of the items UI values are being retrieved and compared with expected data (that is held in an object pricingData)
-_________________ 
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'GroupDiscount' -> ['ZGD1', 'ZGD2']
+. 'ManualLine' -> []
+. 'Tax' -> ['MTAX']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZBASE' -> ['A002', 'A001', 'A003', 'A005', 'A004']
+. 'ZDS1' -> ['A001', 'A002', 'A003']
+. 'MTAX' -> ['A002', 'A004']
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A003' -> ['TransactionAccountExternalID', 'ItemMainCategory']
+. 'A004' -> ['TransactionAccountExternalID']
+. 'A005' -> ['ItemMainCategory']
+
+_____________________________________ 
 _________________ The Relevant Rules:
             
 . 'ZBASE@A002@Acc01@Frag005': 

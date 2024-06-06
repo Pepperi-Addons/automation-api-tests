@@ -37,7 +37,31 @@ _________________ Brief:
 * XXX   CS UOM  - contract1 should be chosen at all accounts 
 * XXX   BOX UOM - for 2 units: contart3 at Acc01, contract2 for other account | from 3 units and above: contract1 for all accounts
 * 
-* the test agenda is to 
+* the test agenda is to ...
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'MultipleValuesAccount' -> ['ZDM3']
+. 'MultipleValuesCategory' -> ['ZDM2']
+. 'MultipleValuesItem' -> ['ZDM1']
+. 'MultipleValues' -> ['ZDM1', 'ZDM2']
+
+_________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZDM1' -> ['A010', 'A008']
+. 'ZDM2' -> ['A007']
+. 'ZDM3' -> ['A009', 'A006']
+
+_________________ 
+_________________ The Relevant Tables:
+    
+. 'A006' -> ['TransactionAccountTSAPricingContracts']
+. 'A007' -> ['TransactionAccountTSAPricingContracts', 'ItemMainCategory']
+. 'A008' -> ['TransactionAccountTSAPricingContracts', 'ItemExternalID']
+. 'A009' -> ['TransactionAccountExternalID', 'TransactionAccountTSAPricingContracts']
+. 'A010' -> ['TransactionAccountExternalID', 'TransactionAccountTSAPricingContracts', 'ItemExternalID']
+
 ________________________________ 
 ____________ The Relevant Rules:
  

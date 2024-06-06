@@ -50,6 +50,29 @@ _________________ Brief:
 * 
 * the test agenda is to check that at the same NPMCalcMessage 2 rules that are excluding one another will never show together
 *
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'Discount2' -> ['ZDS4', 'ZDS5', 'ZDS6', 'ZDS7']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZDS1' -> ['A001', 'A002', 'A003']
+. 'ZDS4' -> ['A001']
+. 'ZDS6' -> ['A003', 'A004', 'A001']
+. 'ZDS7' -> ['A002', 'A004', 'A005']
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A003' -> ['TransactionAccountExternalID', 'ItemMainCategory']
+. 'A004' -> ['TransactionAccountExternalID']
+. 'A005' -> ['ItemMainCategory']
+
 ________________________________ 
 ____________ The Relevant Rules:
  
@@ -80,7 +103,7 @@ ____________ The Relevant Rules:
 . 'ZDS6@A003@Acc01@Paul Pitchell':
             '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[260,"D",40,"%"]]]]',
 
-______________________________ 
+____________ 
 ____________ Order Of Actions:
            
    1. Looping over accounts

@@ -17,11 +17,27 @@ chai.use(promised);
 
 export async function PricingUdcTests(email: string, password: string, client: Client) {
     /*
-_________________ 
+________________________ 
 _________________ Brief:
           
 * Pricing UDC rules are functioning exactly as the UDT rules would have (it is done to improve Sync performance)
 _________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+
+_________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZBASE' -> ['A002', 'A001', 'A003', 'A005', 'A004']
+
+_________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+
+_____________________________________ 
 _________________ The Relevant Rules:
 
 PPM_Values (UDT)
