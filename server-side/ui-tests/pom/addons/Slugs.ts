@@ -4,6 +4,8 @@ import { By } from 'selenium-webdriver';
 import GeneralService from '../../../services/general.service';
 import { AddonPage } from './base/AddonPage';
 import { PageBuilder } from './PageBuilder/PageBuilder';
+import { Browser } from '../../utilities/browser';
+import { Context } from 'vm';
 
 export class Slugs extends AddonPage {
     public Slugs_Title: By = By.xpath('//span[@title="Page Mapping"]');
@@ -50,10 +52,6 @@ export class Slugs extends AddonPage {
     public Info_Popup_Close_Button: By = By.xpath(
         '//span[contains(text(),"Info")]/ancestor::pep-dialog //span[contains(text(),"Close")]/parent::button',
     );
-    // Delete Pop-up
-    public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
-    public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
-    public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
 
     private getSelectorOfTabByText(title: string) {
         return By.xpath(`//div[text()="${title}"]/parent::div[@role="tab"][contains(@id,"mat-tab-label-")]`);
@@ -93,10 +91,6 @@ export class Slugs extends AddonPage {
 
     private getSelectorOfSlugCheckboxByPartialName(title: string) {
         return By.xpath(`//a[@id="Name"][contains(text(),"${title}")]/ancestor::fieldset/mat-checkbox/label/span`);
-    }
-
-    private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
-        return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
     }
 
     public getSelectorOfMappedSlugInRepCardSmallDisplayByText(text: string) {
@@ -156,13 +150,14 @@ export class Slugs extends AddonPage {
         }
     }
 
-    public async confirmDeleteClickRedButton() {
+    public async confirmDeleteClickRedButton(this: Context, driver: Browser) {
+        const slugs = new Slugs(driver);
         try {
-            this.pause(500);
-            const redDeleteButton = await this.browser.findElement(this.DeletePopup_Delete_Button);
+            slugs.pause(500);
+            const redDeleteButton = await driver.findElement(slugs.DeletePopup_Delete_Button);
             redDeleteButton.click();
-            this.pause(1000);
-            await this.checkThatElementIsNotFound('DeletePopup_Delete_Button');
+            slugs.pause(1000);
+            await slugs.checkThatElementIsNotFound.bind(this)('DeletePopup_Delete_Button', driver);
         } catch (error) {
             console.info('RED DELETE Button NOT CLICKED!');
             console.error(error);
@@ -170,11 +165,12 @@ export class Slugs extends AddonPage {
         }
     }
 
-    public async deleteFromListByName(name: string) {
-        await this.selectFromListByName(name);
-        await this.openPencilMenu();
-        await this.selectUnderPencil('Delete');
-        await this.confirmDeleteClickRedButton();
+    public async deleteFromListByName(this: Context, name: string, driver: Browser) {
+        const slugs = new Slugs(driver);
+        await slugs.selectFromListByName(name);
+        await slugs.openPencilMenu();
+        await slugs.selectUnderPencil('Delete');
+        await slugs.confirmDeleteClickRedButton.bind(this)(driver);
     }
 
     public async clickTab(tabName: string): Promise<void> {

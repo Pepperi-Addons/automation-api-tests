@@ -11,6 +11,7 @@ import { PricingService } from '../../../../services/pricing.service';
 import GeneralService from '../../../../services/general.service';
 import addContext from 'mochawesome/addContext';
 import { PricingData08 } from '../../../pom/addons/PricingData08';
+import E2EUtils from '../../../utilities/e2e_utils';
 
 chai.use(promised);
 
@@ -54,13 +55,14 @@ _________________
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
+    let e2eUtils: E2EUtils;
     let transactionUUID: string;
     let accountName: string;
     let duration: string;
     let base64ImageComponent;
 
-    const testAccounts = ['Acc01', 'OtherAcc'];
-    const udcTestItems = ['Hair001'];
+    const testAccounts = ['OtherAcc', 'Acc01', 'Acc02', 'Acc03'];
+    const udcTestItems = ['Frag021', 'Frag006'];
     const udcTestStates = ['baseline', '1 Each', '5 Case', '3 Box'];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
@@ -87,6 +89,7 @@ _________________
                 webAppTopBar = new WebAppTopBar(driver);
                 webAppDialog = new WebAppDialog(driver);
                 orderPage = new OrderPage(driver);
+                e2eUtils = new E2EUtils(driver);
                 pricingService = new PricingService(
                     driver,
                     webAppLoginPage,
@@ -112,14 +115,28 @@ _________________
                 });
             });
 
-            it('Manual Sync', async () => {
-                await webAppHomePage.manualResync(client);
+            it('Manual Resync', async () => {
+                await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 
             testAccounts.forEach((account) => {
-                describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
+                describe(`ACCOUNT "${
+                    account == 'Acc01'
+                        ? 'My Store'
+                        : account == 'Acc02'
+                        ? 'Store 2'
+                        : account == 'Acc03'
+                        ? 'Store 3'
+                        : 'Account for order scenarios'
+                }"`, function () {
                     it('Creating new transaction', async function () {
-                        account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
+                        account == 'Acc01'
+                            ? (accountName = 'My Store')
+                            : account == 'Acc02'
+                            ? (accountName = 'Store 2')
+                            : account == 'Acc03'
+                            ? (accountName = 'Store 3')
+                            : (accountName = 'Account for order scenarios');
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
                         console.info('transactionUUID:', transactionUUID);
                         await orderPage.changeOrderCenterPageView('Line View');
@@ -143,10 +160,20 @@ _________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    describe('Udc', () => {
-                        it('Navigating to "Hair4You" at Sidebar', async function () {
+                    describe(`${
+                        account == 'Acc01'
+                            ? 'UDT "PPM_AccountValues"'
+                            : account == 'Acc02'
+                            ? 'UDC "PricingTest1"'
+                            : account == 'Acc03'
+                            ? 'UDC "PricingTest2"'
+                            : 'UDT "PPM_Values"'
+                    }`, () => {
+                        it('Navigating to "Great Perfumes" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
-                            await driver.click(orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Hair4You'));
+                            await driver.click(
+                                orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Great Perfumes'),
+                            );
                             driver.sleep(0.1 * 1000);
                         });
                         udcTestItems.forEach((udcTestItem) => {
@@ -184,51 +211,25 @@ _________________
                                                 'PriceTaxUnitPriceAfter1',
                                                 'NPMCalcMessage',
                                             ]);
-                                            if (udcTestState === 'baseline') {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues.Udc[udcTestItem]['NPMCalcMessage'][
-                                                        account
-                                                    ][udcTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                    )}`,
-                                                });
-                                                expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
-                                            } else {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues.Udc[udcTestItem]['NPMCalcMessage'][
-                                                        account
-                                                    ]['baseline'];
-                                                const data_NPMCalcMessage =
-                                                    pricingData.testItemsValues.Udc[udcTestItem]['NPMCalcMessage'][
-                                                        account
-                                                    ][udcTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}, \nNPMCalcMessage (at ${udcTestState}) from Data: ${JSON.stringify(
-                                                        data_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}`,
-                                                });
-                                                expect(UI_NPMCalcMessage.length).equals(
-                                                    baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
-                                                );
-                                            }
+                                            const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                                            const data_NPMCalcMessage =
+                                                pricingData.testItemsValues.Udc[udcTestItem]['NPMCalcMessage'][account][
+                                                    udcTestState
+                                                ];
+                                            addContext(this, {
+                                                title: `State Args`,
+                                                value: `NPMCalcMessage from UI: ${JSON.stringify(
+                                                    UI_NPMCalcMessage,
+                                                    null,
+                                                    2,
+                                                )}, \nNPMCalcMessage (at ${udcTestState}) from Data: ${JSON.stringify(
+                                                    data_NPMCalcMessage,
+                                                    null,
+                                                    2,
+                                                )}`,
+                                            });
+                                            expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
+
                                             priceFields.forEach((priceField) => {
                                                 const fieldValue = priceTSAs[priceField];
                                                 const expectedFieldValue =

@@ -18,9 +18,9 @@ export async function PricingUdtInsertion(
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const pricingRules = new PricingRules();
-    const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
-    const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'Pricing')?.Version;
-    const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
+    // const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
+    // const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'Pricing')?.Version;
+    // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     const udtFirstTableName = 'PPM_Values';
     const udtSecondTableName = 'PPM_AccountValues';
     const ppmValuesDataToBatch: {
@@ -47,12 +47,12 @@ export async function PricingUdtInsertion(
                 it('getting data object according to installed version', async function () {
                     switch (testingFeatures) {
                         case '0.5':
-                            console.info('AT installedPricingVersion CASE 5');
+                            console.info('AT testingFeatures for ppmValues_content CASE 0.5');
                             ppmValues_content = pricingRules[udtFirstTableName].features05;
                             break;
 
                         case '0.6':
-                            console.info('AT installedPricingVersion CASE 6');
+                            console.info('AT testingFeatures for ppmValues_content CASE 0.6');
                             ppmValues_content = {
                                 ...pricingRules[udtFirstTableName].features05,
                                 ...pricingRules[udtFirstTableName].features06,
@@ -60,7 +60,7 @@ export async function PricingUdtInsertion(
                             break;
 
                         case '0.7':
-                            console.info('AT installedPricingVersion CASE 7');
+                            console.info('AT testingFeatures for ppmValues_content CASE 0.7');
                             ppmValues_content = {
                                 ...pricingRules[udtFirstTableName].features05,
                                 ...pricingRules[udtFirstTableName].features06,
@@ -69,17 +69,12 @@ export async function PricingUdtInsertion(
                             break;
 
                         case '0.8':
-                            console.info('AT installedPricingVersion CASE 8');
-                            ppmValues_content = {
-                                ...pricingRules[udtFirstTableName].features05,
-                                ...pricingRules[udtFirstTableName].features06,
-                                ...pricingRules[udtFirstTableName].features07,
-                                ...pricingRules[udtFirstTableName].features08,
-                            };
+                            console.info('AT testingFeatures for ppmValues_content CASE 0.8');
+                            ppmValues_content = pricingRules[udtFirstTableName].features08;
                             break;
 
                         default:
-                            console.info('AT installedPricingVersion Default');
+                            console.info('AT testingFeatures for ppmValues_content Default');
                             ppmValues_content = {
                                 ...pricingRules[udtFirstTableName].features05,
                                 ...pricingRules[udtFirstTableName].features06,
@@ -174,9 +169,14 @@ export async function PricingUdtInsertion(
 
         describe(`UDT: "${udtSecondTableName}" insertion`, () => {
             it('getting data object according to installed version', async function () {
-                switch (installedPricingVersionShort) {
-                    case '8':
-                        console.info('AT installedPricingVersion CASE 8');
+                switch (testingFeatures) {
+                    case '0.7':
+                        console.info('AT testingFeatures for ppmAccountValues_content CASE 0.7');
+                        ppmAccountValues_content = pricingRules[udtSecondTableName].features07;
+                        break;
+
+                    case '0.8':
+                        console.info('AT testingFeatures for ppmAccountValues_content CASE 0.8');
                         ppmAccountValues_content =
                             specialVersion === 'version08for07data'
                                 ? pricingRules[udtSecondTableName].features07
@@ -184,8 +184,8 @@ export async function PricingUdtInsertion(
                         break;
 
                     default:
-                        console.info('AT installedPricingVersion Default');
-                        ppmAccountValues_content = pricingRules[udtSecondTableName].features07;
+                        console.info('AT testingFeatures for ppmAccountValues_content Default');
+                        ppmAccountValues_content = {};
                         break;
                 }
                 addContext(this, {

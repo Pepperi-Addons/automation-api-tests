@@ -1,9 +1,12 @@
+import addContext from 'mochawesome/addContext';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
 import GeneralService from '../../../../services/general.service';
 import { AddonPage } from '../base/AddonPage';
 import { v4 as newUuid } from 'uuid';
+import { Browser } from '../../../utilities/browser';
+import { Context } from 'vm';
 
 export class PageBuilder extends AddonPage {
     public PageBuilder_Title: By = By.xpath('//span[@title="Page Builder"]');
@@ -39,10 +42,7 @@ export class PageBuilder extends AddonPage {
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu/div/button');
     public Pencil_Edit: By = this.getSelectorOfButtonUnderPencilMenu('Edit');
     public Pencil_Delete: By = this.getSelectorOfButtonUnderPencilMenu('Delete');
-    // Delete Pop-up
-    public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
-    public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
-    public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
+
     // Edit a Page
     public EditPage_SideBar_PageTitle: By = By.xpath('//pep-side-bar/div/div/div[1]/div[1]/div/div/div/span');
     public EditPage_EditMenu_Button_Publish: By = this.getSelectorOfButtonAtEditPageByDataQa('Publish'); //By.xpath('//button[@data-qa="Publish"]');
@@ -75,10 +75,6 @@ export class PageBuilder extends AddonPage {
 
     private getSelectorOfButtonUnderPencilMenu(title: string) {
         return By.xpath(`//span[@title="${title}"]/parent::button`);
-    }
-
-    private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
-        return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
     }
 
     private getSelectorOfButtonAtEditPageByDataQa(title: string) {
@@ -158,33 +154,62 @@ export class PageBuilder extends AddonPage {
         }
     }
 
-    public async selectUnderPencil(buttonTitle: string) {
+    public async selectUnderPencil(this: Context, buttonTitle: string, driver: Browser) {
+        const pageBuilder = new PageBuilder(driver);
         try {
-            await this.browser.untilIsVisible(this[`Pencil_${buttonTitle}`], 500);
-            await this.clickElement(`Pencil_${buttonTitle}`);
-            await this.browser.untilIsVisible(this.DeletePopup_Dialog, 500);
+            await driver.untilIsVisible(pageBuilder[`Pencil_${buttonTitle}`], 500);
+            await pageBuilder.clickElement(`Pencil_${buttonTitle}`);
+            await driver.untilIsVisible(pageBuilder.DeletePopup_Dialog, 500);
+            const screenShot = await driver.saveScreenshots();
+            addContext(this, {
+                title: `"${buttonTitle}" Selected from Pencil Menu`,
+                value: 'data:image/png;base64,' + screenShot,
+            });
         } catch (error) {
+            const err = error as Error;
             console.info(`UNABLE TO SELECT: ${buttonTitle}`);
             console.error(error);
+            addContext(this, {
+                title: 'Error Message:',
+                value: err.message,
+            });
             expect(`ERROR -> UNABLE TO SELECT: ${buttonTitle}`).to.be.undefined;
         }
     }
 
-    public async openPencilChooseDelete() {
-        await this.openPencilMenu();
-        await this.selectUnderPencil('Delete');
+    public async openPencilChooseDelete(this: Context, driver: Browser) {
+        const pageBuilder = new PageBuilder(driver);
+        await pageBuilder.openPencilMenu();
+        await pageBuilder.selectUnderPencil.bind(this)('Delete', driver);
     }
 
-    public async confirmDeleteClickRedButton() {
+    public async confirmDeleteClickRedButton(this: Context, driver: Browser) {
+        const pageBuilder = new PageBuilder(driver);
+        let screenShot;
         try {
-            this.pause(500);
-            const redDeleteButton = await this.browser.findElement(this.DeletePopup_Delete_Button);
+            screenShot = await driver.saveScreenshots();
+            addContext(this, {
+                title: `At "confirmDeleteClickRedButton" function - Before Red Delete button is clicked`,
+                value: 'data:image/png;base64,' + screenShot,
+            });
+            pageBuilder.pause(500);
+            const redDeleteButton = await driver.findElement(pageBuilder.DeletePopup_Delete_Button);
             redDeleteButton.click();
-            this.pause(1000);
-            await this.checkThatElementIsNotFound('DeletePopup_Delete_Button');
+            pageBuilder.pause(5 * 1000);
+            screenShot = await driver.saveScreenshots();
+            addContext(this, {
+                title: `After Red Delete button is clicked`,
+                value: 'data:image/png;base64,' + screenShot,
+            });
+            await pageBuilder.checkThatElementIsNotFound.bind(this)('DeletePopup_Delete_Button', driver);
         } catch (error) {
+            const err = error as Error;
             console.info('RED DELETE Button NOT CLICKED!');
             console.error(error);
+            addContext(this, {
+                title: 'Error Message:',
+                value: err.message,
+            });
             expect('RED DELETE Button NOT CLICKED!').to.be.null;
         }
     }
@@ -259,11 +284,12 @@ export class PageBuilder extends AddonPage {
     //     await this.selectFromList(selector, name);
     // }
 
-    public async deleteFromListByName(name: string) {
-        await this.selectFromListByName(name);
-        await this.openPencilMenu();
-        await this.selectUnderPencil('Delete');
-        await this.confirmDeleteClickRedButton();
+    public async deleteFromListByName(this: Context, name: string, driver: Browser) {
+        const pageBuilder = new PageBuilder(driver);
+        await pageBuilder.selectFromListByName(name);
+        await pageBuilder.openPencilMenu();
+        await pageBuilder.selectUnderPencil.bind(this)('Delete', driver);
+        await pageBuilder.confirmDeleteClickRedButton.bind(this)(driver);
     }
 
     public async searchForPageByName(name: string) {

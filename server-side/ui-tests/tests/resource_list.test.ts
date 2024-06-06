@@ -162,7 +162,7 @@ export async function ResourceListTests(email: string, password: string, client:
             }[];
             collectionType?: 'contained' | 'data';
             collectionFields?: {
-                classType: 'Primitive' | 'Array' | 'Contained' | 'Resource' | 'ContainedArray';
+                classType: 'Primitive' | 'Array' | 'Resource' | 'ContainedArray';
                 fieldName: string;
                 fieldTitle: string;
                 field: CollectionField;
@@ -605,12 +605,12 @@ export async function ResourceListTests(email: string, password: string, client:
                         return await udcService.purgeScheme(leftoverUdc.Name);
                     }),
                 );
+                addContext(this, {
+                    title: `Purge Responses: `,
+                    value: JSON.stringify(purgeResponses, null, 2),
+                });
                 purgeResponses.forEach((purgeResponse) => {
                     console.info(`${ref_account_resource}_ purgeResponse: ${JSON.stringify(purgeResponse, null, 2)}`);
-                    addContext(this, {
-                        title: `Purge Response: `,
-                        value: JSON.stringify(purgeResponse, null, 2),
-                    });
                     expect(purgeResponse.Ok).to.be.true;
                     expect(purgeResponse.Status).to.equal(200);
                     expect(purgeResponse.Error).to.eql({});
@@ -840,11 +840,11 @@ export async function ResourceListTests(email: string, password: string, client:
                 await webAppLoginPage.login(email, password);
             });
 
-            it('Manual Resync', async () => {
-                await resourceListUtils.performManualResync(client);
+            it('Manual Resync', async function () {
+                await resourceListUtils.performManualResync.bind(this)(client, driver);
             });
 
-            it(`Logout Login`, async () => {
+            it(`Logout Login`, async function () {
                 await resourceListUtils.logOutLogIn(email, password);
                 await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
             });
@@ -931,7 +931,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                     await resourceEditors.click(resourceEditors.EditPage_BackToList_Button);
                     await resourceEditors.clickTab('Editors_Tab');
-                    await resourceEditors.deleteFromListByName(editorName);
+                    await resourceEditors.deleteFromListByName.bind(this)(editorName, driver);
                     base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `At Editors Tab - after "${editorName}" Editor deleted`,
@@ -1212,10 +1212,18 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Delete Page', async function () {
                     deletePageResponse = await pageBuilder.removePageByUUID(pageKey, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deletePageResponse,
+                    });
                 });
 
                 it('Delete Slug', async function () {
                     const deleteSlugResponse = await slugs.deleteSlugByName(slug_path, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deleteSlugResponse,
+                    });
                     expect(deleteSlugResponse.Ok).to.equal(true);
                     expect(deleteSlugResponse.Status).to.equal(200);
                     expect(deleteSlugResponse.Body.success).to.equal(true);
@@ -1223,6 +1231,10 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Delete Editor Via API', async function () {
                     const deleteEditorResponse = await resourceEditors.deleteEditorViaAPI(editorKey, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deleteEditorResponse,
+                    });
                     expect(deleteEditorResponse.Ok).to.equal(true);
                     expect(deleteEditorResponse.Status).to.equal(200);
                     expect(deleteEditorResponse.Body.Name).to.equal(editorName);
@@ -1231,6 +1243,10 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Delete View Via API', async function () {
                     const deleteViewResponse = await resourceViews.deleteViewViaApiByUUID(viewKey, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deleteViewResponse,
+                    });
                     expect(deleteViewResponse.Ok).to.equal(true);
                     expect(deleteViewResponse.Status).to.equal(200);
                     expect(deleteViewResponse.Body.Name).to.equal(viewName);
@@ -1245,11 +1261,20 @@ export async function ResourceListTests(email: string, password: string, client:
                     await resourceListUtils.removeHomePageButtonByProfile(slugDisplayName, 'Rep');
                     await webAppHomePage.manualResync(client);
                     const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugDisplayName);
+                    const screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At Home Page`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
                     expect(isNotFound).to.equal(true);
                 });
 
                 it('Validating Deletion of Page', async function () {
                     console.info(`deletePageResponse: ${JSON.stringify(deletePageResponse, null, 2)}`);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deletePageResponse,
+                    });
                     driver.sleep(0.5 * 1000);
                     expect(deletePageResponse.Ok).to.equal(true);
                     expect(deletePageResponse.Status).to.equal(200);
@@ -1533,9 +1558,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
                 });
 
-                it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async () => {
+                it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async function () {
                     syncStatusOfReferenceAccount
-                        ? await resourceListUtils.performManualResync(client)
+                        ? await resourceListUtils.performManualResync.bind(this)(client, driver)
                         : await resourceListUtils.performManualSync(client);
                 });
 
@@ -1785,9 +1810,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
                 });
 
-                it(`Manual ${syncStatusOfReferenceAccount ? 'Sync' : 'Resync'}`, async () => {
+                it(`Manual ${syncStatusOfReferenceAccount ? 'Sync' : 'Resync'}`, async function () {
                     syncStatusOfReferenceAccount
-                        ? await resourceListUtils.performManualResync(client)
+                        ? await resourceListUtils.performManualResync.bind(this)(client, driver)
                         : await resourceListUtils.performManualSync(client);
                 });
 

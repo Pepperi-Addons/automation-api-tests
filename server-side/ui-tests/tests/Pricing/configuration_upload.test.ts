@@ -104,8 +104,8 @@ export async function PricingConfigUpload(
                 });
             });
 
-            it('Manual Resync', async () => {
-                await e2eUtils.performManualResync(client);
+            it('Manual Resync', async function () {
+                await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 
             it('Logout', async function () {

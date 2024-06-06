@@ -1,3 +1,4 @@
+import addContext from 'mochawesome/addContext';
 import { Browser } from '../../../utilities/browser';
 import { Page } from '../../Pages/base/Page';
 import config from '../../../../config';
@@ -9,6 +10,7 @@ import promised from 'chai-as-promised';
 import { OrderPageItem } from '../../Pages/OrderPage';
 import { ConsoleColors } from '../../../../services/general.service';
 import { PepperiStatus } from '../../Enumerations/PepperiStatus';
+import { Context } from 'vm';
 // import { Context } from 'mocha';
 // import addContext from 'mochawesome/addContext';
 
@@ -111,6 +113,14 @@ export class AddonPage extends Page {
     public EditPage_ConfigProfileCard_Rep_EmptyContent: By = By.xpath(
         '//span[contains(text(),"No fields were assigned")]',
     );
+    // Delete Pop-up
+    public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
+    public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
+    public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
+
+    private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
+        return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
+    }
 
     private getSelectorOfConfigProfileCardByName(name: string) {
         return By.xpath(`//span[contains(text(),"${name}")]/ancestor::pep-profile-data-views-card`);
@@ -350,16 +360,36 @@ export class AddonPage extends Page {
         }
     }
 
-    public async checkThatElementIsNotFound(elem: string): Promise<void> {
-        if (this[elem]) {
+    public async checkThatElementIsNotFound(this: Context, elem: string, driver: Browser): Promise<void> {
+        let screenShot;
+        const addonPage = new AddonPage(driver);
+        driver.sleep(1 * 1000);
+        if (addonPage[elem]) {
             try {
-                await this.browser.findElement(this[elem]);
+                await driver.findElement(addonPage[elem]);
             } catch (error) {
-                expect(`ERROR -> The element: ${elem} is not visible`).to.be.undefined;
+                const er = error as Error;
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At catch of checkThatElementIsNotFound - element: ${elem} NOT found`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+                addContext(this, {
+                    title: `Error Message:`,
+                    value: er.message,
+                });
+                // expect(`ERROR -> The element: ${elem} is not visible`).to.be.undefined;
+                expect(er.message).to.contain('After wait time of: ');
+                expect(er.message).to.contain(', The test must end, The element is');
             }
         } else {
             console.info(`Element: ${elem} - is NOT declared in the Addon file`);
-            expect(`${this[elem]} to be in the Addon file, but is NOT`).to.be.undefined;
+            screenShot = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Element: ${elem} is not defined on AddonPage.ts`,
+                value: 'data:image/png;base64,' + screenShot,
+            });
+            expect(`${addonPage[elem]} to be in the Addon file, but is NOT`).to.be.undefined;
         }
     }
 

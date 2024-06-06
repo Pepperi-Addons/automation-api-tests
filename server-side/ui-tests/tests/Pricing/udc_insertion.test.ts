@@ -9,114 +9,119 @@ import { UDCService } from '../../../services/user-defined-collections.service';
 
 chai.use(promised);
 
-export async function PricingUdcInsertion(
-    client: Client,
-    // specificVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
-) {
+type tableNames = 'PricingUdtReplacement' | 'PricingTest1' | 'PricingTest2';
+
+export async function PricingUdcInsertion(client: Client, testingFeatures: '0.8' | '1.0', tablesNames: tableNames[]) {
     const generalService = new GeneralService(client);
     const udcService = new UDCService(generalService);
     const pricingRules = new PricingRules();
-    const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
-    const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'Pricing')?.Version;
-    // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
-    const udcFirstTableName = 'PricingUdtReplacement';
-    // const udcSecondTableName = 'future_udc_table_name';
-    const dataToInsertToUdc: { PricingKey: string; PricingData: any }[] = [];
-    let udc_ppmValuesEnd;
-    let batchUDTresponse: any;
-    let udc_ppmValues_content;
-    // let secondUDC_content;
+    const udcTables = ['PricingUdtReplacement', 'PricingTest1', 'PricingTest2'];
+    let dataToInsertToUdc: { PricingKey: string; PricingData: any }[] = [];
+    // let bodyOfUdc;
+    // let upsert_response;
+    let udcTable_fromAPI;
+    let udcTable_valuesEnd;
+    // let batchUDTresponse: any;
+    let udc_table_rules;
 
     describe('UDC Upsert - Test Suite', () => {
-        describe(`UDC: "${udcFirstTableName}" insertion`, () => {
-            it('getting data object according to installed version', async function () {
-                switch (true) {
-                    case installedPricingVersion?.startsWith('0.8'):
-                        console.info('AT installedPricingVersion CASE 8');
-                        udc_ppmValues_content = pricingRules[`UDC_${udcFirstTableName}`].features08;
-                        break;
-
-                    default:
-                        console.info('AT installedPricingVersion Default');
-                        udc_ppmValues_content = pricingRules[`UDC_${udcFirstTableName}`].features08;
-                        break;
-                }
-                addContext(this, {
-                    title: `udc_ppmValues_content length`,
-                    value: Object.keys(udc_ppmValues_content).length,
+        udcTables.forEach((udcTable) => {
+            it(`validating "${udcTable}" UDC via API`, async () => {
+                udcTable_fromAPI = await udcService.getSchemes({
+                    where: `Name="${udcTable}"`,
                 });
-                addContext(this, {
-                    title: `udc_ppmValues_content`,
-                    value: JSON.stringify(udc_ppmValues_content, null, 2),
-                });
-            });
-
-            it(`inserting valid rules to the UDC "${udcFirstTableName}"`, async function () {
-                Object.keys(udc_ppmValues_content).forEach((ppmValueKey) => {
-                    dataToInsertToUdc.push({
-                        PricingKey: ppmValueKey,
-                        PricingData: udc_ppmValues_content[ppmValueKey],
-                    });
-                });
-
-                const upsertingValues_Responses = await Promise.all(
-                    dataToInsertToUdc.map(async (listing) => {
-                        return await udcService.postDocument(udcFirstTableName, listing);
-                    }),
-                );
-                upsertingValues_Responses.forEach((upsertingValues_Response) => {
-                    console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
-                    expect(upsertingValues_Response.Ok).to.be.true;
-                    expect(upsertingValues_Response.Status).to.equal(200);
-                    expect(upsertingValues_Response.Error).to.eql({});
-                });
-                addContext(this, {
-                    title: `batchUDTresponse length`,
-                    value: batchUDTresponse.length,
-                });
-                addContext(this, {
-                    title: `batchUDTresponse`,
-                    value: JSON.stringify(batchUDTresponse, null, 2),
-                });
-            });
-
-            it(`validating "${udcFirstTableName}" UDC length after insertion via API`, async () => {
-                udc_ppmValuesEnd = await udcService.getSchemes({
-                    where: `Name="${udcFirstTableName}"`,
-                });
-                console.info(`${udcFirstTableName} fields: `, JSON.stringify(udc_ppmValuesEnd[0].Fields, null, 2));
-                expect(udc_ppmValuesEnd).to.be.an('array').with.lengthOf(1);
-                expect(udc_ppmValuesEnd[0]).to.haveOwnProperty('Fields');
-                expect(Object.keys(udc_ppmValuesEnd[0].Fields)).to.eql(['PricingKey', 'PricingData']);
-                expect(udc_ppmValuesEnd.length).equals(dataToInsertToUdc.length);
+                console.info(`${udcTable} fields: `, JSON.stringify(udcTable_fromAPI[0].Fields, null, 2));
+                expect(udcTable_fromAPI).to.be.an('array').with.lengthOf(1);
+                expect(udcTable_fromAPI[0]).to.haveOwnProperty('Fields');
+                expect(Object.keys(udcTable_fromAPI[0].Fields)).to.eql(['PricingKey', 'PricingData']);
+                expect(udcTable_fromAPI[0]).to.haveOwnProperty('SyncData');
+                expect(Object.keys(udcTable_fromAPI[0].SyncData.Sync)).to.be.true;
             });
         });
 
-        // describe(`UDC: "${udcSecondTableName}" insertion`, () => {
-        //     it('getting data object according to installed version', async function () {
-        //         switch (installedPricingVersionShort) {
-        //             case '8':
-        //                 console.info('AT installedPricingVersion CASE 8');
-        //                 secondUDC_content =
-        //                     specificVersion === 'version08for07data'
-        //                         ? pricingRules[udcSecondTableName].version07
-        //                         : pricingRules[udcSecondTableName].version08;
-        //                 break;
+        tablesNames.forEach((tableName) => {
+            describe(`UDC: "${tableName}" insertion`, () => {
+                // it(`validating "${tableName}" UDC structure via API`, async () => {
+                //     udcTable_fromAPI = await udcService.getSchemes({
+                //         where: `Name="${tableName}"`,
+                //     });
+                //     console.info(`${tableName} fields: `, JSON.stringify(udcTable_fromAPI[0].Fields, null, 2));
+                //     expect(udcTable_fromAPI).to.be.an('array').with.lengthOf(1);
+                //     expect(udcTable_fromAPI[0]).to.haveOwnProperty('Fields');
+                //     expect(Object.keys(udcTable_fromAPI[0].Fields)).to.eql(['PricingKey', 'PricingData']);
+                // });
 
-        //             default:
-        //                 console.info('AT installedPricingVersion Default');
-        //                 secondUDC_content = pricingRules[udcSecondTableName].version07;
-        //                 break;
-        //         }
-        //         addContext(this, {
-        //             title: `secondUDC_content length`,
-        //             value: Object.keys(secondUDC_content).length,
-        //         });
-        //         addContext(this, {
-        //             title: `secondUDC_content`,
-        //             value: JSON.stringify(secondUDC_content, null, 2),
-        //         });
-        //     });
-        // });
+                it('getting data object according to installed version', async function () {
+                    udc_table_rules = {};
+                    switch (testingFeatures) {
+                        case '0.8':
+                            console.info('AT testingFeatures CASE 0.8');
+                            udc_table_rules = pricingRules[`UDC_${tableName}`].features08;
+                            break;
+
+                        default:
+                            console.info('AT testingFeatures Default');
+                            udc_table_rules = pricingRules[`UDC_${tableName}`].features08;
+                            break;
+                    }
+                    addContext(this, {
+                        title: `udc_${tableName} length`,
+                        value: Object.keys(udc_table_rules).length,
+                    });
+                    addContext(this, {
+                        title: `udc_${tableName}`,
+                        value: JSON.stringify(udc_table_rules, null, 2),
+                    });
+                });
+
+                it(`inserting valid rules to the UDC "${tableName}"`, async function () {
+                    dataToInsertToUdc = [];
+                    Object.keys(udc_table_rules).forEach((ppmValueKey) => {
+                        dataToInsertToUdc.push({
+                            PricingKey: ppmValueKey,
+                            PricingData: udc_table_rules[ppmValueKey],
+                        });
+                    });
+
+                    const upsertingValues_Responses = await Promise.all(
+                        dataToInsertToUdc.map(async (listing) => {
+                            return await udcService.postDocument(tableName, listing);
+                        }),
+                    );
+                    upsertingValues_Responses.forEach((upsertingValues_Response) => {
+                        console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+                        // expect(upsertingValues_Response.Ok).to.be.true;
+                        // expect(upsertingValues_Response.Status).to.equal(200);
+                        // expect(upsertingValues_Response.Error).to.eql({});
+                    });
+                    addContext(this, {
+                        title: `upsertingValues_Responses length`,
+                        value: upsertingValues_Responses.length,
+                    });
+                    addContext(this, {
+                        title: `upsertingValues_Responses`,
+                        value: JSON.stringify(upsertingValues_Responses, null, 2),
+                    });
+                });
+
+                it(`validating "${tableName}" UDC length after insertion via API`, async function () {
+                    udcTable_valuesEnd = await udcService.getDocuments(tableName);
+                    console.info(`${tableName} documents: `, JSON.stringify(udcTable_valuesEnd, null, 2));
+                    addContext(this, {
+                        title: `Expected Length:`,
+                        value: dataToInsertToUdc.length,
+                    });
+                    addContext(this, {
+                        title: `Actual Length:`,
+                        value: udcTable_valuesEnd.length,
+                    });
+                    addContext(this, {
+                        title: `Values from API`,
+                        value: JSON.stringify(udcTable_valuesEnd, null, 2),
+                    });
+                    expect(udcTable_valuesEnd).to.be.an('array').with.lengthOf(dataToInsertToUdc.length);
+                });
+            });
+        });
     });
 }

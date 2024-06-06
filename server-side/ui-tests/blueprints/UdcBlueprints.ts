@@ -6,6 +6,7 @@ import {
     SchemeField,
     SchemeFieldType,
 } from '@pepperi-addons/papi-sdk';
+import { UpsertUdcGridDataView } from './DataViewBlueprints';
 
 export class BodyToUpsertUdcWithFields implements Collection {
     constructor(
@@ -39,7 +40,7 @@ export class BodyToUpsertUdcWithFields implements Collection {
         this.UserDefined = true;
         this.Type = type ? type : 'data';
         this.Hidden = false;
-        this.AddonUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
+        this.AddonUUID = '122c0e9d-c240-4865-b446-f37ece866c22'; // UDC addon UUID
     }
     public Name: string;
     public Description: string;
@@ -63,6 +64,40 @@ export class BodyToUpsertUdcWithFields implements Collection {
         | 'abstract';
     public Hidden?: boolean;
     public AddonUUID?: string;
+}
+
+export class BodyToUpsertExtendedUdc implements Collection {
+    constructor(
+        collectionName: string,
+        collectionDescription?: string,
+        syncData?: { Sync: boolean; SyncFieldLevel?: boolean },
+        inherits?: 'pricing_table' | '', // TOBE expended upon need
+    ) {
+        this.Name = collectionName;
+        this.Description = collectionDescription ? collectionDescription : '';
+        this.DocumentKey = {
+            Delimiter: '@',
+            Type: 'AutoGenerate',
+            Fields: [],
+        };
+        this.Fields = {};
+        this.ListView = new UpsertUdcGridDataView([]);
+        this.GenericResource = true;
+        this.SyncData = syncData ? syncData : { Sync: false };
+        this.Extends = inherits == 'pricing_table' ? { AddonUUID: this.PricingUUID, Name: inherits } : undefined;
+    }
+    public Name: string;
+    public Description: string;
+    public DocumentKey: DocumentKey;
+    public Fields: {
+        [key: string]: CollectionField;
+    };
+    public ListView: GridDataView;
+    public SyncData: { Sync: boolean; SyncFieldLevel?: boolean };
+    public GenericResource: boolean;
+    public Extends?: { AddonUUID: string; Name: string } | undefined;
+
+    private PricingUUID = 'adb3c829-110c-4706-9168-40fba9c0eb52';
 }
 
 export class BaseUdcField implements CollectionField {

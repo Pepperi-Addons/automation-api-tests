@@ -1,3 +1,4 @@
+import addContext from 'mochawesome/addContext';
 import { BaseFormDataViewField, DataViewFieldType, MenuDataViewField } from '@pepperi-addons/papi-sdk';
 import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
@@ -14,6 +15,8 @@ import { Client } from '@pepperi-addons/debug-server/dist';
 import { GeneralService } from '../../../services';
 import { DataViewsService } from '../../../services/data-views.service';
 import E2EUtils from '../../utilities/e2e_utils';
+import { Context } from 'vm';
+import { Browser } from '../../utilities/browser';
 
 export interface ViewConfiguration {
     matchingEditorName: string;
@@ -76,10 +79,6 @@ export class ResourceList extends AddonPage {
     public Pencil_Button: By = By.xpath('//pep-list-actions/pep-menu/div/button');
     public Pencil_Edit: By = this.getSelectorOfButtonUnderPencilMenu('Edit');
     public Pencil_Delete: By = this.getSelectorOfButtonUnderPencilMenu('Delete');
-    // Delete Pop-up
-    public DeletePopup_Dialog: By = By.xpath('//*[text()=" Delete "]/ancestor::pep-dialog');
-    public DeletePopup_Delete_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Delete');
-    public DeletePopup_Cancel_Button: By = this.getSelectorOfButtonUnderDeletePopupWindow('Cancel');
     // Add Pop-up
     public AddPopup_Title: By = By.xpath('//span[contains(@class,"dialog-title")]');
     public AddPopup_Name: By = By.xpath('//input[@id="Name"]');
@@ -127,10 +126,6 @@ export class ResourceList extends AddonPage {
 
     public getSelectorOfResourceListSettingsTab(title: string) {
         return By.xpath(`//div[contains(@class,"mat-tab-labels")] //div[text()="${title}"]/parent::div[@role="tab"]`);
-    }
-
-    private getSelectorOfButtonUnderDeletePopupWindow(title: string) {
-        return By.xpath(`//span[contains(text(),"${title}")]/parent::button`);
     }
 
     private getSelectorOfButtonUnderPencilMenu(title: string) {
@@ -247,16 +242,34 @@ export class ResourceList extends AddonPage {
         }
     }
 
-    public async confirmDeleteClickRedButton() {
+    public async confirmDeleteClickRedButton(this: Context, driver: Browser) {
+        let screenShot;
+        const resourceList = new ResourceList(driver);
         try {
-            this.pause(500);
-            const redDeleteButton = await this.browser.findElement(this.DeletePopup_Delete_Button);
-            redDeleteButton.click();
-            this.pause(1000);
-            await this.checkThatElementIsNotFound('DeletePopup_Delete_Button');
+            resourceList.pause(500);
+            const redDeleteButton = await driver.findElement(resourceList.DeletePopup_Delete_Button);
+            await redDeleteButton.click();
+            resourceList.pause(3 * 1000);
+            screenShot = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Delete Confirmation Popup button clicked`,
+                value: 'data:image/png;base64,' + screenShot,
+            });
+            resourceList.pause(2 * 1000);
+            await resourceList.checkThatElementIsNotFound.bind(this)('DeletePopup_Delete_Button', driver);
         } catch (error) {
+            const err = error as Error;
             console.info('RED DELETE Button NOT CLICKED!');
             console.error(error);
+            addContext(this, {
+                title: `At Catch - the error:`,
+                value: err.message,
+            });
+            screenShot = await driver.saveScreenshots();
+            addContext(this, {
+                title: `Delete Confirmation Popup - PROBLEM`,
+                value: 'data:image/png;base64,' + screenShot,
+            });
             expect('RED DELETE Button NOT CLICKED!').to.be.null;
         }
     }
@@ -272,7 +285,7 @@ export class ResourceList extends AddonPage {
                 await this.openPencilMenu();
                 await this.selectUnderPencil('Delete');
                 this.browser.sleep(500);
-                await this.confirmDeleteClickRedButton();
+                await this.confirmDeleteClickRedButton.bind(this)(this.browser);
                 this.browser.sleep(500);
             } catch (error) {
                 const errorMessage: string = (error as any).message;
@@ -310,11 +323,27 @@ export class ResourceList extends AddonPage {
         await this.selectFromList(selector, name);
     }
 
-    public async deleteFromListByName(name: string) {
-        await this.selectFromListByName(name);
-        await this.openPencilMenu();
-        await this.selectUnderPencil('Delete');
-        await this.confirmDeleteClickRedButton();
+    public async deleteFromListByName(this: Context, name: string, driver: Browser) {
+        const resourceList = new ResourceList(driver);
+        await resourceList.selectFromListByName(name);
+        let screenShot = await driver.saveScreenshots();
+        addContext(this, {
+            title: `"${name}" selected from list`,
+            value: 'data:image/png;base64,' + screenShot,
+        });
+        await resourceList.openPencilMenu();
+        screenShot = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Pencil Menu clicked`,
+            value: 'data:image/png;base64,' + screenShot,
+        });
+        await resourceList.selectUnderPencil('Delete');
+        screenShot = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Delete selected`,
+            value: 'data:image/png;base64,' + screenShot,
+        });
+        await resourceList.confirmDeleteClickRedButton.bind(this)(driver);
     }
 
     public async validateListPageIsLoaded() {

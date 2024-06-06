@@ -598,8 +598,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 await webAppLoginPage.login(email, password);
             });
 
-            it('Manual Resync', async () => {
-                await e2eUtils.performManualResync(client);
+            it('Manual Resync', async function () {
+                await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 
             it('Entering Resource List ABI tests Addon', async () => {
