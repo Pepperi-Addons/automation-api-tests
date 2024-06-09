@@ -9,7 +9,7 @@ import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage
 import { ObjectsService } from '../../../../services';
 import { OrderPage } from '../../../pom/Pages/OrderPage';
 import { PricingData05 } from '../../../pom/addons/PricingData05';
-// import { PricingData06 } from '../../../pom/addons/PricingData06';
+import { PricingDataNoUom } from '../../../pom/addons/PricingDataNoUom';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingService } from '../../../../services/pricing.service';
 import PricingRules from '../../../pom/addons/PricingRules';
@@ -20,7 +20,7 @@ export async function PricingCalculatedFieldsManualLineTests(
     email: string,
     password: string,
     client: Client,
-    // specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
+    specialVersion: 'version07for05data' | 'noUom' | undefined = undefined,
 ) {
     /*
 ________________________ 
@@ -111,7 +111,7 @@ _________________
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
 
-    const pricingData = new PricingData05();
+    const pricingData = specialVersion === 'noUom' ? new PricingDataNoUom() : new PricingData05();
 
     const pricingRules = new PricingRules();
 
@@ -120,64 +120,11 @@ _________________
 
     const ppmValues_content = pricingRules[udtFirstTableName].features05;
 
-    const testItemsData = 'testItemsValues';
-
-    // let ppmValues_content;
-    // switch (true) {
-    //     case installedPricingVersionLong?.startsWith('0.5'):
-    //         console.info('AT installedPricingVersion CASE 5');
-    //         testItemsData = 'testItemsValues_version05';
-    //         ppmValues_content = pricingRules[udtFirstTableName].features05;
-    //         break;
-
-    //     case installedPricingVersionLong?.startsWith('0.6'):
-    //         console.info('AT installedPricingVersion CASE 6');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //         };
-    //         break;
-
-    //     case installedPricingVersionLong?.startsWith('0.7'):
-    //         console.info('AT installedPricingVersion CASE 7');
-    //         testItemsData = specialVersion === 'version07for05data' ? 'testItemsValues_version05' : 'testItemsValues';
-    //         ppmValues_content =
-    //             specialVersion === 'version07for05data'
-    //                 ? pricingRules[udtFirstTableName].features05
-    //                 : {
-    //                       ...pricingRules[udtFirstTableName].features05,
-    //                       ...pricingRules[udtFirstTableName].features06,
-    //                       ...pricingRules[udtFirstTableName].features07,
-    //                   };
-    //         break;
-
-    //     case installedPricingVersionLong?.startsWith('0.8'):
-    //         console.info('AT installedPricingVersion CASE 8');
-    //         ppmValues_content =
-    //             specialVersion === 'version08for07data'
-    //                 ? {
-    //                       ...pricingRules[udtFirstTableName].features05,
-    //                       ...pricingRules[udtFirstTableName].features06,
-    //                       ...pricingRules[udtFirstTableName].features07,
-    //                   }
-    //                 : {
-    //                       ...pricingRules[udtFirstTableName].features05,
-    //                       ...pricingRules[udtFirstTableName].features06,
-    //                       ...pricingRules[udtFirstTableName].features07,
-    //                       ...pricingRules[udtFirstTableName].features08,
-    //                   };
-    //         break;
-
-    //     default:
-    //         console.info('AT installedPricingVersion Default');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //             ...pricingRules[udtFirstTableName].features07,
-    //             ...pricingRules[udtFirstTableName].features08,
-    //         };
-    //         break;
-    // }
+    const testItemsData = installedPricingVersionLong?.startsWith('0.5')
+        ? 'testItemsValues_version05'
+        : specialVersion === 'version07for05data'
+        ? 'testItemsValues_version05'
+        : 'testItemsValues';
 
     let driver: Browser;
     let pricingService: PricingService;
