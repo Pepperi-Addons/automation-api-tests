@@ -17,7 +17,7 @@ chai.use(promised);
 
 export async function PricingTotalsTests(email: string, password: string, client: Client) {
     /*
-_________________ 
+________________________ 
 _________________ Brief:
              
    * Pricing Totals
@@ -30,8 +30,31 @@ _________________ Brief:
    * field "PriceTaxTotalPercent" calculation: (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base"
    * field "PriceTaxUnitDiff" calculation: PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
    * 
-   * the test agenda is to 
-_________________ 
+   * the test agenda is to ...
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'GroupDiscount' -> ['ZGD1', 'ZGD2']
+. 'ManualLine' -> []
+. 'Tax' -> ['MTAX']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZBASE' -> ['A002', 'A001', 'A003', 'A005', 'A004']
+. 'ZDS1' -> ['A001', 'A002', 'A003']
+. 'MTAX' -> ['A002', 'A004']
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A005' -> ['ItemMainCategory']
+
+_____________________________________ 
 _________________ The Relevant Rules:
              
 . 'ZBASE@A005@Hand Cosmetics':

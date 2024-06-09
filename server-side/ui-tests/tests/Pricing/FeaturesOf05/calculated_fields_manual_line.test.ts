@@ -9,7 +9,7 @@ import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage
 import { ObjectsService } from '../../../../services';
 import { OrderPage } from '../../../pom/Pages/OrderPage';
 import { PricingData05 } from '../../../pom/addons/PricingData05';
-// import { PricingData06 } from '../../../pom/addons/PricingData06';
+import { PricingDataNoUom } from '../../../pom/addons/PricingDataNoUom';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingService } from '../../../../services/pricing.service';
 import PricingRules from '../../../pom/addons/PricingRules';
@@ -20,17 +20,42 @@ export async function PricingCalculatedFieldsManualLineTests(
     email: string,
     password: string,
     client: Client,
-    // specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
+    specialVersion: 'version07for05data' | 'noUom' | undefined = undefined,
 ) {
     /*
-_________________ 
+________________________ 
 _________________ Brief:
             
 * Basic Pricing tests
 * Pricing is calculated according to Configuration and matching rules that are hosted at "PPM_Values" UDT
 * 7 selected test items (some has rules applied to them and other don't), 2 test accounts, 5 test states, 5 pricing fields (Base, Discount, Group Discount, Manual Line, Tax)
 * for each of the accounts, then each of the states - every one of the items UI values are being retrieved and compared with expected data (that is held in an object pricingData)
-_________________ 
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'GroupDiscount' -> ['ZGD1', 'ZGD2']
+. 'ManualLine' -> []
+. 'Tax' -> ['MTAX']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZBASE' -> ['A002', 'A001', 'A003', 'A005', 'A004']
+. 'ZDS1' -> ['A001', 'A002', 'A003']
+. 'MTAX' -> ['A002', 'A004']
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A003' -> ['TransactionAccountExternalID', 'ItemMainCategory']
+. 'A004' -> ['TransactionAccountExternalID']
+. 'A005' -> ['ItemMainCategory']
+
+_____________________________________ 
 _________________ The Relevant Rules:
             
 . 'ZBASE@A002@Acc01@Frag005': 
@@ -86,7 +111,7 @@ _________________
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
 
-    const pricingData = new PricingData05();
+    const pricingData = specialVersion === 'noUom' ? new PricingDataNoUom() : new PricingData05();
 
     const pricingRules = new PricingRules();
 
@@ -95,64 +120,11 @@ _________________
 
     const ppmValues_content = pricingRules[udtFirstTableName].features05;
 
-    const testItemsData = 'testItemsValues';
-
-    // let ppmValues_content;
-    // switch (true) {
-    //     case installedPricingVersionLong?.startsWith('0.5'):
-    //         console.info('AT installedPricingVersion CASE 5');
-    //         testItemsData = 'testItemsValues_version05';
-    //         ppmValues_content = pricingRules[udtFirstTableName].features05;
-    //         break;
-
-    //     case installedPricingVersionLong?.startsWith('0.6'):
-    //         console.info('AT installedPricingVersion CASE 6');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //         };
-    //         break;
-
-    //     case installedPricingVersionLong?.startsWith('0.7'):
-    //         console.info('AT installedPricingVersion CASE 7');
-    //         testItemsData = specialVersion === 'version07for05data' ? 'testItemsValues_version05' : 'testItemsValues';
-    //         ppmValues_content =
-    //             specialVersion === 'version07for05data'
-    //                 ? pricingRules[udtFirstTableName].features05
-    //                 : {
-    //                       ...pricingRules[udtFirstTableName].features05,
-    //                       ...pricingRules[udtFirstTableName].features06,
-    //                       ...pricingRules[udtFirstTableName].features07,
-    //                   };
-    //         break;
-
-    //     case installedPricingVersionLong?.startsWith('0.8'):
-    //         console.info('AT installedPricingVersion CASE 8');
-    //         ppmValues_content =
-    //             specialVersion === 'version08for07data'
-    //                 ? {
-    //                       ...pricingRules[udtFirstTableName].features05,
-    //                       ...pricingRules[udtFirstTableName].features06,
-    //                       ...pricingRules[udtFirstTableName].features07,
-    //                   }
-    //                 : {
-    //                       ...pricingRules[udtFirstTableName].features05,
-    //                       ...pricingRules[udtFirstTableName].features06,
-    //                       ...pricingRules[udtFirstTableName].features07,
-    //                       ...pricingRules[udtFirstTableName].features08,
-    //                   };
-    //         break;
-
-    //     default:
-    //         console.info('AT installedPricingVersion Default');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //             ...pricingRules[udtFirstTableName].features07,
-    //             ...pricingRules[udtFirstTableName].features08,
-    //         };
-    //         break;
-    // }
+    const testItemsData = installedPricingVersionLong?.startsWith('0.5')
+        ? 'testItemsValues_version05'
+        : specialVersion === 'version07for05data'
+        ? 'testItemsValues_version05'
+        : 'testItemsValues';
 
     let driver: Browser;
     let pricingService: PricingService;

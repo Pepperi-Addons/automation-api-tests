@@ -17,7 +17,7 @@ chai.use(promised);
 
 export async function PricingPartialValueTests(email: string, password: string, client: Client) {
     /*
-_________________ 
+________________________ 
 _________________ Brief:
     
 * Pricing Partial Value
@@ -41,8 +41,23 @@ _________________ Brief:
 
 * UDT rules are defined with the actual partial string as a key (for example: 'ZDH1@A011@1000200@Frag008' , the third key is a 7 letter partial value)
 
-* the test agenda is to 
-_________________ 
+* the test agenda is to ...
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'PartialValue' -> ['ZDH1']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZDH1' -> ['A011', 'A011': 'TransactionAccountTSAPricingHierarchy'- Split: 7, 'A011': 'TransactionAccountTSAPricingHierarchy'- Split: 4]
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A011' -> ['TransactionAccountTSAPricingHierarchy', 'ItemExternalID']
+
+_____________________________________ 
 _________________ The Relevant Rules:
     
 . 'ZDH1@A011@1000@Frag006':

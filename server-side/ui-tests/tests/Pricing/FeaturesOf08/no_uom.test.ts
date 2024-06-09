@@ -17,11 +17,50 @@ chai.use(promised);
 
 export async function PricingNoUomTests(email: string, password: string, client: Client) {
     /*
-_________________ 
+________________________ 
 _________________ Brief:
           
-* Pricing configuration without UOM definition
-_________________ 
+* Pricing configuration without UOM definition (PricingConfiguration.version08noUom)
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'GroupDiscount' -> ['ZGD1', 'ZGD2']
+. 'ManualLine' -> []
+. 'Tax' -> ['MTAX']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZBASE' -> ['A002', 'A001', 'A003', 'A005', 'A004']
+. 'ZDS1' -> ['A001', 'A002', 'A003']
+. 'ZDS2' -> ['A002']
+. 'ZDS3' -> ['A001']
+. 'ZDS4' -> ['A001']
+. 'ZDS5' -> ['A001']
+. 'ZDS6' -> ['A003', 'A004', 'A001']
+. 'ZDS7' -> ['A002', 'A004', 'A005']
+. 'ZGD1' -> ['A002', 'A003']
+. 'ZGD2' -> ['A004', 'A003', 'A002']
+. 'MTAX' -> ['A002', 'A004']
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A003' -> ['TransactionAccountExternalID', 'ItemMainCategory']
+. 'A004' -> ['TransactionAccountExternalID']
+. 'A005' -> ['ItemMainCategory']
+. 'A006' -> ['TransactionAccountTSAPricingContracts']
+. 'A007' -> ['TransactionAccountTSAPricingContracts', 'ItemMainCategory']
+. 'A008' -> ['TransactionAccountTSAPricingContracts', 'ItemExternalID']
+. 'A009' -> ['TransactionAccountExternalID', 'TransactionAccountTSAPricingContracts']
+. 'A010' -> ['TransactionAccountExternalID', 'TransactionAccountTSAPricingContracts', 'ItemExternalID']
+. 'A011' -> ['TransactionAccountTSAPricingHierarchy', 'ItemExternalID']
+
+_____________________________________ 
 _________________ The Relevant Rules:
           
 . 'ZBASE@A005@dummyItem': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",100,"P"]]]]',
