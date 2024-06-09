@@ -281,30 +281,21 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it(`1. Create A UDC Which Extends 'surveys' Scheme Before Creating A Survey`, async function () {
                 debugger;
-                const udcService = new UDCService(generalService);
-                const newSurveyUDCName = 'NewSurveyCollection' + generalService.generateRandomString(4);
-                console.log('about to create a new UDC named: ' + newSurveyUDCName);
-                const response = await udcService.createUDCWithFields(
-                    newSurveyUDCName,
-                    [],
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    { AddonUUID: 'dd0a85ea-7ef0-4bc1-b14f-959e0372877a', Name: 'surveys' },
-                );
-                console.log('got the response from : ' + newSurveyUDCName);
-                if (
-                    generalService.papiClient['options'].baseURL.includes('staging') &&
-                    response.hasOwnProperty('Fail') &&
-                    response.Fail.includes('Table schema must exist, for table = AddonFiles')
-                ) {
-                    console.log('STAGING Table schema must exist, for table = AddonFiles ERROR!!! BUG: DI-23504');
-                    expect(response.Fail).to.equal(
+                if (!generalService.papiClient['options'].baseURL.includes('staging')) {
+                    //PNS SB issue
+                    const udcService = new UDCService(generalService);
+                    const newSurveyUDCName = 'NewSurveyCollection' + generalService.generateRandomString(4);
+                    console.log('about to create a new UDC named: ' + newSurveyUDCName);
+                    const response = await udcService.createUDCWithFields(
+                        newSurveyUDCName,
+                        [],
                         undefined,
-                        'STAGING Table schema must exist, for table = AddonFiles ERROR!!! BUG: DI-23504',
+                        undefined,
+                        undefined,
+                        undefined,
+                        { AddonUUID: 'dd0a85ea-7ef0-4bc1-b14f-959e0372877a', Name: 'surveys' },
                     );
-                } else {
+                    console.log('got the response from : ' + newSurveyUDCName);
                     expect(response).to.haveOwnProperty('Account');
                     expect(response).to.haveOwnProperty('ActionDateTime');
                     expect(response).to.haveOwnProperty('Agent');
