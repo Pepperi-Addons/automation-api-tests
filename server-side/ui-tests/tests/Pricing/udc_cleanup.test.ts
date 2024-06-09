@@ -28,7 +28,7 @@ export async function PricingUdcCleanup(client: Client, tablesNames?: tableNames
                     nameOfCollection: udcTable,
                     fieldsOfCollection: [],
                     descriptionOfCollection: 'created with automation',
-                    syncDefinitionOfCollection: { Sync: true },
+                    syncDefinitionOfCollection: { Sync: true }, // Pricing works through CPI thus the collection must be Online & Offline
                     inherits: 'pricing_table',
                 });
                 upsert_response = await udcService.postScheme(bodyOfUdc);

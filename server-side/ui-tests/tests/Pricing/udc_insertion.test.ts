@@ -35,7 +35,8 @@ export async function PricingUdcInsertion(client: Client, testingFeatures: '0.8'
                 expect(udcTable_fromAPI[0]).to.haveOwnProperty('Fields');
                 expect(Object.keys(udcTable_fromAPI[0].Fields)).to.eql(['PricingKey', 'PricingData']);
                 expect(udcTable_fromAPI[0]).to.haveOwnProperty('SyncData');
-                expect(Object.keys(udcTable_fromAPI[0].SyncData.Sync)).to.be.true;
+                expect(udcTable_fromAPI[0].SyncData).to.haveOwnProperty('Sync');
+                expect(udcTable_fromAPI[0].SyncData.Sync).to.be.true;
             });
         });
 
