@@ -164,6 +164,10 @@ export async function PricingUdtInsertion(
                         Values: [ppmValues_content[mainKey]],
                     });
                 });
+                addContext(this, {
+                    title: `ppmValuesDataToBatch`,
+                    value: JSON.stringify(ppmValuesDataToBatch, null, 2),
+                });
                 batchUDTresponse = await objectsService.postBatchUDT(ppmValuesDataToBatch);
                 expect(batchUDTresponse).to.be.an('array').with.lengthOf(ppmValuesDataToBatch.length);
                 console.info(`insertion to ${udtFirstTableName} RESPONSE: `, JSON.stringify(batchUDTresponse, null, 2));

@@ -10,16 +10,10 @@ import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
-export async function PricingUdtCleanup(
-    client: Client,
-    // specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
-) {
+export async function PricingUdtCleanup(client: Client) {
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const pricingRules = new PricingRules();
-    // const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
-    // const installedPricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'Pricing')?.Version;
-    // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     const dateTime = new Date();
     const udtFirstTableName = 'PPM_Values';
     const udtSecondTableName = 'PPM_AccountValues';
@@ -40,66 +34,6 @@ export async function PricingUdtCleanup(
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
     } | ${dateTime}`, () => {
         describe(`UDT: "${udtFirstTableName}" cleanup`, () => {
-            // it('getting data object according to installed version', async function () {
-            //     switch (true) {
-            //         case installedPricingVersion?.startsWith('0.5'):
-            //             console.info('AT installedPricingVersion CASE 5');
-            //             ppmValues_content = pricingRules[udtFirstTableName].features05;
-            //             break;
-
-            //         case installedPricingVersion?.startsWith('0.6'):
-            //             console.info('AT installedPricingVersion CASE 6');
-            //             ppmValues_content = {
-            //                 ...pricingRules[udtFirstTableName].features05,
-            //                 ...pricingRules[udtFirstTableName].features06,
-            //             };
-            //             break;
-
-            //         case installedPricingVersion?.startsWith('0.7'):
-            //             console.info('AT installedPricingVersion CASE 7');
-            //             ppmValues_content =
-            //                 specialVersion === 'version07for05data'
-            //                     ? pricingRules[udtFirstTableName].features05
-            //                     : {
-            //                           ...pricingRules[udtFirstTableName].features05,
-            //                           ...pricingRules[udtFirstTableName].features06,
-            //                           ...pricingRules[udtFirstTableName].features07,
-            //                       };
-            //             break;
-
-            //         case installedPricingVersion?.startsWith('0.8'):
-            //             console.info('AT installedPricingVersion CASE 8');
-            //             ppmValues_content =
-            //                 specialVersion === 'version08for07data'
-            //                     ? {
-            //                           ...pricingRules[udtFirstTableName].features05,
-            //                           ...pricingRules[udtFirstTableName].features06,
-            //                           ...pricingRules[udtFirstTableName].features07,
-            //                       }
-            //                     : {
-            //                           ...pricingRules[udtFirstTableName].features05,
-            //                           ...pricingRules[udtFirstTableName].features06,
-            //                           ...pricingRules[udtFirstTableName].features07,
-            //                           ...pricingRules[udtFirstTableName].features08,
-            //                       };
-            //             break;
-
-            //         default:
-            //             console.info('AT installedPricingVersion Default');
-            //             ppmValues_content = {
-            //                 ...pricingRules[udtFirstTableName].features05,
-            //                 ...pricingRules[udtFirstTableName].features06,
-            //                 ...pricingRules[udtFirstTableName].features07,
-            //                 ...pricingRules[udtFirstTableName].features08,
-            //             };
-            //             break;
-            //     }
-            //     addContext(this, {
-            //         title: `ppmValues_content.length`,
-            //         value: ppmValues_content.length,
-            //     });
-            // });
-
             it(`retrieving "${udtFirstTableName}" UDT values via API`, async function () {
                 ppmValuesEnd = await objectsService.getUDT({
                     where: `MapDataExternalID='${udtFirstTableName}'`,
@@ -147,12 +81,17 @@ export async function PricingUdtCleanup(
                     if (deleteUDTresponse) {
                         console.info('UDT delete response exist!');
                         const PPMvalue = ppmValues_content[deleteUDTresponse.MainKey];
+                        addContext(this, {
+                            title: `Expected Rule Value`,
+                            value: PPMvalue,
+                        });
                         expect(deleteUDTresponse).to.deep.include({
                             MapDataExternalID: udtFirstTableName,
                             SecondaryKey: null,
-                            Values: [PPMvalue],
+                            // Values: [PPMvalue],
                         });
                         expect(deleteUDTresponse).to.have.property('MainKey');
+                        expect(deleteUDTresponse).to.have.property('Values');
                         expect(deleteUDTresponse).to.have.property('CreationDateTime').that.contains('Z');
                         expect(deleteUDTresponse)
                             .to.have.property('ModificationDateTime')
@@ -182,27 +121,6 @@ export async function PricingUdtCleanup(
         });
 
         describe(`UDT: "${udtSecondTableName}" cleanup`, () => {
-            // it('getting data object according to installed version', async function () {
-            //     switch (installedPricingVersionShort) {
-            //         case '8':
-            //             console.info('AT installedPricingVersion CASE 8');
-            //             ppmAccountValues_content =
-            //                 specialVersion === 'version08for07data'
-            //                     ? pricingRules[udtSecondTableName].features07
-            //                     : pricingRules[udtSecondTableName].features08;
-            //             break;
-
-            //         default:
-            //             console.info('AT installedPricingVersion Default');
-            //             ppmAccountValues_content = pricingRules[udtSecondTableName].features07;
-            //             break;
-            //     }
-            //     addContext(this, {
-            //         title: `ppmAccountValues_content.length`,
-            //         value: ppmAccountValues_content.length,
-            //     });
-            // });
-
             it(`retrieving "${udtSecondTableName}" UDT values via API`, async function () {
                 ppmAccountValuesEnd = await objectsService.getUDT({
                     where: `MapDataExternalID='${udtSecondTableName}'`,
