@@ -204,6 +204,15 @@ _________________
             await e2eutils.performManualResync.bind(this)(client, driver);
         });
 
+        it('Logout-Login', async function () {
+            await e2eutils.logOutLogIn(email, password);
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `At Home Page`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
+        });
+
         it('get UDT Values (PPM_Values)', async () => {
             ppmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
             console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
