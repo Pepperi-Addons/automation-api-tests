@@ -1091,7 +1091,7 @@ export class PricingData05 {
                     },
                     OtherAcc: {
                         cart: {
-                            '1unit':  29.02, // 32.25 * 0.9,
+                            '1unit': 29.02, // 32.25 * 0.9,
                             '3units': 29.02, // 32.25 * 0.9,
                             '1case(6units)': 29.02, // 32.25 * 0.9,
                             '4cases(24units)': 29.02, // 32.25 * 0.9,
