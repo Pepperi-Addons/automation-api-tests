@@ -614,6 +614,24 @@ export class PricingService {
         };
     }
 
+    public async changeValueOfTSAUserLineDiscountOfSpecificItem(changeTo: string, nameOfItem: string): Promise<void> {
+        const UserLineDiscount_Selector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            'UserLineDiscount_Value',
+            nameOfItem,
+        );
+        const UserLineDiscount_Element = await this.browser.findElement(UserLineDiscount_Selector);
+        console.info(`${nameOfItem} UserLineDiscount_Value: `, await UserLineDiscount_Element.getText());
+        for (let i = 0; i < 6; i++) {
+            await UserLineDiscount_Element.sendKeys(Key.BACK_SPACE);
+            this.browser.sleep(0.01 * 1000);
+        }
+        this.browser.sleep(0.05 * 1000);
+        await UserLineDiscount_Element.sendKeys(changeTo);
+        await this.orderPage.isSpinnerDone();
+        this.browser.sleep(0.05 * 1000);
+        this.browser.sleep(0.1 * 1000);
+    }
+
     public async searchInOrderCenter(this: Context, nameOfItem: string, driver: Browser): Promise<void> {
         const orderPage = new OrderPage(driver);
         await orderPage.isSpinnerDone();
