@@ -13,6 +13,7 @@ import { PricingDataNoUom } from '../../../pom/addons/PricingDataNoUom';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingService } from '../../../../services/pricing.service';
 import PricingRules from '../../../pom/addons/PricingRules';
+import E2EUtils from '../../../utilities/e2e_utils';
 
 interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -92,6 +93,7 @@ _________________
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
+    let e2eutils: E2EUtils;
     let transactionID: number;
     let transactionUUID: string;
     let transactionUUID_Acc01: string;
@@ -226,6 +228,7 @@ _________________
             webAppTopBar = new WebAppTopBar(driver);
             webAppDialog = new WebAppDialog(driver);
             orderPage = new OrderPage(driver);
+            e2eutils = new E2EUtils(driver);
             pricingService = new PricingService(
                 driver,
                 webAppLoginPage,
@@ -253,7 +256,7 @@ _________________
         });
 
         it('Manual Sync', async () => {
-            await webAppHomePage.manualResync(client);
+            await e2eutils.performManualSync(client);
         });
 
         it('get UDT Values (PPM_Values)', async function () {

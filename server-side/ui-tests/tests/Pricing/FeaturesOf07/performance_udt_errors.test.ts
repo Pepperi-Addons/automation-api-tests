@@ -11,6 +11,7 @@ import { PricingService } from '../../../../services/pricing.service';
 import PricingRules from '../../../pom/addons/PricingRules';
 import GeneralService from '../../../../services/general.service';
 import addContext from 'mochawesome/addContext';
+import E2EUtils from '../../../utilities/e2e_utils';
 
 chai.use(promised);
 
@@ -81,6 +82,7 @@ _________________
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
+    let e2eutils: E2EUtils;
     let transactionUUID: string;
     let accountName: string;
     let duration: string;
@@ -102,6 +104,7 @@ _________________
                 webAppTopBar = new WebAppTopBar(driver);
                 webAppDialog = new WebAppDialog(driver);
                 orderPage = new OrderPage(driver);
+                e2eutils = new E2EUtils(driver);
                 pricingService = new PricingService(
                     driver,
                     webAppLoginPage,
@@ -127,8 +130,8 @@ _________________
                 });
             });
 
-            it('Manual Sync', async () => {
-                await webAppHomePage.manualResync(client);
+            it('Manual Resync', async () => {
+                await e2eutils.performManualResync.bind(this)(client, driver);
             });
 
             it('get UDT Values (PPM_Values)', async () => {
