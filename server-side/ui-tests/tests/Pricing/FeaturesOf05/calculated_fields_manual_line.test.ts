@@ -162,6 +162,7 @@ _________________
         'PriceManualLineUnitPriceAfter1',
         'PriceTaxUnitPriceAfter1',
     ];
+    const manualLineDiscountItem = 'Drug0003';
 
     describe(`Pricing ** Base ** UI tests | Ver ${installedPricingVersionLong}`, () => {
         before(async function () {
@@ -187,7 +188,6 @@ _________________
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 
@@ -412,91 +412,192 @@ _________________
                         });
                     });
 
-                    switch (state) {
-                        case 'baseline':
-                            break;
-
-                        default:
-                            describe(`CART "${state}"`, () => {
-                                it('entering and verifying being in cart', async function () {
-                                    await driver.click(orderPage.Cart_Button);
-                                    await orderPage.isSpinnerDone();
-                                    driver.sleep(1 * 1000);
-                                    await driver.untilIsVisible(orderPage.Cart_List_container);
+                    state !== 'baseline' &&
+                        describe(`OC Manual Line "${state}"`, () => {
+                            it(`changing "UserLineDiscount" field of item "${manualLineDiscountItem}"`, async function () {
+                                await pricingService.searchInOrderCenter.bind(this)(manualLineDiscountItem, driver);
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At OC Before ${manualLineDiscountItem} UserLineDiscount change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
                                 });
-                                it(`switch to 'Grid View'`, async function () {
-                                    await orderPage.changeCartView('Grid');
+                                driver.sleep(0.2 * 1000);
+                                await pricingService.changeValueOfTSAUserLineDiscountOfSpecificItem(
+                                    '10',
+                                    manualLineDiscountItem,
+                                );
+                                driver.sleep(0.2 * 1000);
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At OC After ${manualLineDiscountItem} UserLineDiscount change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
+                                const manualLineDiscountItem_value = await (
+                                    await driver.findElement(
+                                        orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                                            'UserLineDiscount_Value',
+                                            manualLineDiscountItem,
+                                        ),
+                                    )
+                                ).getText();
+                                expect(manualLineDiscountItem_value).to.equal('10');
+                                driver.sleep(1 * 1000);
+                            });
+                            it(`validating "PriceManualLineUnitPriceAfter1" field of item "${manualLineDiscountItem}" updated`, async function () {
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At OC After ${manualLineDiscountItem} UserLineDiscount change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
+                                const priceDiscountUnitPriceAfter1_value = await (
+                                    await driver.findElement(
+                                        orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                                            'PriceDiscountUnitPriceAfter1_Value',
+                                            manualLineDiscountItem,
+                                        ),
+                                    )
+                                ).getText();
+                                console.info(
+                                    `${manualLineDiscountItem} ${state} priceDiscountUnitPriceAfter1_value:`,
+                                    priceDiscountUnitPriceAfter1_value,
+                                );
+                                const priceManualLineUnitPriceAfter1_value = await (
+                                    await driver.findElement(
+                                        orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                                            'PriceManualLineUnitPriceAfter1_Value',
+                                            manualLineDiscountItem,
+                                        ),
+                                    )
+                                ).getText();
+                                console.info(
+                                    `${manualLineDiscountItem} ${state} priceManualLineUnitPriceAfter1_value:`,
+                                    priceManualLineUnitPriceAfter1_value,
+                                );
+                                addContext(this, {
+                                    title: `priceDiscountUnitPriceAfter1_value`,
+                                    value: priceDiscountUnitPriceAfter1_value,
+                                });
+                                addContext(this, {
+                                    title: `priceManualLineUnitPriceAfter1_value`,
+                                    value: priceManualLineUnitPriceAfter1_value,
+                                });
+                                const expectedValue = Number(priceDiscountUnitPriceAfter1_value) * 0.9;
+                                addContext(this, {
+                                    title: `Expected Value`,
+                                    value: expectedValue,
+                                });
+                                expect(Number(priceManualLineUnitPriceAfter1_value)).equals(expectedValue);
+                            });
+                            it(`checking all TSA fields of item "${manualLineDiscountItem}" after updated`, async function () {
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At OC After ${manualLineDiscountItem} UserLineDiscount change`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
+                                const priceTSAs = await pricingService.getItemTSAs(
+                                    'OrderCenter',
+                                    manualLineDiscountItem,
+                                );
+                                console.info(`${manualLineDiscountItem} ${state} priceTSAs:`, priceTSAs);
+
+                                expect(typeof priceTSAs).equals('object');
+                                expect(Object.keys(priceTSAs)).to.eql([
+                                    'PriceBaseUnitPriceAfter1',
+                                    'PriceDiscountUnitPriceAfter1',
+                                    'PriceGroupDiscountUnitPriceAfter1',
+                                    'PriceManualLineUnitPriceAfter1',
+                                    'PriceTaxUnitPriceAfter1',
+                                    'NPMCalcMessage',
+                                ]);
+                                priceFields.forEach((priceField) => {
+                                    const expextedValue =
+                                        pricingData[testItemsData].Base[manualLineDiscountItem][priceField][account]
+                                            .cart[state];
+                                    addContext(this, {
+                                        title: `Price Field "${priceField}"`,
+                                        value: `ACTUAL: ${priceTSAs[priceField]} \nEXPECTED: ${expextedValue}`,
+                                    });
+                                    expect(priceTSAs[priceField]).equals(expextedValue);
+                                });
+                            });
+                        });
+
+                    state !== 'baseline' &&
+                        describe(`CART "${state}"`, () => {
+                            it('entering and verifying being in cart', async function () {
+                                await driver.click(orderPage.Cart_Button);
+                                await orderPage.isSpinnerDone();
+                                driver.sleep(1 * 1000);
+                                await driver.untilIsVisible(orderPage.Cart_List_container);
+                            });
+                            it(`switch to 'Grid View'`, async function () {
+                                await orderPage.changeCartView('Grid');
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `After "Line View" was selected`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
+                            });
+                            it('verify that the sum total of items in the cart is correct', async function () {
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At Cart`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
+                                const itemsInCart = await (
+                                    await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                ).getText();
+                                driver.sleep(0.2 * 1000);
+                                expect(Number(itemsInCart)).to.equal(testItems.length);
+                                driver.sleep(1 * 1000);
+                            });
+                            testItems.forEach(async (item) => {
+                                it(`checking item "${item.name}"`, async function () {
+                                    const totalUnitsAmount = await pricingService.getItemTotalAmount('Cart', item.name);
+                                    const priceTSAs = await pricingService.getItemTSAs('Cart', item.name);
+                                    console.info(`Cart ${item.name} totalUnitsAmount:`, totalUnitsAmount);
+                                    console.info(`priceTSAs:`, priceTSAs);
+                                    const expectedAmount =
+                                        state === '1unit'
+                                            ? 1
+                                            : state === '3units'
+                                            ? 3
+                                            : state === '1case(6units)'
+                                            ? 6
+                                            : item.cartAmount;
+                                    addContext(this, {
+                                        title: `Total Units Amount`,
+                                        value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
+                                    });
+                                    // expect(totalUnitsAmount).equals(expectedAmount);
+                                    priceFields.forEach((priceField) => {
+                                        const expextedValue =
+                                            pricingData[testItemsData].Base[item.name][priceField][account][state];
+                                        expect(priceTSAs[priceField]).equals(expextedValue);
+                                    });
+                                });
+                            });
+                            describe('back to Order Center and switch to Line View', () => {
+                                it('Click "Continue ordering" button', async function () {
+                                    await driver.click(orderPage.Cart_ContinueOrdering_Button);
+                                    await orderPage.isSpinnerDone();
+                                    await orderPage.changeOrderCenterPageView('Line View');
+                                    await orderPage.isSpinnerDone();
                                     base64ImageComponent = await driver.saveScreenshots();
                                     addContext(this, {
                                         title: `After "Line View" was selected`,
                                         value: 'data:image/png;base64,' + base64ImageComponent,
                                     });
-                                });
-                                it('verify that the sum total of items in the cart is correct', async function () {
+                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
+                                    driver.sleep(1 * 1000);
                                     base64ImageComponent = await driver.saveScreenshots();
                                     addContext(this, {
-                                        title: `At Cart`,
+                                        title: `Order Center - Loaded`,
                                         value: 'data:image/png;base64,' + base64ImageComponent,
-                                    });
-                                    const itemsInCart = await (
-                                        await driver.findElement(orderPage.Cart_Headline_Results_Number)
-                                    ).getText();
-                                    driver.sleep(0.2 * 1000);
-                                    expect(Number(itemsInCart)).to.equal(testItems.length);
-                                    driver.sleep(1 * 1000);
-                                });
-                                testItems.forEach(async (item) => {
-                                    it(`checking item "${item.name}"`, async function () {
-                                        const totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                            'Cart',
-                                            item.name,
-                                        );
-                                        const priceTSAs = await pricingService.getItemTSAs('Cart', item.name);
-                                        console.info(`Cart ${item.name} totalUnitsAmount:`, totalUnitsAmount);
-                                        console.info(`priceTSAs:`, priceTSAs);
-                                        const expectedAmount =
-                                            state === '1unit'
-                                                ? 1
-                                                : state === '3units'
-                                                ? 3
-                                                : state === '1case(6units)'
-                                                ? 6
-                                                : item.cartAmount;
-                                        addContext(this, {
-                                            title: `Total Units Amount`,
-                                            value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
-                                        });
-                                        // expect(totalUnitsAmount).equals(expectedAmount);
-                                        priceFields.forEach((priceField) => {
-                                            const expextedValue =
-                                                pricingData[testItemsData].Base[item.name][priceField][account][state];
-                                            expect(priceTSAs[priceField]).equals(expextedValue);
-                                        });
-                                    });
-                                });
-                                describe('back to Order Center and switch to Line View', () => {
-                                    it('Click "Continue ordering" button', async function () {
-                                        await driver.click(orderPage.Cart_ContinueOrdering_Button);
-                                        await orderPage.isSpinnerDone();
-                                        await orderPage.changeOrderCenterPageView('Line View');
-                                        await orderPage.isSpinnerDone();
-                                        base64ImageComponent = await driver.saveScreenshots();
-                                        addContext(this, {
-                                            title: `After "Line View" was selected`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
-                                        });
-                                        await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
-                                        driver.sleep(1 * 1000);
-                                        base64ImageComponent = await driver.saveScreenshots();
-                                        addContext(this, {
-                                            title: `Order Center - Loaded`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
-                                        });
                                     });
                                 });
                             });
-                            break;
-                    }
+                        });
                 });
             });
         });

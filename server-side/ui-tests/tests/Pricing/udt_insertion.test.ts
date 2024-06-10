@@ -1,17 +1,22 @@
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { describe, it } from 'mocha';
+import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { ObjectsService } from '../../../services';
 import GeneralService from '../../../services/general.service';
 import PricingRules from '../../pom/addons/PricingRules';
 import addContext from 'mochawesome/addContext';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
+import { Browser } from '../../utilities/browser';
+import E2EUtils from '../../utilities/e2e_utils';
+import { WebAppLoginPage } from '../../pom';
 
 chai.use(promised);
 
 export async function PricingUdtInsertion(
     client: Client,
+    email: string,
+    password: string,
     testingFeatures: '0.5' | '0.6' | '0.7' | '0.8' | '1.0',
     specialVersion: 'version07for05data' | 'version08for07data' | 'noUom' | undefined = undefined,
 ) {
@@ -40,6 +45,10 @@ export async function PricingUdtInsertion(
     let batchUDTresponse: any;
     let ppmValues_content;
     let ppmAccountValues_content;
+    let driver: Browser;
+    let e2eUtils: E2EUtils;
+    let webAppLoginPage: WebAppLoginPage;
+    let screenShot;
 
     describe('UDT Upsert - Test Suite', () => {
         describe(`UDT: "${udtFirstTableName}" insertion`, () => {
@@ -317,6 +326,40 @@ export async function PricingUdtInsertion(
                 expect(ppmAccountValuesEnd.length).equals(
                     ppmAccountValuesDataToBatch.length + pricingRules.dummyPPM_AccountValues_length,
                 );
+            });
+        });
+
+        describe(`Login to Pricing Test User after UDT Values Upload`, () => {
+            before(async function () {
+                driver = await Browser.initiateChrome();
+                webAppLoginPage = new WebAppLoginPage(driver);
+                e2eUtils = new E2EUtils(driver);
+            });
+
+            after(async function () {
+                await driver.quit();
+            });
+
+            it('Login', async function () {
+                await webAppLoginPage.login(email, password);
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Home Page`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
+
+            it('Manual Resync', async function () {
+                await e2eUtils.performManualResync.bind(this)(client, driver);
+            });
+
+            it('Logout', async function () {
+                await webAppLoginPage.logout();
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Logged out`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
             });
         });
     });

@@ -62,6 +62,7 @@ export class OrderPage extends WebAppList {
     public Cart_UnitOfMeasure_Selector_Value: By = By.xpath('//*[@id="TSAAOQMUOM1"]');
     public Cart_UnitOfMeasure2_Selector_Value: By = By.xpath('//*[@id="TSAAOQMUOM2"]');
 
+    public UserLineDiscount_Value: By = By.xpath('//span[@id="TSAUserLineDiscount"]');
     public PriceBaseUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceBaseUnitPriceAfter1"]');
     public PriceDiscountUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceDiscountUnitPriceAfter1"]');
     public PriceGroupDiscountUnitPriceAfter1_Value: By = By.xpath('//span[@id="TSAPriceGroupDiscountUnitPriceAfter1"]');
