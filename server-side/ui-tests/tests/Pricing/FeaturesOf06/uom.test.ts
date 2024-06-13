@@ -16,7 +16,7 @@ import E2EUtils from '../../../utilities/e2e_utils';
 
 chai.use(promised);
 
-export async function PricingUomTests(email: string, password: string, client: Client, specialTestData?: 'noUom') {
+export async function PricingUomTests(email: string, password: string, client: Client) {
     /*
 ________________________ 
 _________________ Brief:
@@ -95,16 +95,10 @@ _________________
     // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
 
-    const ppmValues_content =
-        specialTestData === 'noUom'
-            ? {
-                  ...pricingRules[udtFirstTableName].features05noUom,
-                  ...pricingRules[udtFirstTableName].features06noUom,
-              }
-            : {
-                  ...pricingRules[udtFirstTableName].features05,
-                  ...pricingRules[udtFirstTableName].features06,
-              };
+    const ppmValues_content = {
+        ...pricingRules[udtFirstTableName].features05,
+        ...pricingRules[udtFirstTableName].features06,
+    };
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -115,7 +109,7 @@ _________________
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
-    let e2eutils: E2EUtils;
+    let e2eUtils: E2EUtils;
     let transactionUUID: string;
     let accountName: string;
     let duration: string;
@@ -170,7 +164,7 @@ _________________
                 webAppTopBar = new WebAppTopBar(driver);
                 webAppDialog = new WebAppDialog(driver);
                 orderPage = new OrderPage(driver);
-                e2eutils = new E2EUtils(driver);
+                e2eUtils = new E2EUtils(driver);
                 pricingService = new PricingService(
                     driver,
                     webAppLoginPage,
@@ -197,7 +191,7 @@ _________________
             });
 
             it('Manual Resync', async () => {
-                await e2eutils.performManualResync.bind(this)(client, driver);
+                await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 
             it('get UDT Values (PPM_Values)', async () => {
