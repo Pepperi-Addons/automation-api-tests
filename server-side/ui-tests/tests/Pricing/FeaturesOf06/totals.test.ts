@@ -15,7 +15,7 @@ import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
-export async function PricingTotalsTests(email: string, password: string, client: Client) {
+export async function PricingTotalsTests(email: string, password: string, client: Client, specialTestData?: 'noUom') {
     /*
 ________________________ 
 _________________ Brief:
@@ -100,39 +100,16 @@ _________________
     // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
 
-    const ppmValues_content = {
-        ...pricingRules[udtFirstTableName].features05,
-        ...pricingRules[udtFirstTableName].features06,
-    };
-
-    // let ppmValues_content;
-    // switch (true) {
-    //     case installedPricingVersion?.startsWith('0.7'):
-    //         console.info('AT installedPricingVersion CASE 7');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //             ...pricingRules[udtFirstTableName].features07,
-    //         };
-    //         break;
-
-    //     case installedPricingVersion?.startsWith('0.8'):
-    //         console.info('AT installedPricingVersion CASE 8');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //             ...pricingRules[udtFirstTableName].features07,
-    //             ...pricingRules[udtFirstTableName].features08,
-    //         };
-    //         break;
-    //     default:
-    //         console.info('AT installedPricingVersion Default');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //         };
-    //         break;
-    // }
+    const ppmValues_content =
+        specialTestData === 'noUom'
+            ? {
+                  ...pricingRules[udtFirstTableName].features05noUom,
+                  ...pricingRules[udtFirstTableName].features06noUom,
+              }
+            : {
+                  ...pricingRules[udtFirstTableName].features05,
+                  ...pricingRules[udtFirstTableName].features06,
+              };
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -232,12 +209,12 @@ _________________
                         }
                     });
                     matchingRowOfppmValues &&
-                        console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                    console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                        console.info('ACTUAL: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                    console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                     matchingRowOfppmValues &&
                         addContext(this, {
                             title: `PPM Key "${mainKey}"`,
-                            value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
+                            value: `ACTUAL  : ${matchingRowOfppmValues['Values'][0]} \nEXPECTED: ${ppmValues_content[mainKey]}`,
                         });
                     matchingRowOfppmValues &&
                         expect(ppmValues_content[mainKey]).equals(

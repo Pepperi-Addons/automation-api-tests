@@ -119,7 +119,10 @@ _________________
     const udtFirstTableName = 'PPM_Values';
     // const udtSecondTableName = 'PPM_AccountValues';
 
-    const ppmValues_content = pricingRules[udtFirstTableName].features05;
+    const ppmValues_content =
+        specialVersion === 'noUom'
+            ? pricingRules[udtFirstTableName].features05noUom
+            : pricingRules[udtFirstTableName].features05;
 
     const testItemsData = installedPricingVersionLong?.startsWith('0.5')
         ? 'testItemsValues_version05'
@@ -216,6 +219,15 @@ _________________
         it('get UDT Values (PPM_Values)', async () => {
             ppmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
             console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
+            const ppmValues_noDummy = ppmValues.filter((listing) => {
+                if (!listing.MainKey.includes('DummyItem')) {
+                    return listing;
+                }
+            });
+            addContext(this, {
+                title: `PPMValues Filtered Content (NO Dummy)`,
+                value: JSON.stringify(ppmValues_noDummy, null, 2),
+            });
         });
 
         it('validating "PPM_Values" via API', async function () {
@@ -231,6 +243,12 @@ _________________
                 value: `ACTUAL: ${ppmValues.length} \nEXPECTED: ${expectedPPMValuesLength}`,
             });
             expect(ppmValues.length).equals(expectedPPMValuesLength);
+            const ppmValues_noDummy = ppmValues.filter((listing) => {
+                if (!listing.MainKey.includes('DummyItem')) {
+                    return listing;
+                }
+            });
+            expect(ppmValues_noDummy.length).equals(Object.keys(ppmValues_content).length);
             Object.keys(ppmValues_content).forEach((mainKey) => {
                 console.info('mainKey: ', mainKey);
                 const matchingRowOfppmValues = ppmValues.find((tableRow) => {
@@ -238,13 +256,13 @@ _________________
                         return tableRow;
                     }
                 });
+                console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                 matchingRowOfppmValues &&
-                    console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                    console.info('ACTUAL: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
                 matchingRowOfppmValues &&
                     addContext(this, {
                         title: `PPM Key "${mainKey}"`,
-                        value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
+                        value: `ACTUAL  : ${matchingRowOfppmValues['Values'][0]} \nEXPECTED: ${ppmValues_content[mainKey]}`,
                     });
                 matchingRowOfppmValues &&
                     expect(ppmValues_content[mainKey]).equals(
@@ -252,6 +270,12 @@ _________________
                             ? matchingRowOfppmValues['Values'].join()
                             : matchingRowOfppmValues['Values'][0],
                     );
+            });
+            ppmValues_noDummy.forEach((ppmValue) => {
+                addContext(this, {
+                    title: `"${ppmValue.MainKey}"`,
+                    value: `ACTUAL  : ${ppmValue.Values} \nEXPECTED: ${ppmValues_content[ppmValue.MainKey]}`,
+                });
             });
         });
 
