@@ -76,7 +76,10 @@ _________________
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
 
     const pricingData = specialVersion === 'noUom' ? new PricingDataNoUom() : new PricingData05();
-    const ppmValues_content = pricingRules[udtFirstTableName].features05;
+    const ppmValues_content =
+        specialVersion === 'noUom'
+            ? pricingRules[udtFirstTableName].features05noUom
+            : pricingRules[udtFirstTableName].features05;
 
     const testItemsData = installedPricingVersionLong?.startsWith('0.5')
         ? 'testItemsValues_version05'
@@ -292,12 +295,12 @@ _________________
                     }
                 });
                 matchingRowOfppmValues &&
-                    console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                    console.info('ACTUAL: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                 matchingRowOfppmValues &&
                     addContext(this, {
                         title: `PPM Key "${mainKey}"`,
-                        value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
+                        value: `ACTUAL  : ${matchingRowOfppmValues['Values'][0]} \nEXPECTED: ${ppmValues_content[mainKey]}`,
                     });
                 matchingRowOfppmValues &&
                     expect(ppmValues_content[mainKey]).equals(

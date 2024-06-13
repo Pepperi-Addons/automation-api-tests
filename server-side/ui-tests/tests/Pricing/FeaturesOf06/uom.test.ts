@@ -16,7 +16,7 @@ import E2EUtils from '../../../utilities/e2e_utils';
 
 chai.use(promised);
 
-export async function PricingUomTests(email: string, password: string, client: Client) {
+export async function PricingUomTests(email: string, password: string, client: Client, specialTestData?: 'noUom') {
     /*
 ________________________ 
 _________________ Brief:
@@ -95,10 +95,16 @@ _________________
     // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
 
-    const ppmValues_content = {
-        ...pricingRules[udtFirstTableName].features05,
-        ...pricingRules[udtFirstTableName].features06,
-    };
+    const ppmValues_content =
+        specialTestData === 'noUom'
+            ? {
+                  ...pricingRules[udtFirstTableName].features05noUom,
+                  ...pricingRules[udtFirstTableName].features06noUom,
+              }
+            : {
+                  ...pricingRules[udtFirstTableName].features05,
+                  ...pricingRules[udtFirstTableName].features06,
+              };
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -221,12 +227,12 @@ _________________
                         }
                     });
                     matchingRowOfppmValues &&
-                        console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                    console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                        console.info('ACTUAL: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                    console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                     matchingRowOfppmValues &&
                         addContext(this, {
                             title: `PPM Key "${mainKey}"`,
-                            value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
+                            value: `ACTUAL  : ${matchingRowOfppmValues['Values'][0]} \nEXPECTED: ${ppmValues_content[mainKey]}`,
                         });
                     matchingRowOfppmValues &&
                         expect(ppmValues_content[mainKey]).equals(
