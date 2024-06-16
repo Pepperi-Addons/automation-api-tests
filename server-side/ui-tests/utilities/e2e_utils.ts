@@ -225,7 +225,7 @@ export default class E2EUtils extends BasePomObject {
         await slugs.mapPageToSlugEVGENY(slugPath, pageName);
     }
 
-    public async createSlug(
+    public async createAndMapSlug(
         slugDisplayName: string,
         slug_path: string,
         keyOfMappedPage: string,
@@ -371,20 +371,36 @@ export default class E2EUtils extends BasePomObject {
         await webAppList.isSpinnerDone(); // just for the use of webAppList so that fix-lint won't get angry
     }
 
-    public async performManualResync(client: Client) {
-        const webAppHeader: WebAppHeader = new WebAppHeader(this.browser);
-        const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
-        const webAppAPI: WebAppAPI = new WebAppAPI(this.browser, client);
+    public async performManualResync(this: Context, client: Client, driver: Browser) {
+        let screenShot;
+        const webAppHeader: WebAppHeader = new WebAppHeader(driver);
+        const webAppHomePage: WebAppHomePage = new WebAppHomePage(driver);
+        const webAppAPI: WebAppAPI = new WebAppAPI(driver, client);
         const accessToken = await webAppAPI.getAccessToken();
         await webAppHeader.goHome();
         await webAppHomePage.isSpinnerDone();
-        const homePageURL = await this.browser.getCurrentUrl();
-        await this.browser.navigate(`${homePageURL}/supportmenu`);
-        await this.browser.untilIsVisible(webAppHomePage.SupportMenuPopup_Container);
-        await this.browser.click(webAppHomePage.SupportMenuPopup_Refresh);
-        await this.browser.untilIsVisible(webAppHomePage.SupportMenuPopup_RefreshData);
-        this.browser.sleep(0.25 * 1000);
-        await this.browser.click(webAppHomePage.SupportMenuPopup_RefreshData);
+        const homePageURL = await driver.getCurrentUrl();
+        await driver.navigate(`${homePageURL}/supportmenu`);
+        await driver.untilIsVisible(webAppHomePage.SupportMenuPopup_Container);
+        screenShot = await driver.saveScreenshots();
+        addContext(this, {
+            title: `Support Menu at Home Page should be open`,
+            value: 'data:image/png;base64,' + screenShot,
+        });
+        await driver.click(webAppHomePage.SupportMenuPopup_Refresh);
+        await driver.untilIsVisible(webAppHomePage.SupportMenuPopup_RefreshData);
+        screenShot = await driver.saveScreenshots();
+        addContext(this, {
+            title: `"Refresh" option clicked`,
+            value: 'data:image/png;base64,' + screenShot,
+        });
+        driver.sleep(0.25 * 1000);
+        await driver.click(webAppHomePage.SupportMenuPopup_RefreshData);
+        screenShot = await driver.saveScreenshots();
+        addContext(this, {
+            title: `"Refresh Data" option clicked`,
+            value: 'data:image/png;base64,' + screenShot,
+        });
         await webAppAPI.pollForResyncResponse(accessToken, 100);
         let spinnerDone = false;
         do {
@@ -396,7 +412,7 @@ export default class E2EUtils extends BasePomObject {
             }
         } while (!spinnerDone);
         await webAppAPI.pollForResyncResponse(accessToken);
-        await this.browser.navigate(homePageURL);
+        await driver.navigate(homePageURL);
     }
 
     public async logOutLogIn(email: string, password: string) {
@@ -616,7 +632,7 @@ export default class E2EUtils extends BasePomObject {
             await webAppHeader.goHome();
         }
         if (resourceData.slug) {
-            await this.createSlug(
+            await this.createAndMapSlug(
                 resourceData.slug.slugDisplayName,
                 resourceData.slug.slug_path,
                 resourceData.slug.keyOfMappedPage || pageUUID,

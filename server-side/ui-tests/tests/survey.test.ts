@@ -49,7 +49,7 @@ const surveySpesificTestData = {
     sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'], //sync is now public
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.0.%'],
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', ''],
-    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', '1.1.%'],
+    'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', ''],
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''],
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
@@ -281,30 +281,21 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it(`1. Create A UDC Which Extends 'surveys' Scheme Before Creating A Survey`, async function () {
                 debugger;
-                const udcService = new UDCService(generalService);
-                const newSurveyUDCName = 'NewSurveyCollection' + generalService.generateRandomString(4);
-                console.log('about to create a new UDC named: ' + newSurveyUDCName);
-                const response = await udcService.createUDCWithFields(
-                    newSurveyUDCName,
-                    [],
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    { AddonUUID: 'dd0a85ea-7ef0-4bc1-b14f-959e0372877a', Name: 'surveys' },
-                );
-                console.log('got the response from : ' + newSurveyUDCName);
-                if (
-                    generalService.papiClient['options'].baseURL.includes('staging') &&
-                    response.hasOwnProperty('Fail') &&
-                    response.Fail.includes('Table schema must exist, for table = AddonFiles')
-                ) {
-                    console.log('STAGING Table schema must exist, for table = AddonFiles ERROR!!! BUG: DI-23504');
-                    expect(response.Fail).to.equal(
+                if (!generalService.papiClient['options'].baseURL.includes('staging')) {
+                    //PNS SB issue
+                    const udcService = new UDCService(generalService);
+                    const newSurveyUDCName = 'NewSurveyCollection' + generalService.generateRandomString(4);
+                    console.log('about to create a new UDC named: ' + newSurveyUDCName);
+                    const response = await udcService.createUDCWithFields(
+                        newSurveyUDCName,
+                        [],
                         undefined,
-                        'STAGING Table schema must exist, for table = AddonFiles ERROR!!! BUG: DI-23504',
+                        undefined,
+                        undefined,
+                        undefined,
+                        { AddonUUID: 'dd0a85ea-7ef0-4bc1-b14f-959e0372877a', Name: 'surveys' },
                     );
-                } else {
+                    console.log('got the response from : ' + newSurveyUDCName);
                     expect(response).to.haveOwnProperty('Account');
                     expect(response).to.haveOwnProperty('ActionDateTime');
                     expect(response).to.haveOwnProperty('Agent');

@@ -47,7 +47,7 @@ export const systemAddons: any = {
     ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.%.%'],
-    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.58'], //cpapi
+    'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', ''],
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node (Cross Platform Engine)
@@ -148,7 +148,7 @@ console.log('%c#00FF00\t\tSuccess\t\t\t', `${ConsoleColors.MenuBackground}; ${Co
  * The process will end
  */
 process.on('unhandledRejection', async (error) => {
-    debugger;
+    // debugger;
     if (error instanceof Error && JSON.stringify(error.stack).includes('selenium-webdriver\\lib\\http.js')) {
         console.log(`%cError in Chrome API: ${error}`, ConsoleColors.Error);
         console.log('Wait 10 seconds before trying to call the browser api again');
@@ -195,7 +195,10 @@ process.on('unhandledRejection', async (error) => {
             ConsoleColors.SystemInformation,
         );
         process.exit(1);
-    } else if (typeof error === 'string' && (error.includes('Error') || error.includes('502'))) {
+    } else if (
+        typeof error === 'string' &&
+        (error.includes('Error') || error.includes('502') || error.includes('401') || error.includes('error'))
+    ) {
         console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
         console.log(
             `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,

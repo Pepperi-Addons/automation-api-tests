@@ -1098,8 +1098,8 @@ export async function MockTest(email: string, password: string, client: Client) 
             // it('3. Create A Slug For The Viewer Page And Set It To Show On Homepage', async function () {
             //     referenceAccountSlugDisplayName = `Ref Account`;
             //     referenceAccountSlugPath = 'ref_account_auto';
-            //     // referenceAccountSlugUUID = await e2eUiService.createSlug(
-            //     await e2eUiService.createSlug(
+            //     // referenceAccountSlugUUID = await e2eUiService.createAndMapSlug(
+            //     await e2eUiService.createAndMapSlug(
             //         referenceAccountSlugDisplayName,
             //         referenceAccountSlugPath,
             //         referenceAccountAutoPageUUID,
@@ -1218,8 +1218,8 @@ export async function MockTest(email: string, password: string, client: Client) 
             it('3. Create A Slug For The Viewer Page And Set It To Show On Homepage', async function () {
                 referenceAccountSlugDisplayName = `Account Filter`;
                 referenceAccountSlugPath = 'account_filter_auto';
-                // referenceAccountSlugUUID = await e2eUiService.createSlug(
-                await e2eUiService.createSlug(
+                // referenceAccountSlugUUID = await e2eUiService.createAndMapSlug(
+                await e2eUiService.createAndMapSlug(
                     referenceAccountSlugDisplayName,
                     referenceAccountSlugPath,
                     referenceAccountAutoPageUUID,
@@ -1340,8 +1340,8 @@ export async function MockTest(email: string, password: string, client: Client) 
             //     it('3. Create A Slug For The Viewer Page And Set It To Show On Homepage', async function () {
             //         referenceAccountSlugDisplayName = `Big Data Ref Account`;
             //         referenceAccountSlugPath = 'big_data_ref_account_auto';
-            //         // referenceAccountSlugUUID = await e2eUiService.createSlug(
-            //         await e2eUiService.createSlug(
+            //         // referenceAccountSlugUUID = await e2eUiService.createAndMapSlug(
+            //         await e2eUiService.createAndMapSlug(
             //             referenceAccountSlugDisplayName,
             //             referenceAccountSlugPath,
             //             referenceAccountAutoPageUUID,
@@ -1425,7 +1425,7 @@ export async function MockTest(email: string, password: string, client: Client) 
             it('7. Create A Slug For The Viewer Page And Set It To Show On Homepage', async function () {
                 nameAgeSlugDisplayName = `NameAge`;
                 nameAgeSlugPath = 'name_age_auto';
-                await e2eUiService.createSlug(
+                await e2eUiService.createAndMapSlug(
                     nameAgeSlugDisplayName,
                     nameAgeSlugPath,
                     nameAgeAutoPageUUID,
@@ -1512,7 +1512,7 @@ export async function MockTest(email: string, password: string, client: Client) 
             it('11. Create A Slug For The Viewer Page And Set It To Show On Homepage', async function () {
                 indexedNameAgeSlugDisplayName = `Indexed NameAge`;
                 indexedNameAgeSlugPath = 'indexed_name_age_auto';
-                await e2eUiService.createSlug(
+                await e2eUiService.createAndMapSlug(
                     indexedNameAgeSlugDisplayName,
                     indexedNameAgeSlugPath,
                     indexedNameAgeAutoPageUUID,
@@ -1613,7 +1613,7 @@ export async function MockTest(email: string, password: string, client: Client) 
             it('15. Create A Slug For The Viewer Page And Set It To Show On Homepage', async function () {
                 indexedFieldsSlugDisplayName = `Indexed Fields`;
                 indexedFieldsSlugPath = 'indexed_fields_auto';
-                await e2eUiService.createSlug(
+                await e2eUiService.createAndMapSlug(
                     indexedFieldsSlugDisplayName,
                     indexedFieldsSlugPath,
                     indexedFieldsAutoPageUUID,
@@ -2772,7 +2772,7 @@ export async function MockTest(email: string, password: string, client: Client) 
             it('Deleting the View "ReferenceAccountAuto View" with API', async () => {
                 await e2eUiService.navigateTo('Resource Views');
                 await resourceViews.validateViewsListPageIsLoaded();
-                await resourceViews.deleteFromListByName('IndexedFieldsAuto View');
+                await resourceViews.deleteFromListByName.bind(this)('IndexedFieldsAuto View', driver);
                 resourceViews.pause(10 * 1000);
                 // expect(deleteViewResponse.Ok).to.equal(true);
                 // expect(deleteViewResponse.Status).to.equal(200);

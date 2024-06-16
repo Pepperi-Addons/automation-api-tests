@@ -76,7 +76,7 @@ export async function ResourceListTests(email: string, password: string, client:
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // needed for filtering by account (ReferenceAccount collections)
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%'],
+        Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         // configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         // 'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '1.6.%'], // Dependency of Nebula
@@ -162,7 +162,7 @@ export async function ResourceListTests(email: string, password: string, client:
             }[];
             collectionType?: 'contained' | 'data';
             collectionFields?: {
-                classType: 'Primitive' | 'Array' | 'Contained' | 'Resource' | 'ContainedArray';
+                classType: 'Primitive' | 'Array' | 'Resource' | 'ContainedArray';
                 fieldName: string;
                 fieldTitle: string;
                 field: CollectionField;
@@ -593,6 +593,32 @@ export async function ResourceListTests(email: string, password: string, client:
         });
 
         describe('UDCs Prep', async function () {
+            it(`Remove Leftovers Collections that starts with "${ref_account_resource}_"`, async function () {
+                const allUdcs = await udcService.getSchemes();
+                const leftoversUdcs = allUdcs.filter((collection) => {
+                    if (collection.Name.startsWith(`${ref_account_resource}_`)) {
+                        return collection;
+                    }
+                });
+                const purgeResponses = await Promise.all(
+                    leftoversUdcs.map(async (leftoverUdc) => {
+                        return await udcService.purgeScheme(leftoverUdc.Name);
+                    }),
+                );
+                addContext(this, {
+                    title: `Purge Responses: `,
+                    value: JSON.stringify(purgeResponses, null, 2),
+                });
+                purgeResponses.forEach((purgeResponse) => {
+                    console.info(`${ref_account_resource}_ purgeResponse: ${JSON.stringify(purgeResponse, null, 2)}`);
+                    expect(purgeResponse.Ok).to.be.true;
+                    expect(purgeResponse.Status).to.equal(200);
+                    expect(purgeResponse.Error).to.eql({});
+                    expect(Object.keys(purgeResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
+                    expect(purgeResponse.Body.Done).to.be.true;
+                });
+            });
+
             it(`"${resource_name_from_account_dashborad}" Collection Upsert`, async function () {
                 const fields = detailsByResource[ref_account_resource].collectionFields;
                 if (fields) {
@@ -814,11 +840,11 @@ export async function ResourceListTests(email: string, password: string, client:
                 await webAppLoginPage.login(email, password);
             });
 
-            it('Manual Resync', async () => {
-                await resourceListUtils.performManualResync(client);
+            it('Manual Resync', async function () {
+                await resourceListUtils.performManualResync.bind(this)(client, driver);
             });
 
-            it(`Logout Login`, async () => {
+            it(`Logout Login`, async function () {
                 await resourceListUtils.logOutLogIn(email, password);
                 await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
             });
@@ -905,7 +931,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                     await resourceEditors.click(resourceEditors.EditPage_BackToList_Button);
                     await resourceEditors.clickTab('Editors_Tab');
-                    await resourceEditors.deleteFromListByName(editorName);
+                    await resourceEditors.deleteFromListByName.bind(this)(editorName, driver);
                     base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
                         title: `At Editors Tab - after "${editorName}" Editor deleted`,
@@ -1103,7 +1129,14 @@ export async function ResourceListTests(email: string, password: string, client:
                 it('Create & Map Slug', async function () {
                     slugDisplayName = `${resource_name_pipeline} ${random_name}`;
                     slug_path = `${resource_name_pipeline.toLowerCase()}_${random_name}`;
-                    await resourceListUtils.createSlug(slugDisplayName, slug_path, pageKey, email, password, client);
+                    await resourceListUtils.createAndMapSlug(
+                        slugDisplayName,
+                        slug_path,
+                        pageKey,
+                        email,
+                        password,
+                        client,
+                    );
                 });
 
                 it(`Create A Button On Homepage`, async function () {
@@ -1179,10 +1212,18 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Delete Page', async function () {
                     deletePageResponse = await pageBuilder.removePageByUUID(pageKey, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deletePageResponse,
+                    });
                 });
 
                 it('Delete Slug', async function () {
                     const deleteSlugResponse = await slugs.deleteSlugByName(slug_path, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deleteSlugResponse,
+                    });
                     expect(deleteSlugResponse.Ok).to.equal(true);
                     expect(deleteSlugResponse.Status).to.equal(200);
                     expect(deleteSlugResponse.Body.success).to.equal(true);
@@ -1190,6 +1231,10 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Delete Editor Via API', async function () {
                     const deleteEditorResponse = await resourceEditors.deleteEditorViaAPI(editorKey, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deleteEditorResponse,
+                    });
                     expect(deleteEditorResponse.Ok).to.equal(true);
                     expect(deleteEditorResponse.Status).to.equal(200);
                     expect(deleteEditorResponse.Body.Name).to.equal(editorName);
@@ -1198,6 +1243,10 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Delete View Via API', async function () {
                     const deleteViewResponse = await resourceViews.deleteViewViaApiByUUID(viewKey, client);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deleteViewResponse,
+                    });
                     expect(deleteViewResponse.Ok).to.equal(true);
                     expect(deleteViewResponse.Status).to.equal(200);
                     expect(deleteViewResponse.Body.Name).to.equal(viewName);
@@ -1212,11 +1261,20 @@ export async function ResourceListTests(email: string, password: string, client:
                     await resourceListUtils.removeHomePageButtonByProfile(slugDisplayName, 'Rep');
                     await webAppHomePage.manualResync(client);
                     const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugDisplayName);
+                    const screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `At Home Page`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
                     expect(isNotFound).to.equal(true);
                 });
 
                 it('Validating Deletion of Page', async function () {
                     console.info(`deletePageResponse: ${JSON.stringify(deletePageResponse, null, 2)}`);
+                    addContext(this, {
+                        title: `Delete Response:`,
+                        value: deletePageResponse,
+                    });
                     driver.sleep(0.5 * 1000);
                     expect(deletePageResponse.Ok).to.equal(true);
                     expect(deletePageResponse.Status).to.equal(200);
@@ -1340,7 +1398,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 it('Create & Map Slug', async function () {
                     slugDisplayNameAccountDashboard = `${ref_account_resource} ${random_name}`;
                     slug_path_account_dashboard = `${ref_account_resource.toLowerCase()}_${random_name}`;
-                    await resourceListUtils.createSlug(
+                    await resourceListUtils.createAndMapSlug(
                         slugDisplayNameAccountDashboard,
                         slug_path_account_dashboard,
                         pageKey,
@@ -1350,7 +1408,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     );
                 });
 
-                it('Admin: Navigating to Account Dashboard Layout -> Menu (Pencil) -> Admin (Pencil) -> Configuring Slug', async () => {
+                it('Admin: Navigating to Account Dashboard Layout -> Menu (Pencil) -> Admin (Pencil) -> Adding Slug', async function () {
                     await accountDashboardLayout.configureToAccountSelectedSectionByProfile.bind(this)(
                         driver,
                         slugDisplayNameAccountDashboard,
@@ -1445,6 +1503,8 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.refresh();
+                    await resourceList.isSpinnerDone();
+                    resourceList.pause(0.25 * 1000);
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
@@ -1455,7 +1515,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `After Assertions`,
+                        title: `At block - after getting number of results from the UI`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
@@ -1498,9 +1558,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
                 });
 
-                it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async () => {
+                it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async function () {
                     syncStatusOfReferenceAccount
-                        ? await resourceListUtils.performManualResync(client)
+                        ? await resourceListUtils.performManualResync.bind(this)(client, driver)
                         : await resourceListUtils.performManualSync(client);
                 });
 
@@ -1598,6 +1658,8 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.refresh();
+                    await resourceList.isSpinnerDone();
+                    resourceList.pause(0.25 * 1000);
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
@@ -1608,7 +1670,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `After Assertions`,
+                        title: `At block - after getting number of results from the UI`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
@@ -1693,6 +1755,8 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.refresh();
+                    await resourceList.isSpinnerDone();
+                    resourceList.pause(0.25 * 1000);
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
@@ -1703,7 +1767,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `After Assertions`,
+                        title: `At block - after getting number of results from the UI`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
@@ -1746,9 +1810,9 @@ export async function ResourceListTests(email: string, password: string, client:
                     console.info('udcService.postScheme response: ', JSON.stringify(response, null, 2));
                 });
 
-                it(`Manual ${syncStatusOfReferenceAccount ? 'Sync' : 'Resync'}`, async () => {
+                it(`Manual ${syncStatusOfReferenceAccount ? 'Sync' : 'Resync'}`, async function () {
                     syncStatusOfReferenceAccount
-                        ? await resourceListUtils.performManualResync(client)
+                        ? await resourceListUtils.performManualResync.bind(this)(client, driver)
                         : await resourceListUtils.performManualSync(client);
                 });
 
@@ -1816,6 +1880,8 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it('Retrieving Number of Results from UI', async function () {
                     await driver.refresh();
+                    await resourceList.isSpinnerDone();
+                    resourceList.pause(0.25 * 1000);
                     await driver.untilIsVisible(resourceList.NumberOfItemsInList);
                     const numberOfResultsAccountFilterElement = await driver.findElement(
                         resourceList.NumberOfItemsInList,
@@ -1823,10 +1889,10 @@ export async function ResourceListTests(email: string, password: string, client:
                     numberOfResultsWithoutAccountFilter_afterSyncChange = (
                         await numberOfResultsAccountFilterElement.getText()
                     ).trim();
-                    driver.sleep(0.5 * 1000);
+                    resourceList.pause(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
-                        title: `After Assertions`,
+                        title: `At block - after getting number of results from the UI`,
                         value: 'data:image/png;base64,' + base64ImageComponent,
                     });
                 });
@@ -2243,13 +2309,13 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
                 });
 
-                it('Unconfiguring Slug from Account Dashboard', async () => {
+                it('Unconfiguring Slug from Account Dashboard', async function () {
                     await accountDashboardLayout.unconfigureFromAccountSelectedSectionByProfile.bind(this)(
                         driver,
                         slugDisplayNameAccountDashboard,
                         'Menu',
                         'Admin',
-                        `${resource_name_from_account_dashborad} `,
+                        `${ref_account_resource} `,
                     );
                 });
 

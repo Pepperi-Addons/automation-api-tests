@@ -13,6 +13,7 @@ import { UDCService } from '../../services/user-defined-collections.service';
 import { ListAbiTestData } from '../pom/addons/ListAbiTestData';
 import addContext from 'mochawesome/addContext';
 import E2EUtils from '../utilities/e2e_utils';
+import { CollectionField, DataViewFieldType } from '@pepperi-addons/papi-sdk';
 
 chai.use(promised);
 
@@ -30,48 +31,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const objectsService = new ObjectsService(generalService);
     const openCatalogService = new OpenCatalogService(generalService);
     const dateTime = new Date();
-    // const collectionProperties = [
-    //     'GenericResource',
-    //     'ModificationDateTime',
-    //     'SyncData',
-    //     'CreationDateTime',
-    //     'UserDefined',
-    //     'Fields',
-    //     'Description',
-    //     'DataSourceData',
-    //     'DocumentKey',
-    //     'Type',
-    //     'Lock',
-    //     'ListView',
-    //     'Hidden',
-    //     'Name',
-    //     'AddonUUID',
-    // ];
-    // const udcsForTest = {
-    //     ReferenceAccountAuto: {
-    //         of_account: 'Resource', // with indexed fields: Email, Name, UUID
-    //         best_seller_item: 'String', // with optional values: ['A', 'B', 'C', 'D', 'Hair dryer', 'Roller', 'Cart', 'Mask', 'Shirt', '']
-    //         max_quantity: 'Integer',
-    //         discount_rate: 'Double',
-    //         offered_discount_location: 'String Array', // with optional values: ['store', 'on-line', 'rep']
-    //     },
-    //     FiltersAccRefAuto: {
-    //         from_account: 'Resource', // with indexed fields: Email, Name, UUID
-    //         item: 'String',
-    //         price: 'Double',
-    //         quantity: 'Integer',
-    //         instock: 'Bool',
-    //     },
-    //     ArraysOfPrimitivesAuto: {
-    //         names: 'String Array',
-    //         numbers: 'Integer Array',
-    //         reals: 'Double Array',
-    //     },
-    //     ContainedArrayAuto: {
-    //         title: 'String',
-    //         contained_scheme_only_name_age: 'ContainedResource Array',
-    //     },
-    // };
+    const coreResourcesUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -90,6 +50,12 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     // const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
+    const refAccTruncateResponse = await udcService.truncateScheme('ReferenceAccountAuto');
+    console.info(`ReferenceAccountAuto truncateResponse: ${JSON.stringify(refAccTruncateResponse, null, 2)}`);
+
+    const filtersTruncateResponse = await udcService.truncateScheme('FiltersAccRefAuto');
+    console.info(`FiltersAccRefAuto truncateResponse: ${JSON.stringify(filtersTruncateResponse, null, 2)}`);
+
     const installedResourceListVersion = (await generalService.getInstalledAddons()).find(
         (addon) => addon.Addon.Name == 'Resource List',
     )?.Version;
@@ -98,6 +64,376 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const accounts = await objectsService.getAccounts({ page_size: -1 });
     // console.info('items: ', JSON.stringify(items, null, 2));
     // console.info('accounts: ', JSON.stringify(accounts, null, 2));
+    const accountsUUIDs = {};
+    accountsUUIDs['First Account'] = accounts?.filter((account) => {
+        if (account.Name?.includes('First ')) {
+            return account;
+        }
+    })[0]['UUID'];
+    accountsUUIDs['Second Account'] = accounts?.filter((account) => {
+        if (account.Name?.includes('Second ')) {
+            return account;
+        }
+    })[0]['UUID'];
+    accountsUUIDs['Third Account'] = accounts?.filter((account) => {
+        if (account.Name?.includes('Third ')) {
+            return account;
+        }
+    })[0]['UUID'];
+    console.info('First Account: ', JSON.stringify(accountsUUIDs['First Account'], null, 2));
+    console.info('Second Account: ', JSON.stringify(accountsUUIDs['Second Account'], null, 2));
+    console.info('Third Account: ', JSON.stringify(accountsUUIDs['Third Account'], null, 2));
+
+    const detailsByResource: {
+        [key: string]: {
+            view_fields_names: string[];
+            view_fields: {
+                fieldName: string;
+                dataViewType: DataViewFieldType;
+                mandatory: boolean;
+                readonly: boolean;
+            }[];
+            collectionType?: 'contained' | 'data';
+            collectionFields?: {
+                classType: 'Primitive' | 'Array' | 'Contained' | 'Resource' | 'ContainedArray';
+                fieldName: string;
+                fieldTitle: string;
+                field: CollectionField;
+                dataViewType?: DataViewFieldType;
+                readonly?: boolean;
+            }[];
+            listings?: { [key: string]: any }[];
+        };
+    } = {
+        ReferenceAccountAuto: {
+            view_fields_names: [
+                'of_account',
+                'of_account.Name',
+                'best_seller_item',
+                'max_quantity',
+                'discount_rate',
+                'offered_discount_location',
+            ],
+            view_fields: [
+                { fieldName: 'of_account', dataViewType: 'TextBox', mandatory: true, readonly: true },
+                { fieldName: 'of_account.Name', dataViewType: 'TextBox', mandatory: true, readonly: true },
+                { fieldName: 'best_seller_item', dataViewType: 'TextBox', mandatory: true, readonly: true },
+                { fieldName: 'max_quantity', dataViewType: 'NumberInteger', mandatory: true, readonly: true },
+                { fieldName: 'discount_rate', dataViewType: 'NumberReal', mandatory: true, readonly: true },
+                { fieldName: 'offered_discount_location', dataViewType: 'TextBox', mandatory: true, readonly: true },
+            ],
+            collectionFields: [
+                {
+                    classType: 'Resource',
+                    fieldName: 'of_account',
+                    fieldTitle: '',
+                    field: {
+                        Type: 'Resource',
+                        Resource: 'accounts',
+                        Description: '',
+                        Mandatory: false,
+                        Indexed: true,
+                        ApplySystemFilter: true,
+                        IndexedFields: {
+                            Email: { Indexed: true, Type: 'String' },
+                            Name: { Indexed: true, Type: 'String' },
+                            UUID: { Indexed: true, Type: 'String' },
+                        },
+                        Items: { Description: '', Mandatory: false, Type: 'String' },
+                        OptionalValues: [],
+                        AddonUUID: coreResourcesUUID,
+                    },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'best_seller_item',
+                    fieldTitle: '',
+                    field: {
+                        Type: 'String',
+                        Description: '',
+                        AddonUUID: '',
+                        ApplySystemFilter: false,
+                        Mandatory: false,
+                        Indexed: false,
+                        IndexedFields: {},
+                        OptionalValues: ['A', 'B', 'C', 'D', 'Hair dryer', 'Roller', 'Cart', 'Mask', 'Shirt', ''],
+                    },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'max_quantity',
+                    fieldTitle: '',
+                    field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'discount_rate',
+                    fieldTitle: '',
+                    field: { Type: 'Double', Mandatory: false, Indexed: false, Description: '' },
+                },
+                {
+                    classType: 'Array',
+                    fieldName: 'offered_discount_location',
+                    fieldTitle: '',
+                    field: {
+                        Type: 'String',
+                        Mandatory: false,
+                        Indexed: false,
+                        Description: '',
+                        OptionalValues: ['store', 'on-line', 'rep'],
+                    },
+                },
+            ],
+            listings: [
+                { of_account: accountsUUIDs['Third Account'], best_seller_item: 'Daisy', max_quantity: 1500 },
+                {
+                    of_account: accountsUUIDs['Third Account'],
+                    best_seller_item: '',
+                    max_quantity: 100000,
+                    discount_rate: 0.1,
+                    offered_discount_location: [],
+                },
+                {
+                    of_account: accountsUUIDs['Second Account'],
+                    best_seller_item: 'Lily',
+                    max_quantity: 1,
+                    discount_rate: 0.1,
+                    offered_discount_location: ['rep'],
+                },
+                {
+                    of_account: accountsUUIDs['First Account'],
+                    best_seller_item: 'Rose',
+                    max_quantity: 0,
+                    discount_rate: 0.4,
+                    offered_discount_location: ['store', 'on-line', 'rep'],
+                },
+                {
+                    of_account: accountsUUIDs['Second Account'],
+                    best_seller_item: 'Iris',
+                    max_quantity: 40000,
+                    discount_rate: 0.15,
+                    offered_discount_location: ['store', 'on-line'],
+                },
+                {
+                    of_account: accountsUUIDs['Third Account'],
+                    max_quantity: 600,
+                    discount_rate: 0.1,
+                    offered_discount_location: [],
+                },
+                {
+                    of_account: accountsUUIDs['First Account'],
+                    best_seller_item: '',
+                    max_quantity: 55,
+                    discount_rate: 0.22,
+                },
+                {
+                    of_account: accountsUUIDs['Third Account'],
+                    best_seller_item: 'Tulip',
+                    discount_rate: 0.3,
+                    offered_discount_location: ['store'],
+                },
+                {
+                    of_account: accountsUUIDs['First Account'],
+                    best_seller_item: 'NO Amount',
+                    max_quantity: 111,
+                    discount_rate: 0.35,
+                    offered_discount_location: ['on-line'],
+                },
+                {
+                    of_account: accountsUUIDs['First Account'],
+                    best_seller_item: 'First Item',
+                    max_quantity: 1111,
+                    discount_rate: 0.11,
+                    offered_discount_location: ['store', 'on-line', 'rep'],
+                },
+                {
+                    of_account: accountsUUIDs['Second Account'],
+                    best_seller_item: 'Second Item',
+                    max_quantity: 2222,
+                    discount_rate: 0.22,
+                    offered_discount_location: ['on-line', 'rep', 'store'],
+                },
+                {
+                    of_account: accountsUUIDs['Third Account'],
+                    best_seller_item: 'Third Item',
+                    max_quantity: 3333,
+                    discount_rate: 0.33,
+                    offered_discount_location: ['rep', 'store', 'on-line'],
+                },
+            ],
+        },
+        FiltersAccRefAuto: {
+            view_fields_names: ['from_account', 'item', 'price', 'quantity', 'instock'],
+            view_fields: [
+                { fieldName: 'from_account', dataViewType: 'TextBox', mandatory: true, readonly: true },
+                { fieldName: 'of_account.Name', dataViewType: 'TextBox', mandatory: true, readonly: true },
+                { fieldName: 'item', dataViewType: 'TextBox', mandatory: true, readonly: true },
+                { fieldName: 'price', dataViewType: 'NumberReal', mandatory: true, readonly: true },
+                { fieldName: 'quantity', dataViewType: 'NumberInteger', mandatory: true, readonly: true },
+                { fieldName: 'instock', dataViewType: 'Boolean', mandatory: true, readonly: true },
+            ],
+            collectionFields: [
+                {
+                    classType: 'Resource',
+                    fieldName: 'from_account',
+                    fieldTitle: '',
+                    field: {
+                        Type: 'Resource',
+                        Resource: 'accounts',
+                        Description: '',
+                        Mandatory: false,
+                        Indexed: true,
+                        ApplySystemFilter: true,
+                        IndexedFields: {
+                            Email: { Indexed: true, Type: 'String' },
+                            Name: { Indexed: true, Type: 'String' },
+                            UUID: { Indexed: true, Type: 'String' },
+                        },
+                        Items: { Description: '', Mandatory: false, Type: 'String' },
+                        OptionalValues: [],
+                        AddonUUID: coreResourcesUUID,
+                    },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'item',
+                    fieldTitle: '',
+                    field: { Type: 'String', Mandatory: false, Indexed: true, Description: '' },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'price',
+                    fieldTitle: '',
+                    field: { Type: 'Double', Mandatory: false, Indexed: true, Description: '' },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'quantity',
+                    fieldTitle: '',
+                    field: { Type: 'Integer', Mandatory: false, Indexed: true, Description: '' },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'instock',
+                    fieldTitle: '',
+                    field: { Type: 'Bool', Mandatory: false, Indexed: true, Description: '' },
+                },
+            ],
+            listings: [
+                {
+                    from_account: accountsUUIDs['First Account'],
+                    item: 'Abagada',
+                    price: 10.5,
+                    quantity: 80,
+                    instock: true,
+                },
+                {
+                    from_account: accountsUUIDs['Third Account'],
+                    item: 'Bananza',
+                    price: 0.99,
+                    quantity: 1000,
+                    instock: false,
+                },
+                {
+                    from_account: accountsUUIDs['Second Account'],
+                    item: 'Cockie',
+                    price: 5.0,
+                    quantity: 100,
+                    instock: true,
+                },
+                {
+                    from_account: accountsUUIDs['Third Account'],
+                    item: 'Dov',
+                    price: 6.75,
+                    quantity: 100,
+                    instock: false,
+                },
+                {
+                    from_account: accountsUUIDs['Second Account'],
+                    item: 'Emerald',
+                    price: 66.7,
+                    quantity: 1,
+                    instock: false,
+                },
+                {
+                    from_account: accountsUUIDs['First Account'],
+                    item: 'Funny',
+                    price: 66.7,
+                    quantity: 80,
+                    instock: false,
+                },
+                {
+                    from_account: accountsUUIDs['Third Account'],
+                    item: 'Great',
+                    price: 0.99,
+                    quantity: 1,
+                    instock: false,
+                },
+            ],
+        },
+        SchemeOnlyObjectAuto: {
+            view_fields_names: ['name', 'age'],
+            view_fields: [
+                { fieldName: 'name', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                { fieldName: 'age', dataViewType: 'TextBox', mandatory: false, readonly: true },
+            ],
+            collectionType: 'contained',
+            collectionFields: [
+                {
+                    classType: 'Primitive',
+                    fieldName: 'name',
+                    fieldTitle: 'Name',
+                    field: {
+                        Type: 'String',
+                        Description: '',
+                        AddonUUID: '',
+                        ApplySystemFilter: false,
+                        Mandatory: false,
+                        Indexed: false,
+                    },
+                },
+                {
+                    classType: 'Primitive',
+                    fieldName: 'age',
+                    fieldTitle: 'Age',
+                    field: {
+                        Type: 'Integer',
+                        Description: '',
+                        AddonUUID: '',
+                        ApplySystemFilter: false,
+                        Mandatory: false,
+                        Indexed: false,
+                    },
+                },
+            ],
+        },
+    };
+
+    const refAcc = 'ReferenceAccountAuto';
+    const refAccCollectionValues = detailsByResource[refAcc].listings;
+    if (refAccCollectionValues) {
+        const refAccUpsertingValues_Responses = await Promise.all(
+            refAccCollectionValues.map(async (listing) => {
+                return await udcService.listingsInsertionToCollection(listing, refAcc);
+            }),
+        );
+        refAccUpsertingValues_Responses.forEach((upsertingValues_Response) => {
+            console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+        });
+    }
+
+    const filters = 'FiltersAccRefAuto';
+    const filtersCollectionValues = detailsByResource[filters].listings;
+    if (filtersCollectionValues) {
+        const filtersUpsertingValues_Responses = await Promise.all(
+            filtersCollectionValues.map(async (listing) => {
+                return await udcService.listingsInsertionToCollection(listing, filters);
+            }),
+        );
+        filtersUpsertingValues_Responses.forEach((upsertingValues_Response) => {
+            console.info(`upsertingValues_Response: ${JSON.stringify(upsertingValues_Response, null, 2)}`);
+        });
+    }
 
     const items_filtered_MaNa = items?.filter((item) => {
         if (item.ExternalID.includes('MaNa')) {
@@ -262,8 +598,8 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                 await webAppLoginPage.login(email, password);
             });
 
-            it('Manual Resync', async () => {
-                await e2eUtils.performManualResync(client);
+            it('Manual Resync', async function () {
+                await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 
             it('Entering Resource List ABI tests Addon', async () => {
@@ -398,103 +734,97 @@ export async function ResourceListAbiTests(email: string, password: string, clie
                                     break;
                             }
 
-                            if (!email.includes('.stage') || listTitle !== '32. ReferenceAccount - 2 Views') {
-                                // DI-24602
-                                Object.keys(lists[listTitle].elements).forEach((element) => {
-                                    const isDisplayed = lists[listTitle].elements[element];
-                                    it(`${element} - ${
-                                        isDisplayed ? 'DISPLAYED' : 'NOT Displayed'
-                                    }`, async function () {
-                                        switch (element) {
-                                            case 'Menu':
-                                                isDisplayed
-                                                    ? await elemntExist('Menu')
-                                                    : await elemntDoNotExist('Menu');
-                                                break;
-                                            case 'Search Input':
-                                                isDisplayed
-                                                    ? await elemntExist('Search')
-                                                    : await elemntDoNotExist('Search');
-                                                break;
-                                            case 'Smart Search':
-                                                isDisplayed
-                                                    ? await elemntExist('SmartSearch')
-                                                    : await elemntDoNotExist('SmartSearch');
-                                                break;
-                                            case 'Single Radio Button':
-                                                isDisplayed
-                                                    ? await elemntExist('SingleRadioButton')
-                                                    : await elemntDoNotExist('SingleRadioButton');
-                                                break;
-                                            case 'Select All Checkbox':
-                                                isDisplayed
-                                                    ? await elemntExist('MultiCheckbox')
-                                                    : await elemntDoNotExist('MultiCheckbox');
-                                                break;
-                                            case 'Pager':
-                                                isDisplayed
-                                                    ? await elemntExist('Pager')
-                                                    : await elemntDoNotExist('Pager');
-                                                break;
-                                            case 'Line Menu':
-                                                switch (listTitle) {
-                                                    case '10. Accounts - Line Menu':
-                                                    case '30. Items - Full - with 2 Views':
-                                                        await lineMenuSingleExist.bind(this)();
-                                                        break;
+                            // if (!email.includes('.stage') || listTitle !== '32. ReferenceAccount - 2 Views') {
+                            // DI-24602
+                            Object.keys(lists[listTitle].elements).forEach((element) => {
+                                const isDisplayed = lists[listTitle].elements[element];
+                                it(`${element} - ${isDisplayed ? 'DISPLAYED' : 'NOT Displayed'}`, async function () {
+                                    switch (element) {
+                                        case 'Menu':
+                                            isDisplayed ? await elemntExist('Menu') : await elemntDoNotExist('Menu');
+                                            break;
+                                        case 'Search Input':
+                                            isDisplayed
+                                                ? await elemntExist('Search')
+                                                : await elemntDoNotExist('Search');
+                                            break;
+                                        case 'Smart Search':
+                                            isDisplayed
+                                                ? await elemntExist('SmartSearch')
+                                                : await elemntDoNotExist('SmartSearch');
+                                            break;
+                                        case 'Single Radio Button':
+                                            isDisplayed
+                                                ? await elemntExist('SingleRadioButton')
+                                                : await elemntDoNotExist('SingleRadioButton');
+                                            break;
+                                        case 'Select All Checkbox':
+                                            isDisplayed
+                                                ? await elemntExist('MultiCheckbox')
+                                                : await elemntDoNotExist('MultiCheckbox');
+                                            break;
+                                        case 'Pager':
+                                            isDisplayed ? await elemntExist('Pager') : await elemntDoNotExist('Pager');
+                                            break;
+                                        case 'Line Menu':
+                                            switch (listTitle) {
+                                                case '10. Accounts - Line Menu':
+                                                case '30. Items - Full - with 2 Views':
+                                                    await lineMenuSingleExist.bind(this)();
+                                                    break;
 
-                                                    case '11. Items - Line Menu - Selection Type Multi':
-                                                    case '29. Accounts - Full':
-                                                    case '32. ReferenceAccount - 2 Views':
-                                                    case '33. FiltersAccRef - 2 Views':
-                                                        await lineMenuMultiExist.bind(this)();
-                                                        break;
+                                                case '11. Items - Line Menu - Selection Type Multi':
+                                                case '29. Accounts - Full':
+                                                case '32. ReferenceAccount - 2 Views':
+                                                case '33. FiltersAccRef - 2 Views':
+                                                    await lineMenuMultiExist.bind(this)();
+                                                    break;
 
-                                                    case '1. Items - Basic':
-                                                    case '2. Accounts - Basic':
-                                                    case '5. Accounts - Selection - Single':
-                                                        await lineMenuSingleDoNotExist.bind(this)();
-                                                        break;
+                                                case '1. Items - Basic':
+                                                case '2. Accounts - Basic':
+                                                case '5. Accounts - Selection - Single':
+                                                    await lineMenuSingleDoNotExist.bind(this)();
+                                                    break;
 
-                                                    case '4. Accounts - Selection - Multi':
-                                                    case '31. Accounts - Draw Grid Relation':
-                                                        await lineMenuMultiDoNotExist.bind(this)();
-                                                        break;
+                                                case '4. Accounts - Selection - Multi':
+                                                case '31. Accounts - Draw Grid Relation':
+                                                    await lineMenuMultiDoNotExist.bind(this)();
+                                                    break;
 
-                                                    case '6. Accounts - Selection - None':
-                                                        await webAppList.clickOnRowByIndex();
-                                                        await webAppList.isSpinnerDone();
-                                                        const base64ImageBuild = await driver.saveScreenshots();
-                                                        addContext(this, {
-                                                            title: `After row of type "None" was clicked (not really selected)`,
-                                                            value: 'data:image/png;base64,' + base64ImageBuild,
-                                                        });
-                                                        await elemntDoNotExist('LineMenu');
-                                                        resourceListABI.pause(0.2 * 1000);
-                                                        break;
+                                                case '6. Accounts - Selection - None':
+                                                    await webAppList.clickOnRowByIndex();
+                                                    await webAppList.isSpinnerDone();
+                                                    const base64ImageBuild = await driver.saveScreenshots();
+                                                    addContext(this, {
+                                                        title: `After row of type "None" was clicked (not really selected)`,
+                                                        value: 'data:image/png;base64,' + base64ImageBuild,
+                                                    });
+                                                    await elemntDoNotExist('LineMenu');
+                                                    resourceListABI.pause(0.2 * 1000);
+                                                    break;
 
-                                                    default:
-                                                        isDisplayed
-                                                            ? await elemntExist('LineMenu')
-                                                            : await elemntDoNotExist('LineMenu');
-                                                        break;
-                                                }
-                                                break;
+                                                default:
+                                                    isDisplayed
+                                                        ? await elemntExist('LineMenu')
+                                                        : await elemntDoNotExist('LineMenu');
+                                                    break;
+                                            }
+                                            break;
 
-                                            default:
-                                                break;
-                                        }
-                                    });
+                                        default:
+                                            break;
+                                    }
                                 });
-                                if (
-                                    lists[listTitle].elements['Line Menu'] &&
-                                    lists[listTitle].elements['Select All Checkbox']
-                                ) {
-                                    it('Line Menu - Disappear', async function () {
-                                        await lineMenuMultiDisappear.bind(this)();
-                                    });
-                                }
+                            });
+                            if (
+                                lists[listTitle].elements['Line Menu'] &&
+                                lists[listTitle].elements['Select All Checkbox']
+                            ) {
+                                it('Line Menu - Disappear', async function () {
+                                    await lineMenuMultiDisappear.bind(this)();
+                                });
                             }
+                            // }
                             switch (listTitle) {
                                 case '1. Items - Basic':
                                     break;

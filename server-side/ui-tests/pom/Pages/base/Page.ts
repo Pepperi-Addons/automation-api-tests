@@ -52,6 +52,10 @@ export abstract class Page extends BasePomObject {
         return By.xpath(`//div[contains(@class,"footer-buttons")]//div[contains(text(),"${text}")]`);
     }
 
+    public getSelectorOfProfileCardsContainerButtonByText(text: string) {
+        return By.xpath(`//div[@id="tamplateListCont"]//div[contains(text(),"${text}")]`);
+    }
+
     protected setUrl(url: string) {
         this.url = url;
     }

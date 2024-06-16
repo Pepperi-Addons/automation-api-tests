@@ -9,10 +9,11 @@ import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage
 import { ObjectsService } from '../../../../services';
 import { OrderPage } from '../../../pom/Pages/OrderPage';
 import { PricingData05 } from '../../../pom/addons/PricingData05';
-// import { PricingData06 } from '../../../pom/addons/PricingData06';
+import { PricingDataNoUom } from '../../../pom/addons/PricingDataNoUom';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingService } from '../../../../services/pricing.service';
 import PricingRules from '../../../pom/addons/PricingRules';
+import E2EUtils from '../../../utilities/e2e_utils';
 
 chai.use(promised);
 
@@ -20,17 +21,42 @@ export async function PricingCalculatedFieldsManualLineTests(
     email: string,
     password: string,
     client: Client,
-    specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
+    specialVersion: 'version07for05data' | 'noUom' | undefined = undefined,
 ) {
     /*
-_________________ 
+________________________ 
 _________________ Brief:
             
 * Basic Pricing tests
 * Pricing is calculated according to Configuration and matching rules that are hosted at "PPM_Values" UDT
 * 7 selected test items (some has rules applied to them and other don't), 2 test accounts, 5 test states, 5 pricing fields (Base, Discount, Group Discount, Manual Line, Tax)
 * for each of the accounts, then each of the states - every one of the items UI values are being retrieved and compared with expected data (that is held in an object pricingData)
-_________________ 
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'GroupDiscount' -> ['ZGD1', 'ZGD2']
+. 'ManualLine' -> []
+. 'Tax' -> ['MTAX']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZBASE' -> ['A002', 'A001', 'A003', 'A005', 'A004']
+. 'ZDS1' -> ['A001', 'A002', 'A003']
+. 'MTAX' -> ['A002', 'A004']
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A003' -> ['TransactionAccountExternalID', 'ItemMainCategory']
+. 'A004' -> ['TransactionAccountExternalID']
+. 'A005' -> ['ItemMainCategory']
+
+_____________________________________ 
 _________________ The Relevant Rules:
             
 . 'ZBASE@A002@Acc01@Frag005': 
@@ -86,71 +112,23 @@ _________________
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
 
-    const pricingData = new PricingData05();
+    const pricingData = specialVersion === 'noUom' ? new PricingDataNoUom() : new PricingData05();
 
     const pricingRules = new PricingRules();
 
     const udtFirstTableName = 'PPM_Values';
     // const udtSecondTableName = 'PPM_AccountValues';
 
-    let testItemsData = 'testItemsValues';
-    let ppmValues_content;
+    const ppmValues_content =
+        specialVersion === 'noUom'
+            ? pricingRules[udtFirstTableName].features05noUom
+            : pricingRules[udtFirstTableName].features05;
 
-    switch (true) {
-        case installedPricingVersionLong?.startsWith('0.5'):
-            console.info('AT installedPricingVersion CASE 5');
-            testItemsData = 'testItemsValues_version05';
-            ppmValues_content = pricingRules[udtFirstTableName].features05;
-            break;
-
-        case installedPricingVersionLong?.startsWith('0.6'):
-            console.info('AT installedPricingVersion CASE 6');
-            ppmValues_content = {
-                ...pricingRules[udtFirstTableName].features05,
-                ...pricingRules[udtFirstTableName].features06,
-            };
-            break;
-
-        case installedPricingVersionLong?.startsWith('0.7'):
-            console.info('AT installedPricingVersion CASE 7');
-            testItemsData = specialVersion === 'version07for05data' ? 'testItemsValues_version05' : 'testItemsValues';
-            ppmValues_content =
-                specialVersion === 'version07for05data'
-                    ? pricingRules[udtFirstTableName].features05
-                    : {
-                          ...pricingRules[udtFirstTableName].features05,
-                          ...pricingRules[udtFirstTableName].features06,
-                          ...pricingRules[udtFirstTableName].features07,
-                      };
-            break;
-
-        case installedPricingVersionLong?.startsWith('0.8'):
-            console.info('AT installedPricingVersion CASE 8');
-            ppmValues_content =
-                specialVersion === 'version08for07data'
-                    ? {
-                          ...pricingRules[udtFirstTableName].features05,
-                          ...pricingRules[udtFirstTableName].features06,
-                          ...pricingRules[udtFirstTableName].features07,
-                      }
-                    : {
-                          ...pricingRules[udtFirstTableName].features05,
-                          ...pricingRules[udtFirstTableName].features06,
-                          ...pricingRules[udtFirstTableName].features07,
-                          ...pricingRules[udtFirstTableName].features08,
-                      };
-            break;
-
-        default:
-            console.info('AT installedPricingVersion Default');
-            ppmValues_content = {
-                ...pricingRules[udtFirstTableName].features05,
-                ...pricingRules[udtFirstTableName].features06,
-                ...pricingRules[udtFirstTableName].features07,
-                ...pricingRules[udtFirstTableName].features08,
-            };
-            break;
-    }
+    const testItemsData = installedPricingVersionLong?.startsWith('0.5')
+        ? 'testItemsValues_version05'
+        : specialVersion === 'version07for05data'
+        ? 'testItemsValues_version05'
+        : 'testItemsValues';
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -161,6 +139,7 @@ _________________
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
+    let e2eutils: E2EUtils;
     let transactionUUID_Acc01: string;
     let transactionUUID_OtherAcc: string;
     let accountName: string;
@@ -186,6 +165,7 @@ _________________
         'PriceManualLineUnitPriceAfter1',
         'PriceTaxUnitPriceAfter1',
     ];
+    // const manualLineDiscountItem = 'Drug0003';
 
     describe(`Pricing ** Base ** UI tests | Ver ${installedPricingVersionLong}`, () => {
         before(async function () {
@@ -197,6 +177,7 @@ _________________
             webAppTopBar = new WebAppTopBar(driver);
             webAppDialog = new WebAppDialog(driver);
             orderPage = new OrderPage(driver);
+            e2eutils = new E2EUtils(driver);
             pricingService = new PricingService(
                 driver,
                 webAppLoginPage,
@@ -210,7 +191,6 @@ _________________
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 
@@ -223,13 +203,31 @@ _________________
             });
         });
 
-        it('Manual Sync', async () => {
-            await webAppHomePage.manualResync(client);
+        it('Manual Resync', async () => {
+            await e2eutils.performManualResync.bind(this)(client, driver);
+        });
+
+        it('Logout-Login', async function () {
+            await e2eutils.logOutLogIn(email, password);
+            base64ImageComponent = await driver.saveScreenshots();
+            addContext(this, {
+                title: `At Home Page`,
+                value: 'data:image/png;base64,' + base64ImageComponent,
+            });
         });
 
         it('get UDT Values (PPM_Values)', async () => {
             ppmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
             console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
+            const ppmValues_noDummy = ppmValues.filter((listing) => {
+                if (!listing.MainKey.includes('DummyItem')) {
+                    return listing;
+                }
+            });
+            addContext(this, {
+                title: `PPMValues Filtered Content (NO Dummy)`,
+                value: JSON.stringify(ppmValues_noDummy, null, 2),
+            });
         });
 
         it('validating "PPM_Values" via API', async function () {
@@ -245,6 +243,12 @@ _________________
                 value: `ACTUAL: ${ppmValues.length} \nEXPECTED: ${expectedPPMValuesLength}`,
             });
             expect(ppmValues.length).equals(expectedPPMValuesLength);
+            const ppmValues_noDummy = ppmValues.filter((listing) => {
+                if (!listing.MainKey.includes('DummyItem')) {
+                    return listing;
+                }
+            });
+            expect(ppmValues_noDummy.length).equals(Object.keys(ppmValues_content).length);
             Object.keys(ppmValues_content).forEach((mainKey) => {
                 console.info('mainKey: ', mainKey);
                 const matchingRowOfppmValues = ppmValues.find((tableRow) => {
@@ -252,13 +256,13 @@ _________________
                         return tableRow;
                     }
                 });
+                console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                 matchingRowOfppmValues &&
-                    console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                    console.info('ACTUAL: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
                 matchingRowOfppmValues &&
                     addContext(this, {
                         title: `PPM Key "${mainKey}"`,
-                        value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
+                        value: `ACTUAL  : ${matchingRowOfppmValues['Values'][0]} \nEXPECTED: ${ppmValues_content[mainKey]}`,
                     });
                 matchingRowOfppmValues &&
                     expect(ppmValues_content[mainKey]).equals(
@@ -266,6 +270,12 @@ _________________
                             ? matchingRowOfppmValues['Values'].join()
                             : matchingRowOfppmValues['Values'][0],
                     );
+            });
+            ppmValues_noDummy.forEach((ppmValue) => {
+                addContext(this, {
+                    title: `"${ppmValue.MainKey}"`,
+                    value: `ACTUAL  : ${ppmValue.Values} \nEXPECTED: ${ppmValues_content[ppmValue.MainKey]}`,
+                });
             });
         });
 
@@ -426,91 +436,192 @@ _________________
                         });
                     });
 
-                    switch (state) {
-                        case 'baseline':
-                            break;
+                    // state !== 'baseline' &&
+                    //     describe(`OC Manual Line "${state}"`, () => {
+                    //         it(`changing "UserLineDiscount" field of item "${manualLineDiscountItem}"`, async function () {
+                    //             await pricingService.searchInOrderCenter.bind(this)(manualLineDiscountItem, driver);
+                    //             base64ImageComponent = await driver.saveScreenshots();
+                    //             addContext(this, {
+                    //                 title: `At OC Before ${manualLineDiscountItem} UserLineDiscount change`,
+                    //                 value: 'data:image/png;base64,' + base64ImageComponent,
+                    //             });
+                    //             driver.sleep(0.2 * 1000);
+                    //             await pricingService.changeValueOfTSAUserLineDiscountOfSpecificItem(
+                    //                 '10',
+                    //                 manualLineDiscountItem,
+                    //             );
+                    //             driver.sleep(0.2 * 1000);
+                    //             base64ImageComponent = await driver.saveScreenshots();
+                    //             addContext(this, {
+                    //                 title: `At OC After ${manualLineDiscountItem} UserLineDiscount change`,
+                    //                 value: 'data:image/png;base64,' + base64ImageComponent,
+                    //             });
+                    //             const manualLineDiscountItem_value = await (
+                    //                 await driver.findElement(
+                    //                     orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                    //                         'UserLineDiscount_Value',
+                    //                         manualLineDiscountItem,
+                    //                     ),
+                    //                 )
+                    //             ).getText();
+                    //             expect(manualLineDiscountItem_value).to.equal('10');
+                    //             driver.sleep(1 * 1000);
+                    //         });
+                    //         it(`validating "PriceManualLineUnitPriceAfter1" field of item "${manualLineDiscountItem}" updated`, async function () {
+                    //             base64ImageComponent = await driver.saveScreenshots();
+                    //             addContext(this, {
+                    //                 title: `At OC After ${manualLineDiscountItem} UserLineDiscount change`,
+                    //                 value: 'data:image/png;base64,' + base64ImageComponent,
+                    //             });
+                    //             const priceDiscountUnitPriceAfter1_value = await (
+                    //                 await driver.findElement(
+                    //                     orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                    //                         'PriceDiscountUnitPriceAfter1_Value',
+                    //                         manualLineDiscountItem,
+                    //                     ),
+                    //                 )
+                    //             ).getText();
+                    //             console.info(
+                    //                 `${manualLineDiscountItem} ${state} priceDiscountUnitPriceAfter1_value:`,
+                    //                 priceDiscountUnitPriceAfter1_value,
+                    //             );
+                    //             const priceManualLineUnitPriceAfter1_value = await (
+                    //                 await driver.findElement(
+                    //                     orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                    //                         'PriceManualLineUnitPriceAfter1_Value',
+                    //                         manualLineDiscountItem,
+                    //                     ),
+                    //                 )
+                    //             ).getText();
+                    //             console.info(
+                    //                 `${manualLineDiscountItem} ${state} priceManualLineUnitPriceAfter1_value:`,
+                    //                 priceManualLineUnitPriceAfter1_value,
+                    //             );
+                    //             addContext(this, {
+                    //                 title: `priceDiscountUnitPriceAfter1_value`,
+                    //                 value: priceDiscountUnitPriceAfter1_value,
+                    //             });
+                    //             addContext(this, {
+                    //                 title: `priceManualLineUnitPriceAfter1_value`,
+                    //                 value: priceManualLineUnitPriceAfter1_value,
+                    //             });
+                    //             const expectedValue = Number(priceDiscountUnitPriceAfter1_value) * 0.9;
+                    //             addContext(this, {
+                    //                 title: `Expected Value`,
+                    //                 value: expectedValue,
+                    //             });
+                    //             expect(Number(priceManualLineUnitPriceAfter1_value)).equals(expectedValue);
+                    //         });
+                    //         it(`checking all TSA fields of item "${manualLineDiscountItem}" after updated`, async function () {
+                    //             base64ImageComponent = await driver.saveScreenshots();
+                    //             addContext(this, {
+                    //                 title: `At OC After ${manualLineDiscountItem} UserLineDiscount change`,
+                    //                 value: 'data:image/png;base64,' + base64ImageComponent,
+                    //             });
+                    //             const priceTSAs = await pricingService.getItemTSAs(
+                    //                 'OrderCenter',
+                    //                 manualLineDiscountItem,
+                    //             );
+                    //             console.info(`${manualLineDiscountItem} ${state} priceTSAs:`, priceTSAs);
 
-                        default:
-                            describe(`CART "${state}"`, () => {
-                                it('entering and verifying being in cart', async function () {
-                                    await driver.click(orderPage.Cart_Button);
-                                    await orderPage.isSpinnerDone();
-                                    driver.sleep(1 * 1000);
-                                    await driver.untilIsVisible(orderPage.Cart_List_container);
+                    //             expect(typeof priceTSAs).equals('object');
+                    //             expect(Object.keys(priceTSAs)).to.eql([
+                    //                 'PriceBaseUnitPriceAfter1',
+                    //                 'PriceDiscountUnitPriceAfter1',
+                    //                 'PriceGroupDiscountUnitPriceAfter1',
+                    //                 'PriceManualLineUnitPriceAfter1',
+                    //                 'PriceTaxUnitPriceAfter1',
+                    //                 'NPMCalcMessage',
+                    //             ]);
+                    //             priceFields.forEach((priceField) => {
+                    //                 const expextedValue =
+                    //                     pricingData[testItemsData].Base[manualLineDiscountItem][priceField][account]
+                    //                         .cart[state];
+                    //                 addContext(this, {
+                    //                     title: `Price Field "${priceField}"`,
+                    //                     value: `ACTUAL: ${priceTSAs[priceField]} \nEXPECTED: ${expextedValue}`,
+                    //                 });
+                    //                 expect(priceTSAs[priceField]).equals(expextedValue);
+                    //             });
+                    //         });
+                    //     });
+
+                    state !== 'baseline' &&
+                        describe(`CART "${state}"`, () => {
+                            it('entering and verifying being in cart', async function () {
+                                await driver.click(orderPage.Cart_Button);
+                                await orderPage.isSpinnerDone();
+                                driver.sleep(1 * 1000);
+                                await driver.untilIsVisible(orderPage.Cart_List_container);
+                            });
+                            it(`switch to 'Grid View'`, async function () {
+                                await orderPage.changeCartView('Grid');
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `After "Line View" was selected`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
                                 });
-                                it(`switch to 'Grid View'`, async function () {
-                                    await orderPage.changeCartView('Grid');
+                            });
+                            it('verify that the sum total of items in the cart is correct', async function () {
+                                base64ImageComponent = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At Cart`,
+                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                });
+                                const itemsInCart = await (
+                                    await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                ).getText();
+                                driver.sleep(0.2 * 1000);
+                                expect(Number(itemsInCart)).to.equal(testItems.length);
+                                driver.sleep(1 * 1000);
+                            });
+                            testItems.forEach(async (item) => {
+                                it(`checking item "${item.name}"`, async function () {
+                                    const totalUnitsAmount = await pricingService.getItemTotalAmount('Cart', item.name);
+                                    const priceTSAs = await pricingService.getItemTSAs('Cart', item.name);
+                                    console.info(`Cart ${item.name} totalUnitsAmount:`, totalUnitsAmount);
+                                    console.info(`priceTSAs:`, priceTSAs);
+                                    const expectedAmount =
+                                        state === '1unit'
+                                            ? 1
+                                            : state === '3units'
+                                            ? 3
+                                            : state === '1case(6units)'
+                                            ? 6
+                                            : item.cartAmount;
+                                    addContext(this, {
+                                        title: `Total Units Amount`,
+                                        value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
+                                    });
+                                    // expect(totalUnitsAmount).equals(expectedAmount);
+                                    priceFields.forEach((priceField) => {
+                                        const expextedValue =
+                                            pricingData[testItemsData].Base[item.name][priceField][account][state];
+                                        expect(priceTSAs[priceField]).equals(expextedValue);
+                                    });
+                                });
+                            });
+                            describe('back to Order Center and switch to Line View', () => {
+                                it('Click "Continue ordering" button', async function () {
+                                    await driver.click(orderPage.Cart_ContinueOrdering_Button);
+                                    await orderPage.isSpinnerDone();
+                                    await orderPage.changeOrderCenterPageView('Line View');
+                                    await orderPage.isSpinnerDone();
                                     base64ImageComponent = await driver.saveScreenshots();
                                     addContext(this, {
                                         title: `After "Line View" was selected`,
                                         value: 'data:image/png;base64,' + base64ImageComponent,
                                     });
-                                });
-                                it('verify that the sum total of items in the cart is correct', async function () {
+                                    await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
+                                    driver.sleep(1 * 1000);
                                     base64ImageComponent = await driver.saveScreenshots();
                                     addContext(this, {
-                                        title: `At Cart`,
+                                        title: `Order Center - Loaded`,
                                         value: 'data:image/png;base64,' + base64ImageComponent,
-                                    });
-                                    const itemsInCart = await (
-                                        await driver.findElement(orderPage.Cart_Headline_Results_Number)
-                                    ).getText();
-                                    driver.sleep(0.2 * 1000);
-                                    expect(Number(itemsInCart)).to.equal(testItems.length);
-                                    driver.sleep(1 * 1000);
-                                });
-                                testItems.forEach(async (item) => {
-                                    it(`checking item "${item.name}"`, async function () {
-                                        const totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                            'Cart',
-                                            item.name,
-                                        );
-                                        const priceTSAs = await pricingService.getItemTSAs('Cart', item.name);
-                                        console.info(`Cart ${item.name} totalUnitsAmount:`, totalUnitsAmount);
-                                        console.info(`priceTSAs:`, priceTSAs);
-                                        const expectedAmount =
-                                            state === '1unit'
-                                                ? 1
-                                                : state === '3units'
-                                                ? 3
-                                                : state === '1case(6units)'
-                                                ? 6
-                                                : item.cartAmount;
-                                        addContext(this, {
-                                            title: `Total Units Amount`,
-                                            value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
-                                        });
-                                        // expect(totalUnitsAmount).equals(expectedAmount);
-                                        priceFields.forEach((priceField) => {
-                                            const expextedValue =
-                                                pricingData[testItemsData].Base[item.name][priceField][account][state];
-                                            expect(priceTSAs[priceField]).equals(expextedValue);
-                                        });
-                                    });
-                                });
-                                describe('back to Order Center and switch to Line View', () => {
-                                    it('Click "Continue ordering" button', async function () {
-                                        await driver.click(orderPage.Cart_ContinueOrdering_Button);
-                                        await orderPage.isSpinnerDone();
-                                        await orderPage.changeOrderCenterPageView('Line View');
-                                        await orderPage.isSpinnerDone();
-                                        base64ImageComponent = await driver.saveScreenshots();
-                                        addContext(this, {
-                                            title: `After "Line View" was selected`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
-                                        });
-                                        await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
-                                        driver.sleep(1 * 1000);
-                                        base64ImageComponent = await driver.saveScreenshots();
-                                        addContext(this, {
-                                            title: `Order Center - Loaded`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
-                                        });
                                     });
                                 });
                             });
-                            break;
-                    }
+                        });
                 });
             });
         });

@@ -12,19 +12,43 @@ import { PricingData06 } from '../../../pom/addons/PricingData06';
 import PricingRules from '../../../pom/addons/PricingRules';
 import GeneralService from '../../../../services/general.service';
 import addContext from 'mochawesome/addContext';
+import E2EUtils from '../../../utilities/e2e_utils';
 
 chai.use(promised);
 
 export async function PricingUomTests(email: string, password: string, client: Client) {
     /*
-_________________ 
+________________________ 
 _________________ Brief:
           
 * Pricing Per UOM
 * in previous version there was set price to only one Unit Of Measure, and the others were multiplication by the UOM factor 
 * now a set price is available for each UOM separately
 * the test agenda is to make sure calculations per each UOM are performed correctly
-_________________ 
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'GroupDiscount' -> ['ZGD1', 'ZGD2']
+. 'ManualLine' -> []
+. 'Tax' -> ['MTAX']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZBASE' -> ['A002', 'A001', 'A003', 'A005', 'A004']
+. 'ZDS1' -> ['A001', 'A002', 'A003']
+. 'ZDS2' -> ['A002']
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A003' -> ['TransactionAccountExternalID', 'ItemMainCategory']
+
+_____________________________________ 
 _________________ The Relevant Rules:
           
 . 'ZBASE@A003@Acc01@Hair4You':
@@ -76,35 +100,6 @@ _________________
         ...pricingRules[udtFirstTableName].features06,
     };
 
-    // let ppmValues_content;
-    // switch (true) {
-    //     case installedPricingVersion?.startsWith('0.7'):
-    //         console.info('AT installedPricingVersion CASE 7');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //             ...pricingRules[udtFirstTableName].features07,
-    //         };
-    //         break;
-
-    //     case installedPricingVersion?.startsWith('0.8'):
-    //         console.info('AT installedPricingVersion CASE 8');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //             ...pricingRules[udtFirstTableName].features07,
-    //             ...pricingRules[udtFirstTableName].features08,
-    //         };
-    //         break;
-    //     default:
-    //         console.info('AT installedPricingVersion Default');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //         };
-    //         break;
-    // }
-
     let driver: Browser;
     let pricingService: PricingService;
     let webAppLoginPage: WebAppLoginPage;
@@ -114,6 +109,7 @@ _________________
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
+    let e2eUtils: E2EUtils;
     let transactionUUID: string;
     let accountName: string;
     let duration: string;
@@ -168,6 +164,7 @@ _________________
                 webAppTopBar = new WebAppTopBar(driver);
                 webAppDialog = new WebAppDialog(driver);
                 orderPage = new OrderPage(driver);
+                e2eUtils = new E2EUtils(driver);
                 pricingService = new PricingService(
                     driver,
                     webAppLoginPage,
@@ -193,8 +190,8 @@ _________________
                 });
             });
 
-            it('Manual Sync', async () => {
-                await webAppHomePage.manualResync(client);
+            it('Manual Resync', async () => {
+                await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 
             it('get UDT Values (PPM_Values)', async () => {
@@ -224,12 +221,12 @@ _________________
                         }
                     });
                     matchingRowOfppmValues &&
-                        console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                    console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                        console.info('ACTUAL: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                    console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                     matchingRowOfppmValues &&
                         addContext(this, {
                             title: `PPM Key "${mainKey}"`,
-                            value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
+                            value: `ACTUAL  : ${matchingRowOfppmValues['Values'][0]} \nEXPECTED: ${ppmValues_content[mainKey]}`,
                         });
                     matchingRowOfppmValues &&
                         expect(ppmValues_content[mainKey]).equals(

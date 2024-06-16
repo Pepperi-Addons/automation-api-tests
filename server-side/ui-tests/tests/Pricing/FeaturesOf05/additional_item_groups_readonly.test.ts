@@ -9,10 +9,11 @@ import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage
 import { ObjectsService } from '../../../../services';
 import { OrderPage } from '../../../pom/Pages/OrderPage';
 import { PricingData05 } from '../../../pom/addons/PricingData05';
-// import { PricingData06 } from '../../../pom/addons/PricingData06';
+import { PricingDataNoUom } from '../../../pom/addons/PricingDataNoUom';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { PricingService } from '../../../../services/pricing.service';
 import PricingRules from '../../../pom/addons/PricingRules';
+import E2EUtils from '../../../utilities/e2e_utils';
 
 interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -29,8 +30,37 @@ export async function PricingAdditionalItemGroupsReadonlyTests(
     email: string,
     password: string,
     client: Client,
-    specialVersion: 'version07for05data' | 'version08for07data' | undefined = undefined,
+    specialVersion: 'version07for05data' | 'noUom' | undefined = undefined,
 ) {
+    /*
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'GroupDiscount' -> ['ZGD1', 'ZGD2']
+. 'ManualLine' -> []
+. 'Tax' -> ['MTAX']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZDS2' -> ['A002']
+. 'ZDS3' -> ['A001']
+. 'ZGD1' -> ['A002', 'A003']
+. 'ZGD2' -> ['A004', 'A003', 'A002']
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A003' -> ['TransactionAccountExternalID', 'ItemMainCategory']
+. 'A004' -> ['TransactionAccountExternalID']
+
+_________________ 
+_________________ 
+ */
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const pricingRules = new PricingRules();
@@ -45,66 +75,17 @@ export async function PricingAdditionalItemGroupsReadonlyTests(
     const installedPricingVersion = installedPricingVersionLong?.split('.')[1];
     console.info('Installed Pricing Version: 0.', JSON.stringify(installedPricingVersion, null, 2));
 
-    const pricingData = new PricingData05();
+    const pricingData = specialVersion === 'noUom' ? new PricingDataNoUom() : new PricingData05();
+    const ppmValues_content =
+        specialVersion === 'noUom'
+            ? pricingRules[udtFirstTableName].features05noUom
+            : pricingRules[udtFirstTableName].features05;
 
-    let testItemsData = 'testItemsValues';
-    let ppmValues_content;
-
-    switch (true) {
-        case installedPricingVersionLong?.startsWith('0.5'):
-            console.info('AT installedPricingVersion CASE 5');
-            testItemsData = 'testItemsValues_version05';
-            ppmValues_content = pricingRules[udtFirstTableName].features05;
-            break;
-
-        case installedPricingVersionLong?.startsWith('0.6'):
-            console.info('AT installedPricingVersion CASE 6');
-            ppmValues_content = {
-                ...pricingRules[udtFirstTableName].features05,
-                ...pricingRules[udtFirstTableName].features06,
-            };
-            break;
-
-        case installedPricingVersionLong?.startsWith('0.7'):
-            console.info('AT installedPricingVersion CASE 7');
-            testItemsData = specialVersion === 'version07for05data' ? 'testItemsValues_version05' : 'testItemsValues';
-            ppmValues_content =
-                specialVersion === 'version07for05data'
-                    ? pricingRules[udtFirstTableName].features05
-                    : {
-                          ...pricingRules[udtFirstTableName].features05,
-                          ...pricingRules[udtFirstTableName].features06,
-                          ...pricingRules[udtFirstTableName].features07,
-                      };
-            break;
-
-        case installedPricingVersionLong?.startsWith('0.8'):
-            console.info('AT installedPricingVersion CASE 8');
-            ppmValues_content =
-                specialVersion === 'version08for07data'
-                    ? {
-                          ...pricingRules[udtFirstTableName].features05,
-                          ...pricingRules[udtFirstTableName].features06,
-                          ...pricingRules[udtFirstTableName].features07,
-                      }
-                    : {
-                          ...pricingRules[udtFirstTableName].features05,
-                          ...pricingRules[udtFirstTableName].features06,
-                          ...pricingRules[udtFirstTableName].features07,
-                          ...pricingRules[udtFirstTableName].features08,
-                      };
-            break;
-
-        default:
-            console.info('AT installedPricingVersion Default');
-            ppmValues_content = {
-                ...pricingRules[udtFirstTableName].features05,
-                ...pricingRules[udtFirstTableName].features06,
-                ...pricingRules[udtFirstTableName].features07,
-                ...pricingRules[udtFirstTableName].features08,
-            };
-            break;
-    }
+    const testItemsData = installedPricingVersionLong?.startsWith('0.5')
+        ? 'testItemsValues_version05'
+        : specialVersion === 'version07for05data'
+        ? 'testItemsValues_version05'
+        : 'testItemsValues';
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -115,6 +96,7 @@ export async function PricingAdditionalItemGroupsReadonlyTests(
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
+    let e2eutils: E2EUtils;
     let transactionID: number;
     let transactionUUID: string;
     let transactionUUID_Acc01: string;
@@ -249,6 +231,7 @@ export async function PricingAdditionalItemGroupsReadonlyTests(
             webAppTopBar = new WebAppTopBar(driver);
             webAppDialog = new WebAppDialog(driver);
             orderPage = new OrderPage(driver);
+            e2eutils = new E2EUtils(driver);
             pricingService = new PricingService(
                 driver,
                 webAppLoginPage,
@@ -262,7 +245,6 @@ export async function PricingAdditionalItemGroupsReadonlyTests(
         });
 
         after(async function () {
-            await driver.close();
             await driver.quit();
         });
 
@@ -276,7 +258,7 @@ export async function PricingAdditionalItemGroupsReadonlyTests(
         });
 
         it('Manual Sync', async () => {
-            await webAppHomePage.manualResync(client);
+            await e2eutils.performManualSync(client);
         });
 
         it('get UDT Values (PPM_Values)', async function () {
@@ -284,7 +266,11 @@ export async function PricingAdditionalItemGroupsReadonlyTests(
             console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
             addContext(this, {
                 title: `PPM Values Expected Valid Rules Content`,
-                value: `Length: ${ppmValues_content.length} \nValues: ${JSON.stringify(ppmValues_content, null, 2)}`,
+                value: `Length: ${Object.keys(ppmValues_content).length} \nValues: ${JSON.stringify(
+                    ppmValues_content,
+                    null,
+                    2,
+                )}`,
             });
         });
 
@@ -309,12 +295,12 @@ export async function PricingAdditionalItemGroupsReadonlyTests(
                     }
                 });
                 matchingRowOfppmValues &&
-                    console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                    console.info('ACTUAL: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                 matchingRowOfppmValues &&
                     addContext(this, {
                         title: `PPM Key "${mainKey}"`,
-                        value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
+                        value: `ACTUAL  : ${matchingRowOfppmValues['Values'][0]} \nEXPECTED: ${ppmValues_content[mainKey]}`,
                     });
                 matchingRowOfppmValues &&
                     expect(ppmValues_content[mainKey]).equals(
