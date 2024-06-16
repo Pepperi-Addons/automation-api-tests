@@ -506,12 +506,15 @@ _________________
                                     title: `priceManualLineUnitPriceAfter1_value`,
                                     value: priceManualLineUnitPriceAfter1_value,
                                 });
-                                const expectedValue = Number(priceDiscountUnitPriceAfter1_value) * 0.9;
+                                const expectedValue =
+                                    Number(priceDiscountUnitPriceAfter1_value.split(' ')[1].trim()) * 0.9;
                                 addContext(this, {
                                     title: `Expected Value`,
-                                    value: expectedValue,
+                                    value: expectedValue.toString(),
                                 });
-                                expect(Number(priceManualLineUnitPriceAfter1_value)).equals(expectedValue);
+                                expect(Number(priceManualLineUnitPriceAfter1_value.split(' ')[1].trim())).equals(
+                                    expectedValue,
+                                );
                             });
                             it(`checking all TSA fields of item "${manualLineDiscountItem}" after update`, async function () {
                                 base64ImageComponent = await driver.saveScreenshots();
@@ -597,7 +600,7 @@ _________________
                                     // expect(totalUnitsAmount).equals(expectedAmount);
                                     priceFields.forEach((priceField) => {
                                         const expextedValue =
-                                            pricingData[testItemsData].Base[item.name][priceField][account][state];
+                                            pricingData[testItemsData].Base[item.name][priceField][account].cart[state];
                                         expect(priceTSAs[priceField]).equals(expextedValue);
                                     });
                                 });
