@@ -294,9 +294,9 @@ _________________
                         return tableRow;
                     }
                 });
+                console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                 matchingRowOfppmValues &&
                     console.info('ACTUAL: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                 matchingRowOfppmValues &&
                     addContext(this, {
                         title: `PPM Key "${mainKey}"`,

@@ -338,6 +338,11 @@ export class Browser {
         return;
     }
 
+    public async sendStringWithoutElement(text: string): Promise<void> {
+        await this.driver.actions().keyDown(Key.CONTROL).sendKeys('a').keyUp(Key.CONTROL).sendKeys(text).perform();
+        await this.driver.actions().keyDown(Key.ENTER).keyUp(Key.ENTER).perform();
+    }
+
     public async sendKeysNoClear(selector: By, keys: string | number, index = 0, waitUntil = 15000): Promise<void> {
         const isSecret = selector.valueOf()['value'].includes(`input[type="password"]`);
         try {
