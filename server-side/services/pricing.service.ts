@@ -619,16 +619,41 @@ export class PricingService {
             'UserLineDiscount_Value',
             nameOfItem,
         );
+        const UserLineDiscount_containerSelector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            'UserLineDiscount_Container',
+            nameOfItem,
+        );
+        const UserLineDiscount_inputSelector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            'UserLineDiscount_Container',
+            nameOfItem,
+        );
+        const UserLineDiscount_inputContainerSelector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            'UserLineDiscount_InputContainer',
+            nameOfItem,
+        );
         const UserLineDiscount_Element = await this.browser.findElement(UserLineDiscount_Selector);
         console.info(`${nameOfItem} UserLineDiscount_Value: `, await UserLineDiscount_Element.getText());
-        for (let i = 0; i < 6; i++) {
-            await UserLineDiscount_Element.sendKeys(Key.BACK_SPACE);
-            this.browser.sleep(0.01 * 1000);
-        }
+        await UserLineDiscount_Element.click();
+        const UserLineDiscount_containerElement = await this.browser.findElement(UserLineDiscount_containerSelector);
+        const UserLineDiscount_inputContainerElement = await this.browser.findElement(
+            UserLineDiscount_inputContainerSelector,
+        );
+        console.info(`${nameOfItem} UserLineDiscount_Value: `, await UserLineDiscount_containerElement.getText());
+        console.info(
+            `${nameOfItem} UserLineDiscount_Container Inner HTML: `,
+            await UserLineDiscount_containerElement.getAttribute('innerHTML'),
+        );
+        console.info(
+            `${nameOfItem} UserLineDiscount_InputContainer Inner HTML: `,
+            await UserLineDiscount_inputContainerElement.getAttribute('innerHTML'),
+        );
         this.browser.sleep(0.05 * 1000);
-        await UserLineDiscount_Element.sendKeys(changeTo);
+        const UserLineDiscount_inputElement = await this.browser.findElement(UserLineDiscount_inputSelector);
+        console.info(`${nameOfItem} UserLineDiscount_Input text: `, await UserLineDiscount_inputElement.getText());
+        await this.browser.sendStringWithoutElement(changeTo);
+        this.browser.sleep(0.05 * 1000);
+        await this.browser.click(this.orderPage.TransactionID); // getting the input out of focus
         await this.orderPage.isSpinnerDone();
-        this.browser.sleep(0.05 * 1000);
         this.browser.sleep(0.1 * 1000);
     }
 
