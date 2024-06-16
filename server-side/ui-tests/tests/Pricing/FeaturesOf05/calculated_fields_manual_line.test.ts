@@ -167,7 +167,7 @@ _________________
     ];
     const manualLineDiscountItem = 'Drug0003';
 
-    describe(`Pricing ** Base ** UI tests | Ver ${installedPricingVersionLong}`, () => {
+    describe(`Pricing ** Base ** UI tests | Ver ${installedPricingVersionLong}`, function () {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -513,7 +513,7 @@ _________________
                                     value: expectedValue.toString(),
                                 });
                                 expect(Number(priceManualLineUnitPriceAfter1_value.split(' ')[1].trim())).equals(
-                                    expectedValue,
+                                    Math.round((expectedValue + Number.EPSILON) * 100) / 100,
                                 );
                             });
                             it(`checking all TSA fields of item "${manualLineDiscountItem}" after update`, async function () {
@@ -666,7 +666,7 @@ _________________
         });
 
         describe('Cleanup', () => {
-            it('Deleting all Activities', async () => {
+            it('Deleting all Activities', async function () {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
                 await webAppHomePage.clickOnBtn('Activities');
