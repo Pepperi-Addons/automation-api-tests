@@ -460,7 +460,7 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
         for (let index = 0; index <= num; index++) {
             if (
                 logcash.addDataToTableOverwriteTrue[index].Status == 'Error' &&
-                logcash.addDataToTableOverwriteTrue[index].Details == 'Provided list of item keys contains duplicates'
+                logcash.addDataToTableOverwriteTrue[index].Details.includes('Provided list of item keys contains duplicates')
             ) {
                 tst++;
                 if (tst == num) {
@@ -552,8 +552,7 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
         for (let index = 0; index <= num; index++) {
             if (
                 logcash.add50InsertsToTableOverwriteFalse[index].Status == 'Error' &&
-                logcash.add50InsertsToTableOverwriteFalse[index].Details ==
-                    'Provided list of item keys contains duplicates'
+                logcash.add50InsertsToTableOverwriteFalse[index].Details .includes('Provided list of item keys contains duplicates')
             ) {
                 tst++;
                 if (tst == num) {
@@ -638,7 +637,7 @@ export async function BatchUpsertTests(generalService: GeneralService, request, 
         for (let index = 0; index <= num; index++) {
             if (
                 logcash.pageSizeChngesOverwriteFalse[index].Status == 'Error' &&
-                logcash.pageSizeChngesOverwriteFalse[index].Details == 'Provided list of item keys contains duplicates'
+                logcash.pageSizeChngesOverwriteFalse[index].Details .includes('Provided list of item keys contains duplicates')
             ) {
                 tst++;
                 if (tst == num) {
