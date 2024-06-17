@@ -11,7 +11,12 @@ chai.use(promised);
 
 type tableNames = 'PricingUdtReplacement' | 'PricingTest1' | 'PricingTest2';
 
-export async function PricingUdcInsertion(client: Client, testingFeatures: '0.8' | '1.0', tablesNames: tableNames[]) {
+export async function PricingUdcInsertion(
+    client: Client,
+    testingFeatures: '0.8' | '1.0',
+    tablesNames: tableNames[],
+    specialTestData?: 'noUom',
+) {
     const generalService = new GeneralService(client);
     const udcService = new UDCService(generalService);
     const pricingRules = new PricingRules();
@@ -42,27 +47,19 @@ export async function PricingUdcInsertion(client: Client, testingFeatures: '0.8'
 
         tablesNames.forEach((tableName) => {
             describe(`UDC: "${tableName}" insertion`, () => {
-                // it(`validating "${tableName}" UDC structure via API`, async () => {
-                //     udcTable_fromAPI = await udcService.getSchemes({
-                //         where: `Name="${tableName}"`,
-                //     });
-                //     console.info(`${tableName} fields: `, JSON.stringify(udcTable_fromAPI[0].Fields, null, 2));
-                //     expect(udcTable_fromAPI).to.be.an('array').with.lengthOf(1);
-                //     expect(udcTable_fromAPI[0]).to.haveOwnProperty('Fields');
-                //     expect(Object.keys(udcTable_fromAPI[0].Fields)).to.eql(['PricingKey', 'PricingData']);
-                // });
-
                 it('getting data object according to installed version', async function () {
                     udc_table_rules = {};
                     switch (testingFeatures) {
                         case '0.8':
                             console.info('AT testingFeatures CASE 0.8');
-                            udc_table_rules = pricingRules[`UDC_${tableName}`].features08;
+                            udc_table_rules =
+                                pricingRules[`UDC_${tableName}`][`features08${specialTestData ? specialTestData : ''}`];
                             break;
 
                         default:
                             console.info('AT testingFeatures Default');
-                            udc_table_rules = pricingRules[`UDC_${tableName}`].features08;
+                            udc_table_rules =
+                                pricingRules[`UDC_${tableName}`][`features08${specialTestData ? specialTestData : ''}`];
                             break;
                     }
                     addContext(this, {

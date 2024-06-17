@@ -176,13 +176,6 @@ export class PricingService {
             'PriceBaseUnitPriceAfter1_Value',
             nameOfItem,
         );
-        // let PriceBaseUnitPriceAfter1_Values;
-        // if (at === 'Cart') {
-        //     PriceBaseUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getCssValue('background')) !== 'rgb(165, 235, 255)') { return webElement } });
-        //     console.info('background-color: ', await PriceBaseUnitPriceAfter1_Values[0].getCssValue('background-color'));
-        // } else {
-        //     PriceBaseUnitPriceAfter1_Values = await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector);
-        // }
         const PriceBaseUnitPriceAfter1_Values = await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector);
         const PriceBaseUnitPriceAfter1_Value = locationInElementsArray
             ? await PriceBaseUnitPriceAfter1_Values[locationInElementsArray].getText()
@@ -193,12 +186,6 @@ export class PricingService {
             'PriceDiscountUnitPriceAfter1_Value',
             nameOfItem,
         );
-        // let PriceDiscountUnitPriceAfter1_Values;
-        // if (at === 'Cart') {
-        //     PriceDiscountUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
-        // } else {
-        //     PriceDiscountUnitPriceAfter1_Values = await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector);
-        // }
         const PriceDiscountUnitPriceAfter1_Values = await this.browser.findElements(
             PriceDiscountUnitPriceAfter1_Selector,
         );
@@ -211,12 +198,6 @@ export class PricingService {
             'PriceGroupDiscountUnitPriceAfter1_Value',
             nameOfItem,
         );
-        // let PriceGroupDiscountUnitPriceAfter1_Values;
-        // if (at === 'Cart') {
-        //     PriceGroupDiscountUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
-        // } else {
-        //     PriceGroupDiscountUnitPriceAfter1_Values = await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector);
-        // }
         const PriceGroupDiscountUnitPriceAfter1_Values = await this.browser.findElements(
             PriceGroupDiscountUnitPriceAfter1_Selector,
         );
@@ -232,12 +213,6 @@ export class PricingService {
             'PriceManualLineUnitPriceAfter1_Value',
             nameOfItem,
         );
-        // let PriceManualLineUnitPriceAfter1_Values;
-        // if (at === 'Cart') {
-        //     PriceManualLineUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
-        // } else {
-        //     PriceManualLineUnitPriceAfter1_Values = await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector);
-        // }
         const PriceManualLineUnitPriceAfter1_Values = await this.browser.findElements(
             PriceManualLineUnitPriceAfter1_Selector,
         );
@@ -250,12 +225,6 @@ export class PricingService {
             'PriceTaxUnitPriceAfter1_Value',
             nameOfItem,
         );
-        // let PriceTaxUnitPriceAfter1_Values;
-        // if (at === 'Cart') {
-        //     PriceTaxUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
-        // } else {
-        //     PriceTaxUnitPriceAfter1_Values = await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector);
-        // }
         const PriceTaxUnitPriceAfter1_Values = await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector);
         const PriceTaxUnitPriceAfter1_Value = locationInElementsArray
             ? await PriceTaxUnitPriceAfter1_Values[locationInElementsArray].getText()
@@ -612,6 +581,49 @@ export class PricingService {
         return {
             PricePartial: Number(PricePartial_Value.split(' ')[1].trim()),
         };
+    }
+
+    public async changeValueOfTSAUserLineDiscountOfSpecificItem(changeTo: string, nameOfItem: string): Promise<void> {
+        const UserLineDiscount_Selector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            'UserLineDiscount_Value',
+            nameOfItem,
+        );
+        const UserLineDiscount_containerSelector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            'UserLineDiscount_Container',
+            nameOfItem,
+        );
+        const UserLineDiscount_inputSelector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            'UserLineDiscount_Container',
+            nameOfItem,
+        );
+        const UserLineDiscount_inputContainerSelector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            'UserLineDiscount_InputContainer',
+            nameOfItem,
+        );
+        const UserLineDiscount_Element = await this.browser.findElement(UserLineDiscount_Selector);
+        console.info(`${nameOfItem} UserLineDiscount_Value: `, await UserLineDiscount_Element.getText());
+        await UserLineDiscount_Element.click();
+        const UserLineDiscount_containerElement = await this.browser.findElement(UserLineDiscount_containerSelector);
+        const UserLineDiscount_inputContainerElement = await this.browser.findElement(
+            UserLineDiscount_inputContainerSelector,
+        );
+        console.info(`${nameOfItem} UserLineDiscount_Value: `, await UserLineDiscount_containerElement.getText());
+        console.info(
+            `${nameOfItem} UserLineDiscount_Container Inner HTML: `,
+            await UserLineDiscount_containerElement.getAttribute('innerHTML'),
+        );
+        console.info(
+            `${nameOfItem} UserLineDiscount_InputContainer Inner HTML: `,
+            await UserLineDiscount_inputContainerElement.getAttribute('innerHTML'),
+        );
+        this.browser.sleep(0.05 * 1000);
+        const UserLineDiscount_inputElement = await this.browser.findElement(UserLineDiscount_inputSelector);
+        console.info(`${nameOfItem} UserLineDiscount_Input text: `, await UserLineDiscount_inputElement.getText());
+        await this.browser.sendStringWithoutElement(changeTo);
+        this.browser.sleep(0.05 * 1000);
+        await this.browser.click(this.orderPage.TransactionID); // getting the input out of focus
+        await this.orderPage.isSpinnerDone();
+        this.browser.sleep(0.1 * 1000);
     }
 
     public async searchInOrderCenter(this: Context, nameOfItem: string, driver: Browser): Promise<void> {

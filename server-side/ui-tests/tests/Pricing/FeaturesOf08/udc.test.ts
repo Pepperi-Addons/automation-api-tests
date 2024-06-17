@@ -17,15 +17,49 @@ chai.use(promised);
 
 export async function PricingUdcTests(email: string, password: string, client: Client) {
     /*
-_________________ 
+________________________ 
 _________________ Brief:
           
-* Pricing UDC rules
+* Pricing UDC rules are functioning exactly as the UDT rules would have (it is done to improve Sync performance)
 _________________ 
+_________________ The Relevant Blocks:
+            
+. 'Base' -> ['ZBASE']
+
+_________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZBASE' -> ['A002', 'A001', 'A003', 'A005', 'A004']
+
+_________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+
+_____________________________________ 
 _________________ The Relevant Rules:
+
+PPM_Values (UDT)
           
-. 'ZBASE@A005@dummyItem': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",100,"P"]]]]',
+. 'ZBASE@A001@Frag021':
+    '[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",1,"P"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",11,"P"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",111,"P"]],"BOX","BOX"]]',
  
+PPM_AccountValues (UDT)
+
+. 'ZBASE@A002@Acc01@Frag021':
+    '[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",2,"P"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",22,"P"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",222,"P"]],"BOX","BOX"]]',
+
+UDC_PricingTest1
+
+. 'ZBASE@A002@Acc02@Frag021':
+    '[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",3,"P"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",33,"P"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",333,"P"]],"BOX","BOX"]]',
+
+UDC_PricingTest2
+
+. 'ZBASE@A002@Acc03@Frag021':
+    '[[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",4,"P"]],"EA","EA"],[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",44,"P"]],"CS","CS"],[true,"1555891200000","2534022144999","1","1","ZBASE_A001",[[0,"S",444,"P"]],"BOX","BOX"]]',
+
 _________________ 
 _________________ Order Of Actions:
           

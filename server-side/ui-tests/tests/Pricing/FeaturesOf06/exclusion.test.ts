@@ -15,7 +15,12 @@ import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
-export async function PricingExclusionTests(email: string, password: string, client: Client) {
+export async function PricingExclusionTests(
+    email: string,
+    password: string,
+    client: Client,
+    specialTestData?: 'noUom',
+) {
     /*
 ________________________ 
 _________________ Brief:
@@ -50,6 +55,29 @@ _________________ Brief:
 * 
 * the test agenda is to check that at the same NPMCalcMessage 2 rules that are excluding one another will never show together
 *
+______________________________________ 
+_________________ The Relevant Blocks:
+            
+. 'Discount' -> ['ZDS1', 'ZDS2', 'ZDS3']
+. 'Discount2' -> ['ZDS4', 'ZDS5', 'ZDS6', 'ZDS7']
+
+__________________________________________ 
+_________________ The Relevant Conditions:
+            
+. 'ZDS1' -> ['A001', 'A002', 'A003']
+. 'ZDS4' -> ['A001']
+. 'ZDS6' -> ['A003', 'A004', 'A001']
+. 'ZDS7' -> ['A002', 'A004', 'A005']
+
+______________________________________ 
+_________________ The Relevant Tables:
+    
+. 'A001' -> ['ItemExternalID']
+. 'A002' -> ['TransactionAccountExternalID', 'ItemExternalID']
+. 'A003' -> ['TransactionAccountExternalID', 'ItemMainCategory']
+. 'A004' -> ['TransactionAccountExternalID']
+. 'A005' -> ['ItemMainCategory']
+
 ________________________________ 
 ____________ The Relevant Rules:
  
@@ -80,7 +108,7 @@ ____________ The Relevant Rules:
 . 'ZDS6@A003@Acc01@Paul Pitchell':
             '[[true,"1555891200000","2534022144999","1","1","ZDS1_A001",[[260,"D",40,"%"]]]]',
 
-______________________________ 
+____________ 
 ____________ Order Of Actions:
            
    1. Looping over accounts
@@ -113,38 +141,16 @@ ________________________________________________________________________________
     // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
 
-    const ppmValues_content = {
-        ...pricingRules[udtFirstTableName].features05,
-        ...pricingRules[udtFirstTableName].features06,
-    };
-
-    // switch (true) {
-    //     case installedPricingVersion?.startsWith('0.7'):
-    //         console.info('AT installedPricingVersion CASE 7');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //             ...pricingRules[udtFirstTableName].features07,
-    //         };
-    //         break;
-
-    //     case installedPricingVersion?.startsWith('0.8'):
-    //         console.info('AT installedPricingVersion CASE 8');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //             ...pricingRules[udtFirstTableName].features07,
-    //             ...pricingRules[udtFirstTableName].features08,
-    //         };
-    //         break;
-    //     default:
-    //         console.info('AT installedPricingVersion Default');
-    //         ppmValues_content = {
-    //             ...pricingRules[udtFirstTableName].features05,
-    //             ...pricingRules[udtFirstTableName].features06,
-    //         };
-    //         break;
-    // }
+    const ppmValues_content =
+        specialTestData === 'noUom'
+            ? {
+                  ...pricingRules[udtFirstTableName].features05noUom,
+                  ...pricingRules[udtFirstTableName].features06noUom,
+              }
+            : {
+                  ...pricingRules[udtFirstTableName].features05,
+                  ...pricingRules[udtFirstTableName].features06,
+              };
 
     let driver: Browser;
     let pricingService: PricingService;
@@ -251,12 +257,12 @@ ________________________________________________________________________________
                         }
                     });
                     matchingRowOfppmValues &&
-                        console.info('EXPECTED: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                    console.info('ACTUAL: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
+                        console.info('ACTUAL: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
+                    console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                     matchingRowOfppmValues &&
                         addContext(this, {
                             title: `PPM Key "${mainKey}"`,
-                            value: `ACTUAL  : ${ppmValues_content[mainKey]} \nEXPECTED: ${matchingRowOfppmValues['Values'][0]}`,
+                            value: `ACTUAL  : ${matchingRowOfppmValues['Values'][0]} \nEXPECTED: ${ppmValues_content[mainKey]}`,
                         });
                     matchingRowOfppmValues &&
                         expect(ppmValues_content[mainKey]).equals(
