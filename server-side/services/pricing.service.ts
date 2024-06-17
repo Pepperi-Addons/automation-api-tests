@@ -5,6 +5,7 @@ import { Context } from 'mocha';
 import { WebAppLoginPage, WebAppHomePage, WebAppHeader, WebAppList, WebAppTopBar, WebAppDialog } from '../ui-tests/pom';
 import { OrderPage } from '../ui-tests/pom/Pages/OrderPage';
 import addContext from 'mochawesome/addContext';
+import GeneralService from './general.service';
 
 export interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -49,7 +50,7 @@ export interface PricePartialTsaFields {
 
 export class PricingService {
     public browser: Browser;
-    // public generalService: GeneralService;
+    public generalService: GeneralService | undefined;
     // public objectsService: ObjectsService;
     public webAppLoginPage: WebAppLoginPage;
     public webAppHomePage: WebAppHomePage;
@@ -61,7 +62,6 @@ export class PricingService {
     public base64Image;
 
     constructor(
-        // public client: Client,
         driver: Browser,
         webAppLoginPage: WebAppLoginPage,
         webAppHomePage: WebAppHomePage,
@@ -70,9 +70,10 @@ export class PricingService {
         webAppTopBar: WebAppTopBar,
         webAppDialog: WebAppDialog,
         orderPage: OrderPage,
+        generalService?: GeneralService,
     ) {
         this.browser = driver;
-        // this.generalService = new GeneralService(client);
+        this.generalService = generalService;
         // this.objectsService = new ObjectsService(this.generalService);
         // this.webAppLoginPage = new WebAppLoginPage(driver);
         // this.webAppHomePage = new WebAppHomePage(driver);
@@ -88,6 +89,45 @@ export class PricingService {
         this.webAppTopBar = webAppTopBar;
         this.webAppDialog = webAppDialog;
         this.orderPage = orderPage;
+    }
+
+    public async uploadConfiguration(payload: any) {
+        const uploadConfigResponse =
+            this.generalService &&
+            (await this.generalService.fetchStatus(
+                `/addons/api/adb3c829-110c-4706-9168-40fba9c0eb52/api/configuration`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        Key: 'main',
+                        Config: JSON.stringify(payload),
+                    }),
+                },
+            ));
+        console.info('uploadConfigResponse: ', JSON.stringify(uploadConfigResponse, null, 2));
+        expect(uploadConfigResponse?.Ok).to.equal(true);
+        expect(uploadConfigResponse?.Status).to.equal(200);
+        expect(Object.keys(uploadConfigResponse?.Body)).to.eql([
+            'ModificationDateTime',
+            'Hidden',
+            'CreationDateTime',
+            'Config',
+            'Key',
+        ]);
+        expect(uploadConfigResponse?.Body.Key).to.equal('main');
+    }
+
+    public async getConfiguration() {
+        const getConfigResponse =
+            this.generalService &&
+            (await this.generalService.fetchStatus(
+                `/addons/api/adb3c829-110c-4706-9168-40fba9c0eb52/api/configuration`,
+            ));
+        console.info('getConfigResponse: ', JSON.stringify(getConfigResponse, null, 2));
+        if (getConfigResponse && getConfigResponse.Body[0].Config) {
+            const configurationObj = getConfigResponse.Body[0].Config;
+            return JSON.parse(configurationObj);
+        }
     }
 
     public async startNewSalesOrderTransaction(nameOfAccount: string): Promise<string> {
