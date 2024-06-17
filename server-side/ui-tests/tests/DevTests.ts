@@ -164,8 +164,8 @@ export class DevTest {
                 }, Got Exception: ${(error as any).message}, On User: ${user.email}, Making ${
                     this.addonName
                 } Unavailable As We Coludn't Install It`;
-                await this.unavailableVersion();
                 await this.reportExceptionToTeams(errorString);
+                await this.unavailableVersion();
                 throw new Error(errorString);
             }
         }
