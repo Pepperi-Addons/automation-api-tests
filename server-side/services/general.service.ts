@@ -168,7 +168,13 @@ process.on('unhandledRejection', async (error) => {
             ConsoleColors.SystemInformation,
         );
         process.exit(1);
-    } else if (error && typeof error === 'string' && error.includes(`reason: certificate has expired`)) {
+    } else if (
+        error &&
+        typeof error === 'object' &&
+        error['message'] &&
+        typeof error['message'] === 'string' &&
+        error['message'].includes(`reason: certificate has expired`)
+    ) {
         console.log(`%Unhandled Rejection: ${error}`, ConsoleColors.Error);
         console.log(
             `%cIn Cases Of UnhandledRejection Which Include Message Of "Error" The Process Stopps With Exit Code 1`,
