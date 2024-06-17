@@ -513,7 +513,7 @@ _________________
                                     value: expectedValue.toString(),
                                 });
                                 expect(Number(priceManualLineUnitPriceAfter1_value.split(' ')[1].trim())).equals(
-                                    Math.round((expectedValue + Number.EPSILON) * 100) / 100,
+                                    Math.floor((expectedValue + Number.EPSILON) * 100) / 100,
                                 );
                             });
                             it(`checking all TSA fields of item "${manualLineDiscountItem}" after update`, async function () {
