@@ -257,6 +257,22 @@ _________________
             });
         });
 
+        it('Deleting All Transactions via API', async function () {
+            let allTransactions = await objectsService.getTransaction();
+            const deleteResponses = await Promise.all(
+                allTransactions.map(async (transaction) => {
+                    if (transaction.InternalID) {
+                        return await objectsService.deleteTransaction(transaction.InternalID);
+                    }
+                }),
+            );
+            deleteResponses.forEach((response) => {
+                expect(response).to.be.true;
+            });
+            allTransactions = await objectsService.getTransaction();
+            expect(allTransactions).to.eql([]);
+        });
+
         it('Manual Sync', async () => {
             await e2eutils.performManualSync(client);
         });
