@@ -203,6 +203,22 @@ _________________
             });
         });
 
+        it('Deleting All Transactions via API', async function () {
+            let allTransactions = await objectsService.getTransaction();
+            const deleteResponses = await Promise.all(
+                allTransactions.map(async (transaction) => {
+                    if (transaction.InternalID) {
+                        return await objectsService.deleteTransaction(transaction.InternalID);
+                    }
+                }),
+            );
+            deleteResponses.forEach((response) => {
+                expect(response).to.be.true;
+            });
+            allTransactions = await objectsService.getTransaction();
+            expect(allTransactions).to.eql([]);
+        });
+
         it('Manual Resync', async function () {
             await e2eutils.performManualResync.bind(this)(client, driver);
         });
@@ -507,14 +523,16 @@ _________________
                                     value: priceManualLineUnitPriceAfter1_value,
                                 });
                                 const expectedValue =
-                                    Number(priceDiscountUnitPriceAfter1_value.split(' ')[1].trim()) * 0.9;
+                                    Number(priceDiscountUnitPriceAfter1_value.split('$')[1].trim()) * 0.9;
+                                const expectedValueRounded = Math.floor((expectedValue + Number.EPSILON) * 100) / 100;
+                                const priceManualLineUnitPriceAfter1_value_asNumber = Number(
+                                    priceManualLineUnitPriceAfter1_value.split('$')[1].trim(),
+                                );
                                 addContext(this, {
                                     title: `Expected Value`,
-                                    value: expectedValue.toString(),
+                                    value: expectedValueRounded.toString(),
                                 });
-                                expect(Number(priceManualLineUnitPriceAfter1_value.split(' ')[1].trim())).equals(
-                                    Math.floor((expectedValue + Number.EPSILON) * 100) / 100,
-                                );
+                                expect(priceManualLineUnitPriceAfter1_value_asNumber).equals(expectedValueRounded);
                             });
                             it(`checking all TSA fields of item "${manualLineDiscountItem}" after update`, async function () {
                                 base64ImageComponent = await driver.saveScreenshots();
