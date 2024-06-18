@@ -1378,10 +1378,10 @@ export class PricingDataNoUom {
                 PriceManualLineUnitPriceAfter1: {
                     Acc01: {
                         cart: {
-                            '1unit': 30,
-                            '3units': 30,
-                            '1case(6units)': 30,
-                            '4cases(24units)': 30,
+                            '1unit': 30 * 0.9, // Manual Line 10%
+                            '3units': 30 * 0.9, // Manual Line 10%
+                            '1case(6units)': 30 * 6 * 0.9, // Manual Line 10%
+                            '4cases(24units)': 30 * 6 * 0.9, // Manual Line 10%
                         },
                         baseline: 30,
                         '1unit': 30,
@@ -1391,10 +1391,10 @@ export class PricingDataNoUom {
                     },
                     OtherAcc: {
                         cart: {
-                            '1unit': 32.25,
-                            '3units': 32.25,
-                            '1case(6units)': 32.25,
-                            '4cases(24units)': 32.25,
+                            '1unit': 29.02, // 32.25 * 0.9 (Manual Line 10%)
+                            '3units': 29.02, // 32.25 * 0.9 (Manual Line 10%)
+                            '1case(6units)': 29.02, // 32.25 * 0.9 (Manual Line 10%)
+                            '4cases(24units)': 29.02, // 32.25 * 0.9 (Manual Line 10%)
                         },
                         baseline: 32.25,
                         '1unit': 32.25,
@@ -1406,10 +1406,10 @@ export class PricingDataNoUom {
                 PriceTaxUnitPriceAfter1: {
                     Acc01: {
                         cart: {
-                            '1unit': 30,
-                            '3units': 30,
-                            '1case(6units)': 30,
-                            '4cases(24units)': 30,
+                            '1unit': 30 * 0.9, // Manual Line 10%
+                            '3units': 30 * 0.9, // Manual Line 10%
+                            '1case(6units)': 30 * 6 * 0.9, // Manual Line 10%
+                            '4cases(24units)': 30 * 6 * 0.9, // Manual Line 10%
                         },
                         baseline: 30,
                         '1unit': 30,
@@ -1419,10 +1419,10 @@ export class PricingDataNoUom {
                     },
                     OtherAcc: {
                         cart: {
-                            '1unit': 32.25,
-                            '3units': 32.25,
-                            '1case(6units)': 32.25,
-                            '4cases(24units)': 32.25,
+                            '1unit': 29.02, // 32.25 * 0.9 (Manual Line 10%)
+                            '3units': 29.02, // 32.25 * 0.9 (Manual Line 10%)
+                            '1case(6units)': 29.02, // 32.25 * 0.9 (Manual Line 10%)
+                            '4cases(24units)': 29.02, // 32.25 * 0.9 (Manual Line 10%)
                         },
                         baseline: 32.25,
                         '1unit': 32.25,
