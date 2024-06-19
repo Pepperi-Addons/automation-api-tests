@@ -265,6 +265,10 @@ export class DevTest {
                         addonDep[index].pfs = ['00000000-0000-0000-0000-0000000f11e5', '1.4.%'];
                         debugger;
                     }
+                    if (dep.sync) {
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        debugger;
+                    }
                 }
             }
             if (this.addonUUID === '50062e0c-9967-4ed4-9102-f2bc50602d41') {
