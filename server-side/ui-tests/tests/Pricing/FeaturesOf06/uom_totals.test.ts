@@ -15,7 +15,12 @@ import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
-export async function PricingTotalsTests(email: string, password: string, client: Client, specialTestData?: 'noUom') {
+export async function PricingUomTotalsTests(
+    email: string,
+    password: string,
+    client: Client,
+    specialTestData?: 'noUom',
+) {
     /*
 ________________________ 
 _________________ Brief:
