@@ -15,7 +15,7 @@ import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
-export async function PricingExclusionTests(
+export async function PricingGlobalExclusionTests(
     email: string,
     password: string,
     client: Client,
