@@ -32,8 +32,8 @@ import { PricingUomTotalsTests } from './Pricing/FeaturesOf06/uom_totals.test';
 import { PricingGlobalExclusionTests } from './Pricing/FeaturesOf06/global_exclusion.test';
 import { PricingPartialValueTests } from './Pricing/FeaturesOf06/partial_value.test';
 import { PricingMultipleValuesTests } from './Pricing/FeaturesOf06/multiple_values.test';
-import { PricingPerformanceUdtErrorsTests } from './Pricing/FeaturesOf07/performance_udt_errors.test';
-import { PricingDeliveryDatePackagesTests } from './Pricing/FeaturesOf07/delivery_date_packages.test';
+import { PricingDeliveryDatePerformanceUdtErrorsTests } from './Pricing/FeaturesOf07/delivery_date_performance.test';
+import { PricingPackagesProfilesTests } from './Pricing/FeaturesOf08/packages_profiles.test';
 import { PricingNoUomTotalsTests } from './Pricing/FeaturesOf08/no_uom_totals.test';
 import { PricingUdcSourceTests } from './Pricing/FeaturesOf08/udc_source.test';
 import { ResourceListAbiTests } from './rl_abi.test';
@@ -103,8 +103,8 @@ export {
     PricingGlobalExclusionTests,
     PricingPartialValueTests,
     PricingMultipleValuesTests,
-    PricingPerformanceUdtErrorsTests,
-    PricingDeliveryDatePackagesTests,
+    PricingDeliveryDatePerformanceUdtErrorsTests,
+    PricingPackagesProfilesTests,
     PricingNoUomTotalsTests,
     PricingUdcSourceTests,
     ResourceListAbiTests,
