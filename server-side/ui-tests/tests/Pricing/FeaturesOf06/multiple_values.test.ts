@@ -13,6 +13,7 @@ import { PricingData06 } from '../../../pom/addons/PricingData06';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import PricingRules from '../../../pom/addons/PricingRules';
 import E2EUtils from '../../../utilities/e2e_utils';
+import { PricingDataNoUom } from '../../../pom/addons/PricingDataNoUom';
 
 chai.use(promised);
 
@@ -146,7 +147,7 @@ ________________________________________________________________________________
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
-    const pricingData = new PricingData06();
+    const pricingData = specialTestData === 'noUom' ? new PricingDataNoUom() : new PricingData06();
     const pricingRules = new PricingRules();
     const udtFirstTableName = 'PPM_Values';
     // const udtSecondTableName = 'PPM_AccountValues';
