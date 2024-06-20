@@ -698,7 +698,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingUdcCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client, email, pass, '0.5'); // the argument 0.5|0.6|0.7 refers to the version of which the features originate from
+        await PricingUdtInsertion(client, email, pass, '0.5'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
         await PricingCalculatedFieldsManualLineTests(email, pass, client);
         await PricingAdditionalItemGroupsReadonlyTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
@@ -711,7 +711,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingUdcCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client, email, pass, '0.6'); // the argument 0.5|0.6|0.7 refers to the version of which the features originate from
+        await PricingUdtInsertion(client, email, pass, '0.6'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
         await PricingApplyUomsTests(email, pass, client);
         await PricingUomTotalsTests(email, pass, client);
         await PricingGlobalExclusionTests(email, pass, client);
@@ -726,9 +726,9 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingUdcCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client, email, pass, '0.6'); // the argument 0.5|0.6|0.7 refers to the version of which the features originate from
+        await PricingUdtInsertion(client, email, pass, '0.6'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
         await PricingMultipleValuesTests(email, pass, client);
-        await PricingUdtInsertion(client, email, pass, '0.7'); // the argument 0.5|0.6|0.7 refers to the version of which the features originate from
+        await PricingUdtInsertion(client, email, pass, '0.7'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
         await PricingDeliveryDatePerformanceUdtErrorsTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
@@ -740,7 +740,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingUdcCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass, 'noUom');
-        await PricingUdtInsertion(client, email, pass, '0.5', 'noUom'); // the argument 0.5|0.6|0.7 refers to the version of which the features originate from
+        await PricingUdtInsertion(client, email, pass, '0.5', 'noUom'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
         await PricingCalculatedFieldsManualLineTests(email, pass, client, 'noUom');
         await PricingAdditionalItemGroupsReadonlyTests(email, pass, client, 'noUom');
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
@@ -753,7 +753,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingUdcCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass, 'noUom');
-        await PricingUdtInsertion(client, email, pass, '0.6', 'noUom'); // the argument 0.5|0.6|0.7 refers to the version of which the features originate from
+        await PricingUdtInsertion(client, email, pass, '0.6', 'noUom'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
         await PricingGlobalExclusionTests(email, pass, client, 'noUom');
         await PricingPartialValueTests(email, pass, client, 'noUom');
         await PricingMultipleValuesTests(email, pass, client, 'noUom');
@@ -767,8 +767,9 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingUdcCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass, 'noUom');
-        await PricingUdtInsertion(client, email, pass, '0.7', 'noUom'); // the argument 0.5|0.6|0.7 refers to the version of which the features originate from
+        await PricingUdtInsertion(client, email, pass, '0.7', 'noUom'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
         await PricingNoUomTotalsTests(email, pass, client);
+        await PricingDeliveryDatePerformanceUdtErrorsTests(email, pass, client, 'noUom');
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -779,9 +780,10 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingUdcCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingUdcInsertion(client, '0.8', ['PricingTest1', 'PricingTest2']);
-        await PricingUdtInsertion(client, email, pass, '0.8'); // the argument 0.5|0.6|0.7 refers to the version of which the features originate from
+        await PricingUdtInsertion(client, email, pass, '0.8'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
         await PricingConfigUpload(client, email, pass);
         await PricingUdcSourceTests(email, pass, client);
+        // await PricingPackagesProfilesTests(email, pass, client); // not ready yet JUNE 2024
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
