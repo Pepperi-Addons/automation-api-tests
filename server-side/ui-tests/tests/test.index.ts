@@ -742,6 +742,33 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         return;
     }
 
+    if (tests === 'Pricing06FeaturesNoUom') {
+        await PricingUdtCleanup(client);
+        await PricingUdcCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingConfigUpload(client, email, pass, 'noUom');
+        await PricingUdtInsertion(client, email, pass, '0.6', 'noUom');
+        await PricingGlobalExclusionTests(email, pass, client, 'noUom');
+        await PricingPartialValueTests(email, pass, client, 'noUom');
+        await PricingMultipleValuesTests(email, pass, client, 'noUom');
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'Pricing07FeaturesNoUom') {
+        await PricingUdtCleanup(client);
+        await PricingUdcCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingConfigUpload(client, email, pass, 'noUom');
+        await PricingUdtInsertion(client, email, pass, '0.7', 'noUom');
+        await PricingCalculatedFieldsManualLineTests(email, pass, client, 'noUom');
+        await PricingAdditionalItemGroupsReadonlyTests(email, pass, client, 'noUom');
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
     if (tests === 'Pricing08Features') {
         await PricingUdtCleanup(client);
         await PricingUdcCleanup(client);
