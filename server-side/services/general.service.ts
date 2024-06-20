@@ -59,16 +59,19 @@ export const systemAddons: any = {
 };
 
 export const testData = {
-    //these are the addons which all the "regular" dists in pepperi work with, we need them to work on latest versions -
-    //this also contains our testing addon - these addons are combined to become our basic upg. dep. set
-    //please notice that this JSON extends "system addons" so of course its still fits open sync
+    //*these are the addons which all the "regular" dists in pepperi work with, we need them to work on latest versions -
+    //this also contains our testing addon.
+    //*these addons are combined to become our basic upg. dep. set
+    //*please notice that this JSON extends "system addons" so of course its still fits open sync
+    //*first half of these addons above the 'systemAddons' are system addon dependecies
     Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''],
-    'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.4.%'], //1.4.22 in the interim 1.4.X PFS version
+    'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.4.%'], //1.4.45 is the interim 1.4.X PFS version
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
+    'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''], // REQUIRED FOR ADAL NEW VERSIONS (2.0.19 and above)
+    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     ...systemAddons,
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON --
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
-    'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
     Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
 };
