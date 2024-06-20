@@ -91,6 +91,7 @@ export class PricingService {
         this.orderPage = orderPage;
     }
 
+    /** */
     public async uploadConfiguration(payload: any) {
         const uploadConfigResponse =
             this.generalService &&
@@ -117,6 +118,7 @@ export class PricingService {
         expect(uploadConfigResponse?.Body.Key).to.equal('main');
     }
 
+    /** */
     public async getConfiguration() {
         const getConfigResponse =
             this.generalService &&
@@ -130,6 +132,7 @@ export class PricingService {
         }
     }
 
+    /** */
     public async startNewSalesOrderTransaction(nameOfAccount: string): Promise<string> {
         await this.webAppHeader.goHome();
         await this.webAppHomePage.isSpinnerDone();
@@ -153,6 +156,7 @@ export class PricingService {
         return trnUUID;
     }
 
+    /** */
     public async getItemTotalAmount(
         at: 'OrderCenter' | 'Cart',
         itemName: string,
@@ -201,6 +205,7 @@ export class PricingService {
         return totalOfUnitsAsNum;
     }
 
+    /** */
     public async getItemTSAs(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -290,6 +295,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getItemNPMCalcMessage(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -317,6 +323,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getItemTSAs_Discount2(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -352,6 +359,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getItemTSAs_AOQM_UOM2(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -422,6 +430,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getTotalsTSAsOfItem(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -486,6 +495,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getTSAsOfMultiPerItem(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -598,6 +608,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getTSAsOfPartialPerItem(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -623,6 +634,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async changeValueOfTSAUserLineDiscountOfSpecificItem(changeTo: string, nameOfItem: string): Promise<void> {
         const UserLineDiscount_Selector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
             'UserLineDiscount_Value',
@@ -666,6 +678,7 @@ export class PricingService {
         this.browser.sleep(0.1 * 1000);
     }
 
+    /* UI FUNCTION: */
     public async searchInOrderCenter(this: Context, nameOfItem: string, driver: Browser): Promise<void> {
         const orderPage = new OrderPage(driver);
         await orderPage.isSpinnerDone();
@@ -687,6 +700,7 @@ export class PricingService {
         });
     }
 
+    /* UI FUNCTION: specify uom ('Each' | 'Case' | 'Box') at uomValue. if TOTALS are required the string '&Totals' should be added to the uom specified. the function do not perform a search before change */
     public async changeSelectedQuantityOfSpecificItemInOrderCenter(
         // for calculation of both AOQM fields "&Totals" needs to be added to uomValue
         this: Context,
@@ -799,6 +813,7 @@ export class PricingService {
         });
     }
 
+    /* UI FUNCTION: specify uom ('Each' | 'Case'), item name and desired quantity. the function do not perform a search before change */
     public async changeSelectedQuantityOfSpecificItemInCart(
         this: Context,
         uomValue: 'Each' | 'Case',
@@ -872,6 +887,7 @@ export class PricingService {
         });
     }
 
+    /* UI FUNCTION: pressing button with X icon that belongs to search component */
     public async clearOrderCenterSearch(): Promise<void> {
         await this.orderPage.isSpinnerDone();
         await this.browser.click(this.orderPage.Search_X_Button);

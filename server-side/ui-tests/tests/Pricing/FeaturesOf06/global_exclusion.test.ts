@@ -12,10 +12,11 @@ import { PricingData06 } from '../../../pom/addons/PricingData06';
 import PricingRules from '../../../pom/addons/PricingRules';
 import GeneralService from '../../../../services/general.service';
 import addContext from 'mochawesome/addContext';
+import { PricingDataNoUom } from '../../../pom/addons/PricingDataNoUom';
 
 chai.use(promised);
 
-export async function PricingExclusionTests(
+export async function PricingGlobalExclusionTests(
     email: string,
     password: string,
     client: Client,
@@ -129,7 +130,7 @@ ________________________________________________________________________________
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
-    const pricingData = new PricingData06();
+    const pricingData = specialTestData === 'noUom' ? new PricingDataNoUom() : new PricingData06();
     const pricingRules = new PricingRules();
 
     const udtFirstTableName = 'PPM_Values';
