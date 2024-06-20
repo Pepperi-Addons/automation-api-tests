@@ -66,7 +66,7 @@ _________________
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const pricingRules = new PricingRules();
-    const pricingData = specialTestData ? new PricingDataNoUom() : new PricingData07();
+    const pricingData = specialTestData === 'noUom' ? new PricingDataNoUom() : new PricingData07();
     const udtFirstTableName = 'PPM_Values';
 
     const installedPricingVersion = (await generalService.getInstalledAddons()).find(
@@ -75,11 +75,18 @@ _________________
 
     console.info('Installed Pricing Version: ', JSON.stringify(installedPricingVersion, null, 2));
 
-    const ppmValues_content = {
-        ...pricingRules[udtFirstTableName].features05,
-        ...pricingRules[udtFirstTableName].features06,
-        ...pricingRules[udtFirstTableName].features07,
-    };
+    const ppmValues_content =
+        specialTestData === 'noUom'
+            ? {
+                  ...pricingRules[udtFirstTableName].features05noUom,
+                  ...pricingRules[udtFirstTableName].features06noUom,
+                  ...pricingRules[udtFirstTableName].features07,
+              }
+            : {
+                  ...pricingRules[udtFirstTableName].features05,
+                  ...pricingRules[udtFirstTableName].features06,
+                  ...pricingRules[udtFirstTableName].features07,
+              };
 
     let driver: Browser;
     let pricingService: PricingService;
