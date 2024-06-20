@@ -50,8 +50,8 @@ import {
     PricingGlobalExclusionTests,
     PricingPartialValueTests,
     PricingMultipleValuesTests,
-    PricingPerformanceUdtErrorsTests,
-    PricingDeliveryDatePackagesTests,
+    PricingDeliveryDatePerformanceUdtErrorsTests,
+    PricingPackagesProfilesTests,
     PricingNoUomTotalsTests,
     PricingUdcSourceTests,
     ResourceListAbiTests,
@@ -729,7 +729,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingUdtInsertion(client, email, pass, '0.6'); // the argument 0.5|0.6|0.7 refers to the version of which the features originate from
         await PricingMultipleValuesTests(email, pass, client);
         await PricingUdtInsertion(client, email, pass, '0.7'); // the argument 0.5|0.6|0.7 refers to the version of which the features originate from
-        await PricingPerformanceUdtErrorsTests(email, pass, client);
+        await PricingDeliveryDatePerformanceUdtErrorsTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
@@ -890,7 +890,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingUdtInsertion(client, email, pass, '0.7');
         await PricingConfigUpload(client, email, pass);
-        await PricingDeliveryDatePackagesTests(email, pass, client);
+        await PricingPackagesProfilesTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
