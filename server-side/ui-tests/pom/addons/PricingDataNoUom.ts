@@ -2974,7 +2974,7 @@ export class PricingDataNoUom {
                 ItemPrice: 50.25,
                 Acc01: {
                     baseline: {
-                        PriceDiscount2UnitPriceAfter1: 600.0, // base is 100 each and at baseline the presented value is of case - meaning 100 * 6
+                        PriceDiscount2UnitPriceAfter1: 100.0,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
@@ -3123,14 +3123,14 @@ export class PricingDataNoUom {
                         ],
                     },
                     '42 Case': {
-                        PriceDiscount2UnitPriceAfter1: 600.0 - 60.0, // base (600) - discount2 (10% = 60)
+                        PriceDiscount2UnitPriceAfter1: 100.0 - 10.0, // base (100) - discount2 (10% = 10)
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 2110.5,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 23089.5 }],
+                                Base: 12663,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 12537 }],
                                 New: 25200,
-                                Amount: 23089.5,
+                                Amount: 12537,
                             },
                             {
                                 Name: 'Discount2',
@@ -3149,14 +3149,14 @@ export class PricingDataNoUom {
                         ],
                     },
                     '43 Case': {
-                        PriceDiscount2UnitPriceAfter1: 600.0 - 60.0, // base (600) - discount2 (10% = 60)
+                        PriceDiscount2UnitPriceAfter1: 100.0 - 10.0, // base (100) - discount2 (10% = 10)
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 2160.75,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 23639.25 }],
+                                Base: 12964.5,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 12835.5 }],
                                 New: 25800,
-                                Amount: 23639.25,
+                                Amount: 12835.5,
                             },
                             {
                                 Name: 'Discount2',
@@ -3175,14 +3175,14 @@ export class PricingDataNoUom {
                         ],
                     },
                     '45 Case': {
-                        PriceDiscount2UnitPriceAfter1: 600.0 - 240.0 - 150.0, // base (600) - discount2 (40% = 240 + 25% = 150)
+                        PriceDiscount2UnitPriceAfter1: 100.0 - 40.0 - 25.0, // base (100) - discount2 (40% = 40 + 25% = 25)
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 2261.25,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 24738.75 }],
+                                Base: 13567.5,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 13432.5 }],
                                 New: 27000,
-                                Amount: 24738.75,
+                                Amount: 13432.5,
                             },
                             {
                                 Name: 'Discount2',
@@ -3204,14 +3204,14 @@ export class PricingDataNoUom {
                         ],
                     },
                     '46 Case': {
-                        PriceDiscount2UnitPriceAfter1: 600.0 - 120.0, // base (600) - discount2 (20% = 120)
+                        PriceDiscount2UnitPriceAfter1: 100.0 - 20.0, // base (100) - discount2 (20% = 20)
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 2311.5,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 25288.5 }],
+                                Base: 13869,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 13731 }],
                                 New: 27600,
-                                Amount: 25288.5,
+                                Amount: 13731,
                             },
                             {
                                 Name: 'Discount2',
@@ -3234,21 +3234,21 @@ export class PricingDataNoUom {
                         ],
                     },
                     '10 Box': {
-                        PriceDiscount2UnitPriceAfter1: 100.0, // base (100) box do not have it's own UOM so it present the Each UOM
+                        PriceDiscount2UnitPriceAfter1: 100.0, // base (100)
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 502.5,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 497.5 }],
-                                New: 1000,
-                                Amount: 497.5,
+                                Base: 12060,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 11940 }],
+                                New: 24000,
+                                Amount: 11940,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1000,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -300 }],
-                                New: 700,
-                                Amount: -300,
+                                Base: 24000,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -7200 }],
+                                New: 16800,
+                                Amount: -7200,
                             },
                         ],
                     },
@@ -3257,27 +3257,27 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 552.75,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 547.25 }],
-                                New: 1100,
-                                Amount: 547.25,
+                                Base: 13266,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 13134 }],
+                                New: 26400,
+                                Amount: 13134,
                             },
                             {
                                 Name: 'Discount2',
                                 Base: 1100,
                                 Conditions: [
-                                    { Name: 'ZDS6_A003', Type: '%', Value: -40, Amount: -440 },
-                                    { Name: 'ZDS7_A002', Type: '%', Value: -25, Amount: -275 },
+                                    { Name: 'ZDS6_A003', Type: '%', Value: -40, Amount: -10560 },
+                                    { Name: 'ZDS7_A002', Type: '%', Value: -25, Amount: -6600 },
                                 ],
-                                New: 385,
-                                Amount: -715,
+                                New: 9240,
+                                Amount: -17160,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1100,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -330 }],
-                                New: 770,
-                                Amount: -330,
+                                Base: 26400,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -7920 }],
+                                New: 18480,
+                                Amount: -7920,
                             },
                         ],
                     },
@@ -3286,28 +3286,28 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 603,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 597 }],
-                                New: 1200,
-                                Amount: 597,
+                                Base: 14472,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 14328 }],
+                                New: 28800,
+                                Amount: 14328,
                             },
                             {
                                 Name: 'Discount2',
-                                Base: 1200,
+                                Base: 28800,
                                 Conditions: [
-                                    { Name: 'ZDS4_A001', Type: '%', Value: -20, Amount: -240 },
+                                    { Name: 'ZDS4_A001', Type: '%', Value: -20, Amount: -5760 },
                                     // { Name: 'ZDS6_A003', Type: '%', Value: -40, Amount: -480 },
                                     // { Name: 'ZDS7_A002', Type: '%', Value: -25, Amount: -300 },
                                 ],
-                                New: 960,
-                                Amount: -240,
+                                New: 23040,
+                                Amount: -5760,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1200,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -360 }],
-                                New: 840,
-                                Amount: -360,
+                                Base: 28800,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -8640 }],
+                                New: 20160,
+                                Amount: -8640,
                             },
                         ],
                     },
@@ -3316,28 +3316,28 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 603,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 597 }],
-                                New: 1200,
-                                Amount: 597,
+                                Base: 14472,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 14328 }],
+                                New: 28800,
+                                Amount: 14328,
                             },
                             {
                                 Name: 'Discount2',
-                                Base: 1200,
+                                Base: 28800,
                                 Conditions: [
-                                    { Name: 'ZDS4_A001', Type: '%', Value: -20, Amount: -240 },
+                                    { Name: 'ZDS4_A001', Type: '%', Value: -20, Amount: -5760 },
                                     // { Name: 'ZDS6_A003', Type: '%', Value: -40, Amount: -480 },
                                     // { Name: 'ZDS7_A002', Type: '%', Value: -25, Amount: -300 },
                                 ],
-                                New: 960,
-                                Amount: -240,
+                                New: 23040,
+                                Amount: -5760,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1200,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -360 }],
-                                New: 840,
-                                Amount: -360,
+                                Base: 28800,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -8640 }],
+                                New: 20160,
+                                Amount: -8640,
                             },
                         ],
                     },
@@ -3345,7 +3345,7 @@ export class PricingDataNoUom {
                 },
                 OtherAcc: {
                     baseline: {
-                        PriceDiscount2UnitPriceAfter1: 600.0, // base is 100 each and at baseline the presented value is of case - meaning 100 * 6
+                        PriceDiscount2UnitPriceAfter1: 100.0,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
@@ -3490,14 +3490,14 @@ export class PricingDataNoUom {
                         ],
                     },
                     '42 Case': {
-                        PriceDiscount2UnitPriceAfter1: 600.0 - 60.0, // base (600) - discount2 (10% = 60)
+                        PriceDiscount2UnitPriceAfter1: 100.0 - 10.0, // base (100) - discount2 (10% = 10)
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 2110.5,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 23089.5 }],
+                                Base: 12663,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 12537 }],
                                 New: 25200,
-                                Amount: 23089.5,
+                                Amount: 12537,
                             },
                             {
                                 Name: 'Discount2',
@@ -3516,14 +3516,14 @@ export class PricingDataNoUom {
                         ],
                     },
                     '43 Case': {
-                        PriceDiscount2UnitPriceAfter1: 600.0 - 90.0, // base (600) - discount2 (15% = 90)
+                        PriceDiscount2UnitPriceAfter1: 100.0 - 15.0, // base (100) - discount2 (15% = 15)
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 2160.75,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 23639.25 }],
+                                Base: 12964.5,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 12835.5 }],
                                 New: 25800,
-                                Amount: 23639.25,
+                                Amount: 12835.5,
                             },
                             {
                                 Name: 'Discount2',
@@ -3542,14 +3542,14 @@ export class PricingDataNoUom {
                         ],
                     },
                     '45 Case': {
-                        PriceDiscount2UnitPriceAfter1: 600.0 - 90.0, // base (600) - discount2 (15% = 90)
+                        PriceDiscount2UnitPriceAfter1: 100.0 - 15.0, // base (100) - discount2 (15% = 15)
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 2261.25,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 24738.75 }],
+                                Base: 13567.5,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 13432.5 }],
                                 New: 27000,
-                                Amount: 24738.75,
+                                Amount: 13432.5,
                             },
                             {
                                 Name: 'Discount2',
@@ -3568,14 +3568,14 @@ export class PricingDataNoUom {
                         ],
                     },
                     '46 Case': {
-                        PriceDiscount2UnitPriceAfter1: 600.0 - 120.0, // base (600) - discount2 (20% = 120)
+                        PriceDiscount2UnitPriceAfter1: 100.0 - 20.0, // base (100) - discount2 (20% = 20)
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 2311.5,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 25288.5 }],
+                                Base: 13869,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 13731 }],
                                 New: 27600,
-                                Amount: 25288.5,
+                                Amount: 13731,
                             },
                             {
                                 Name: 'Discount2',
@@ -3597,21 +3597,21 @@ export class PricingDataNoUom {
                         ],
                     },
                     '10 Box': {
-                        PriceDiscount2UnitPriceAfter1: 100.0, // base (100) box do not have it's own UOM so it present the Each UOM
+                        PriceDiscount2UnitPriceAfter1: 100.0, // base (100)
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 502.5,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 497.5 }],
-                                New: 1000,
-                                Amount: 497.5,
+                                Base: 12060,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 11940 }],
+                                New: 24000,
+                                Amount: 11940,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1000,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -150 }],
-                                New: 850,
-                                Amount: -150,
+                                Base: 24000,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -3600 }],
+                                New: 20400,
+                                Amount: -3600,
                             },
                         ],
                     },
@@ -3620,24 +3620,24 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 552.75,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 547.25 }],
-                                New: 1100,
-                                Amount: 547.25,
+                                Base: 13266,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 13134 }],
+                                New: 26400,
+                                Amount: 13134,
                             },
                             {
                                 Name: 'Discount2',
-                                Base: 1100,
-                                Conditions: [{ Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -165 }],
-                                New: 935,
-                                Amount: -165,
+                                Base: 26400,
+                                Conditions: [{ Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -3960 }],
+                                New: 22440,
+                                Amount: -3960,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1100,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -165 }],
-                                New: 935,
-                                Amount: -165,
+                                Base: 26400,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -3960 }],
+                                New: 22440,
+                                Amount: -3960,
                             },
                         ],
                     },
@@ -3646,27 +3646,27 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 603,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 597 }],
-                                New: 1200,
-                                Amount: 597,
+                                Base: 14472,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 14328 }],
+                                New: 28800,
+                                Amount: 14328,
                             },
                             {
                                 Name: 'Discount2',
-                                Base: 1200,
+                                Base: 28800,
                                 Conditions: [
-                                    { Name: 'ZDS4_A001', Type: '%', Value: -20, Amount: -240 },
+                                    { Name: 'ZDS4_A001', Type: '%', Value: -20, Amount: -5760 },
                                     // { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -180 },
                                 ],
-                                New: 960,
-                                Amount: -240,
+                                New: 23040,
+                                Amount: -5760,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1200,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -180 }],
-                                New: 1020,
-                                Amount: -180,
+                                Base: 28800,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -4320 }],
+                                New: 24480,
+                                Amount: -4320,
                             },
                         ],
                     },
@@ -3675,27 +3675,27 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
-                                Base: 603,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 597 }],
-                                New: 1200,
-                                Amount: 597,
+                                Base: 14472,
+                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 100, Amount: 14328 }],
+                                New: 28800,
+                                Amount: 14328,
                             },
                             {
                                 Name: 'Discount2',
-                                Base: 1200,
+                                Base: 28800,
                                 Conditions: [
-                                    { Name: 'ZDS4_A001', Type: '%', Value: -20, Amount: -240 },
-                                    // { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -180 },
+                                    { Name: 'ZDS4_A001', Type: '%', Value: -20, Amount: -5760 },
+                                    // { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -4320 },
                                 ],
-                                New: 960,
-                                Amount: -240,
+                                New: 23040,
+                                Amount: -5760,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1200,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -180 }],
-                                New: 1020,
-                                Amount: -180,
+                                Base: 28800,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -4320 }],
+                                New: 24480,
+                                Amount: -4320,
                             },
                         ],
                     },
@@ -3719,20 +3719,6 @@ export class PricingDataNoUom {
                                 New: 6431.25,
                                 Amount: -2756.25,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 9187.5,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -459.375 }],
-                                New: 8728.125,
-                                Amount: -459.375,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 6431.25,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -321.5625 }],
-                                New: 6109.7,
-                                Amount: -321.55,
-                            },
                         ],
                     },
                     '253 Each': {
@@ -3745,20 +3731,6 @@ export class PricingDataNoUom {
                                 New: 6508.425,
                                 Amount: -2789.325,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 9297.75,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -464.8875 }],
-                                New: 8832.8625,
-                                Amount: -464.8875,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 6508.425,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -325.4213 }],
-                                New: 6183.0164,
-                                Amount: -325.4086,
-                            },
                         ],
                     },
                     '255 Each': {
@@ -3770,20 +3742,6 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2811.375 }],
                                 New: 6559.875,
                                 Amount: -2811.375,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 9371.25,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -468.5625 }],
-                                New: 8902.6875,
-                                Amount: -468.5625,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 6559.875,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -327.9938 }],
-                                New: 6231.894,
-                                Amount: -327.981,
                             },
                         ],
                     },
@@ -3804,20 +3762,6 @@ export class PricingDataNoUom {
                                 New: 6688.5,
                                 Amount: -2866.5,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 9555,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -477.75 }],
-                                New: 9077.25,
-                                Amount: -477.75,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 6688.5,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -334.425 }],
-                                New: 6354.088,
-                                Amount: -334.412,
-                            },
                         ],
                     },
                     '275 Each': {
@@ -3837,20 +3781,6 @@ export class PricingDataNoUom {
                                 New: 7074.375,
                                 Amount: -3031.875,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 10106.25,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -505.3125 }],
-                                New: 9600.9375,
-                                Amount: -505.3125,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 7074.375,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -353.7188 }],
-                                New: 6720.67,
-                                Amount: -353.705,
-                            },
                         ],
                     },
                     '42 Case': {
@@ -3863,24 +3793,6 @@ export class PricingDataNoUom {
                                 New: 1080.45,
                                 Amount: -463.05,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 1543.5,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -385.875, Uom: ['CS'] },
-                                ],
-                                New: 1157.625,
-                                Amount: -385.875,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 1080.45,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -270.1125, Uom: ['CS'] },
-                                ],
-                                New: 810.3396,
-                                Amount: -270.1104,
-                            },
                         ],
                     },
                     '43 Case': {
@@ -3892,24 +3804,6 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -474.075 }],
                                 New: 1106.175,
                                 Amount: -474.075,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 1580.25,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -395.0625, Uom: ['CS'] },
-                                ],
-                                New: 1185.1875,
-                                Amount: -395.0625,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 1106.175,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -276.5438, Uom: ['CS'] },
-                                ],
-                                New: 829.6334,
-                                Amount: -276.5416,
                             },
                         ],
                     },
@@ -3930,24 +3824,6 @@ export class PricingDataNoUom {
                                 New: 1157.625,
                                 Amount: -496.125,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 1653.75,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -413.4375, Uom: ['CS'] },
-                                ],
-                                New: 1240.3125,
-                                Amount: -413.4375,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 1157.625,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -289.4063, Uom: ['CS'] },
-                                ],
-                                New: 868.221,
-                                Amount: -289.404,
-                            },
                         ],
                     },
                     '46 Case': {
@@ -3967,24 +3843,6 @@ export class PricingDataNoUom {
                                 New: 1183.35,
                                 Amount: -507.15,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 1690.5,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -422.625, Uom: ['CS'] },
-                                ],
-                                New: 1267.875,
-                                Amount: -422.625,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 1183.35,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -295.8375, Uom: ['CS'] },
-                                ],
-                                New: 887.5148,
-                                Amount: -295.8352,
-                            },
                         ],
                     },
                     '10 Box': {
@@ -3996,24 +3854,6 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -110.25 }],
                                 New: 257.25,
                                 Amount: -110.25,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 367.5,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -55.125, Uom: ['BOX'] },
-                                ],
-                                New: 312.375,
-                                Amount: -55.125,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 257.25,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -38.5875, Uom: ['BOX'] },
-                                ],
-                                New: 218.663,
-                                Amount: -38.587,
                             },
                         ],
                     },
@@ -4034,24 +3874,6 @@ export class PricingDataNoUom {
                                 New: 282.975,
                                 Amount: -121.275,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 404.25,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -60.6375, Uom: ['BOX'] },
-                                ],
-                                New: 343.6125,
-                                Amount: -60.6375,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 282.975,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -42.4463, Uom: ['BOX'] },
-                                ],
-                                New: 240.5293,
-                                Amount: -42.4457,
-                            },
                         ],
                     },
                     '12 Box': {
@@ -4071,24 +3893,6 @@ export class PricingDataNoUom {
                                 New: 308.7,
                                 Amount: -132.3,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 441,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -66.15, Uom: ['BOX'] },
-                                ],
-                                New: 374.85,
-                                Amount: -66.15,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 308.7,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -46.305, Uom: ['BOX'] },
-                                ],
-                                New: 262.3956,
-                                Amount: -46.3044,
-                            },
                         ],
                     },
                     cart: {
@@ -4107,24 +3911,6 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -132.3 }],
                                 New: 308.7,
                                 Amount: -132.3,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 441,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -66.15, Uom: ['BOX'] },
-                                ],
-                                New: 374.85,
-                                Amount: -66.15,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 308.7,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -46.305, Uom: ['BOX'] },
-                                ],
-                                New: 262.3956,
-                                Amount: -46.3044,
                             },
                         ],
                     },
@@ -4145,20 +3931,6 @@ export class PricingDataNoUom {
                                 New: 7809.375,
                                 Amount: -1378.125,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 9187.5,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -459.375 }],
-                                New: 8728.125,
-                                Amount: -459.375,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 7809.375,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -390.4688 }],
-                                New: 7418.9,
-                                Amount: -390.475,
-                            },
                         ],
                     },
                     '253 Each': {
@@ -4170,20 +3942,6 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1394.6625 }],
                                 New: 7903.0875,
                                 Amount: -1394.6625,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 9297.75,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -464.8875 }],
-                                New: 8832.8625,
-                                Amount: -464.8875,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 7903.0875,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -395.1544 }],
-                                New: 7507.9268,
-                                Amount: -395.1607,
                             },
                         ],
                     },
@@ -4204,20 +3962,6 @@ export class PricingDataNoUom {
                                 New: 7965.5625,
                                 Amount: -1405.6875,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 9371.25,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -468.5625 }],
-                                New: 8902.6875,
-                                Amount: -468.5625,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 7965.5625,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -398.2781 }],
-                                New: 7567.278,
-                                Amount: -398.2845,
-                            },
                         ],
                     },
                     '260 Each': {
@@ -4236,20 +3980,6 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1433.25 }],
                                 New: 8121.75,
                                 Amount: -1433.25,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 9555,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -477.75 }],
-                                New: 9077.25,
-                                Amount: -477.75,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 8121.75,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -406.0875 }],
-                                New: 7715.656,
-                                Amount: -406.094,
                             },
                         ],
                     },
@@ -4270,20 +4000,6 @@ export class PricingDataNoUom {
                                 New: 8590.3125,
                                 Amount: -1515.9375,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 10106.25,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -505.3125 }],
-                                New: 9600.9375,
-                                Amount: -505.3125,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 8590.3125,
-                                Conditions: [{ Name: 'ZDM2_A007', Type: '%', Value: -5, Amount: -429.5156 }],
-                                New: 8160.79,
-                                Amount: -429.5225,
-                            },
                         ],
                     },
                     '42 Case': {
@@ -4295,24 +4011,6 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -231.525 }],
                                 New: 1311.975,
                                 Amount: -231.525,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 1543.5,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -385.875, Uom: ['CS'] },
-                                ],
-                                New: 1157.625,
-                                Amount: -385.875,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 1311.975,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -327.9938, Uom: ['CS'] },
-                                ],
-                                New: 983.9802,
-                                Amount: -327.9948,
                             },
                         ],
                     },
@@ -4333,24 +4031,6 @@ export class PricingDataNoUom {
                                 New: 1343.2125,
                                 Amount: -237.0375,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 1580.25,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -395.0625, Uom: ['CS'] },
-                                ],
-                                New: 1185.1875,
-                                Amount: -395.0625,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 1343.2125,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -335.8031, Uom: ['CS'] },
-                                ],
-                                New: 1007.4083,
-                                Amount: -335.8042,
-                            },
                         ],
                     },
                     '45 Case': {
@@ -4369,24 +4049,6 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -248.0625 }],
                                 New: 1405.6875,
                                 Amount: -248.0625,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 1653.75,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -413.4375, Uom: ['CS'] },
-                                ],
-                                New: 1240.3125,
-                                Amount: -413.4375,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 1405.6875,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -351.4219, Uom: ['CS'] },
-                                ],
-                                New: 1054.2645,
-                                Amount: -351.423,
                             },
                         ],
                     },
@@ -4407,24 +4069,6 @@ export class PricingDataNoUom {
                                 New: 1436.925,
                                 Amount: -253.575,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 1690.5,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -422.625, Uom: ['CS'] },
-                                ],
-                                New: 1267.875,
-                                Amount: -422.625,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 1436.925,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -25, Amount: -359.2313, Uom: ['CS'] },
-                                ],
-                                New: 1077.6926,
-                                Amount: -359.2324,
-                            },
                         ],
                     },
                     '10 Box': {
@@ -4436,24 +4080,6 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -55.125 }],
                                 New: 312.375,
                                 Amount: -55.125,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 367.5,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -55.125, Uom: ['BOX'] },
-                                ],
-                                New: 312.375,
-                                Amount: -55.125,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 312.375,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -46.8563, Uom: ['BOX'] },
-                                ],
-                                New: 265.519,
-                                Amount: -46.856,
                             },
                         ],
                     },
@@ -4474,24 +4100,6 @@ export class PricingDataNoUom {
                                 New: 343.6125,
                                 Amount: -60.6375,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 404.25,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -60.6375, Uom: ['BOX'] },
-                                ],
-                                New: 343.6125,
-                                Amount: -60.6375,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 343.6125,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -51.5419, Uom: ['BOX'] },
-                                ],
-                                New: 292.0709,
-                                Amount: -51.5416,
-                            },
                         ],
                     },
                     '12 Box': {
@@ -4511,24 +4119,6 @@ export class PricingDataNoUom {
                                 New: 374.85,
                                 Amount: -66.15,
                             },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 441,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -66.15, Uom: ['BOX'] },
-                                ],
-                                New: 374.85,
-                                Amount: -66.15,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 374.85,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -56.2275, Uom: ['BOX'] },
-                                ],
-                                New: 318.6228,
-                                Amount: -56.2272,
-                            },
                         ],
                     },
                     cart: {
@@ -4547,24 +4137,6 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -66.15 }],
                                 New: 374.85,
                                 Amount: -66.15,
-                            },
-                            {
-                                Name: 'MultipleValuesCategory', // do not affect calculation
-                                Base: 441,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -66.15, Uom: ['BOX'] },
-                                ],
-                                New: 374.85,
-                                Amount: -66.15,
-                            },
-                            {
-                                Name: 'MultipleValues', // do not affect calculation
-                                Base: 374.85,
-                                Conditions: [
-                                    { Name: 'ZDM2_A007', Type: '%', Value: -15, Amount: -56.2275, Uom: ['BOX'] },
-                                ],
-                                New: 318.6228,
-                                Amount: -56.2272,
                             },
                         ],
                     },
@@ -4699,17 +4271,17 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1228.5,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -368.55 }],
-                                New: 859.95,
-                                Amount: -368.55,
+                                Base: 7371,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2211.3 }],
+                                New: 5159.7,
+                                Amount: -2211.3,
                             },
                             {
                                 Name: 'PartialValue', // do not affect calculation
-                                Base: 1228.5,
-                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -368.55 }],
-                                New: 859.95,
-                                Amount: -368.55,
+                                Base: 7371,
+                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -2211.3 }],
+                                New: 5159.7,
+                                Amount: -2211.3,
                             },
                         ],
                     },
@@ -4718,24 +4290,24 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount2',
-                                Base: 1257.75,
-                                Conditions: [{ Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -503.1 }],
-                                New: 754.65,
-                                Amount: -503.1,
+                                Base: 7546.5,
+                                Conditions: [{ Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -3018.6 }],
+                                New: 4527.9,
+                                Amount: -3018.6,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1257.75,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -377.325 }],
-                                New: 880.425,
-                                Amount: -377.325,
+                                Base: 7546.5,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2263.95 }],
+                                New: 5282.55,
+                                Amount: -2263.95,
                             },
                             {
                                 Name: 'PartialValue', // do not affect calculation
-                                Base: 1257.75,
-                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -377.325 }],
-                                New: 880.425,
-                                Amount: -377.325,
+                                Base: 7546.5,
+                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -2263.95 }],
+                                New: 5282.55,
+                                Amount: -2263.95,
                             },
                         ],
                     },
@@ -4744,24 +4316,24 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount', // do not affect calculation
-                                Base: 1316.25,
-                                Conditions: [{ Name: 'ZDS1_A002', Type: '%', Value: -40, Amount: -526.5 }],
-                                New: 789.75,
-                                Amount: -526.5,
+                                Base: 7897.5,
+                                Conditions: [{ Name: 'ZDS1_A002', Type: '%', Value: -40, Amount: -3159 }],
+                                New: 4738.5,
+                                Amount: -3159,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1316.25,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -394.875 }],
-                                New: 921.375,
-                                Amount: -394.875,
+                                Base: 7897.5,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2369.25 }],
+                                New: 5528.25,
+                                Amount: -2369.25,
                             },
                             {
                                 Name: 'PartialValue', // do not affect calculation
-                                Base: 1316.25,
-                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -394.875 }],
-                                New: 921.375,
-                                Amount: -394.875,
+                                Base: 7897.5,
+                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -2369.25 }],
+                                New: 5528.25,
+                                Amount: -2369.25,
                             },
                         ],
                     },
@@ -4770,24 +4342,24 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount', // do not affect calculation
-                                Base: 1345.5,
-                                Conditions: [{ Name: 'ZDS1_A002', Type: '%', Value: -40, Amount: -538.2 }],
-                                New: 807.3,
-                                Amount: -538.2,
+                                Base: 8073,
+                                Conditions: [{ Name: 'ZDS1_A002', Type: '%', Value: -40, Amount: -3229.2 }],
+                                New: 4843.8,
+                                Amount: -3229.2,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1345.5,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -403.65 }],
-                                New: 941.85,
-                                Amount: -403.65,
+                                Base: 8073,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2421.9 }],
+                                New: 5651.1,
+                                Amount: -2421.9,
                             },
                             {
                                 Name: 'PartialValue', // do not affect calculation
-                                Base: 1345.5,
-                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -403.65 }],
-                                New: 941.85,
-                                Amount: -403.65,
+                                Base: 8073,
+                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -2421.9 }],
+                                New: 5651.1,
+                                Amount: -2421.9,
                             },
                         ],
                     },
@@ -4796,17 +4368,17 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 292.5,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -87.75 }],
-                                New: 204.75,
-                                Amount: -87.75,
+                                Base: 7020,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2106 }],
+                                New: 4914,
+                                Amount: -2106,
                             },
                             {
                                 Name: 'PartialValue', // do not affect calculation
-                                Base: 292.5,
-                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -87.75 }],
-                                New: 204.75,
-                                Amount: -87.75,
+                                Base: 7020,
+                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -2106 }],
+                                New: 4914,
+                                Amount: -2106,
                             },
                         ],
                     },
@@ -4815,24 +4387,24 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount', // do not affect calculation
-                                Base: 321.75,
-                                Conditions: [{ Name: 'ZDS1_A002', Type: '%', Value: -40, Amount: -128.7 }],
-                                New: 193.05,
-                                Amount: -128.7,
+                                Base: 7722,
+                                Conditions: [{ Name: 'ZDS1_A002', Type: '%', Value: -40, Amount: -3088.8 }],
+                                New: 4633.2,
+                                Amount: -3088.8,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 321.75,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -96.525 }],
-                                New: 225.225,
-                                Amount: -96.525,
+                                Base: 7722,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2316.6 }],
+                                New: 5405.4,
+                                Amount: -2316.6,
                             },
                             {
                                 Name: 'PartialValue', // do not affect calculation
-                                Base: 321.75,
-                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -96.525 }],
-                                New: 225.225,
-                                Amount: -96.525,
+                                Base: 7722,
+                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -2316.6 }],
+                                New: 5405.4,
+                                Amount: -2316.6,
                             },
                         ],
                     },
@@ -4841,24 +4413,24 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount', // do not affect calculation
-                                Base: 351,
-                                Conditions: [{ Name: 'ZDS1_A002', Type: '%', Value: -40, Amount: -140.4 }],
-                                New: 210.6,
-                                Amount: -140.4,
+                                Base: 8424,
+                                Conditions: [{ Name: 'ZDS1_A002', Type: '%', Value: -40, Amount: -3369.6 }],
+                                New: 5054.4,
+                                Amount: -3369.6,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 351,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -105.3 }],
-                                New: 245.7,
-                                Amount: -105.3,
+                                Base: 8424,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2527.2 }],
+                                New: 5896.8,
+                                Amount: -2527.2,
                             },
                             {
                                 Name: 'PartialValue', // do not affect calculation
-                                Base: 351,
-                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -105.3 }],
-                                New: 245.7,
-                                Amount: -105.3,
+                                Base: 8424,
+                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -2527.2 }],
+                                New: 5896.8,
+                                Amount: -2527.2,
                             },
                         ],
                     },
@@ -4867,24 +4439,24 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount', // do not affect calculation
-                                Base: 351,
-                                Conditions: [{ Name: 'ZDS1_A002', Type: '%', Value: -40, Amount: -140.4 }],
-                                New: 210.6,
-                                Amount: -140.4,
+                                Base: 8424,
+                                Conditions: [{ Name: 'ZDS1_A002', Type: '%', Value: -40, Amount: -3369.6 }],
+                                New: 5054.4,
+                                Amount: -3369.6,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 351,
-                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -105.3 }],
-                                New: 245.7,
-                                Amount: -105.3,
+                                Base: 8424,
+                                Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2527.2 }],
+                                New: 5896.8,
+                                Amount: -2527.2,
                             },
                             {
                                 Name: 'PartialValue', // do not affect calculation
-                                Base: 351,
-                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -105.3 }],
-                                New: 245.7,
-                                Amount: -105.3,
+                                Base: 8424,
+                                Conditions: [{ Name: 'ZDH1_A011', Type: '%', Value: -30, Amount: -2527.2 }],
+                                New: 5896.8,
+                                Amount: -2527.2,
                             },
                         ],
                     },
@@ -4990,10 +4562,10 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1228.5,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -184.275 }],
-                                New: 1044.225,
-                                Amount: -184.275,
+                                Base: 7371,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1105.65 }],
+                                New: 6265.35,
+                                Amount: -1105.65,
                             },
                         ],
                     },
@@ -5002,20 +4574,20 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount2',
-                                Base: 1257.75,
+                                Base: 7546.5,
                                 Conditions: [
                                     { Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -503.1 },
-                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -188.6625 },
+                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -1131.975 },
                                 ],
-                                New: 565.9875,
-                                Amount: -691.7625,
+                                New: 3395.925,
+                                Amount: -4150.575,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1257.75,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -188.6625 }],
-                                New: 1069.0875,
-                                Amount: -188.6625,
+                                Base: 7546.5,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1131.975 }],
+                                New: 6414.525,
+                                Amount: -1131.975,
                             },
                         ],
                     },
@@ -5024,20 +4596,20 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount2',
-                                Base: 1316.25,
+                                Base: 7897.5,
                                 Conditions: [
-                                    { Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -526.5 },
-                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -197.4375 },
+                                    { Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -3159 },
+                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -1184.625 },
                                 ],
-                                New: 592.3125,
-                                Amount: -723.9375,
+                                New: 3553.875,
+                                Amount: -4343.625,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1316.25,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -197.4375 }],
-                                New: 1118.8125,
-                                Amount: -197.4375,
+                                Base: 7897.5,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1184.625 }],
+                                New: 6712.875,
+                                Amount: -1184.625,
                             },
                         ],
                     },
@@ -5046,20 +4618,20 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount2',
-                                Base: 1345.5,
+                                Base: 8073,
                                 Conditions: [
-                                    { Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -538.2 },
-                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -201.825 },
+                                    { Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -3229.2 },
+                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -1210.95 },
                                 ],
-                                New: 605.475,
-                                Amount: -740.025,
+                                New: 3632.85,
+                                Amount: -4440.15,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 1345.5,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -201.825 }],
-                                New: 1143.675,
-                                Amount: -201.825,
+                                Base: 8073,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1210.95 }],
+                                New: 6862.05,
+                                Amount: -1210.95,
                             },
                         ],
                     },
@@ -5068,10 +4640,10 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 292.5,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -43.875 }],
-                                New: 248.625,
-                                Amount: -43.875,
+                                Base: 7020,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1053 }],
+                                New: 5967,
+                                Amount: -1053,
                             },
                         ],
                     },
@@ -5080,20 +4652,20 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount2',
-                                Base: 321.75,
+                                Base: 7722,
                                 Conditions: [
-                                    { Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -128.7 },
-                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -48.2625 },
+                                    { Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -3088.8 },
+                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -1158.3 },
                                 ],
-                                New: 144.7875,
-                                Amount: -176.9625,
+                                New: 3474.9,
+                                Amount: -4247.1,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 321.75,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -48.2625 }],
-                                New: 273.4875,
-                                Amount: -48.2625,
+                                Base: 7722,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1158.3 }],
+                                New: 6563.7,
+                                Amount: -1158.3,
                             },
                         ],
                     },
@@ -5102,20 +4674,20 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount2',
-                                Base: 351,
+                                Base: 8424,
                                 Conditions: [
-                                    { Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -140.4 },
-                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -52.65 },
+                                    { Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -3369.6 },
+                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -1263.6 },
                                 ],
-                                New: 157.95,
-                                Amount: -193.05,
+                                New: 3790.8,
+                                Amount: -4633.2,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 351,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -52.65 }],
-                                New: 298.35,
-                                Amount: -52.65,
+                                Base: 8424,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1263.6 }],
+                                New: 7160.4,
+                                Amount: -1263.6,
                             },
                         ],
                     },
@@ -5124,20 +4696,20 @@ export class PricingDataNoUom {
                         NPMCalcMessage: [
                             {
                                 Name: 'Discount2',
-                                Base: 351,
+                                Base: 8424,
                                 Conditions: [
-                                    { Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -140.4 },
-                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -52.65 },
+                                    { Name: 'ZDS6_A001', Type: '%', Value: -40, Amount: -3369.6 },
+                                    { Name: 'ZDS7_A004', Type: '%', Value: -15, Amount: -1263.6 },
                                 ],
-                                New: 157.95,
-                                Amount: -193.05,
+                                New: 3790.8,
+                                Amount: -4633.2,
                             },
                             {
                                 Name: 'MultipleValuesAccount', // do not affect calculation
-                                Base: 351,
-                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -52.65 }],
-                                New: 298.35,
-                                Amount: -52.65,
+                                Base: 8424,
+                                Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1263.6 }],
+                                New: 7160.4,
+                                Amount: -1263.6,
                             },
                         ],
                     },
