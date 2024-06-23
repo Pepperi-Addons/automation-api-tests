@@ -3719,6 +3719,34 @@ export class PricingDataNoUom {
                                 New: 6431.25,
                                 Amount: -2756.25,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9187.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2756.25,
+                                    },
+                                ],
+                                New: 6431.25,
+                                Amount: -2756.25,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 6431.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -1929.375,
+                                    },
+                                ],
+                                New: 4501.875,
+                                Amount: -1929.375,
+                            },
                         ],
                     },
                     '253 Each': {
@@ -3731,6 +3759,34 @@ export class PricingDataNoUom {
                                 New: 6508.425,
                                 Amount: -2789.325,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9297.75,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2789.325,
+                                    },
+                                ],
+                                New: 6508.425,
+                                Amount: -2789.325,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 6508.425,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -1952.5275,
+                                    },
+                                ],
+                                New: 4555.8975,
+                                Amount: -1952.5275,
+                            },
                         ],
                     },
                     '255 Each': {
@@ -3742,6 +3798,34 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2811.375 }],
                                 New: 6559.875,
                                 Amount: -2811.375,
+                            },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9371.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2811.375,
+                                    },
+                                ],
+                                New: 6559.875,
+                                Amount: -2811.375,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 6559.875,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -1967.9625,
+                                    },
+                                ],
+                                New: 4591.9125,
+                                Amount: -1967.9625,
                             },
                         ],
                     },
@@ -3762,6 +3846,34 @@ export class PricingDataNoUom {
                                 New: 6688.5,
                                 Amount: -2866.5,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9555,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2866.5,
+                                    },
+                                ],
+                                New: 6688.5,
+                                Amount: -2866.5,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 6688.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2006.55,
+                                    },
+                                ],
+                                New: 4681.95,
+                                Amount: -2006.55,
+                            },
                         ],
                     },
                     '275 Each': {
@@ -3781,6 +3893,34 @@ export class PricingDataNoUom {
                                 New: 7074.375,
                                 Amount: -3031.875,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 10106.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -3031.875,
+                                    },
+                                ],
+                                New: 7074.375,
+                                Amount: -3031.875,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 7074.375,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2122.3125,
+                                    },
+                                ],
+                                New: 4952.0625,
+                                Amount: -2122.3125,
+                            },
                         ],
                     },
                     '42 Case': {
@@ -3793,6 +3933,34 @@ export class PricingDataNoUom {
                                 New: 6482.7,
                                 Amount: -2778.3,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9261,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2778.3,
+                                    },
+                                ],
+                                New: 6482.7,
+                                Amount: -2778.3,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 6482.7,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -1944.81,
+                                    },
+                                ],
+                                New: 4537.89,
+                                Amount: -1944.81,
+                            },
                         ],
                     },
                     '43 Case': {
@@ -3804,6 +3972,34 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2844.45 }],
                                 New: 6637.05,
                                 Amount: -2844.45,
+                            },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9481.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2844.45,
+                                    },
+                                ],
+                                New: 6637.05,
+                                Amount: -2844.45,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 6637.05,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -1991.115,
+                                    },
+                                ],
+                                New: 4645.935,
+                                Amount: -1991.115,
                             },
                         ],
                     },
@@ -3824,6 +4020,34 @@ export class PricingDataNoUom {
                                 New: 6945.75,
                                 Amount: -2976.75,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9922.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2976.75,
+                                    },
+                                ],
+                                New: 6945.75,
+                                Amount: -2976.75,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 6945.75,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2083.725,
+                                    },
+                                ],
+                                New: 4862.025,
+                                Amount: -2083.725,
+                            },
                         ],
                     },
                     '46 Case': {
@@ -3843,6 +4067,34 @@ export class PricingDataNoUom {
                                 New: 7100.1,
                                 Amount: -3042.9,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 10143,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -3042.9,
+                                    },
+                                ],
+                                New: 7100.1,
+                                Amount: -3042.9,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 7100.1,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2130.03,
+                                    },
+                                ],
+                                New: 4970.07,
+                                Amount: -2130.03,
+                            },
                         ],
                     },
                     '10 Box': {
@@ -3854,6 +4106,34 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -2646 }],
                                 New: 6174,
                                 Amount: -2646,
+                            },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 8820,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2646,
+                                    },
+                                ],
+                                New: 6174,
+                                Amount: -2646,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 6174,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -1852.2,
+                                    },
+                                ],
+                                New: 4321.8,
+                                Amount: -1852.2,
                             },
                         ],
                     },
@@ -3874,6 +4154,34 @@ export class PricingDataNoUom {
                                 New: 6791.4,
                                 Amount: -2910.6,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9702,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2910.6,
+                                    },
+                                ],
+                                New: 6791.4,
+                                Amount: -2910.6,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 6791.4,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2037.42,
+                                    },
+                                ],
+                                New: 4753.98,
+                                Amount: -2037.42,
+                            },
                         ],
                     },
                     '12 Box': {
@@ -3893,6 +4201,34 @@ export class PricingDataNoUom {
                                 New: 7408.8,
                                 Amount: -3175.2,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 10584,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -3175.2,
+                                    },
+                                ],
+                                New: 7408.8,
+                                Amount: -3175.2,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 7408.8,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2222.64,
+                                    },
+                                ],
+                                New: 5186.16,
+                                Amount: -2222.64,
+                            },
                         ],
                     },
                     cart: {
@@ -3911,6 +4247,34 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A009', Type: '%', Value: -30, Amount: -3175.2 }],
                                 New: 7408.8,
                                 Amount: -3175.2,
+                            },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 10584,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -3175.2,
+                                    },
+                                ],
+                                New: 7408.8,
+                                Amount: -3175.2,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 7408.8,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2222.64,
+                                    },
+                                ],
+                                New: 5186.16,
+                                Amount: -2222.64,
                             },
                         ],
                     },
@@ -3931,6 +4295,34 @@ export class PricingDataNoUom {
                                 New: 7809.375,
                                 Amount: -1378.125,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9187.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2756.25,
+                                    },
+                                ],
+                                New: 6431.25,
+                                Amount: -2756.25,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 7809.375,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2342.8125,
+                                    },
+                                ],
+                                New: 5466.575,
+                                Amount: -2342.8,
+                            },
                         ],
                     },
                     '253 Each': {
@@ -3942,6 +4334,34 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1394.6625 }],
                                 New: 7903.0875,
                                 Amount: -1394.6625,
+                            },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9297.75,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2789.325,
+                                    },
+                                ],
+                                New: 6508.425,
+                                Amount: -2789.325,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 7903.0875,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2370.9263,
+                                    },
+                                ],
+                                New: 5532.1739,
+                                Amount: -2370.9136,
                             },
                         ],
                     },
@@ -3962,6 +4382,34 @@ export class PricingDataNoUom {
                                 New: 7965.5625,
                                 Amount: -1405.6875,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9371.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2811.375,
+                                    },
+                                ],
+                                New: 6559.875,
+                                Amount: -2811.375,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 7965.5625,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2389.6688,
+                                    },
+                                ],
+                                New: 5575.9065,
+                                Amount: -2389.656,
+                            },
                         ],
                     },
                     '260 Each': {
@@ -3980,6 +4428,34 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1433.25 }],
                                 New: 8121.75,
                                 Amount: -1433.25,
+                            },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9555,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2866.5,
+                                    },
+                                ],
+                                New: 6688.5,
+                                Amount: -2866.5,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 8121.75,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2436.525,
+                                    },
+                                ],
+                                New: 5685.238,
+                                Amount: -2436.512,
                             },
                         ],
                     },
@@ -4000,6 +4476,34 @@ export class PricingDataNoUom {
                                 New: 8590.3125,
                                 Amount: -1515.9375,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 10106.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -3031.875,
+                                    },
+                                ],
+                                New: 7074.375,
+                                Amount: -3031.875,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 8590.3125,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2577.0938,
+                                    },
+                                ],
+                                New: 6013.2325,
+                                Amount: -2577.08,
+                            },
                         ],
                     },
                     '42 Case': {
@@ -4011,6 +4515,34 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1389.15 }],
                                 New: 7871.85,
                                 Amount: -1389.15,
+                            },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9261,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2778.3,
+                                    },
+                                ],
+                                New: 6482.7,
+                                Amount: -2778.3,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 7871.85,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2361.555,
+                                    },
+                                ],
+                                New: 5510.3076,
+                                Amount: -2361.5424,
                             },
                         ],
                     },
@@ -4031,6 +4563,34 @@ export class PricingDataNoUom {
                                 New: 8059.275,
                                 Amount: -1422.225,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9481.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2844.45,
+                                    },
+                                ],
+                                New: 6637.05,
+                                Amount: -2844.45,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 8059.275,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2417.7825,
+                                    },
+                                ],
+                                New: 5641.5054,
+                                Amount: -2417.7696,
+                            },
                         ],
                     },
                     '45 Case': {
@@ -4049,6 +4609,34 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1488.375 }],
                                 New: 8434.125,
                                 Amount: -1488.375,
+                            },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9922.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2976.75,
+                                    },
+                                ],
+                                New: 6945.75,
+                                Amount: -2976.75,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 8434.125,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2530.2375,
+                                    },
+                                ],
+                                New: 5903.901,
+                                Amount: -2530.224,
                             },
                         ],
                     },
@@ -4069,6 +4657,34 @@ export class PricingDataNoUom {
                                 New: 8621.55,
                                 Amount: -1521.45,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 10143,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -3042.9,
+                                    },
+                                ],
+                                New: 7100.1,
+                                Amount: -3042.9,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 8621.55,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2586.465,
+                                    },
+                                ],
+                                New: 6035.0988,
+                                Amount: -2586.4512,
+                            },
                         ],
                     },
                     '10 Box': {
@@ -4080,6 +4696,34 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1323 }],
                                 New: 7497,
                                 Amount: -1323,
+                            },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 8820,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2646,
+                                    },
+                                ],
+                                New: 6174,
+                                Amount: -2646,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 7497,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2249.1,
+                                    },
+                                ],
+                                New: 5247.912,
+                                Amount: -2249.088,
                             },
                         ],
                     },
@@ -4100,6 +4744,34 @@ export class PricingDataNoUom {
                                 New: 8246.7,
                                 Amount: -1455.3,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 9702,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2910.6,
+                                    },
+                                ],
+                                New: 6791.4,
+                                Amount: -2910.6,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 8246.7,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2474.01,
+                                    },
+                                ],
+                                New: 5772.7032,
+                                Amount: -2473.9968,
+                            },
                         ],
                     },
                     '12 Box': {
@@ -4119,6 +4791,34 @@ export class PricingDataNoUom {
                                 New: 8996.4,
                                 Amount: -1587.6,
                             },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 10584,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -3175.2,
+                                    },
+                                ],
+                                New: 7408.8,
+                                Amount: -3175.2,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 8996.4,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2698.92,
+                                    },
+                                ],
+                                New: 6297.4944,
+                                Amount: -2698.9056,
+                            },
                         ],
                     },
                     cart: {
@@ -4137,6 +4837,34 @@ export class PricingDataNoUom {
                                 Conditions: [{ Name: 'ZDM3_A006', Type: '%', Value: -15, Amount: -1587.6 }],
                                 New: 8996.4,
                                 Amount: -1587.6,
+                            },
+                            {
+                                Name: 'MultipleValuesCategory',
+                                Base: 10584,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -3175.2,
+                                    },
+                                ],
+                                New: 7408.8,
+                                Amount: -3175.2,
+                            },
+                            {
+                                Name: 'MultipleValues',
+                                Base: 8996.4,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM2_A007',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -2698.92,
+                                    },
+                                ],
+                                New: 6297.4944,
+                                Amount: -2698.9056,
                             },
                         ],
                     },
