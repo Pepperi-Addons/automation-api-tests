@@ -244,7 +244,7 @@ _________________
             });
 
             testAccounts.forEach((account) => {
-                describe(`ACCOUNT "My Store"`, function () {
+                describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
                     it('Creating new transaction', async function () {
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
