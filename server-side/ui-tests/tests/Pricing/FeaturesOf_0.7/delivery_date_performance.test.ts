@@ -99,12 +99,14 @@ _________________
     let orderPage: OrderPage;
     let e2eutils: E2EUtils;
     let transactionUUID: string;
-    let accountName: string;
     let duration: string;
+    let accountName: string;
     let ppmValues: UserDefinedTableRow[];
     let base64ImageComponent;
 
+    const nameOfAccount = 'My Store';
     const testAccounts = ['Acc01', 'OtherAcc'];
+    const testDates = ['CurrentDate', 'OtherAcc'];
     const deliveryDateTestItems = ['Frag007'];
     const deliveryDateTestStates = ['baseline', '1 Each', '2 Each', '3 Each'];
     const priceFields = [
@@ -232,6 +234,41 @@ _________________
                         expect(typeof duration_num).equals('number');
                         expect(duration_num).to.be.below(limit);
                     });
+                });
+            });
+
+            testDates.forEach((date) => {
+                describe(`Tested DATE "${
+                    date == 'CurrentDate' ? dateTime.toISOString().split('T')[0] : 'order date'
+                }"`, function () {
+                    it('Creating new transaction', async function () {
+                        transactionUUID = await pricingService.startNewSalesOrderTransaction(nameOfAccount);
+                        console.info('transactionUUID:', transactionUUID);
+                        await orderPage.changeOrderCenterPageView('Line View');
+                    });
+
+                    it(`PERFORMANCE: making sure Sales Order Loading Duration is acceptable`, async function () {
+                        let limit: number;
+                        switch (true) {
+                            case installedPricingVersion?.startsWith('0.5'):
+                            case installedPricingVersion?.startsWith('0.6'):
+                                limit = 650;
+                                break;
+
+                            default:
+                                limit = 600;
+                                break;
+                        }
+                        duration = await (await driver.findElement(orderPage.Duration_Span)).getAttribute('title');
+                        console.info(`DURATION at Sales Order Load: ${duration}`);
+                        addContext(this, {
+                            title: `Sales Order - Loading Time, Version ${installedPricingVersion}`,
+                            value: `Duration: ${duration} ms (limit: ${limit})`,
+                        });
+                        const duration_num = Number(duration);
+                        expect(typeof duration_num).equals('number');
+                        expect(duration_num).to.be.below(limit);
+                    });
 
                     describe('Delivery Date', () => {
                         it('Navigating to "Great Perfumes" at Sidebar', async function () {
@@ -287,7 +324,7 @@ _________________
                                                 const baseline_NPMCalcMessage =
                                                     pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
                                                         'NPMCalcMessage'
-                                                    ][account][deliveryDateTestState];
+                                                    ][date][deliveryDateTestState];
                                                 addContext(this, {
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
@@ -302,11 +339,11 @@ _________________
                                                 const baseline_NPMCalcMessage =
                                                     pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
                                                         'NPMCalcMessage'
-                                                    ][account]['baseline'];
+                                                    ][date]['baseline'];
                                                 const data_NPMCalcMessage =
                                                     pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
                                                         'NPMCalcMessage'
-                                                    ][account][deliveryDateTestState];
+                                                    ][date][deliveryDateTestState];
                                                 addContext(this, {
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
@@ -332,7 +369,7 @@ _________________
                                                 const expectedFieldValue =
                                                     pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
                                                         priceField
-                                                    ][account][deliveryDateTestState];
+                                                    ][date][deliveryDateTestState];
                                                 addContext(this, {
                                                     title: `${priceField}`,
                                                     value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
