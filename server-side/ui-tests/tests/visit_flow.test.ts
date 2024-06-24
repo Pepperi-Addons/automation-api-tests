@@ -32,7 +32,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
         'pepperi-pack': ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
         // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%'], // dependency > 0.2.58 versions 2.0.% are open sync and are irrelevant to this test
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%'], // versions 2.0.% are open sync and are irrelevant to this test
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.3.88'], // PFS makes create session loop
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // current phased version 0.5.10 | dependency > 0.5.7
@@ -42,7 +42,8 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
         // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '1.0.%'], // current phased version 0.9.38 | dependency > 0.9.31
         // Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''], // current phased version 1.0.23 | dependency > 1.0.23
         survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', ''],
-        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', ''],
+        'Survey Builder': ['cf17b569-1af4-45a9-aac5-99f23cae45d8', '0.8.%'], //15/5/24: phased version is 0.7.50, once we'll phase 0.8.x and avaliable 0.9.x this has to change
+        Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.3.7'], //slugs above 1.3.7 (1.3.8 and so on) require config  >=1.0.18 but we cant upgrade as its for open sync
         // Slideshow: ['f93658be-17b6-4c92-9df3-4e6c7151e038', '1.1.23'],
         // 'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', '0.0.793'], //OUR TESTING ADDON --
         // 'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.34'], // PAPI
@@ -165,7 +166,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                 await driver.quit();
             });
 
-            it('Login', async () => {
+            it('Login', async function () {
                 await webAppLoginPage.login(email, password);
             });
 
@@ -173,7 +174,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                 await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 
-            it('Pages Leftovers Cleanup (starting with "VisitFlow Page Auto_")', async () => {
+            it('Pages Leftovers Cleanup (starting with "VisitFlow Page Auto_")', async function () {
                 const allPages = await pageBuilder.getAllPages(client);
                 const pagesOfAutoTest = allPages?.Body.filter((page) => {
                     if (page.Name.includes('VisitFlow Page Auto_')) {
@@ -197,7 +198,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                 expect(findAutoPageAfterCleanup).to.be.undefined;
             });
 
-            it('Pages Leftovers Cleanup (starting with "Blank")', async () => {
+            it('Pages Leftovers Cleanup (starting with "Blank")', async function () {
                 const allPages = await pageBuilder.getDraftPages(client);
                 console.info(
                     `allPages.Body.length (looking for Blank Page): ${JSON.stringify(allPages.Body.length, null, 4)}`,
@@ -226,7 +227,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                 expect(findBlankPageAfterCleanup).to.be.undefined;
             });
 
-            it('Making sure UDCs custom (manually inserted) fields are NOT removed upon version upgrade', async () => {
+            it('Making sure UDCs custom (manually inserted) fields are NOT removed upon version upgrade', async function () {
                 // custom field "manuallyAddedField" was added to "VisitFlows" collection, and needs to be there after version upgrade
                 const visitFlowsSchemes = await udcService.getSchemes({
                     where: 'Name="VisitFlows"',
@@ -268,7 +269,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
             // });
 
             describe('Inserting Data to the UDC VisitFlowGroups', () => {
-                it('Configuring UDC: Visit Flow Groups', async () => {
+                it('Configuring UDC: Visit Flow Groups', async function () {
                     const collectionName = 'VisitFlowGroups';
                     const groupsDocumentsToUpsert = [
                         { Title: `Start Auto ${randomString}`, SortIndex: 0 },
@@ -334,7 +335,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
             });
 
             describe('Inserting Data to the UDC: VisitFlows', () => {
-                it('Configuring Flows', async () => {
+                it('Configuring Flows', async function () {
                     driver.sleep(0.5 * 1000);
                     const collectionName = 'VisitFlows';
                     const group_Start = upsertedListingsToVisitFlowGroups.length
@@ -465,7 +466,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
             });
 
             describe('Configuring Account Dashboard', () => {
-                it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async () => {
+                it('Navigating to Account Dashboard Layout -> Menu (Pencil) -> Rep (Pencil)', async function () {
                     await accountDashboardLayout.configureToAccountMenuRepCard(
                         driver,
                         slugDisplayName,
@@ -474,7 +475,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     );
                 });
 
-                it('Performing Manual Sync', async () => {
+                it('Performing Manual Sync', async function () {
                     await e2eUtils.logOutLogIn(email, password);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
@@ -708,8 +709,16 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                 });
             });
 
+            /* commented out on 24.6.24 because survey configuration started failing 
+            Error: After wait time of: 15000, for selector of '//pep-button[@iconname="arrow_down"]', The test must end, The element is: undefined
+                at Browser.findElements (ui-tests\utilities\browser.ts:598:19)
+                at processTicksAndRejections (node:internal/process/task_queues:95:5)
+                at Browser.click (ui-tests\utilities\browser.ts:193:20)
+                at SurveyTemplateBuilder.addQuestionToSurvey (ui-tests\pom\addons\SurveyTemplateBuilder.ts:394:25)
+                at SurveyTemplateBuilder.configureTheSurveyTemplate (ui-tests\pom\addons\SurveyTemplateBuilder.ts:293:17)
+                at Context.<anonymous> (ui-tests\tests\visit_flow.test.ts:717:34) */
             describe('Survey Prep', () => {
-                it('Configuring Survey', async () => {
+                it('Configuring Survey', async function () {
                     surveyTemplateName = `VF_Survey_${randomString}`;
                     surveyTemplateDesc = 'Survey in Visit Flow Automated Test';
                     await surveyService.enterSurveyBuilderSettingsPage();
@@ -724,7 +733,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     await webAppHomePage.isSpinnerDone();
                 });
 
-                it('Configuring Survey in UDC: Flows', async () => {
+                it('Configuring Survey in UDC: Flows', async function () {
                     driver.sleep(0.5 * 1000);
                     const collectionName = 'VisitFlows';
                     const group_Surveys = upsertedListingsToVisitFlowGroups.length
@@ -766,11 +775,11 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     });
                 });
 
-                it('Performing Manual Sync', async () => {
+                it('Performing Manual Sync', async function () {
                     await e2eUtils.performManualSync(client);
                 });
 
-                it('Loging Out and Loging In as Rep', async () => {
+                it('Loging Out and Loging In as Rep', async function () {
                     await e2eUtils.logOutLogIn(repEmail, password);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
@@ -944,34 +953,34 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_EmptyList_Message, 15000);
                     driver.sleep(2.5 * 1000);
                 });
-                it('Sign back in as Admin', async () => {
+                it('Sign back in as Admin', async function () {
                     await e2eUtils.logOutLogIn(email, password);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 });
             });
 
             describe('Teardown', () => {
-                it('Getting VF_VisitFlowMainActivity activity (via API)', async () => {
+                it('Getting VF_VisitFlowMainActivity activity (via API)', async function () {
                     getCreatedVisitFlowMainActivity = await objectsService.getActivity({
                         where: `'TSASubject="Automated test (${randomString}) of Visit Flow started"'`,
                     });
                 });
 
-                it('Getting Sales Order transaction (via API)', async () => {
+                it('Getting Sales Order transaction (via API)', async function () {
                     getCreatedSalesOrderTransaction = await objectsService.getTransaction({
                         order_by: `CreationDateTime DESC`,
                     });
                 });
 
-                it('Unconfiguring Slug from Account Dashboard', async () => {
+                it('Unconfiguring Slug from Account Dashboard', async function () {
                     await accountDashboardLayout.unconfigureFromAccountMenuRepCard(driver, slug_path, '_auto_');
                 });
 
-                it('Deleting Survey Template via API', async () => {
+                it('Deleting Survey Template via API', async function () {
                     await surveyService.deleteTemplateByKeyViaAPI(surveyUUID, client);
                 });
 
-                it('Deleting Slug via API', async () => {
+                it('Deleting Slug via API', async function () {
                     const res = await slugs.deleteSlugByName(slug_path, client);
                     expect(res.Ok).to.be.true;
                     expect(res.Status).to.equal(200);
@@ -1010,7 +1019,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     await driver.click(pageBuilder.PageBuilder_Search_Clear);
                 });
 
-                it('Verifying VF_VisitFlowMainActivity activity was formed', async () => {
+                it('Verifying VF_VisitFlowMainActivity activity was formed', async function () {
                     console.info(
                         `getCreatedVisitFlowMainActivity: ${JSON.stringify(getCreatedVisitFlowMainActivity, null, 4)}`,
                     );
@@ -1023,7 +1032,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     expect(getCreatedVisitFlowMainActivity[0].Title).to.contain(`Automated test (${randomString}) `);
                 });
 
-                it('Verifying Sales Order transaction was formed', async () => {
+                it('Verifying Sales Order transaction was formed', async function () {
                     console.info(
                         `getCreatedSalesOrderTransaction: ${JSON.stringify(getCreatedSalesOrderTransaction, null, 4)}`,
                     );
@@ -1039,7 +1048,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     expect(getCreatedSalesOrderTransaction[0]).to.haveOwnProperty('TransactionLines');
                 });
 
-                it('Deleting UDCs "VisitFlowGroups" listings', async () => {
+                it('Deleting UDCs "VisitFlowGroups" listings', async function () {
                     // deleting created VisitFlowGroups documents
                     upsertedListingsToVisitFlowGroups.forEach(async (documentBody) => {
                         const deleteResponse = await udcService.hideObjectInACollection(
@@ -1056,7 +1065,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     });
                 });
 
-                it('Deleting UDCs "VisitFlows" listings', async () => {
+                it('Deleting UDCs "VisitFlows" listings', async function () {
                     // deleting created VisitFlows documents
                     upsertedListingsToVisitFlows.forEach(async (documentBody) => {
                         const deleteResponse = await udcService.hideObjectInACollection('VisitFlows', documentBody.Key);
@@ -1069,7 +1078,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     });
                 });
 
-                it('Deleting LEFTOVERS UDCs "VisitFlowGroups" listings', async () => {
+                it('Deleting LEFTOVERS UDCs "VisitFlowGroups" listings', async function () {
                     // deleting any leftovers from unsuccessful previous tests
                     let visitFlowGroupsDocuments = await udcService.getDocuments('VisitFlowGroups', {
                         where: 'Title like "%Auto%"',
@@ -1085,7 +1094,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     expect(visitFlowGroupsDocuments).to.be.an('array').with.lengthOf(0);
                 });
 
-                it('Deleting LEFTOVERS UDCs "VisitFlows" listings', async () => {
+                it('Deleting LEFTOVERS UDCs "VisitFlows" listings', async function () {
                     // deleting any leftovers from unsuccessful previous tests
                     let visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name like "Auto%"',
@@ -1101,7 +1110,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     expect(visitFlowsDocuments).to.be.an('array').with.lengthOf(0);
                 });
 
-                it('Deleting LEFTOVERS "MockVisit" listings from UDC "VisitFlows"', async () => {
+                it('Deleting LEFTOVERS "MockVisit" listings from UDC "VisitFlows"', async function () {
                     let visitFlowsDocuments = await udcService.getDocuments('VisitFlows', {
                         where: 'Name="MockVisit"',
                     });

@@ -131,6 +131,7 @@ export class SurveyTemplateBuilder extends AddonPage {
     public SelectOptionValueTextBox: By = By.xpath(`//textarea[@id="question"]`);
     public AddAnotherOptionButton: By = By.css(`[data-qa="Add item to Selection"]`);
     public ArrowDownButtonOnSelection: By = By.xpath(`//pep-button[@iconname="arrow_down"]`);
+    public MatSelectArrow: By = By.xpath(`//div[contains(@class,"mat-select-arrow-wrapper")]`);
     //boolean option component
     public TrueValueName: By = By.xpath(`//mat-label[@title="True"]//..//..//..//input`);
     public FalseValueName: By = By.xpath(`//mat-label[@title="False"]//..//..//..//input`);
