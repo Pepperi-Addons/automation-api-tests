@@ -240,9 +240,11 @@ _________________
 
             testDates.forEach((date) => {
                 describe(`Testing ${
-                    date == 'CurrentDate'
+                    date === 'CurrentDate'
                         ? `Current Date (${dateTime.toISOString().split('T')[0]})`
-                        : 'DATE - 15 Dec 2023'
+                        : date === '15Dec2023'
+                        ? 'DATE - 15 Dec 2023'
+                        : 'DATE - 30 Nov 2023'
                 }`, function () {
                     it('Creating new transaction', async function () {
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(nameOfAccount);
@@ -272,6 +274,8 @@ _________________
                         expect(typeof duration_num).equals('number');
                         expect(duration_num).to.be.below(limit);
                     });
+
+                    // date !== 'CurrentDate' && it(`Changing Delivery Date (${date})`, async function () {});
 
                     describe('Delivery Date', () => {
                         it('Navigating to "Great Perfumes" at Sidebar', async function () {
