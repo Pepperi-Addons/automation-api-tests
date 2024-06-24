@@ -106,9 +106,10 @@ _________________
 
     const nameOfAccount = 'My Store';
     const testAccounts = ['Acc01', 'OtherAcc'];
-    const testDates = ['CurrentDate', 'OtherAcc'];
+    const testDates = ['CurrentDate', '15Dec2023', '30Nov2023'];
     const deliveryDateTestItems = ['Frag007'];
     const deliveryDateTestStates = ['baseline', '1 Each', '2 Each', '3 Each'];
+    const priceDeliveryDateDiscountFields = ['PriceDiscount2UnitPriceAfter1'];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
         'PriceDiscountUnitPriceAfter1',
@@ -238,9 +239,11 @@ _________________
             });
 
             testDates.forEach((date) => {
-                describe(`Tested DATE "${
-                    date == 'CurrentDate' ? dateTime.toISOString().split('T')[0] : 'order date'
-                }"`, function () {
+                describe(`Testing ${
+                    date == 'CurrentDate'
+                        ? `Current Date (${dateTime.toISOString().split('T')[0]})`
+                        : 'DATE - 15 Dec 2023'
+                }`, function () {
                     it('Creating new transaction', async function () {
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(nameOfAccount);
                         console.info('transactionUUID:', transactionUUID);
@@ -310,6 +313,14 @@ _________________
                                                 `${deliveryDateTestItem} ${deliveryDateTestState} priceTSAs:`,
                                                 priceTSAs,
                                             );
+                                            const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
+                                                'OrderCenter',
+                                                deliveryDateTestItem,
+                                            );
+                                            console.info(
+                                                `${deliveryDateTestItem} ${deliveryDateTestState} priceTSA_Discount2:`,
+                                                priceTSA_Discount2,
+                                            );
                                             expect(typeof priceTSAs).equals('object');
                                             expect(Object.keys(priceTSAs)).to.eql([
                                                 'PriceBaseUnitPriceAfter1',
@@ -319,6 +330,10 @@ _________________
                                                 'PriceTaxUnitPriceAfter1',
                                                 'NPMCalcMessage',
                                             ]);
+                                            expect(typeof priceTSA_Discount2).equals('object');
+                                            expect(Object.keys(priceTSA_Discount2)).to.eql(
+                                                priceDeliveryDateDiscountFields,
+                                            );
                                             // if (deliveryDateTestState === 'baseline') {
                                             //     const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                             //     const baseline_NPMCalcMessage =
@@ -367,6 +382,18 @@ _________________
                                             expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
                                             priceFields.forEach((priceField) => {
                                                 const fieldValue = priceTSAs[priceField];
+                                                const expectedFieldValue =
+                                                    pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
+                                                        priceField
+                                                    ][date][deliveryDateTestState];
+                                                addContext(this, {
+                                                    title: `${priceField}`,
+                                                    value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                                });
+                                                expect(fieldValue).equals(expectedFieldValue);
+                                            });
+                                            priceDeliveryDateDiscountFields.forEach((priceField) => {
+                                                const fieldValue = priceTSA_Discount2[priceField];
                                                 const expectedFieldValue =
                                                     pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
                                                         priceField
