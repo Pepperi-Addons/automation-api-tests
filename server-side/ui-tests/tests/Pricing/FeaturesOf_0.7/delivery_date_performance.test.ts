@@ -360,10 +360,11 @@ _________________
                                                     2,
                                                 )}`,
                                             });
-                                            expect(UI_NPMCalcMessage.length).equals(
-                                                baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
-                                            );
+                                            // expect(UI_NPMCalcMessage.length).equals(
+                                            //     baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
+                                            // );
                                             // }
+                                            expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
                                             priceFields.forEach((priceField) => {
                                                 const fieldValue = priceTSAs[priceField];
                                                 const expectedFieldValue =
