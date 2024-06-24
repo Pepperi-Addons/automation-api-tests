@@ -710,7 +710,7 @@ export class PricingData07 {
                             '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                             '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                         },
-                        baseline: 60.0 * 6 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
+                        baseline: Math.round((60.0 * 6 * 0.7 + Number.EPSILON) * 100) / 100,
                         '1 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                         '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                         '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
@@ -721,7 +721,7 @@ export class PricingData07 {
                             '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                             '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                         },
-                        baseline: 60.0 * 6 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
+                        baseline: Math.round((60.0 * 6 * 0.7 + Number.EPSILON) * 100) / 100,
                         '1 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                         '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                         '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
@@ -732,7 +732,7 @@ export class PricingData07 {
                             '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                             '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                         },
-                        baseline: 60.0 * 6 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
+                        baseline: Math.round((60.0 * 6 * 0.7 + Number.EPSILON) * 100) / 100,
                         '1 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                         '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                         '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
