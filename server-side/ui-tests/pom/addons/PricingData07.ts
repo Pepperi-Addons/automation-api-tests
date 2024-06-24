@@ -131,14 +131,48 @@ export class PricingData07 {
                             {
                                 Name: 'Base',
                                 Base: 84.75,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 60, Amount: 95.25 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A001',
+                                        Type: 'S',
+                                        Value: 60,
+                                        Amount: 95.25,
+                                    },
+                                ],
                                 New: 180,
                                 Amount: 95.25,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 180,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -20, Amount: -36 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -20,
+                                        Amount: -36,
+                                    },
+                                ],
+                                New: 144,
+                                Amount: -36,
+                            },
+                            {
+                                Name: 'Discount2',
+                                Base: 180,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS4_A001',
+                                        Type: '%',
+                                        Value: -5,
+                                        Amount: -9,
+                                    },
+                                    {
+                                        Name: 'ZDS5_A001',
+                                        Type: '%',
+                                        Value: -15,
+                                        Amount: -27,
+                                    },
+                                ],
                                 New: 144,
                                 Amount: -36,
                             },
@@ -271,14 +305,48 @@ export class PricingData07 {
                             {
                                 Name: 'Base',
                                 Base: 84.75,
-                                Conditions: [{ Name: 'ZBASE_A001', Type: 'S', Value: 60, Amount: 95.25 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A001',
+                                        Type: 'S',
+                                        Value: 60,
+                                        Amount: 95.25,
+                                    },
+                                ],
                                 New: 180,
                                 Amount: 95.25,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 180,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -20, Amount: -36 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -20,
+                                        Amount: -36,
+                                    },
+                                ],
+                                New: 144,
+                                Amount: -36,
+                            },
+                            {
+                                Name: 'Discount2',
+                                Base: 180,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS4_A001',
+                                        Type: '%',
+                                        Value: -5,
+                                        Amount: -9,
+                                    },
+                                    {
+                                        Name: 'ZDS5_A001',
+                                        Type: '%',
+                                        Value: -15,
+                                        Amount: -27,
+                                    },
+                                ],
                                 New: 144,
                                 Amount: -36,
                             },
@@ -293,7 +361,7 @@ export class PricingData07 {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0,
+                        baseline: 60.0 * 6,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
@@ -304,7 +372,7 @@ export class PricingData07 {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0,
+                        baseline: 60.0 * 6,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
@@ -317,10 +385,10 @@ export class PricingData07 {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0,
-                        '1 Each': 60.0,
-                        '2 Each': 60.0,
-                        '3 Each': 60.0,
+                        baseline: 60.0 * 6,
+                        '1 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
+                        '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
+                        '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                     },
                     OtherAcc: {
                         cart: {
@@ -328,10 +396,10 @@ export class PricingData07 {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0,
-                        '1 Each': 60.0,
-                        '2 Each': 60.0,
-                        '3 Each': 60.0,
+                        baseline: 60.0 * 6,
+                        '1 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
+                        '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
+                        '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%
                     },
                 },
                 PriceGroupDiscountUnitPriceAfter1: {
@@ -341,7 +409,7 @@ export class PricingData07 {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0,
+                        baseline: 60.0 * 6,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
@@ -352,7 +420,7 @@ export class PricingData07 {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0,
+                        baseline: 60.0 * 6,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
@@ -365,7 +433,7 @@ export class PricingData07 {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0,
+                        baseline: 60.0 * 6,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
@@ -376,7 +444,7 @@ export class PricingData07 {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0,
+                        baseline: 60.0 * 6,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
@@ -389,7 +457,7 @@ export class PricingData07 {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0,
+                        baseline: 60.0 * 6,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
@@ -400,7 +468,7 @@ export class PricingData07 {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0,
+                        baseline: 60.0 * 6,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
