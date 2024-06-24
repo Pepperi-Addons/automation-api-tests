@@ -319,51 +319,51 @@ _________________
                                                 'PriceTaxUnitPriceAfter1',
                                                 'NPMCalcMessage',
                                             ]);
-                                            if (deliveryDateTestState === 'baseline') {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
-                                                        'NPMCalcMessage'
-                                                    ][date][deliveryDateTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                    )}`,
-                                                });
-                                                expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
-                                            } else {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
-                                                        'NPMCalcMessage'
-                                                    ][date]['baseline'];
-                                                const data_NPMCalcMessage =
-                                                    pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
-                                                        'NPMCalcMessage'
-                                                    ][date][deliveryDateTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}, \nNPMCalcMessage (at ${deliveryDateTestState}) from Data: ${JSON.stringify(
-                                                        data_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}`,
-                                                });
-                                                expect(UI_NPMCalcMessage.length).equals(
-                                                    baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
-                                                );
-                                            }
+                                            // if (deliveryDateTestState === 'baseline') {
+                                            //     const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                                            //     const baseline_NPMCalcMessage =
+                                            //         pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
+                                            //             'NPMCalcMessage'
+                                            //         ][date][deliveryDateTestState];
+                                            //     addContext(this, {
+                                            //         title: `State Args`,
+                                            //         value: `NPMCalcMessage from UI: ${JSON.stringify(
+                                            //             UI_NPMCalcMessage,
+                                            //         )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                            //             baseline_NPMCalcMessage,
+                                            //         )}`,
+                                            //     });
+                                            //     expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
+                                            // } else {
+                                            const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                                            const baseline_NPMCalcMessage =
+                                                pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
+                                                    'NPMCalcMessage'
+                                                ][date]['baseline'];
+                                            const data_NPMCalcMessage =
+                                                pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
+                                                    'NPMCalcMessage'
+                                                ][date][deliveryDateTestState];
+                                            addContext(this, {
+                                                title: `State Args`,
+                                                value: `NPMCalcMessage from UI: ${JSON.stringify(
+                                                    UI_NPMCalcMessage,
+                                                    null,
+                                                    2,
+                                                )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                    baseline_NPMCalcMessage,
+                                                    null,
+                                                    2,
+                                                )}, \nNPMCalcMessage (at ${deliveryDateTestState}) from Data: ${JSON.stringify(
+                                                    data_NPMCalcMessage,
+                                                    null,
+                                                    2,
+                                                )}`,
+                                            });
+                                            expect(UI_NPMCalcMessage.length).equals(
+                                                baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
+                                            );
+                                            // }
                                             priceFields.forEach((priceField) => {
                                                 const fieldValue = priceTSAs[priceField];
                                                 const expectedFieldValue =
