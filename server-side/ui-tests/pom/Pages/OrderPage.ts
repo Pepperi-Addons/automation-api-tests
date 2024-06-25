@@ -22,6 +22,28 @@ export class OrderPage extends WebAppList {
     public Search_Magnifier_Button: By = By.xpath('//search//pep-icon[@name="system_search"]');
     public Search_X_Button: By = By.xpath('//search//pep-icon[@name="system_close"]');
 
+    public DeliveryDate: By = By.xpath('//pep-date/div');
+    public DeliveryDate_Pencil: By = By.xpath('//pep-date//span[@id="TSAPricingDate"]/parent::div/button');
+    public DarkBackdrop_of_DatePicker: By = By.xpath('//div[contains(@class,"overlay-dark-backdrop")]');
+    public DeliveryDate_input: By = By.xpath('//input[@id="TSAPricingDate"]');
+    public DeliveryDate_input_active: By = By.xpath(
+        '//input[@id="TSAPricingDate"]/ancestor::mat-form-field[contains(@class,"mat-focused")]',
+    );
+
+    public DatePicker_popup: By = By.xpath('//mat-datetimepicker-content');
+    public DatePicker_calendar: By = By.xpath('//mat-datetimepicker-calendar');
+    public DatePicker_currentDate: By = By.xpath(
+        '//mat-datetimepicker-month-view//tbody//div[contains(@class,"calendar-body-today")]',
+    );
+    public TimePicker_clock: By = By.xpath('//mat-datetimepicker-clock');
+    public TimePicker_currentHour: By = By.xpath(
+        '//mat-datetimepicker-clock//div[contains(@class,"clock-cell-selected")]',
+    );
+    public TimePicker_minutes_active: By = By.xpath(
+        '//mat-datetimepicker-clock//div[contains(@class,"mat-datetimepicker-clock-minutes active")]',
+    );
+    public TimePicker_minutes_00: By = By.xpath(`${this.TimePicker_minutes_active.value}/div`);
+
     public ItemQuantity_NumberOfUnits_Readonly: By = By.xpath('//pep-quantity-selector//button[@id="UnitsQuantity"]');
     public ItemQuantity_byUOM_InteractableNumber: By = By.xpath(
         '//pep-quantity-selector//input[@id="TSAAOQMQuantity1"]',
