@@ -498,7 +498,7 @@ _________________
                                     });
                                     deliveryDateTestItems.forEach(async (item) => {
                                         deliveryDateTestCartStates.forEach((deliveryDateTestState) => {
-                                            describe(`CHECKING "${deliveryDateTestState}"`, () => {
+                                            describe(`Checking "${deliveryDateTestState}"`, () => {
                                                 it(`switch to 'Grid View'`, async function () {
                                                     await orderPage.changeCartView('Grid');
                                                     screenShot = await driver.saveScreenshots();
