@@ -14,6 +14,7 @@ import addContext from 'mochawesome/addContext';
 import E2EUtils from '../../../utilities/e2e_utils';
 import { PricingData07 } from '../../../pom/addons/PricingData07';
 import { PricingDataNoUom } from '../../../pom/addons/PricingDataNoUom';
+import { Key } from 'selenium-webdriver';
 
 chai.use(promised);
 
@@ -102,13 +103,18 @@ _________________
     let duration: string;
     let accountName: string;
     let ppmValues: UserDefinedTableRow[];
-    let base64ImageComponent;
+    let screenShot;
 
     const nameOfAccount = 'My Store';
     const testAccounts = ['Acc01', 'OtherAcc'];
-    const testDates = ['CurrentDate', '15Dec2023', '30Nov2023'];
+    const testDates = ['BlankDate', 'CurrentDate', '15 Dec 2023', '30 Nov 2023'];
+    const testDatesForInput = {
+        '15 Dec 2023': '12/15/2023 5:55 PM',
+        '30 Nov 2023': '11/30/2023 5:55 PM',
+    };
     const deliveryDateTestItems = ['Frag007'];
     const deliveryDateTestStates = ['baseline', '1 Each', '2 Each', '3 Each'];
+    const deliveryDateTestCartStates = ['1 Each', '2 Each', '3 Each'];
     const priceDeliveryDateDiscountFields = ['PriceDiscount2UnitPriceAfter1'];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
@@ -150,10 +156,10 @@ _________________
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
 
@@ -241,10 +247,10 @@ _________________
             testDates.forEach((date) => {
                 describe(`Testing ${
                     date === 'CurrentDate'
-                        ? `Current Date (${dateTime.toISOString().split('T')[0]})`
-                        : date === '15Dec2023'
-                        ? 'DATE - 15 Dec 2023'
-                        : 'DATE - 30 Nov 2023'
+                        ? `CURRENT DATE (${dateTime.toDateString()})`
+                        : date === 'BlankDate'
+                        ? 'Default'
+                        : date
                 }`, function () {
                     it('Creating new transaction', async function () {
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(nameOfAccount);
@@ -275,9 +281,71 @@ _________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    // date !== 'CurrentDate' && it(`Changing Delivery Date (${date})`, async function () {});
+                    it(`${
+                        date === 'BlankDate'
+                            ? 'NO Change in Delivery Date'
+                            : `Changing Delivery Date (${date === 'CurrentDate' ? dateTime.toUTCString() : date})`
+                    }`, async function () {
+                        screenShot = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `At Order Center - before Delivery Date Pencil is clicked`,
+                            value: 'data:image/png;base64,' + screenShot,
+                        });
+                        if (date !== 'BlankDate') {
+                            await driver.click(orderPage.DeliveryDate);
+                            screenShot = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `after Delivery Date Pencil is clicked`,
+                                value: 'data:image/png;base64,' + screenShot,
+                            });
+                            await driver.untilIsVisible(orderPage.DatePicker_popup);
+                            await driver.untilIsVisible(orderPage.DarkBackdrop_of_DatePicker);
 
-                    describe('Delivery Date', () => {
+                            if (date === 'CurrentDate') {
+                                await driver.click(orderPage.DatePicker_currentDate); // choosing today from the calendar
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `after Today was picked from the calendar`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                                await driver.untilIsVisible(orderPage.TimePicker_clock);
+                                await driver.click(orderPage.TimePicker_currentHour); // choosing current hour from the clock
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `after current Hour was picked from the clock`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                                await driver.untilIsVisible(orderPage.TimePicker_minutes_active);
+                                await driver.click(orderPage.TimePicker_minutes_00); // choosing 00 minutes from the clock
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `after 00 Minutes was picked from the clock`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                            } else {
+                                await driver.sendKeyWithoutElement(Key.ESCAPE);
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `after Date Picker is canceled (ESCAPE clicked)`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                                await driver.untilIsVisible(orderPage.DeliveryDate_input_active);
+                                await driver.sendStringWithoutElement(testDatesForInput[date]);
+                                driver.sleep(0.05 * 1000);
+                                await driver.click(orderPage.TransactionID); // getting the input out of focus
+                            }
+                            await orderPage.isSpinnerDone();
+                            driver.sleep(0.1 * 1000);
+                        }
+                    });
+
+                    describe(`Delivery Date - ${
+                        date === 'BlankDate'
+                            ? 'Default'
+                            : date === 'CurrentDate'
+                            ? `Today (${dateTime.toDateString()})`
+                            : date
+                    }`, () => {
                         it('Navigating to "Great Perfumes" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(
@@ -315,15 +383,15 @@ _________________
                                             );
                                             console.info(
                                                 `${deliveryDateTestItem} ${deliveryDateTestState} priceTSAs:`,
-                                                priceTSAs,
+                                                JSON.stringify(priceTSAs, null, 2),
                                             );
                                             const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
                                                 'OrderCenter',
                                                 deliveryDateTestItem,
                                             );
                                             console.info(
-                                                `${deliveryDateTestItem} ${deliveryDateTestState} priceTSA_Discount2:`,
-                                                priceTSA_Discount2,
+                                                `OC ${deliveryDateTestItem} ${deliveryDateTestState} priceTSA_Discount2:`,
+                                                JSON.stringify(priceTSA_Discount2, null, 2),
                                             );
                                             expect(typeof priceTSAs).equals('object');
                                             expect(Object.keys(priceTSAs)).to.eql([
@@ -338,22 +406,7 @@ _________________
                                             expect(Object.keys(priceTSA_Discount2)).to.eql(
                                                 priceDeliveryDateDiscountFields,
                                             );
-                                            // if (deliveryDateTestState === 'baseline') {
-                                            //     const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                            //     const baseline_NPMCalcMessage =
-                                            //         pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
-                                            //             'NPMCalcMessage'
-                                            //         ][date][deliveryDateTestState];
-                                            //     addContext(this, {
-                                            //         title: `State Args`,
-                                            //         value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                            //             UI_NPMCalcMessage,
-                                            //         )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                            //             baseline_NPMCalcMessage,
-                                            //         )}`,
-                                            //     });
-                                            //     expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
-                                            // } else {
+
                                             const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                             const baseline_NPMCalcMessage =
                                                 pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
@@ -363,6 +416,7 @@ _________________
                                                 pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
                                                     'NPMCalcMessage'
                                                 ][date][deliveryDateTestState];
+
                                             addContext(this, {
                                                 title: `State Args`,
                                                 value: `NPMCalcMessage from UI: ${JSON.stringify(
@@ -379,11 +433,9 @@ _________________
                                                     2,
                                                 )}`,
                                             });
-                                            // expect(UI_NPMCalcMessage.length).equals(
-                                            //     baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
-                                            // );
-                                            // }
                                             expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
+                                            expect(UI_NPMCalcMessage).to.deep.equal(data_NPMCalcMessage);
+
                                             priceFields.forEach((priceField) => {
                                                 const fieldValue = priceTSAs[priceField];
                                                 const expectedFieldValue =
@@ -396,6 +448,7 @@ _________________
                                                 });
                                                 expect(fieldValue).equals(expectedFieldValue);
                                             });
+
                                             priceDeliveryDateDiscountFields.forEach((priceField) => {
                                                 const fieldValue = priceTSA_Discount2[priceField];
                                                 const expectedFieldValue =
@@ -411,6 +464,137 @@ _________________
                                             driver.sleep(0.2 * 1000);
                                         });
                                     });
+                                });
+
+                                describe(`CART`, () => {
+                                    it('entering and verifying being in cart', async function () {
+                                        await driver.click(orderPage.Cart_Button);
+                                        await orderPage.isSpinnerDone();
+                                        driver.sleep(1 * 1000);
+                                        try {
+                                            await driver.untilIsVisible(orderPage.Cart_List_container);
+                                        } catch (error) {
+                                            console.error(error);
+                                            try {
+                                                await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
+                                            } catch (error) {
+                                                console.error(error);
+                                                throw new Error('Problem in Cart validation');
+                                            }
+                                        }
+                                    });
+                                    it('verify that the sum total of items in the cart is correct', async function () {
+                                        screenShot = await driver.saveScreenshots();
+                                        addContext(this, {
+                                            title: `At Cart`,
+                                            value: 'data:image/png;base64,' + screenShot,
+                                        });
+                                        const itemsInCart = await (
+                                            await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                        ).getText();
+                                        driver.sleep(0.2 * 1000);
+                                        expect(Number(itemsInCart)).to.equal(deliveryDateTestItems.length);
+                                        driver.sleep(1 * 1000);
+                                    });
+                                    deliveryDateTestItems.forEach(async (item) => {
+                                        deliveryDateTestCartStates.forEach((deliveryDateTestState) => {
+                                            describe(`CHECKING "${deliveryDateTestState}"`, () => {
+                                                it(`switch to 'Grid View'`, async function () {
+                                                    await orderPage.changeCartView('Grid');
+                                                    screenShot = await driver.saveScreenshots();
+                                                    addContext(this, {
+                                                        title: `After "Grid" View was selected`,
+                                                        value: 'data:image/png;base64,' + screenShot,
+                                                    });
+                                                });
+                                                it(`change ${item} quantity to ${deliveryDateTestState}`, async function () {
+                                                    const splitedStateArgs = deliveryDateTestState.split(' ');
+                                                    const amount = Number(splitedStateArgs[0]);
+                                                    await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(
+                                                        this,
+                                                    )('Each', item, amount, driver);
+                                                    driver.sleep(0.2 * 1000);
+                                                });
+                                                it(`switch to 'Lines View'`, async function () {
+                                                    await orderPage.changeCartView('Lines');
+                                                    screenShot = await driver.saveScreenshots();
+                                                    addContext(this, {
+                                                        title: `After "Lines" View was selected`,
+                                                        value: 'data:image/png;base64,' + screenShot,
+                                                    });
+                                                });
+                                                it(`Checking TSAs`, async function () {
+                                                    const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                                        'Cart',
+                                                        item,
+                                                        undefined,
+                                                        undefined,
+                                                        'LinesView',
+                                                    );
+                                                    const priceTSAs = await pricingService.getItemTSAs(
+                                                        'Cart',
+                                                        item,
+                                                        undefined,
+                                                        undefined,
+                                                        'LinesView',
+                                                    );
+                                                    console.info(`Cart ${item} totalUnitsAmount:`, totalUnitsAmount);
+                                                    console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
+                                                    const priceTSA_Discount2 =
+                                                        await pricingService.getItemTSAs_Discount2(
+                                                            'Cart',
+                                                            item,
+                                                            undefined,
+                                                            undefined,
+                                                            'LinesView',
+                                                        );
+                                                    console.info(
+                                                        `CART ${item} ${deliveryDateTestState} priceTSA_Discount2:`,
+                                                        JSON.stringify(priceTSA_Discount2, null, 2),
+                                                    );
+                                                    const expectedAmount = deliveryDateTestState.split(' ')[0];
+                                                    addContext(this, {
+                                                        title: `Total Units Amount`,
+                                                        value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
+                                                    });
+                                                    priceFields.forEach((priceField) => {
+                                                        const expextedValue =
+                                                            pricingData.testItemsValues.DeliveryDate[item][priceField][
+                                                                date
+                                                            ].cart[deliveryDateTestState];
+                                                        expect(priceTSAs[priceField]).equals(expextedValue);
+                                                    });
+                                                    priceDeliveryDateDiscountFields.forEach((priceField) => {
+                                                        const expextedValue =
+                                                            pricingData.testItemsValues.DeliveryDate[item][priceField][
+                                                                date
+                                                            ].cart[deliveryDateTestState];
+                                                        expect(priceTSA_Discount2[priceField]).equals(expextedValue);
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    });
+                                    // describe('back to Order Center and switch to Line View', () => {
+                                    //     it('Click "Continue ordering" button', async function () {
+                                    //         await driver.click(orderPage.Cart_ContinueOrdering_Button);
+                                    //         await orderPage.isSpinnerDone();
+                                    //         await orderPage.changeOrderCenterPageView('Line View');
+                                    //         await orderPage.isSpinnerDone();
+                                    //         screenShot = await driver.saveScreenshots();
+                                    //         addContext(this, {
+                                    //             title: `After "Line View" was selected`,
+                                    //             value: 'data:image/png;base64,' + screenShot,
+                                    //         });
+                                    //         await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
+                                    //         driver.sleep(1 * 1000);
+                                    //         screenShot = await driver.saveScreenshots();
+                                    //         addContext(this, {
+                                    //             title: `Order Center - Loaded`,
+                                    //             value: 'data:image/png;base64,' + screenShot,
+                                    //         });
+                                    //     });
+                                    // });
                                 });
                             });
                         });
