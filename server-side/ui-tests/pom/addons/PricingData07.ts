@@ -958,14 +958,14 @@ export class PricingData07 {
                     },
                     '15 Dec 2023': {
                         cart: {
-                            '1 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
-                            '2 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
-                            '3 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
+                            '1 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
+                            '2 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
+                            '3 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
                         },
                         baseline: Math.round((40.0 * 6 * 0.3 + Number.EPSILON) * 100) / 100,
-                        '1 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
-                        '2 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
-                        '3 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
+                        '1 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
+                        '2 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
+                        '3 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
                     },
                     '30 Nov 2023': {
                         cart: {

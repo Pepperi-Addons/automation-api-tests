@@ -247,7 +247,7 @@ _________________
             testDates.forEach((date) => {
                 describe(`Testing ${
                     date === 'CurrentDate'
-                        ? `CURRENT DATE (${dateTime.toDateString()})`
+                        ? `${dateTime.toUTCString()} (CURRENT DATE)`
                         : date === 'BlankDate'
                         ? 'Default'
                         : date
@@ -284,7 +284,7 @@ _________________
                     it(`${
                         date === 'BlankDate'
                             ? 'NO Change in Delivery Date'
-                            : `Changing Delivery Date (${date === 'CurrentDate' ? dateTime.toUTCString() : date})`
+                            : `Changing Delivery Date (${date === 'CurrentDate' ? dateTime.toDateString() : date})`
                     }`, async function () {
                         screenShot = await driver.saveScreenshots();
                         addContext(this, {
