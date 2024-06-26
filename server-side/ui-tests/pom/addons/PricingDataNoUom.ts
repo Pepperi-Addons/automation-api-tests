@@ -8717,7 +8717,7 @@ export class PricingDataNoUom {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0 * 6,
+                        baseline: 60.0,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
@@ -8729,7 +8729,7 @@ export class PricingDataNoUom {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0 * 6,
+                        baseline: 60.0,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
@@ -8740,7 +8740,7 @@ export class PricingDataNoUom {
                             '2 Each': 40.0,
                             '3 Each': 40.0,
                         },
-                        baseline: 40.0 * 6,
+                        baseline: 40.0,
                         '1 Each': 40.0,
                         '2 Each': 40.0,
                         '3 Each': 40.0,
@@ -8751,7 +8751,7 @@ export class PricingDataNoUom {
                             '2 Each': 40.0,
                             '3 Each': 40.0,
                         },
-                        baseline: 40.0 * 6,
+                        baseline: 40.0,
                         '1 Each': 40.0,
                         '2 Each': 40.0,
                         '3 Each': 40.0,
@@ -8764,7 +8764,7 @@ export class PricingDataNoUom {
                             '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 60.0 * 6, // default of AOQM_UOM1 is "Case" so it's times 6 , base price is set according to 'ZBASE@A001@Frag007'
+                        baseline: 60.0,
                         '1 Each': 60.0,
                         '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8775,7 +8775,7 @@ export class PricingDataNoUom {
                             '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 60.0 * 6, // default of AOQM_UOM1 is "Case" so it's times 6 , base price is set according to 'ZBASE@A001@Frag007'
+                        baseline: 60.0,
                         '1 Each': 60.0,
                         '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8786,7 +8786,7 @@ export class PricingDataNoUom {
                             '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 40.0 * 6,
+                        baseline: 40.0,
                         '1 Each': 40.0,
                         '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8797,7 +8797,7 @@ export class PricingDataNoUom {
                             '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 40.0 * 6,
+                        baseline: 40.0,
                         '1 Each': 40.0,
                         '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8810,7 +8810,7 @@ export class PricingDataNoUom {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0 * 6,
+                        baseline: 60.0,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
@@ -8821,7 +8821,7 @@ export class PricingDataNoUom {
                             '2 Each': 60.0,
                             '3 Each': 60.0,
                         },
-                        baseline: 60.0 * 6,
+                        baseline: 60.0,
                         '1 Each': 60.0,
                         '2 Each': 60.0,
                         '3 Each': 60.0,
@@ -8832,7 +8832,7 @@ export class PricingDataNoUom {
                             '2 Each': 40.0,
                             '3 Each': 40.0,
                         },
-                        baseline: 40.0 * 6,
+                        baseline: 40.0,
                         '1 Each': 40.0,
                         '2 Each': 40.0,
                         '3 Each': 40.0,
@@ -8843,7 +8843,7 @@ export class PricingDataNoUom {
                             '2 Each': 40.0,
                             '3 Each': 40.0,
                         },
-                        baseline: 40.0 * 6,
+                        baseline: 40.0,
                         '1 Each': 40.0,
                         '2 Each': 40.0,
                         '3 Each': 40.0,
@@ -8856,7 +8856,7 @@ export class PricingDataNoUom {
                             '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 60.0 * 6, // default of AOQM_UOM1 is "Case" so it's times 6 , base price is set according to 'ZBASE@A001@Frag007'
+                        baseline: 60.0,
                         '1 Each': 60.0,
                         '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8867,7 +8867,7 @@ export class PricingDataNoUom {
                             '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 60.0 * 6, // default of AOQM_UOM1 is "Case" so it's times 6 , base price is set according to 'ZBASE@A001@Frag007'
+                        baseline: 60.0,
                         '1 Each': 60.0,
                         '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8878,7 +8878,7 @@ export class PricingDataNoUom {
                             '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 40.0 * 6,
+                        baseline: 40.0,
                         '1 Each': 40.0,
                         '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8889,7 +8889,7 @@ export class PricingDataNoUom {
                             '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 40.0 * 6,
+                        baseline: 40.0,
                         '1 Each': 40.0,
                         '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8902,7 +8902,7 @@ export class PricingDataNoUom {
                             '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 60.0 * 6, // default of AOQM_UOM1 is "Case" so it's times 6 , base price is set according to 'ZBASE@A001@Frag007'
+                        baseline: 60.0,
                         '1 Each': 60.0,
                         '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8913,7 +8913,7 @@ export class PricingDataNoUom {
                             '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 60.0 * 6, // default of AOQM_UOM1 is "Case" so it's times 6 , base price is set according to 'ZBASE@A001@Frag007'
+                        baseline: 60.0,
                         '1 Each': 60.0,
                         '2 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 60.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8924,7 +8924,7 @@ export class PricingDataNoUom {
                             '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 40.0 * 6,
+                        baseline: 40.0,
                         '1 Each': 40.0,
                         '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8935,7 +8935,7 @@ export class PricingDataNoUom {
                             '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                             '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         },
-                        baseline: 40.0 * 6,
+                        baseline: 40.0,
                         '1 Each': 40.0,
                         '2 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
                         '3 Each': 40.0 * 0.8, // 'ZDS1@A001@Frag007' - 20% off
@@ -8948,7 +8948,7 @@ export class PricingDataNoUom {
                             '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
                             '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
                         },
-                        baseline: Math.round((60.0 * 6 * 0.7 + Number.EPSILON) * 100) / 100,
+                        baseline: 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
                         '1 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
                         '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
                         '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
@@ -8959,21 +8959,21 @@ export class PricingDataNoUom {
                             '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
                             '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
                         },
-                        baseline: Math.round((60.0 * 6 * 0.7 + Number.EPSILON) * 100) / 100,
+                        baseline: 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
                         '1 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
                         '2 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
                         '3 Each': 60.0 * 0.7, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 15%  ==> total 30% off
                     },
                     '15 Dec 2023': {
                         cart: {
-                            '1 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
-                            '2 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
-                            '3 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
+                            '1 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 30%  ==> total 45% off
+                            '2 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 30%  ==> total 45% off
+                            '3 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 30%  ==> total 45% off
                         },
-                        baseline: Math.round((40.0 * 6 * 0.3 + Number.EPSILON) * 100) / 100,
-                        '1 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
-                        '2 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
-                        '3 Each': 40.0 * 0.3, // ZDS4@A001@Frag007 - 10% + 15% + ZDS5@A001@Frag007 - 30% + 15%  ==> total 70% off
+                        baseline: Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 30%  ==> total 45% off
+                        '1 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 30%  ==> total 45% off
+                        '2 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 30%  ==> total 45% off
+                        '3 Each': Math.round((40.0 * 0.55 + Number.EPSILON) * 100) / 100, // ZDS4@A001@Frag007 - 15% + ZDS5@A001@Frag007 - 30%  ==> total 45% off
                     },
                     '30 Nov 2023': {
                         cart: {
@@ -8981,7 +8981,7 @@ export class PricingDataNoUom {
                             '2 Each': 40.0 * 0.6, // ZDS4@A001@Frag007 - 10% + ZDS5@A001@Frag007 - 30%  ==> total 40% off
                             '3 Each': 40.0 * 0.6, // ZDS4@A001@Frag007 - 10% + ZDS5@A001@Frag007 - 30%  ==> total 40% off
                         },
-                        baseline: Math.round((40.0 * 6 * 0.6 + Number.EPSILON) * 100) / 100,
+                        baseline: 40.0 * 0.6, // ZDS4@A001@Frag007 - 10% + ZDS5@A001@Frag007 - 30%  ==> total 40% off
                         '1 Each': 40.0 * 0.6, // ZDS4@A001@Frag007 - 10% + ZDS5@A001@Frag007 - 30%  ==> total 40% off
                         '2 Each': 40.0 * 0.6, // ZDS4@A001@Frag007 - 10% + ZDS5@A001@Frag007 - 30%  ==> total 40% off
                         '3 Each': 40.0 * 0.6, // ZDS4@A001@Frag007 - 10% + ZDS5@A001@Frag007 - 30%  ==> total 40% off

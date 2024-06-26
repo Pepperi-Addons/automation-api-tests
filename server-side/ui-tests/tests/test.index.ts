@@ -715,6 +715,20 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingApplyUomsTests(email, pass, client);
         await PricingUomTotalsTests(email, pass, client);
         await PricingGlobalExclusionTests(email, pass, client);
+        // await PricingPartialValueTests(email, pass, client);
+        // await PricingMultipleValuesTests(email, pass, client);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'PricingFeatures06') {
+        // Jenkins cannot run all 5 features together
+        await PricingUdtCleanup(client);
+        await PricingUdcCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        await PricingConfigUpload(client, email, pass);
+        await PricingUdtInsertion(client, email, pass, '0.6'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
         await PricingPartialValueTests(email, pass, client);
         await PricingMultipleValuesTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
