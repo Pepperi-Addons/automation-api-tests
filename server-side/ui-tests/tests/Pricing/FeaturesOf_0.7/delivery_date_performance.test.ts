@@ -163,11 +163,11 @@ _________________
                 });
             });
 
-            it('Manual Resync', async () => {
+            it('Manual Resync', async function () {
                 await e2eutils.performManualResync.bind(this)(client, driver);
             });
 
-            it('get UDT Values (PPM_Values)', async () => {
+            it('get UDT Values (PPM_Values)', async function () {
                 ppmValues = await objectsService.getUDT({ where: "MapDataExternalID='PPM_Values'", page_size: -1 });
                 console.info('PPM_Values Length: ', JSON.stringify(ppmValues.length, null, 2));
             });

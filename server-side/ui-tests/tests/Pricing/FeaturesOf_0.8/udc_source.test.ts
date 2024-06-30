@@ -149,7 +149,7 @@ _________________
                 });
             });
 
-            it('Manual Resync', async () => {
+            it('Manual Resync', async function () {
                 await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 

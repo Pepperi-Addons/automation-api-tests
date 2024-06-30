@@ -28,7 +28,7 @@ import { PricingUdcCleanup } from './Pricing/udc_cleanup.test';
 import { PricingCalculatedFieldsManualLineTests } from './Pricing/FeaturesOf_0.5/calculated_fields_manual_line.test';
 import { PricingAdditionalItemGroupsReadonlyTests } from './Pricing/FeaturesOf_0.5/additional_item_groups_readonly.test';
 import { PricingApplyUomsTests } from './Pricing/FeaturesOf_0.6/apply_uoms.test';
-import { PricingUomTotalsTests } from './Pricing/FeaturesOf_0.6/uom_totals.test';
+import { PricingTotalsTests } from './Pricing/FeaturesOf_0.6/totals.test';
 import { PricingGlobalExclusionTests } from './Pricing/FeaturesOf_0.6/global_exclusion.test';
 import { PricingPartialValueTests } from './Pricing/FeaturesOf_0.6/partial_value.test';
 import { PricingMultipleValuesTests } from './Pricing/FeaturesOf_0.6/multiple_values.test';
@@ -99,7 +99,7 @@ export {
     PricingCalculatedFieldsManualLineTests,
     PricingAdditionalItemGroupsReadonlyTests,
     PricingApplyUomsTests,
-    PricingUomTotalsTests,
+    PricingTotalsTests,
     PricingGlobalExclusionTests,
     PricingPartialValueTests,
     PricingMultipleValuesTests,

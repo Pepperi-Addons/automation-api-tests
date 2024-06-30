@@ -402,22 +402,14 @@ export default class E2EUtils extends BasePomObject {
             value: 'data:image/png;base64,' + screenShot,
         });
         await webAppAPI.pollForResyncResponse(accessToken, 100);
-        // const spinnerDone = false;
-        // do {
-        //     spinnerDone = await webAppHomePage.isSpinnerDone();
-        //     try {
-        //         await webAppHomePage.isDialogOnHomePAge(this);
-        //     } catch (error) {
-        //         console.error(error);
-        //     }
-        // } while (!spinnerDone);
         await webAppAPI.pollForResyncResponse(accessToken);
         try {
             await webAppHomePage.isDialogOnHomePAge(this);
         } catch (error) {
             console.error(error);
+        } finally {
+            await driver.navigate(homePageURL);
         }
-        await driver.navigate(homePageURL);
     }
 
     public async logOutLogIn(email: string, password: string) {
