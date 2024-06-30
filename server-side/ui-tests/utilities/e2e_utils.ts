@@ -35,44 +35,63 @@ export default class E2EUtils extends BasePomObject {
     }
 
     public async navigateTo(destiny: 'Resource Views' | 'Slugs' | 'Page Builder') {
+        let succeed = false;
+        let counter = 3;
         const header: WebAppHeader = new WebAppHeader(this.browser);
+        const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
         const settingsSidePanel: WebAppSettingsSidePanel = new WebAppSettingsSidePanel(this.browser);
-        try {
-            await header.goHome();
-            await header.isSpinnerDone();
-            await header.openSettings();
-            await header.isSpinnerDone();
-            await settingsSidePanel.selectSettingsByID('Pages');
-            switch (destiny) {
-                case 'Resource Views':
-                    const resourceList: ResourceList = new ResourceList(this.browser);
-                    await settingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
-                    this.browser.sleep(0.2 * 1000);
-                    if (await this.browser.isElementVisible(resourceList.EditPage_BackToList_Button)) {
-                        await this.browser.click(resourceList.EditPage_BackToList_Button);
-                        await resourceList.isSpinnerDone();
-                    }
-                    await this.browser.refresh();
-                    await resourceList.waitTillVisible(resourceList.PepTopArea_title, 30000);
-                    await resourceList.waitTillVisible(resourceList.Views_Tab_selected, 3000);
-                    break;
-                case 'Slugs':
-                    await settingsSidePanel.clickSettingsSubCategory('slugs', 'Pages');
-                    break;
-                case 'Page Builder':
-                    await settingsSidePanel.clickSettingsSubCategory('pages', 'Pages');
-                    await header.isSpinnerDone();
-                    this.browser.sleep(0.2 * 1000);
-                    await this.browser.refresh();
-                    await header.isSpinnerDone();
-                    this.browser.sleep(0.2 * 1000);
-                    break;
-                default:
-                    throw new Error('Incorrect Path Chosen!');
+        do {
+            try {
+                await header.goHome();
+                await header.isSpinnerDone();
+                await header.openSettings();
+                await header.isSpinnerDone();
+                await settingsSidePanel.selectSettingsByID('Pages');
+                switch (destiny) {
+                    case 'Resource Views':
+                        const resourceList: ResourceList = new ResourceList(this.browser);
+                        await settingsSidePanel.clickSettingsSubCategory('views_and_editors', 'Pages');
+                        this.browser.sleep(0.2 * 1000);
+                        if (await this.browser.isElementVisible(resourceList.EditPage_BackToList_Button)) {
+                            await this.browser.click(resourceList.EditPage_BackToList_Button);
+                            await resourceList.isSpinnerDone();
+                        }
+                        await this.browser.refresh();
+                        await resourceList.waitTillVisible(resourceList.PepTopArea_title, 30000);
+                        await resourceList.waitTillVisible(resourceList.Views_Tab_selected, 3000);
+                        succeed = true;
+                        break;
+                    case 'Slugs':
+                        await settingsSidePanel.clickSettingsSubCategory('slugs', 'Pages');
+                        succeed = true;
+                        break;
+                    case 'Page Builder':
+                        const pageBuilder: PageBuilder = new PageBuilder(this.browser);
+                        await settingsSidePanel.clickSettingsSubCategory('pages', 'Pages');
+                        await header.isSpinnerDone();
+                        this.browser.sleep(0.2 * 1000);
+                        await this.browser.refresh();
+                        await header.isSpinnerDone();
+                        this.browser.sleep(0.2 * 1000);
+                        await pageBuilder.waitTillVisible(pageBuilder.PageBuilder_Title, 15000);
+                        await pageBuilder.waitTillVisible(pageBuilder.AddPage_Button, 15000);
+                        succeed = true;
+                        break;
+                    default:
+                        throw new Error('Incorrect Path Chosen!');
+                }
+            } catch (error) {
+                console.error(error);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await header.goHome();
+                }
             }
-        } catch (error) {
-            console.error(error);
-        }
+            counter--;
+        } while (!succeed && counter > 0);
         return;
     }
 
@@ -109,8 +128,8 @@ export default class E2EUtils extends BasePomObject {
         // debugger;
         const pageBuilder: PageBuilder = new PageBuilder(this.browser);
         await this.navigateTo('Page Builder');
-        await pageBuilder.waitTillVisible(pageBuilder.PageBuilder_Title, 15000);
-        await pageBuilder.waitTillVisible(pageBuilder.AddPage_Button, 15000);
+        // await pageBuilder.waitTillVisible(pageBuilder.PageBuilder_Title, 15000);
+        // await pageBuilder.waitTillVisible(pageBuilder.AddPage_Button, 15000);
         pageBuilder.pause(1000);
         await pageBuilder.addBlankPage(nameOfPage, descriptionOfPage, extraSection ? extraSection : false);
         pageBuilder.pause(2 * 1000);
