@@ -5,7 +5,7 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
 import { Browser } from '../utilities/browser';
-import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppList } from '../pom';
+import { WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppList, WebAppAPI } from '../pom';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
 import E2EUtils from '../utilities/e2e_utils';
@@ -83,6 +83,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
 
     let driver: Browser;
     let e2eUtils: E2EUtils;
+    let webAppAPI: WebAppAPI;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
@@ -139,6 +140,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
         describe('Visit Flow UI tests', () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
+                webAppAPI = new WebAppAPI(driver, client);
                 webAppLoginPage = new WebAppLoginPage(driver);
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
@@ -307,6 +309,20 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
                 });
+
+                it('If Error popup appear - close it', async function () {
+                    const accessToken = await webAppAPI.getAccessToken();
+                    await webAppAPI.pollForResyncResponse(accessToken, 100);
+                    try {
+                        await webAppHomePage.isDialogOnHomePAge(this);
+                    } catch (error) {
+                        console.error(error);
+                    } finally {
+                        await driver.navigate(`${client.BaseURL}/HomePage`);
+                    }
+                    await webAppAPI.pollForResyncResponse(accessToken);
+                });
+
                 it('New Page through the UI + VisitFlow Block through API', async function () {
                     // pageUUID = await e2eUtils.addPage(pageName, 'Visit Flow 0.5 tests');
                     await driver.untilIsVisible(webAppHomePage.MainHomePageBtn);

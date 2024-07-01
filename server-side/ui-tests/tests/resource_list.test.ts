@@ -849,7 +849,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
             });
 
-            describe('Views & Editors Full Functionality test', async function () {
+            describe('Views & Editors Full Functionality test', async () => {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
@@ -965,7 +965,7 @@ export async function ResourceListTests(email: string, password: string, client:
             //     });
             // });
 
-            describe('Pipeline', async function () {
+            describe('Pipeline', async () => {
                 // conditions for this section: tested user must have UDC = NameAgeAuto
                 afterEach(async function () {
                     driver.sleep(500);
@@ -1204,7 +1204,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            describe('Teardown of Pipeline', async function () {
+            describe('Teardown of Pipeline', async () => {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
@@ -1283,7 +1283,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            describe(`Resource View (${ref_account_resource}) from Account Dashboard`, async function () {
+            describe(`Resource View (${ref_account_resource}) from Account Dashboard`, async () => {
                 // conditions for this section: tested user must have UDC = ReferenceAccountAuto
                 afterEach(async function () {
                     driver.sleep(500);
@@ -1693,7 +1693,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            describe(`Resource View (${resource_name_from_account_dashborad}) without account filter`, async function () {
+            describe(`Resource View (${resource_name_from_account_dashborad}) without account filter`, async () => {
                 // conditions for this section: tested user must have UDC = ReferenceAccountAuto
                 afterEach(async function () {
                     driver.sleep(500);
@@ -1915,7 +1915,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            describe('Teardown of Account Dashboard scenario', async function () {
+            describe('Teardown of Account Dashboard scenario', async () => {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
@@ -1952,7 +1952,7 @@ export async function ResourceListTests(email: string, password: string, client:
 
             // conditions for this section: tested user must have Slug with display name "Auto Test" and path "auto_test"
             simpleResources.forEach((resource) => {
-                describe(`Flow Tests for "${resource}"`, async function () {
+                describe(`Flow Tests for "${resource}"`, async () => {
                     // conditions for this section: tested user must have UDC = NameAgeAuto
                     before(function () {
                         resourceListBlock = new ResourceListBlock(
