@@ -354,6 +354,11 @@ export async function PricingUdtInsertion(
             });
 
             it('Logout', async function () {
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Before logout`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 await webAppLoginPage.logout();
                 screenShot = await driver.saveScreenshots();
                 addContext(this, {
