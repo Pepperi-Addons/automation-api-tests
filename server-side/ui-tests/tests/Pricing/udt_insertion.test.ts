@@ -9,7 +9,7 @@ import addContext from 'mochawesome/addContext';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { Browser } from '../../utilities/browser';
 import E2EUtils from '../../utilities/e2e_utils';
-import { WebAppLoginPage } from '../../pom';
+import { WebAppAPI, WebAppHomePage, WebAppLoginPage } from '../../pom';
 
 chai.use(promised);
 
@@ -20,6 +20,7 @@ export async function PricingUdtInsertion(
     testingFeatures: '0.5' | '0.6' | '0.7' | '0.8' | '1.0',
     specialVersion: 'version07for05data' | 'version08for07data' | 'noUom' | undefined = undefined,
 ) {
+    const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const pricingRules = new PricingRules();
@@ -47,7 +48,9 @@ export async function PricingUdtInsertion(
     let ppmAccountValues_content;
     let driver: Browser;
     let e2eUtils: E2EUtils;
+    let webAppAPI: WebAppAPI;
     let webAppLoginPage: WebAppLoginPage;
+    let webAppHomePage: WebAppHomePage;
     let screenShot;
 
     describe('UDT Upsert - Test Suite', () => {
@@ -333,6 +336,8 @@ export async function PricingUdtInsertion(
             before(async function () {
                 driver = await Browser.initiateChrome();
                 webAppLoginPage = new WebAppLoginPage(driver);
+                webAppHomePage = new WebAppHomePage(driver);
+                webAppAPI = new WebAppAPI(driver, client);
                 e2eUtils = new E2EUtils(driver);
             });
 
@@ -351,6 +356,19 @@ export async function PricingUdtInsertion(
 
             it('Manual Resync', async function () {
                 await e2eUtils.performManualResync.bind(this)(client, driver);
+            });
+
+            it('If Error popup appear - close it', async function () {
+                const accessToken = await webAppAPI.getAccessToken();
+                await webAppAPI.pollForResyncResponse(accessToken, 100);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await driver.navigate(`${baseUrl}/HomePage`);
+                }
+                await webAppAPI.pollForResyncResponse(accessToken);
             });
 
             it('Logout', async function () {

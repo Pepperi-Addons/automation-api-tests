@@ -5,7 +5,15 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
 import { Browser } from '../../../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
+import {
+    WebAppAPI,
+    WebAppDialog,
+    WebAppHeader,
+    WebAppHomePage,
+    WebAppList,
+    WebAppLoginPage,
+    WebAppTopBar,
+} from '../../../pom';
 import { ObjectsService } from '../../../../services';
 import { OrderPage } from '../../../pom/Pages/OrderPage';
 import { PricingService } from '../../../../services/pricing.service';
@@ -149,6 +157,7 @@ ________________________________________________________________________________
     const objectsService = new ObjectsService(generalService);
     const pricingData = specialTestData === 'noUom' ? new PricingDataNoUom() : new PricingData06();
     const pricingRules = new PricingRules();
+    const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
     const udtFirstTableName = 'PPM_Values';
     // const udtSecondTableName = 'PPM_AccountValues';
 
@@ -172,6 +181,7 @@ ________________________________________________________________________________
 
     let driver: Browser;
     let pricingService: PricingService;
+    let webAppAPI: WebAppAPI;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
@@ -248,6 +258,7 @@ ________________________________________________________________________________
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
+                webAppAPI = new WebAppAPI(driver, client);
                 webAppLoginPage = new WebAppLoginPage(driver);
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
@@ -283,6 +294,19 @@ ________________________________________________________________________________
 
             it('Manual Resync', async function () {
                 await e2eutils.performManualResync.bind(this)(client, driver);
+            });
+
+            it('If Error popup appear - close it', async function () {
+                const accessToken = await webAppAPI.getAccessToken();
+                await webAppAPI.pollForResyncResponse(accessToken, 100);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await driver.navigate(`${baseUrl}/HomePage`);
+                }
+                await webAppAPI.pollForResyncResponse(accessToken);
             });
 
             it('get UDT Values (PPM_Values)', async function () {
