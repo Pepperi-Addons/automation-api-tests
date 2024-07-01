@@ -308,7 +308,13 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     await webAppHomePage.collectEndTestData(this);
                 });
                 it('New Page through the UI + VisitFlow Block through API', async function () {
-                    pageUUID = await e2eUtils.addPage(pageName, 'Visit Flow 0.5 tests');
+                    // pageUUID = await e2eUtils.addPage(pageName, 'Visit Flow 0.5 tests');
+                    await driver.untilIsVisible(webAppHomePage.MainHomePageBtn);
+                    await e2eUtils.navigateTo('Page Builder');
+                    pageBuilder.pause(1000);
+                    await pageBuilder.addBlankPage(pageName, 'Visit Flow 0.5 tests');
+                    pageBuilder.pause(2 * 1000);
+                    pageUUID = await e2eUtils.getUUIDfromURL();
                     expect(pageUUID).to.not.be.undefined;
                     console.info('pageUUID: ', pageUUID);
                     const createdPage = await pageBuilder.getPageByUUID(pageUUID, client);
