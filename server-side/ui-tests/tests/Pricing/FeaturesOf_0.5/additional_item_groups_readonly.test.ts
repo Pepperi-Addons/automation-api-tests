@@ -330,6 +330,11 @@ _________________
         testAccounts.forEach((account) => {
             describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, () => {
                 it('Creating new transaction', async function () {
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Before Transaction created`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     switch (account) {
                         case 'Acc01':
                             accountName = 'My Store';

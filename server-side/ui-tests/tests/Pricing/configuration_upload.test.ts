@@ -34,7 +34,7 @@ export async function PricingConfigUpload(
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
     let pricingService: PricingService;
-    let base64ImageComponent;
+    let screenShot;
     let pricingConfig;
 
     describe(`Setting Configuration File - Pricing Version: ${installedPricingVersion} ${
@@ -132,10 +132,10 @@ export async function PricingConfigUpload(
         describe(`Login to Pricing Test User after Configuration Upload | Ver ${installedPricingVersion}`, () => {
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
 
@@ -144,11 +144,16 @@ export async function PricingConfigUpload(
             });
 
             it('Logout', async function () {
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Before logout`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 await webAppLoginPage.logout();
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Logged out`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
         });
