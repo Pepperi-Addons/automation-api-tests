@@ -8,26 +8,20 @@ import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { OrderPage } from '../../../pom/Pages/OrderPage';
 import { ObjectsService } from '../../../../services';
 import { PricingService } from '../../../../services/pricing.service';
-import { PricingData07 } from '../../../pom/addons/PricingData07';
 import PricingRules from '../../../pom/addons/PricingRules';
 import GeneralService from '../../../../services/general.service';
 import addContext from 'mochawesome/addContext';
+import { PricingData08 } from '../../../pom/addons/PricingData08';
 
 chai.use(promised);
 
-export async function PricingDeliveryDatePackagesTests(email: string, password: string, client: Client) {
+export async function PricingNoUomTotalsTests(email: string, password: string, client: Client) {
     /*
 ________________________ 
 _________________ Brief:
           
-* Pricing Promotion Packages test 
-    TODO
-
-* DI-27332 :
-    1. Package transaction - test for pricing in package
-
-    2. Sales order - test for group pricing calculation using packages lines
-_________________ 
+* Pricing configuration without UOM definition (PricingConfiguration.version08noUom)
+______________________________________ 
 _________________ The Relevant Blocks:
             
 . 'Base' -> ['ZBASE']
@@ -36,7 +30,7 @@ _________________ The Relevant Blocks:
 . 'ManualLine' -> []
 . 'Tax' -> ['MTAX']
 
-_________________ 
+__________________________________________ 
 _________________ The Relevant Conditions:
             
 . 'ZBASE' -> ['A002', 'A001', 'A003', 'A005', 'A004']
@@ -51,7 +45,7 @@ _________________ The Relevant Conditions:
 . 'ZGD2' -> ['A004', 'A003', 'A002']
 . 'MTAX' -> ['A002', 'A004']
 
-_________________ 
+______________________________________ 
 _________________ The Relevant Tables:
     
 . 'A001' -> ['ItemExternalID']
@@ -65,7 +59,8 @@ _________________ The Relevant Tables:
 . 'A009' -> ['TransactionAccountExternalID', 'TransactionAccountTSAPricingContracts']
 . 'A010' -> ['TransactionAccountExternalID', 'TransactionAccountTSAPricingContracts', 'ItemExternalID']
 . 'A011' -> ['TransactionAccountTSAPricingHierarchy', 'ItemExternalID']
-_________________ 
+
+_____________________________________ 
 _________________ The Relevant Rules:
           
 . 'ZBASE@A005@dummyItem': '[[true,"1555891200000","2534022144999","1","1","ZBASE_A005",[[0,"S",100,"P"]]]]',
@@ -81,7 +76,7 @@ _________________
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
-    const pricingData = new PricingData07();
+    const pricingData = new PricingData08();
     const pricingRules = new PricingRules();
     const udtFirstTableName = 'PPM_Values';
 
@@ -113,10 +108,8 @@ _________________
     let base64ImageComponent;
 
     const testAccounts = ['Acc01', 'OtherAcc'];
-    const deliveryDateTestItems = ['Frag007'];
-    const deliveryDateTestStates = ['baseline', '1 Each', '2 Each', '3 Each'];
-    // const packagesTestItems = ['Hair001', 'Hair002', 'Hair012'];
-    // const packagesTestStates = ['baseline', '1 Each', '5 Case', '3 Box'];
+    const noUomTestItems = ['Hair001'];
+    const noUomTestStates = ['baseline', '1 Each', '5 Case', '3 Box'];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
         'PriceDiscountUnitPriceAfter1',
@@ -125,8 +118,12 @@ _________________
         'PriceTaxUnitPriceAfter1',
     ];
 
-    if (!installedPricingVersion?.startsWith('0.5') && !installedPricingVersion?.startsWith('0.6')) {
-        describe(`Pricing ** Delivery Date & Packages ** UI tests  - ${
+    if (
+        !installedPricingVersion?.startsWith('0.5') &&
+        !installedPricingVersion?.startsWith('0.6') &&
+        !installedPricingVersion?.startsWith('0.7')
+    ) {
+        describe(`Pricing ** NO-UOM ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
@@ -222,11 +219,6 @@ _________________
                     it(`PERFORMANCE: making sure Sales Order Loading Duration is acceptable`, async function () {
                         let limit: number;
                         switch (true) {
-                            case installedPricingVersion?.startsWith('0.5'):
-                            case installedPricingVersion?.startsWith('0.6'):
-                                limit = 650;
-                                break;
-
                             default:
                                 limit = 600;
                                 break;
@@ -242,28 +234,23 @@ _________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    describe('Delivery Date', () => {
-                        it('Navigating to "Great Perfumes" at Sidebar', async function () {
+                    describe('NoUom', () => {
+                        it('Navigating to "Hair4You" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
-                            await driver.click(
-                                orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Great Perfumes'),
-                            );
+                            await driver.click(orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Hair4You'));
                             driver.sleep(0.1 * 1000);
                         });
-                        deliveryDateTestItems.forEach((deliveryDateTestItem) => {
-                            describe(`Item: ***${deliveryDateTestItem}`, function () {
+                        noUomTestItems.forEach((noUomTestItem) => {
+                            describe(`Item: ***${noUomTestItem}`, function () {
                                 describe('ORDER CENTER', function () {
-                                    it(`Looking for "${deliveryDateTestItem}" using the search box`, async function () {
-                                        await pricingService.searchInOrderCenter.bind(this)(
-                                            deliveryDateTestItem,
-                                            driver,
-                                        );
+                                    it(`Looking for "${noUomTestItem}" using the search box`, async function () {
+                                        await pricingService.searchInOrderCenter.bind(this)(noUomTestItem, driver);
                                         driver.sleep(1 * 1000);
                                     });
-                                    deliveryDateTestStates.forEach((deliveryDateTestState) => {
-                                        it(`Checking "${deliveryDateTestState}"`, async function () {
-                                            if (deliveryDateTestState != 'baseline') {
-                                                const splitedStateArgs = deliveryDateTestState.split(' ');
+                                    noUomTestStates.forEach((noUomTestState) => {
+                                        it(`Checking "${noUomTestState}"`, async function () {
+                                            if (noUomTestState != 'baseline') {
+                                                const splitedStateArgs = noUomTestState.split(' ');
                                                 const chosenUOM = splitedStateArgs[1];
                                                 const amount = Number(splitedStateArgs[0]);
                                                 addContext(this, {
@@ -272,16 +259,13 @@ _________________
                                                 });
                                                 await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
                                                     this,
-                                                )(chosenUOM, deliveryDateTestItem, amount, driver);
+                                                )(chosenUOM, noUomTestItem, amount, driver);
                                             }
                                             const priceTSAs = await pricingService.getItemTSAs(
                                                 'OrderCenter',
-                                                deliveryDateTestItem,
+                                                noUomTestItem,
                                             );
-                                            console.info(
-                                                `${deliveryDateTestItem} ${deliveryDateTestState} priceTSAs:`,
-                                                priceTSAs,
-                                            );
+                                            console.info(`${noUomTestItem} ${noUomTestState} priceTSAs:`, priceTSAs);
                                             expect(typeof priceTSAs).equals('object');
                                             expect(Object.keys(priceTSAs)).to.eql([
                                                 'PriceBaseUnitPriceAfter1',
@@ -291,12 +275,12 @@ _________________
                                                 'PriceTaxUnitPriceAfter1',
                                                 'NPMCalcMessage',
                                             ]);
-                                            if (deliveryDateTestState === 'baseline') {
+                                            if (noUomTestState === 'baseline') {
                                                 const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                                 const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
+                                                    pricingData.testItemsValues.TotalsNoUom[noUomTestItem][
                                                         'NPMCalcMessage'
-                                                    ][account][deliveryDateTestState];
+                                                    ][account][noUomTestState];
                                                 addContext(this, {
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
@@ -309,13 +293,13 @@ _________________
                                             } else {
                                                 const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
                                                 const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
+                                                    pricingData.testItemsValues.TotalsNoUom[noUomTestItem][
                                                         'NPMCalcMessage'
                                                     ][account]['baseline'];
                                                 const data_NPMCalcMessage =
-                                                    pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
+                                                    pricingData.testItemsValues.TotalsNoUom[noUomTestItem][
                                                         'NPMCalcMessage'
-                                                    ][account][deliveryDateTestState];
+                                                    ][account][noUomTestState];
                                                 addContext(this, {
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
@@ -326,7 +310,7 @@ _________________
                                                         baseline_NPMCalcMessage,
                                                         null,
                                                         2,
-                                                    )}, \nNPMCalcMessage (at ${deliveryDateTestState}) from Data: ${JSON.stringify(
+                                                    )}, \nNPMCalcMessage (at ${noUomTestState}) from Data: ${JSON.stringify(
                                                         data_NPMCalcMessage,
                                                         null,
                                                         2,
@@ -339,9 +323,9 @@ _________________
                                             priceFields.forEach((priceField) => {
                                                 const fieldValue = priceTSAs[priceField];
                                                 const expectedFieldValue =
-                                                    pricingData.testItemsValues.DeliveryDate[deliveryDateTestItem][
-                                                        priceField
-                                                    ][account][deliveryDateTestState];
+                                                    pricingData.testItemsValues.TotalsNoUom[noUomTestItem][priceField][
+                                                        account
+                                                    ][noUomTestState];
                                                 addContext(this, {
                                                     title: `${priceField}`,
                                                     value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
@@ -355,115 +339,6 @@ _________________
                             });
                         });
                     });
-
-                    // describe('Packages', () => {
-                    //     it('Navigating to "Hair4You" at Sidebar', async function () {
-                    //         await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
-                    //         await driver.click(orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Hair4You'));
-                    //         driver.sleep(0.1 * 1000);
-                    //     });
-                    //     packagesTestItems.forEach((packagesTestItem) => {
-                    //         describe(`Item: ***${packagesTestItem}`, function () {
-                    //             describe('ORDER CENTER', function () {
-                    //                 it(`Looking for "${packagesTestItem}" using the search box`, async function () {
-                    //                     await pricingService.searchInOrderCenter.bind(this)(packagesTestItem, driver);
-                    //                     driver.sleep(1 * 1000);
-                    //                 });
-                    //                 packagesTestStates.forEach((packagesTestState) => {
-                    //                     it(`Checking "${packagesTestState}"`, async function () {
-                    //                         if (packagesTestState != 'baseline') {
-                    //                             const splitedStateArgs = packagesTestState.split(' ');
-                    //                             const chosenUOM = splitedStateArgs[1];
-                    //                             const amount = Number(splitedStateArgs[0]);
-                    //                             addContext(this, {
-                    //                                 title: `State Args`,
-                    //                                 value: `Chosen UOM: ${chosenUOM}, Amount: ${amount}`,
-                    //                             });
-                    //                             await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
-                    //                                 this,
-                    //                             )(chosenUOM, packagesTestItem, amount, driver);
-                    //                         }
-                    //                         const priceTSAs = await pricingService.getItemTSAs(
-                    //                             'OrderCenter',
-                    //                             packagesTestItem,
-                    //                         );
-                    //                         console.info(
-                    //                             `${packagesTestItem} ${packagesTestState} priceTSAs:`,
-                    //                             priceTSAs,
-                    //                         );
-                    //                         expect(typeof priceTSAs).equals('object');
-                    //                         expect(Object.keys(priceTSAs)).to.eql([
-                    //                             'PriceBaseUnitPriceAfter1',
-                    //                             'PriceDiscountUnitPriceAfter1',
-                    //                             'PriceGroupDiscountUnitPriceAfter1',
-                    //                             'PriceManualLineUnitPriceAfter1',
-                    //                             'PriceTaxUnitPriceAfter1',
-                    //                             'NPMCalcMessage',
-                    //                         ]);
-                    //                         if (packagesTestState === 'baseline') {
-                    //                             const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                    //                             const baseline_NPMCalcMessage =
-                    //                                 pricingData.testItemsValues.Packages[packagesTestItem][
-                    //                                     'NPMCalcMessage'
-                    //                                 ][account][packagesTestState];
-                    //                             addContext(this, {
-                    //                                 title: `State Args`,
-                    //                                 value: `NPMCalcMessage from UI: ${JSON.stringify(
-                    //                                     UI_NPMCalcMessage,
-                    //                                 )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                    //                                     baseline_NPMCalcMessage,
-                    //                                 )}`,
-                    //                             });
-                    //                             expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
-                    //                         } else {
-                    //                             const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                    //                             const baseline_NPMCalcMessage =
-                    //                                 pricingData.testItemsValues.Packages[packagesTestItem][
-                    //                                     'NPMCalcMessage'
-                    //                                 ][account]['baseline'];
-                    //                             const data_NPMCalcMessage =
-                    //                                 pricingData.testItemsValues.Packages[packagesTestItem][
-                    //                                     'NPMCalcMessage'
-                    //                                 ][account][packagesTestState];
-                    //                             addContext(this, {
-                    //                                 title: `State Args`,
-                    //                                 value: `NPMCalcMessage from UI: ${JSON.stringify(
-                    //                                     UI_NPMCalcMessage,
-                    //                                     null,
-                    //                                     2,
-                    //                                 )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                    //                                     baseline_NPMCalcMessage,
-                    //                                     null,
-                    //                                     2,
-                    //                                 )}, \nNPMCalcMessage (at ${packagesTestState}) from Data: ${JSON.stringify(
-                    //                                     data_NPMCalcMessage,
-                    //                                     null,
-                    //                                     2,
-                    //                                 )}`,
-                    //                             });
-                    //                             expect(UI_NPMCalcMessage.length).equals(
-                    //                                 baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
-                    //                             );
-                    //                         }
-                    //                         priceFields.forEach((priceField) => {
-                    //                             const fieldValue = priceTSAs[priceField];
-                    //                             const expectedFieldValue =
-                    //                                 pricingData.testItemsValues.Packages[packagesTestItem][priceField][
-                    //                                     account
-                    //                                 ][packagesTestState];
-                    //                             addContext(this, {
-                    //                                 title: `${priceField}`,
-                    //                                 value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
-                    //                             });
-                    //                             expect(fieldValue).equals(expectedFieldValue);
-                    //                         });
-                    //                         driver.sleep(0.2 * 1000);
-                    //                     });
-                    //                 });
-                    //             });
-                    //         });
-                    //     });
-                    // });
                 });
             });
 

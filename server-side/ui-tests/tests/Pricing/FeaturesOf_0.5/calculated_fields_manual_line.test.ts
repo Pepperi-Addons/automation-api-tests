@@ -580,7 +580,7 @@ _________________
                                 await orderPage.changeCartView('Grid');
                                 base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
-                                    title: `After "Line View" was selected`,
+                                    title: `After "Grid" View was selected`,
                                     value: 'data:image/png;base64,' + base64ImageComponent,
                                 });
                             });

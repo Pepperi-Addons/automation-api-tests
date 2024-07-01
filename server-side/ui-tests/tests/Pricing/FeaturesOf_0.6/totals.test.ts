@@ -9,18 +9,14 @@ import { OrderPage } from '../../../pom/Pages/OrderPage';
 import { ObjectsService } from '../../../../services';
 import { PricingService } from '../../../../services/pricing.service';
 import { PricingData06 } from '../../../pom/addons/PricingData06';
+import { PricingDataNoUom } from '../../../pom/addons/PricingDataNoUom';
 import PricingRules from '../../../pom/addons/PricingRules';
 import GeneralService from '../../../../services/general.service';
 import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
-export async function PricingUomTotalsTests(
-    email: string,
-    password: string,
-    client: Client,
-    specialTestData?: 'noUom',
-) {
+export async function PricingTotalsTests(email: string, password: string, client: Client, specialTestData?: 'noUom') {
     /*
 ________________________ 
 _________________ Brief:
@@ -93,7 +89,7 @@ _________________
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
-    const pricingData = new PricingData06();
+    const pricingData = specialTestData === 'noUom' ? new PricingDataNoUom() : new PricingData06();
     const pricingRules = new PricingRules();
     const udtFirstTableName = 'PPM_Values';
     // const udtSecondTableName = 'PPM_AccountValues';
