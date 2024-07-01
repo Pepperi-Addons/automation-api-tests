@@ -421,7 +421,6 @@ export default class E2EUtils extends BasePomObject {
             value: 'data:image/png;base64,' + screenShot,
         });
         await webAppAPI.pollForResyncResponse(accessToken, 100);
-        await webAppAPI.pollForResyncResponse(accessToken);
         try {
             await webAppHomePage.isDialogOnHomePAge(this);
         } catch (error) {
@@ -429,6 +428,7 @@ export default class E2EUtils extends BasePomObject {
         } finally {
             await driver.navigate(homePageURL);
         }
+        await webAppAPI.pollForResyncResponse(accessToken);
     }
 
     public async logOutLogIn(email: string, password: string) {
