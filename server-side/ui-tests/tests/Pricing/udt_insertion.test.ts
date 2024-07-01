@@ -378,6 +378,17 @@ export async function PricingUdtInsertion(
                     title: `Before logout`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
+                const accessToken = await webAppAPI.getAccessToken();
+                await webAppAPI.pollForResyncResponse(accessToken, 100);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await driver.navigate(`${baseUrl}/HomePage`);
+                }
+                await webAppAPI.pollForResyncResponse(accessToken);
+                await driver.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 await webAppLoginPage.logout();
                 screenShot = await driver.saveScreenshots();
                 addContext(this, {
