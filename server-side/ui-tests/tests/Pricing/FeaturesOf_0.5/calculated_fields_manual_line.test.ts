@@ -235,6 +235,7 @@ _________________
         });
 
         it('If Error popup appear - close it', async function () {
+            await driver.refresh();
             const accessToken = await webAppAPI.getAccessToken();
             await webAppAPI.pollForResyncResponse(accessToken, 100);
             try {
