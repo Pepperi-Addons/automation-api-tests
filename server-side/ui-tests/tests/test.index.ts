@@ -647,19 +647,57 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
 
     if (tests === 'Pricing') {
         await PricingUdtCleanup(client);
+        await PricingUdcCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingConfigUpload(client, email, pass);
-        await PricingUdtInsertion(client, email, pass, '1.0');
+        await PricingUdtInsertion(client, email, pass, '0.5'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
         await PricingCalculatedFieldsManualLineTests(email, pass, client);
         await PricingAdditionalItemGroupsReadonlyTests(email, pass, client);
+        await PricingUdtInsertion(client, email, pass, '0.6'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
         await PricingApplyUomsTests(email, pass, client);
         await PricingTotalsTests(email, pass, client);
         await PricingGlobalExclusionTests(email, pass, client);
         await PricingPartialValueTests(email, pass, client);
         await PricingMultipleValuesTests(email, pass, client);
+        await PricingUdtInsertion(client, email, pass, '0.7'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
+        await PricingDeliveryDatePerformanceUdtErrorsTests(email, pass, client);
+        await PricingUdcInsertion(client, '0.8', ['PricingTest1', 'PricingTest2']);
+        await PricingUdtInsertion(client, email, pass, '0.8'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
+        await PricingConfigUpload(client, email, pass);
+        await PricingUdcSourceTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
+    }
+
+    if (tests === 'PricingNoUom') {
+        await PricingUdtCleanup(client);
+        await PricingUdcCleanup(client);
+        await PricingAddonsUpsert(varPass, client, prcVer);
+        // NO UOM belongs to version 0.8
+        const installedPricingVersion = (await generalService.getInstalledAddons()).find(
+            (addon) => addon.Addon.Name == 'Pricing',
+        )?.Version;
+        if (
+            !installedPricingVersion?.startsWith('0.5') &&
+            !installedPricingVersion?.startsWith('0.6') &&
+            !installedPricingVersion?.startsWith('0.7')
+        ) {
+            await PricingConfigUpload(client, email, pass, 'noUom');
+            await PricingUdtInsertion(client, email, pass, '0.5', 'noUom'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
+            await PricingCalculatedFieldsManualLineTests(email, pass, client, 'noUom');
+            await PricingAdditionalItemGroupsReadonlyTests(email, pass, client, 'noUom');
+            await PricingUdtInsertion(client, email, pass, '0.6', 'noUom'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
+            // await PricingTotalsTests(email, pass, client, 'noUom');
+            await PricingGlobalExclusionTests(email, pass, client, 'noUom');
+            await PricingPartialValueTests(email, pass, client, 'noUom');
+            await PricingMultipleValuesTests(email, pass, client, 'noUom');
+            await PricingUdtInsertion(client, email, pass, '0.7', 'noUom'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
+            await PricingDeliveryDatePerformanceUdtErrorsTests(email, pass, client, 'noUom');
+            await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+            run();
+            return;
+        }
     }
 
     // if (tests === 'Pricing05Features') {

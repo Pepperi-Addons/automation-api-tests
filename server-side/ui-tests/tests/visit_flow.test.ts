@@ -26,6 +26,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
     const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
     const repEmail = email.split('@')[0] + '.rep@pepperitest.com';
+    const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
 
     const testData = {
         VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
@@ -318,12 +319,13 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     } catch (error) {
                         console.error(error);
                     } finally {
-                        await driver.navigate(`${client.BaseURL}/HomePage`);
+                        await driver.navigate(`${baseUrl}/HomePage`);
                     }
                     await webAppAPI.pollForResyncResponse(accessToken);
                 });
 
                 it('New Page through the UI + VisitFlow Block through API', async function () {
+                    await driver.refresh();
                     // pageUUID = await e2eUtils.addPage(pageName, 'Visit Flow 0.5 tests');
                     await driver.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.navigateTo('Page Builder');
