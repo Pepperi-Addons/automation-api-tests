@@ -44,7 +44,9 @@ export class OrderPage extends WebAppList {
     );
     public TimePicker_minutes_00: By = By.xpath(`${this.TimePicker_minutes_active.value}/div`);
 
-    public ItemQuantity_NumberOfUnits_Readonly: By = By.xpath('//pep-quantity-selector//button[@id="UnitsQuantity"]');
+    public ItemQuantity_NumberOfUnits_Readonly: By = By.xpath(
+        '//pep-quantity-selector//span[contains(@class,"mat-input-element")]',
+    ); // used to be: //pep-quantity-selector//button[@id="UnitsQuantity"]
     public ItemQuantity_byUOM_InteractableNumber: By = By.xpath(
         '//pep-quantity-selector//input[@id="TSAAOQMQuantity1"]',
     );
