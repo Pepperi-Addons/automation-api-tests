@@ -116,6 +116,8 @@ export class DevTest {
                 return '00000000-0000-0000-0000-000000006a91';
             case 'FEBULA':
                 return 'cebb251f-1c80-4d80-b62c-442e48e678e8';
+            case 'NEBULUS':
+                return 'e8b5bb3a-d2df-4828-90f4-32cc3d49f207';
             case 'SYNC':
                 return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
             case 'CORE':
@@ -1305,6 +1307,8 @@ export class DevTest {
                 return ['neo4JSyncEU@pepperitest.com', 'Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //
             case 'FEBULA':
                 return ['febulaEU@pepperitest.com', 'febulaProd@pepperitest.com', 'febulaSB@pepperitest.com']; //
+            case 'NEBULUS':
+                return ['NebulusEU@pepperitest.com', 'NebulusPROD@pepperitest.com', 'NebulusSB@pepperitest.com'];
             case 'KMS':
                 return ['KmsTesterEU@pepperitest.com', 'KmsTesterProd@pepperitest.com', 'KmsTesterSB@pepperitest.com']; //
             case 'ADAL':

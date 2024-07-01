@@ -2134,6 +2134,8 @@ export default class GeneralService {
             case 'NEBULA':
             case 'FEBULA':
                 return await this.getSecretfromKMS(email, pass, 'NebulaTeamsWebHook');
+            case 'NEBULUS':
+                return await this.getSecretfromKMS(email, pass, 'NebulusTeamsWebHook');
             case 'DIMX':
                 return await this.getSecretfromKMS(email, pass, 'DIMXTeamsWebHook');
             case 'DATA INDEX':
