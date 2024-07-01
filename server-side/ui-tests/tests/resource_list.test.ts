@@ -861,6 +861,11 @@ export async function ResourceListTests(email: string, password: string, client:
             });
 
             it(`Logout Login`, async function () {
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Home Page`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
                 await resourceListUtils.logOutLogIn(email, password);
                 await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
             });
