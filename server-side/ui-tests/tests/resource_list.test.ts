@@ -866,7 +866,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     title: `At Home Page`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
-                await resourceListUtils.logOutLogIn(email, password);
+                await resourceListUtils.logOutLogIn(email, password, client);
                 await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
             });
 
@@ -1440,7 +1440,7 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it(`Manual Sync & Logout Login`, async () => {
                     await resourceListUtils.performManualSync(client);
-                    await resourceListUtils.logOutLogIn(email, password);
+                    await resourceListUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 });
 
@@ -1586,7 +1586,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`Logout Login`, async () => {
-                    await resourceListUtils.logOutLogIn(email, password);
+                    await resourceListUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 });
 
@@ -1838,7 +1838,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`Logout Login`, async () => {
-                    await resourceListUtils.logOutLogIn(email, password);
+                    await resourceListUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 });
 
@@ -2089,7 +2089,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
 
                     it('Logout & Login', async function () {
-                        await resourceListUtils.logOutLogIn(email, password);
+                        await resourceListUtils.logOutLogIn(email, password, client);
                     });
 
                     it('Block Tests', async function () {
