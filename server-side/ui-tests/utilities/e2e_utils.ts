@@ -276,7 +276,7 @@ export default class E2EUtils extends BasePomObject {
                     4,
                 )}`,
             );
-            await this.logOutLogIn(email, password);
+            await this.logOutLogIn(email, password, client);
             await webAppHomePage.isSpinnerDone();
             await this.navigateTo('Slugs');
             await slugs.clickTab('Mapping_Tab');
@@ -431,9 +431,24 @@ export default class E2EUtils extends BasePomObject {
         await webAppAPI.pollForResyncResponse(accessToken);
     }
 
-    public async logOutLogIn(email: string, password: string) {
+    public async logOutLogIn(email: string, password: string, client: Client) {
         const webAppHeader: WebAppHeader = new WebAppHeader(this.browser);
         const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(this.browser);
+        const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
+        const webAppAPI: WebAppAPI = new WebAppAPI(this.browser, client);
+        const accessToken = await webAppAPI.getAccessToken();
+        const homePageURL = `https://${
+            client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'
+        }/HomePage`;
+        await webAppAPI.pollForResyncResponse(accessToken, 100);
+        try {
+            await webAppHomePage.isDialogOnHomePAge(this);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            await this.browser.navigate(homePageURL);
+        }
+        await webAppAPI.pollForResyncResponse(accessToken);
         this.browser.sleep(1000);
         await webAppHeader.signOut();
         this.browser.sleep(5 * 1000);

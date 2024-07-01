@@ -469,7 +469,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     await slugs.isSpinnerDone();
                     await slugs.waitTillVisible(slugs.MappedSlugs_Title, 15000);
                     driver.sleep(2 * 1000);
-                    await e2eUtils.logOutLogIn(email, password);
+                    await e2eUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.isSpinnerDone();
                     await e2eUtils.navigateTo('Slugs');
                     await slugs.clickTab('Mapping_Tab');
@@ -501,7 +501,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                 });
 
                 it('Performing Manual Sync', async function () {
-                    await e2eUtils.logOutLogIn(email, password);
+                    await e2eUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
                 });
@@ -805,7 +805,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                 });
 
                 it('Loging Out and Loging In as Rep', async function () {
-                    await e2eUtils.logOutLogIn(repEmail, password);
+                    await e2eUtils.logOutLogIn(repEmail, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                     await e2eUtils.performManualSync(client);
                 });
@@ -952,7 +952,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                 });
 
                 it('Deleting Activities', async function () {
-                    await e2eUtils.logOutLogIn(repEmail, password);
+                    await e2eUtils.logOutLogIn(repEmail, password, client);
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Accounts');
                     driver.sleep(0.5 * 1000);
@@ -979,7 +979,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     driver.sleep(2.5 * 1000);
                 });
                 it('Sign back in as Admin', async function () {
-                    await e2eUtils.logOutLogIn(email, password);
+                    await e2eUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 });
             });

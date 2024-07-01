@@ -249,7 +249,7 @@ _________________
         });
 
         it('Logout-Login', async function () {
-            await e2eutils.logOutLogIn(email, password);
+            await e2eutils.logOutLogIn(email, password, client);
             base64ImageComponent = await driver.saveScreenshots();
             addContext(this, {
                 title: `At Home Page`,

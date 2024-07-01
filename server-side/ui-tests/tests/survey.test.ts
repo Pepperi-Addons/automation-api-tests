@@ -1041,6 +1041,7 @@ async function CreateSlug(
     slugDisplayName: string,
     slug_path: string,
     pageToMapToKey: string,
+    client: Client,
 ) {
     // const slugDisplayName = 'slideshow_slug';
     // const slug_path = 'slideshow_slug';
@@ -1072,7 +1073,7 @@ async function CreateSlug(
     const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
     console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
     driver.sleep(2 * 1000);
-    await e2eUiService.logOutLogIn(email, password);
+    await e2eUiService.logOutLogIn(email, password, client);
     const webAppHomePage = new WebAppHomePage(driver);
     await webAppHomePage.isSpinnerDone();
     await e2eUiService.navigateTo('Slugs');
@@ -1332,7 +1333,16 @@ export async function createSurvey(
     //4. survey slug creation
     const surveySlugDisplayName = `survey_slug_${generalService.generateRandomString(4)}`;
     const slugPath = surveySlugDisplayName;
-    await CreateSlug(email, password, driver, generalService, surveySlugDisplayName, slugPath, surveyBlockPageUUID);
+    await CreateSlug(
+        email,
+        password,
+        driver,
+        generalService,
+        surveySlugDisplayName,
+        slugPath,
+        surveyBlockPageUUID,
+        client,
+    );
     //5. survey script creation
     let script;
     try {
@@ -1369,6 +1379,7 @@ export async function createSurvey(
         slideshowSlugDisplayName,
         slugPath2,
         slideshowBlockPageUUID,
+        client,
     );
     //8. ATD creation on homepage
     driver.sleep(5000);
