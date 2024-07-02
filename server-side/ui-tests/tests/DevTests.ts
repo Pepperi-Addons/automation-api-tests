@@ -273,6 +273,10 @@ export class DevTest {
                         addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
                         debugger;
                     }
+                    if (dep.configurations) {
+                        addonDep[index].configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.%'];
+                        debugger;
+                    }
                 }
             }
             if (this.addonUUID === '50062e0c-9967-4ed4-9102-f2bc50602d41') {
