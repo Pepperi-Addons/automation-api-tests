@@ -820,6 +820,7 @@ export class PricingService {
         nameOfItem: string,
         quantityOfItem: number,
         driver: Browser,
+        view?: 'LinesView',
     ): Promise<void> {
         const orderPage = new OrderPage(driver);
         driver.sleep(0.05 * 1000);
@@ -861,7 +862,7 @@ export class PricingService {
         expect(Number(await uomXnumber.getAttribute('title'))).equals(quantityOfItem);
         driver.sleep(0.2 * 1000);
         const numberOfUnits = await driver.findElement(
-            orderPage.getSelectorOfNumberOfUnitsInCartByItemName(nameOfItem),
+            orderPage.getSelectorOfNumberOfUnitsInCartByItemName(nameOfItem, view),
         );
         driver.sleep(1 * 1000);
         switch (uomValue) {
