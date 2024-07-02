@@ -799,6 +799,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     slugNameCollectionData,
                     slugPath,
                     dataCollectionPageUUID,
+                    client,
                 );
                 driver.sleep(5000);
                 const webAppHeader = new WebAppHeader(driver);
@@ -823,6 +824,7 @@ export async function SyncTests(email: string, password: string, client: Client,
                     slugNameAccountInfo,
                     slugPath,
                     accountsInfoPageUUID,
+                    client,
                 );
                 driver.sleep(5000);
             });
@@ -1438,6 +1440,7 @@ async function CreateSlug(
     slugDisplayName: string,
     slug_path: string,
     pageToMapToKey: string,
+    client: Client,
 ) {
     // const slugDisplayName = 'slideshow_slug';
     // const slug_path = 'slideshow_slug';
@@ -1469,7 +1472,7 @@ async function CreateSlug(
     const upsertFieldsToMappedSlugs = await dataViewsService.postDataView(slugsFieldsToAddToMappedSlugsObj);
     console.info(`RESPONSE: ${JSON.stringify(upsertFieldsToMappedSlugs, null, 2)}`);
     driver.sleep(2 * 1000);
-    await e2eUiService.logOutLogIn(email, password);
+    await e2eUiService.logOutLogIn(email, password, client);
     const webAppHomePage = new WebAppHomePage(driver);
     await webAppHomePage.isSpinnerDone();
     await e2eUiService.navigateTo('Slugs');

@@ -5,7 +5,15 @@ import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
 import { Browser } from '../../../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
+import {
+    WebAppAPI,
+    WebAppDialog,
+    WebAppHeader,
+    WebAppHomePage,
+    WebAppList,
+    WebAppLoginPage,
+    WebAppTopBar,
+} from '../../../pom';
 import { ObjectsService } from '../../../../services';
 import { OrderPage } from '../../../pom/Pages/OrderPage';
 import { PricingData05 } from '../../../pom/addons/PricingData05';
@@ -104,6 +112,7 @@ _________________
  */
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
+    const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
 
     const installedPricingVersionLong = (await generalService.getInstalledAddons()).find(
         (addon) => addon.Addon.Name == 'Pricing',
@@ -132,6 +141,7 @@ _________________
 
     let driver: Browser;
     let pricingService: PricingService;
+    let webAppAPI: WebAppAPI;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
@@ -170,6 +180,7 @@ _________________
     describe(`Pricing ** Base ** UI tests | Ver ${installedPricingVersionLong}`, function () {
         before(async function () {
             driver = await Browser.initiateChrome();
+            webAppAPI = new WebAppAPI(driver, client);
             webAppLoginPage = new WebAppLoginPage(driver);
             webAppHomePage = new WebAppHomePage(driver);
             webAppHeader = new WebAppHeader(driver);
@@ -223,8 +234,22 @@ _________________
             await e2eutils.performManualResync.bind(this)(client, driver);
         });
 
+        it('If Error popup appear - close it', async function () {
+            await driver.refresh();
+            const accessToken = await webAppAPI.getAccessToken();
+            await webAppAPI.pollForResyncResponse(accessToken, 100);
+            try {
+                await webAppHomePage.isDialogOnHomePAge(this);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                await driver.navigate(`${baseUrl}/HomePage`);
+            }
+            await webAppAPI.pollForResyncResponse(accessToken);
+        });
+
         it('Logout-Login', async function () {
-            await e2eutils.logOutLogIn(email, password);
+            await e2eutils.logOutLogIn(email, password, client);
             base64ImageComponent = await driver.saveScreenshots();
             addContext(this, {
                 title: `At Home Page`,
@@ -298,6 +323,11 @@ _________________
         testAccounts.forEach((account) => {
             describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, () => {
                 it('Creating new transaction', async function () {
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Before Transaction created`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     switch (account) {
                         case 'Acc01':
                             accountName = 'My Store';

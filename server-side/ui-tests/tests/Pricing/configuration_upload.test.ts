@@ -3,7 +3,15 @@ import promised from 'chai-as-promised';
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../pom';
+import {
+    WebAppAPI,
+    WebAppDialog,
+    WebAppHeader,
+    WebAppHomePage,
+    WebAppList,
+    WebAppLoginPage,
+    WebAppTopBar,
+} from '../../pom';
 import addContext from 'mochawesome/addContext';
 import GeneralService from '../../../services/general.service';
 import PricingConfiguration from '../../pom/addons/PricingConfiguration';
@@ -19,6 +27,7 @@ export async function PricingConfigUpload(
     password: string,
     specificVersion: 'version07for05data' | 'noUom' | undefined = undefined,
 ) {
+    const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
     const pricingConfiguration = new PricingConfiguration();
     const generalService = new GeneralService(client);
     const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
@@ -26,6 +35,7 @@ export async function PricingConfigUpload(
     // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     let driver: Browser;
     let e2eUtils: E2EUtils;
+    let webAppAPI: WebAppAPI;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
@@ -34,7 +44,7 @@ export async function PricingConfigUpload(
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
     let pricingService: PricingService;
-    let base64ImageComponent;
+    let screenShot;
     let pricingConfig;
 
     describe(`Setting Configuration File - Pricing Version: ${installedPricingVersion} ${
@@ -42,6 +52,7 @@ export async function PricingConfigUpload(
     }`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
+            webAppAPI = new WebAppAPI(driver, client);
             webAppLoginPage = new WebAppLoginPage(driver);
             webAppHomePage = new WebAppHomePage(driver);
             webAppHeader = new WebAppHeader(driver);
@@ -132,10 +143,10 @@ export async function PricingConfigUpload(
         describe(`Login to Pricing Test User after Configuration Upload | Ver ${installedPricingVersion}`, () => {
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
 
@@ -143,12 +154,42 @@ export async function PricingConfigUpload(
                 await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 
+            it('If Error popup appear - close it', async function () {
+                await driver.refresh();
+                const accessToken = await webAppAPI.getAccessToken();
+                await webAppAPI.pollForResyncResponse(accessToken, 100);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await driver.navigate(`${baseUrl}/HomePage`);
+                }
+                await webAppAPI.pollForResyncResponse(accessToken);
+            });
+
             it('Logout', async function () {
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Before logout`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+                const accessToken = await webAppAPI.getAccessToken();
+                await webAppAPI.pollForResyncResponse(accessToken, 100);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await driver.navigate(`${baseUrl}/HomePage`);
+                }
+                await webAppAPI.pollForResyncResponse(accessToken);
+                await driver.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 await webAppLoginPage.logout();
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Logged out`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
         });

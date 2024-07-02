@@ -45,6 +45,9 @@ export class OrderPage extends WebAppList {
     public TimePicker_minutes_00: By = By.xpath(`${this.TimePicker_minutes_active.value}/div`);
 
     public ItemQuantity_NumberOfUnits_Readonly: By = By.xpath('//pep-quantity-selector//button[@id="UnitsQuantity"]');
+    public ItemQuantity_NumberOfUnits_Readonly_cartGrid: By = By.xpath(
+        '//pep-quantity-selector//span[contains(@class,"mat-input-element")]',
+    );
     public ItemQuantity_byUOM_InteractableNumber: By = By.xpath(
         '//pep-quantity-selector//input[@id="TSAAOQMQuantity1"]',
     );
@@ -216,10 +219,16 @@ export class OrderPage extends WebAppList {
         );
     }
 
-    public getSelectorOfNumberOfUnitsInCartByItemName(name: string) {
-        return By.xpath(
-            `${this.getSelectorOfItemInCartByName(name).value}${this.ItemQuantity_NumberOfUnits_Readonly.value}`,
-        );
+    public getSelectorOfNumberOfUnitsInCartByItemName(name: string, view?: 'LinesView') {
+        return view === 'LinesView'
+            ? By.xpath(
+                  `${this.getSelectorOfItemInCartByName(name).value}${this.ItemQuantity_NumberOfUnits_Readonly.value}`,
+              )
+            : By.xpath(
+                  `${this.getSelectorOfItemInCartByName(name).value}${
+                      this.ItemQuantity_NumberOfUnits_Readonly_cartGrid.value
+                  }`,
+              );
     }
 
     public getSelectorOfNumberOfUnitsInCartLinesViewByItemName(name: string) {

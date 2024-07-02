@@ -3,7 +3,15 @@ import promised from 'chai-as-promised';
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
+import {
+    WebAppAPI,
+    WebAppDialog,
+    WebAppHeader,
+    WebAppHomePage,
+    WebAppList,
+    WebAppLoginPage,
+    WebAppTopBar,
+} from '../../../pom';
 import { UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { OrderPage } from '../../../pom/Pages/OrderPage';
 import { ObjectsService } from '../../../../services';
@@ -66,6 +74,7 @@ _________________
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
+    const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
     const pricingRules = new PricingRules();
     const pricingData = specialTestData === 'noUom' ? new PricingDataNoUom() : new PricingData07();
     const udtFirstTableName = 'PPM_Values';
@@ -91,6 +100,7 @@ _________________
 
     let driver: Browser;
     let pricingService: PricingService;
+    let webAppAPI: WebAppAPI;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
@@ -130,6 +140,7 @@ _________________
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
+                webAppAPI = new WebAppAPI(driver, client);
                 webAppLoginPage = new WebAppLoginPage(driver);
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
@@ -165,6 +176,20 @@ _________________
 
             it('Manual Resync', async function () {
                 await e2eutils.performManualResync.bind(this)(client, driver);
+            });
+
+            it('If Error popup appear - close it', async function () {
+                await driver.refresh();
+                const accessToken = await webAppAPI.getAccessToken();
+                await webAppAPI.pollForResyncResponse(accessToken, 100);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await driver.navigate(`${baseUrl}/HomePage`);
+                }
+                await webAppAPI.pollForResyncResponse(accessToken);
             });
 
             it('get UDT Values (PPM_Values)', async function () {
