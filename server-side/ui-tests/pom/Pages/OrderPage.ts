@@ -219,16 +219,12 @@ export class OrderPage extends WebAppList {
         );
     }
 
-    public getSelectorOfNumberOfUnitsInCartByItemName(name: string, view?: 'LinesView') {
-        return view === 'LinesView'
-            ? By.xpath(
-                  `${this.getSelectorOfItemInCartByName(name).value}${this.ItemQuantity_NumberOfUnits_Readonly.value}`,
-              )
-            : By.xpath(
-                  `${this.getSelectorOfItemInCartByName(name).value}${
-                      this.ItemQuantity_NumberOfUnits_Readonly_cartGrid.value
-                  }`,
-              );
+    public getSelectorOfNumberOfUnitsInCartByItemName(name: string) {
+        return By.xpath(
+            `${this.getSelectorOfItemInCartByName(name).value}${
+                this.ItemQuantity_NumberOfUnits_Readonly_cartGrid.value
+            }`,
+        );
     }
 
     public getSelectorOfNumberOfUnitsInCartLinesViewByItemName(name: string) {
