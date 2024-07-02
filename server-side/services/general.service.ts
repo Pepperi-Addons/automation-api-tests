@@ -2180,6 +2180,8 @@ export default class GeneralService {
                 return await this.getSecretfromKMS(email, pass, 'ASYNCTeamsWebHook');
             case 'TRANSLATION':
                 return await this.getSecretfromKMS(email, pass, 'TRANSLATIONTeamsWebHook');
+            case 'PUSH-NOTIFICATIONS':
+                return await this.getSecretfromKMS(email, pass, 'PushNotificationsTeamsWebHook');
         }
     }
 

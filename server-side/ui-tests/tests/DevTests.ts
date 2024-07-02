@@ -148,6 +148,8 @@ export class DevTest {
             case 'CPI DATA':
             case 'ADDONS-CPI-DATA':
                 return 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b';
+            case 'PUSH-NOTIFICATIONS':
+                return '95025423-9096-4a4f-a8cd-d0a17548e42e';
             default:
                 return 'none';
         }
@@ -1432,6 +1434,12 @@ export class DevTest {
                     'GenericResourceEuTester@pepperitest.com',
                     'GenResProdCiCd@pepperitest.com',
                     'GenericResourceSBTester@pepperitest.com',
+                ];
+            case 'PUSH-NOTIFICATIONS':
+                return [
+                    'pushNotifiEU@pepperitest.com',
+                    'pushNotifiPROD@pepperitest.com',
+                    'pushNotifiSB@pepperitest.com',
                 ];
             default:
                 return [];
