@@ -274,11 +274,11 @@ export class DevTest {
                         debugger;
                     }
                     if (dep.configurations) {
-                        addonDep[index].configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.%'];
+                        addonDep[index].configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.35']; //changed on 3/7/24 - this is phased version currently
                         debugger;
                     }
                     if (dep.nebula) {
-                        addonDep[index].nebula = ['00000000-0000-0000-0000-000000006a91', '1.5.28'];
+                        addonDep[index].nebula = ['00000000-0000-0000-0000-000000006a91', '1.5.28']; //changed on 3/7/24 - this is phased version currently
                         debugger;
                     }
                 }
