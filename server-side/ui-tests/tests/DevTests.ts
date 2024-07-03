@@ -277,10 +277,11 @@ export class DevTest {
                         addonDep[index].configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.%'];
                         debugger;
                     }
+                    if (dep.nebula) {
+                        addonDep[index].nebula = ['00000000-0000-0000-0000-000000006a91', '1.5.28'];
+                        debugger;
+                    }
                 }
-                const depObjSync = {};
-                depObjSync['nebula'] = ['00000000-0000-0000-0000-000000006a91', '1.5.%'];
-                addonDep.push(depObjSync);
             }
             if (this.addonUUID === '50062e0c-9967-4ed4-9102-f2bc50602d41') {
                 //page builder
