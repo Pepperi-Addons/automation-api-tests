@@ -270,7 +270,7 @@ export class DevTest {
                         debugger;
                     }
                     if (dep.sync) {
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
                         debugger;
                     }
                     if (dep.configurations) {
@@ -278,6 +278,9 @@ export class DevTest {
                         debugger;
                     }
                 }
+                const depObjSync = {};
+                depObjSync['nebula'] = ['00000000-0000-0000-0000-000000006a91', '%'];
+                addonDep.push(depObjSync);
             }
             if (this.addonUUID === '50062e0c-9967-4ed4-9102-f2bc50602d41') {
                 //page builder
