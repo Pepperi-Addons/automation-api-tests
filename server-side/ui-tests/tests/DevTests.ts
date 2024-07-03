@@ -279,7 +279,7 @@ export class DevTest {
                     }
                 }
                 const depObjSync = {};
-                depObjSync['nebula'] = ['00000000-0000-0000-0000-000000006a91', '1.5.%'];
+                depObjSync['nebula'] = ['00000000-0000-0000-0000-000000006a91', '1.5.28'];
                 addonDep.push(depObjSync);
             }
             if (this.addonUUID === '50062e0c-9967-4ed4-9102-f2bc50602d41') {
