@@ -116,6 +116,8 @@ export class DevTest {
                 return '00000000-0000-0000-0000-000000006a91';
             case 'FEBULA':
                 return 'cebb251f-1c80-4d80-b62c-442e48e678e8';
+            case 'NEBULUS':
+                return 'e8b5bb3a-d2df-4828-90f4-32cc3d49f207';
             case 'SYNC':
                 return '5122dc6d-745b-4f46-bb8e-bd25225d350a';
             case 'CORE':
@@ -146,6 +148,8 @@ export class DevTest {
             case 'CPI DATA':
             case 'ADDONS-CPI-DATA':
                 return 'd6b06ad0-a2c1-4f15-bebb-83ecc4dca74b';
+            case 'PUSH-NOTIFICATIONS':
+                return '95025423-9096-4a4f-a8cd-d0a17548e42e';
             default:
                 return 'none';
         }
@@ -164,8 +168,8 @@ export class DevTest {
                 }, Got Exception: ${(error as any).message}, On User: ${user.email}, Making ${
                     this.addonName
                 } Unavailable As We Coludn't Install It`;
-                await this.unavailableVersion();
                 await this.reportExceptionToTeams(errorString);
+                await this.unavailableVersion();
                 throw new Error(errorString);
             }
         }
@@ -256,6 +260,28 @@ export class DevTest {
                     }
                 }
                 debugger;
+            }
+            if (this.addonUUID === '41011fbf-debf-40d8-8990-767738b8af03') {
+                //journey
+                for (let index = 0; index < addonDep.length; index++) {
+                    const dep = addonDep[index];
+                    if (dep.pfs) {
+                        addonDep[index].pfs = ['00000000-0000-0000-0000-0000000f11e5', '1.4.%'];
+                        debugger;
+                    }
+                    if (dep.sync) {
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
+                        debugger;
+                    }
+                    if (dep.configurations) {
+                        addonDep[index].configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.35']; //changed on 3/7/24 - this is phased version currently
+                        debugger;
+                    }
+                    if (dep.nebula) {
+                        addonDep[index].nebula = ['00000000-0000-0000-0000-000000006a91', '1.5.28']; //changed on 3/7/24 - this is phased version currently
+                        debugger;
+                    }
+                }
             }
             if (this.addonUUID === '50062e0c-9967-4ed4-9102-f2bc50602d41') {
                 //page builder
@@ -1291,6 +1317,8 @@ export class DevTest {
                 return ['neo4JSyncEU@pepperitest.com', 'Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //
             case 'FEBULA':
                 return ['febulaEU@pepperitest.com', 'febulaProd@pepperitest.com', 'febulaSB@pepperitest.com']; //
+            case 'NEBULUS':
+                return ['NebulusEU@pepperitest.com', 'NebulusPROD@pepperitest.com', 'NebulusSB@pepperitest.com'];
             case 'KMS':
                 return ['KmsTesterEU@pepperitest.com', 'KmsTesterProd@pepperitest.com', 'KmsTesterSB@pepperitest.com']; //
             case 'ADAL':
@@ -1414,6 +1442,12 @@ export class DevTest {
                     'GenericResourceEuTester@pepperitest.com',
                     'GenResProdCiCd@pepperitest.com',
                     'GenericResourceSBTester@pepperitest.com',
+                ];
+            case 'PUSH-NOTIFICATIONS':
+                return [
+                    'pushNotifiEU@pepperitest.com',
+                    'pushNotifiPROD@pepperitest.com',
+                    'pushNotifiSB@pepperitest.com',
                 ];
             default:
                 return [];

@@ -5,7 +5,7 @@ import { Client } from '@pepperi-addons/debug-server';
 import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
+import { WebAppAPI, WebAppHeader, WebAppHomePage, WebAppLoginPage } from '../pom';
 import { ResourceList, ResourceEditors, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import E2EUtils from '../utilities/e2e_utils';
@@ -32,6 +32,7 @@ export async function ResourceListTests(email: string, password: string, client:
     // const papi_resources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
 
     let driver: Browser;
+    let webAppAPI: WebAppAPI;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
@@ -575,6 +576,7 @@ export async function ResourceListTests(email: string, password: string, client:
     } || Ver ${installedResourceListVersion} || ${date}`, async function () {
         before(async function () {
             driver = await Browser.initiateChrome();
+            webAppAPI = new WebAppAPI(driver, client);
             webAppLoginPage = new WebAppLoginPage(driver);
             webAppHomePage = new WebAppHomePage(driver);
             webAppHeader = new WebAppHeader(driver);
@@ -844,12 +846,31 @@ export async function ResourceListTests(email: string, password: string, client:
                 await resourceListUtils.performManualResync.bind(this)(client, driver);
             });
 
+            it('If Error popup appear - close it', async function () {
+                await driver.refresh();
+                const accessToken = await webAppAPI.getAccessToken();
+                await webAppAPI.pollForResyncResponse(accessToken, 100);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await driver.navigate(`${baseUrl}/HomePage`);
+                }
+                await webAppAPI.pollForResyncResponse(accessToken);
+            });
+
             it(`Logout Login`, async function () {
-                await resourceListUtils.logOutLogIn(email, password);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `At Home Page`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+                await resourceListUtils.logOutLogIn(email, password, client);
                 await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
             });
 
-            describe('Views & Editors Full Functionality test', async function () {
+            describe('Views & Editors Full Functionality test', async () => {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
@@ -965,7 +986,7 @@ export async function ResourceListTests(email: string, password: string, client:
             //     });
             // });
 
-            describe('Pipeline', async function () {
+            describe('Pipeline', async () => {
                 // conditions for this section: tested user must have UDC = NameAgeAuto
                 afterEach(async function () {
                     driver.sleep(500);
@@ -1204,7 +1225,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            describe('Teardown of Pipeline', async function () {
+            describe('Teardown of Pipeline', async () => {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
@@ -1283,7 +1304,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            describe(`Resource View (${ref_account_resource}) from Account Dashboard`, async function () {
+            describe(`Resource View (${ref_account_resource}) from Account Dashboard`, async () => {
                 // conditions for this section: tested user must have UDC = ReferenceAccountAuto
                 afterEach(async function () {
                     driver.sleep(500);
@@ -1419,7 +1440,7 @@ export async function ResourceListTests(email: string, password: string, client:
 
                 it(`Manual Sync & Logout Login`, async () => {
                     await resourceListUtils.performManualSync(client);
-                    await resourceListUtils.logOutLogIn(email, password);
+                    await resourceListUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 });
 
@@ -1565,7 +1586,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`Logout Login`, async () => {
-                    await resourceListUtils.logOutLogIn(email, password);
+                    await resourceListUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 });
 
@@ -1693,7 +1714,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            describe(`Resource View (${resource_name_from_account_dashborad}) without account filter`, async function () {
+            describe(`Resource View (${resource_name_from_account_dashborad}) without account filter`, async () => {
                 // conditions for this section: tested user must have UDC = ReferenceAccountAuto
                 afterEach(async function () {
                     driver.sleep(500);
@@ -1817,7 +1838,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`Logout Login`, async () => {
-                    await resourceListUtils.logOutLogIn(email, password);
+                    await resourceListUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 });
 
@@ -1915,7 +1936,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
             });
 
-            describe('Teardown of Account Dashboard scenario', async function () {
+            describe('Teardown of Account Dashboard scenario', async () => {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.collectEndTestData(this);
@@ -1952,7 +1973,7 @@ export async function ResourceListTests(email: string, password: string, client:
 
             // conditions for this section: tested user must have Slug with display name "Auto Test" and path "auto_test"
             simpleResources.forEach((resource) => {
-                describe(`Flow Tests for "${resource}"`, async function () {
+                describe(`Flow Tests for "${resource}"`, async () => {
                     // conditions for this section: tested user must have UDC = NameAgeAuto
                     before(function () {
                         resourceListBlock = new ResourceListBlock(
@@ -2068,7 +2089,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
 
                     it('Logout & Login', async function () {
-                        await resourceListUtils.logOutLogIn(email, password);
+                        await resourceListUtils.logOutLogIn(email, password, client);
                     });
 
                     it('Block Tests', async function () {

@@ -5,6 +5,7 @@ import { Context } from 'mocha';
 import { WebAppLoginPage, WebAppHomePage, WebAppHeader, WebAppList, WebAppTopBar, WebAppDialog } from '../ui-tests/pom';
 import { OrderPage } from '../ui-tests/pom/Pages/OrderPage';
 import addContext from 'mochawesome/addContext';
+import GeneralService from './general.service';
 
 export interface PriceTsaFields {
     PriceBaseUnitPriceAfter1: number;
@@ -49,7 +50,7 @@ export interface PricePartialTsaFields {
 
 export class PricingService {
     public browser: Browser;
-    // public generalService: GeneralService;
+    public generalService: GeneralService | undefined;
     // public objectsService: ObjectsService;
     public webAppLoginPage: WebAppLoginPage;
     public webAppHomePage: WebAppHomePage;
@@ -61,7 +62,6 @@ export class PricingService {
     public base64Image;
 
     constructor(
-        // public client: Client,
         driver: Browser,
         webAppLoginPage: WebAppLoginPage,
         webAppHomePage: WebAppHomePage,
@@ -70,9 +70,10 @@ export class PricingService {
         webAppTopBar: WebAppTopBar,
         webAppDialog: WebAppDialog,
         orderPage: OrderPage,
+        generalService?: GeneralService,
     ) {
         this.browser = driver;
-        // this.generalService = new GeneralService(client);
+        this.generalService = generalService;
         // this.objectsService = new ObjectsService(this.generalService);
         // this.webAppLoginPage = new WebAppLoginPage(driver);
         // this.webAppHomePage = new WebAppHomePage(driver);
@@ -90,6 +91,48 @@ export class PricingService {
         this.orderPage = orderPage;
     }
 
+    /** */
+    public async uploadConfiguration(payload: any) {
+        const uploadConfigResponse =
+            this.generalService &&
+            (await this.generalService.fetchStatus(
+                `/addons/api/adb3c829-110c-4706-9168-40fba9c0eb52/api/configuration`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        Key: 'main',
+                        Config: JSON.stringify(payload),
+                    }),
+                },
+            ));
+        console.info('uploadConfigResponse: ', JSON.stringify(uploadConfigResponse, null, 2));
+        expect(uploadConfigResponse?.Ok).to.equal(true);
+        expect(uploadConfigResponse?.Status).to.equal(200);
+        expect(Object.keys(uploadConfigResponse?.Body)).to.eql([
+            'ModificationDateTime',
+            'Hidden',
+            'CreationDateTime',
+            'Config',
+            'Key',
+        ]);
+        expect(uploadConfigResponse?.Body.Key).to.equal('main');
+    }
+
+    /** */
+    public async getConfiguration() {
+        const getConfigResponse =
+            this.generalService &&
+            (await this.generalService.fetchStatus(
+                `/addons/api/adb3c829-110c-4706-9168-40fba9c0eb52/api/configuration`,
+            ));
+        console.info('getConfigResponse: ', JSON.stringify(getConfigResponse, null, 2));
+        if (getConfigResponse && getConfigResponse.Body[0].Config) {
+            const configurationObj = getConfigResponse.Body[0].Config;
+            return JSON.parse(configurationObj);
+        }
+    }
+
+    /** */
     public async startNewSalesOrderTransaction(nameOfAccount: string): Promise<string> {
         await this.webAppHeader.goHome();
         await this.webAppHomePage.isSpinnerDone();
@@ -113,6 +156,7 @@ export class PricingService {
         return trnUUID;
     }
 
+    /** */
     public async getItemTotalAmount(
         at: 'OrderCenter' | 'Cart',
         itemName: string,
@@ -161,6 +205,7 @@ export class PricingService {
         return totalOfUnitsAsNum;
     }
 
+    /** */
     public async getItemTSAs(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -176,13 +221,6 @@ export class PricingService {
             'PriceBaseUnitPriceAfter1_Value',
             nameOfItem,
         );
-        // let PriceBaseUnitPriceAfter1_Values;
-        // if (at === 'Cart') {
-        //     PriceBaseUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getCssValue('background')) !== 'rgb(165, 235, 255)') { return webElement } });
-        //     console.info('background-color: ', await PriceBaseUnitPriceAfter1_Values[0].getCssValue('background-color'));
-        // } else {
-        //     PriceBaseUnitPriceAfter1_Values = await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector);
-        // }
         const PriceBaseUnitPriceAfter1_Values = await this.browser.findElements(PriceBaseUnitPriceAfter1_Selector);
         const PriceBaseUnitPriceAfter1_Value = locationInElementsArray
             ? await PriceBaseUnitPriceAfter1_Values[locationInElementsArray].getText()
@@ -193,12 +231,6 @@ export class PricingService {
             'PriceDiscountUnitPriceAfter1_Value',
             nameOfItem,
         );
-        // let PriceDiscountUnitPriceAfter1_Values;
-        // if (at === 'Cart') {
-        //     PriceDiscountUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
-        // } else {
-        //     PriceDiscountUnitPriceAfter1_Values = await this.browser.findElements(PriceDiscountUnitPriceAfter1_Selector);
-        // }
         const PriceDiscountUnitPriceAfter1_Values = await this.browser.findElements(
             PriceDiscountUnitPriceAfter1_Selector,
         );
@@ -211,12 +243,6 @@ export class PricingService {
             'PriceGroupDiscountUnitPriceAfter1_Value',
             nameOfItem,
         );
-        // let PriceGroupDiscountUnitPriceAfter1_Values;
-        // if (at === 'Cart') {
-        //     PriceGroupDiscountUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
-        // } else {
-        //     PriceGroupDiscountUnitPriceAfter1_Values = await this.browser.findElements(PriceGroupDiscountUnitPriceAfter1_Selector);
-        // }
         const PriceGroupDiscountUnitPriceAfter1_Values = await this.browser.findElements(
             PriceGroupDiscountUnitPriceAfter1_Selector,
         );
@@ -232,12 +258,6 @@ export class PricingService {
             'PriceManualLineUnitPriceAfter1_Value',
             nameOfItem,
         );
-        // let PriceManualLineUnitPriceAfter1_Values;
-        // if (at === 'Cart') {
-        //     PriceManualLineUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
-        // } else {
-        //     PriceManualLineUnitPriceAfter1_Values = await this.browser.findElements(PriceManualLineUnitPriceAfter1_Selector);
-        // }
         const PriceManualLineUnitPriceAfter1_Values = await this.browser.findElements(
             PriceManualLineUnitPriceAfter1_Selector,
         );
@@ -250,12 +270,6 @@ export class PricingService {
             'PriceTaxUnitPriceAfter1_Value',
             nameOfItem,
         );
-        // let PriceTaxUnitPriceAfter1_Values;
-        // if (at === 'Cart') {
-        //     PriceTaxUnitPriceAfter1_Values = freeItem ? await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector) : (await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector)).filter(async webElement => { if ((await webElement.getAttribute('style')) === '') { return webElement } });
-        // } else {
-        //     PriceTaxUnitPriceAfter1_Values = await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector);
-        // }
         const PriceTaxUnitPriceAfter1_Values = await this.browser.findElements(PriceTaxUnitPriceAfter1_Selector);
         const PriceTaxUnitPriceAfter1_Value = locationInElementsArray
             ? await PriceTaxUnitPriceAfter1_Values[locationInElementsArray].getText()
@@ -281,6 +295,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getItemNPMCalcMessage(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -308,6 +323,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getItemTSAs_Discount2(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -343,6 +359,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getItemTSAs_AOQM_UOM2(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -413,6 +430,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getTotalsTSAsOfItem(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -477,6 +495,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getTSAsOfMultiPerItem(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -589,6 +608,7 @@ export class PricingService {
         };
     }
 
+    /** */
     public async getTSAsOfPartialPerItem(
         at: 'OrderCenter' | 'Cart',
         nameOfItem: string,
@@ -614,24 +634,51 @@ export class PricingService {
         };
     }
 
+    /** */
     public async changeValueOfTSAUserLineDiscountOfSpecificItem(changeTo: string, nameOfItem: string): Promise<void> {
         const UserLineDiscount_Selector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
             'UserLineDiscount_Value',
             nameOfItem,
         );
+        const UserLineDiscount_containerSelector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            'UserLineDiscount_Container',
+            nameOfItem,
+        );
+        const UserLineDiscount_inputSelector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            'UserLineDiscount_Container',
+            nameOfItem,
+        );
+        const UserLineDiscount_inputContainerSelector = this.orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+            'UserLineDiscount_InputContainer',
+            nameOfItem,
+        );
         const UserLineDiscount_Element = await this.browser.findElement(UserLineDiscount_Selector);
         console.info(`${nameOfItem} UserLineDiscount_Value: `, await UserLineDiscount_Element.getText());
-        for (let i = 0; i < 6; i++) {
-            await UserLineDiscount_Element.sendKeys(Key.BACK_SPACE);
-            this.browser.sleep(0.01 * 1000);
-        }
+        await UserLineDiscount_Element.click();
+        const UserLineDiscount_containerElement = await this.browser.findElement(UserLineDiscount_containerSelector);
+        const UserLineDiscount_inputContainerElement = await this.browser.findElement(
+            UserLineDiscount_inputContainerSelector,
+        );
+        console.info(`${nameOfItem} UserLineDiscount_Value: `, await UserLineDiscount_containerElement.getText());
+        console.info(
+            `${nameOfItem} UserLineDiscount_Container Inner HTML: `,
+            await UserLineDiscount_containerElement.getAttribute('innerHTML'),
+        );
+        console.info(
+            `${nameOfItem} UserLineDiscount_InputContainer Inner HTML: `,
+            await UserLineDiscount_inputContainerElement.getAttribute('innerHTML'),
+        );
         this.browser.sleep(0.05 * 1000);
-        await UserLineDiscount_Element.sendKeys(changeTo);
+        const UserLineDiscount_inputElement = await this.browser.findElement(UserLineDiscount_inputSelector);
+        console.info(`${nameOfItem} UserLineDiscount_Input text: `, await UserLineDiscount_inputElement.getText());
+        await this.browser.sendStringWithoutElement(changeTo);
+        this.browser.sleep(0.05 * 1000);
+        await this.browser.click(this.orderPage.TransactionID); // getting the input out of focus
         await this.orderPage.isSpinnerDone();
-        this.browser.sleep(0.05 * 1000);
         this.browser.sleep(0.1 * 1000);
     }
 
+    /* UI FUNCTION: */
     public async searchInOrderCenter(this: Context, nameOfItem: string, driver: Browser): Promise<void> {
         const orderPage = new OrderPage(driver);
         await orderPage.isSpinnerDone();
@@ -653,6 +700,7 @@ export class PricingService {
         });
     }
 
+    /* UI FUNCTION: specify uom ('Each' | 'Case' | 'Box') at uomValue. if TOTALS are required the string '&Totals' should be added to the uom specified. the function do not perform a search before change */
     public async changeSelectedQuantityOfSpecificItemInOrderCenter(
         // for calculation of both AOQM fields "&Totals" needs to be added to uomValue
         this: Context,
@@ -765,13 +813,18 @@ export class PricingService {
         });
     }
 
+    /* UI FUNCTION: specify uom ('Each' | 'Case'), item name and desired quantity. the function do not perform a search before change */
     public async changeSelectedQuantityOfSpecificItemInCart(
         this: Context,
         uomValue: 'Each' | 'Case',
         nameOfItem: string,
         quantityOfItem: number,
         driver: Browser,
+        view?: 'LinesView',
     ): Promise<void> {
+        const nameOfFunctionToLocateSelectorOfUnitsQuantity = `getSelectorOfNumberOfUnitsInCart${
+            view ? view : ''
+        }ByItemName`;
         const orderPage = new OrderPage(driver);
         driver.sleep(0.05 * 1000);
         let itemUomValue: WebElement = await driver.findElement(
@@ -812,7 +865,7 @@ export class PricingService {
         expect(Number(await uomXnumber.getAttribute('title'))).equals(quantityOfItem);
         driver.sleep(0.2 * 1000);
         const numberOfUnits = await driver.findElement(
-            orderPage.getSelectorOfNumberOfUnitsInCartByItemName(nameOfItem),
+            orderPage[nameOfFunctionToLocateSelectorOfUnitsQuantity](nameOfItem),
         );
         driver.sleep(1 * 1000);
         switch (uomValue) {
@@ -838,6 +891,7 @@ export class PricingService {
         });
     }
 
+    /* UI FUNCTION: pressing button with X icon that belongs to search component */
     public async clearOrderCenterSearch(): Promise<void> {
         await this.orderPage.isSpinnerDone();
         await this.browser.click(this.orderPage.Search_X_Button);
