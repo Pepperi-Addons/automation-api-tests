@@ -76,7 +76,7 @@ export async function UsageMonitorTests(generalService: GeneralService, request,
                 };
                 await generalService.changeVersion(varKey, tempTestData, false);
                 const baseVersion = await usageMonitorService.get();
-                //debugger;
+                debugger;
                 delete baseVersion.ExpirationDateTime;
                 delete baseVersion.Key;
                 delete lastVersion.ExpirationDateTime;

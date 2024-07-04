@@ -1,4 +1,5 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
+import { AddonUUID as TestAddonUUID } from '../../../addon.config.json';
 
 export async function InstallTests(generalService: GeneralService, tester: TesterFunctions) {
     const service = generalService.papiClient;
@@ -425,9 +426,9 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
                 '/' +
                 functionName +
                 '?callback=' +
-                CallbackCash.callbackForAddon.result,
+                CallbackCash.callbackForAddon, //.result,
         );
-        //debugger;
+        debugger;
         if (
             CallbackCash.getAsyncedCallback.ExecutionUUID.length == 36 &&
             CallbackCash.getAsyncedCallback.URI.includes('/audit_logs')
@@ -443,8 +444,19 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
                 '= function name is ' +
                 functionName +
                 'and callback UUID is ' +
-                CallbackCash.callbackForAddon.result;
+                CallbackCash.callbackForAddon; //.result;
         }
+        await callbackForAddonRelative();
+    }
+    async function callbackForAddonRelative() {
+        //llbackCash.callbackForAddon = await globalTestService.sync("Post", "addons/api/async/callback" , callbackForAddonBody);
+        // API callback URL changed on 09-11-20
+        CallbackCash.callbackForAddonRelative = await service.post(
+            `/addons/api/async/${addonUUID}/${jsFileName}/${functionName}?callback_encoded_url=/addons/api/${TestAddonUUID}/async_test/async_test`,
+        );
+        debugger;
+        //await createUdtTable();
+
         //getCloudWatchFromAsyncedCallback();
 
         //debugger;
