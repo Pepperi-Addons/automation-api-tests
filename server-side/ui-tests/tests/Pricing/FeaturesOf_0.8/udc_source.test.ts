@@ -3,7 +3,15 @@ import promised from 'chai-as-promised';
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../../utilities/browser';
-import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
+import {
+    WebAppAPI,
+    WebAppDialog,
+    WebAppHeader,
+    WebAppHomePage,
+    WebAppList,
+    WebAppLoginPage,
+    WebAppTopBar,
+} from '../../../pom';
 import { OrderPage } from '../../../pom/Pages/OrderPage';
 // import { ObjectsService } from '../../../../services';
 import { PricingService } from '../../../../services/pricing.service';
@@ -15,7 +23,7 @@ import E2EUtils from '../../../utilities/e2e_utils';
 
 chai.use(promised);
 
-export async function PricingUdcTests(email: string, password: string, client: Client) {
+export async function PricingUdcSourceTests(email: string, password: string, client: Client) {
     /*
 ________________________ 
 _________________ Brief:
@@ -71,6 +79,7 @@ _________________
     const dateTime = new Date();
     const generalService = new GeneralService(client);
     // const objectsService = new ObjectsService(generalService);
+    const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
     const pricingData = new PricingData08();
     // const pricingRules = new PricingRules();
 
@@ -82,6 +91,7 @@ _________________
 
     let driver: Browser;
     let pricingService: PricingService;
+    let webAppAPI: WebAppAPI;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
@@ -93,11 +103,12 @@ _________________
     let transactionUUID: string;
     let accountName: string;
     let duration: string;
-    let base64ImageComponent;
+    let screenShot;
 
     const testAccounts = ['OtherAcc', 'Acc01', 'Acc02', 'Acc03'];
     const udcTestItems = ['Frag021', 'Frag006'];
     const udcTestStates = ['baseline', '1 Each', '5 Case', '3 Box'];
+    const udcTestCartStates = ['1 Each', '5 Case', '3 Box'];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
         'PriceDiscountUnitPriceAfter1',
@@ -116,6 +127,7 @@ _________________
         } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
+                webAppAPI = new WebAppAPI(driver, client);
                 webAppLoginPage = new WebAppLoginPage(driver);
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
@@ -142,15 +154,29 @@ _________________
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
 
-            it('Manual Resync', async () => {
+            it('Manual Resync', async function () {
                 await e2eUtils.performManualResync.bind(this)(client, driver);
+            });
+
+            it('If Error popup appear - close it', async function () {
+                await driver.refresh();
+                const accessToken = await webAppAPI.getAccessToken();
+                await webAppAPI.pollForResyncResponse(accessToken, 100);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await driver.navigate(`${baseUrl}/HomePage`);
+                }
+                await webAppAPI.pollForResyncResponse(accessToken);
             });
 
             testAccounts.forEach((account) => {
@@ -263,6 +289,7 @@ _________________
                                                 )}`,
                                             });
                                             expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
+                                            expect(UI_NPMCalcMessage).to.deep.equal(data_NPMCalcMessage);
 
                                             priceFields.forEach((priceField) => {
                                                 const fieldValue = priceTSAs[priceField];
@@ -277,6 +304,105 @@ _________________
                                                 expect(fieldValue).equals(expectedFieldValue);
                                             });
                                             driver.sleep(0.2 * 1000);
+                                        });
+                                    });
+                                });
+                            });
+                        });
+
+                        describe(`CART`, () => {
+                            it('entering and verifying being in cart', async function () {
+                                await driver.click(orderPage.Cart_Button);
+                                await orderPage.isSpinnerDone();
+                                driver.sleep(1 * 1000);
+                                try {
+                                    await driver.untilIsVisible(orderPage.Cart_List_container);
+                                } catch (error) {
+                                    console.error(error);
+                                    try {
+                                        await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
+                                    } catch (error) {
+                                        console.error(error);
+                                        throw new Error('Problem in Cart validation');
+                                    }
+                                }
+                            });
+                            it('verify that the sum total of items in the cart is correct', async function () {
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At Cart`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                                const itemsInCart = await (
+                                    await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                ).getText();
+                                driver.sleep(0.2 * 1000);
+                                expect(Number(itemsInCart)).to.equal(udcTestItems.length);
+                                driver.sleep(1 * 1000);
+                            });
+                            it(`switch to 'Lines View'`, async function () {
+                                await orderPage.changeCartView('Lines');
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `After "Lines" View was selected`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                            });
+                            udcTestItems.forEach(async (item) => {
+                                udcTestCartStates.forEach((udcTestState) => {
+                                    describe(`Checking "${udcTestState}"`, () => {
+                                        it(`change ${item} quantity to ${udcTestState}`, async function () {
+                                            const splitedStateArgs = udcTestState.split(' ');
+                                            const amount = Number(splitedStateArgs[0]);
+                                            await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
+                                                'Each',
+                                                item,
+                                                amount,
+                                                driver,
+                                                'LinesView',
+                                            );
+                                            driver.sleep(0.2 * 1000);
+                                        });
+                                        it(`Checking TSAs`, async function () {
+                                            const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                                'Cart',
+                                                item,
+                                                undefined,
+                                                undefined,
+                                                'LinesView',
+                                            );
+                                            const priceTSAs = await pricingService.getItemTSAs(
+                                                'Cart',
+                                                item,
+                                                undefined,
+                                                undefined,
+                                                'LinesView',
+                                            );
+                                            console.info(`Cart ${item} totalUnitsAmount:`, totalUnitsAmount);
+                                            console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
+                                            const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
+                                                'Cart',
+                                                item,
+                                                undefined,
+                                                undefined,
+                                                'LinesView',
+                                            );
+                                            console.info(
+                                                `CART ${item} ${udcTestState} priceTSA_Discount2:`,
+                                                JSON.stringify(priceTSA_Discount2, null, 2),
+                                            );
+                                            const expectedAmount = udcTestState.split(' ')[0];
+                                            addContext(this, {
+                                                title: `Total Units Amount`,
+                                                value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
+                                            });
+                                            priceFields.forEach((priceField) => {
+                                                const expectedValue =
+                                                    pricingData.testItemsValues.Udc[item][priceField][account].cart[
+                                                        udcTestState
+                                                    ];
+                                                expect(priceTSAs[priceField]).equals(expectedValue);
+                                            });
                                         });
                                     });
                                 });

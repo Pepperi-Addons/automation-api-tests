@@ -257,6 +257,22 @@ _________________
             });
         });
 
+        it('Deleting All Transactions via API', async function () {
+            let allTransactions = await objectsService.getTransaction();
+            const deleteResponses = await Promise.all(
+                allTransactions.map(async (transaction) => {
+                    if (transaction.InternalID) {
+                        return await objectsService.deleteTransaction(transaction.InternalID);
+                    }
+                }),
+            );
+            deleteResponses.forEach((response) => {
+                expect(response).to.be.true;
+            });
+            allTransactions = await objectsService.getTransaction();
+            expect(allTransactions).to.eql([]);
+        });
+
         it('Manual Sync', async () => {
             await e2eutils.performManualSync(client);
         });
@@ -294,9 +310,9 @@ _________________
                         return tableRow;
                     }
                 });
+                console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                 matchingRowOfppmValues &&
                     console.info('ACTUAL: matchingRowOfppmValues: ', matchingRowOfppmValues['Values'][0]);
-                console.info('EXPECTED: ppmValues_content[mainKey]: ', ppmValues_content[mainKey]);
                 matchingRowOfppmValues &&
                     addContext(this, {
                         title: `PPM Key "${mainKey}"`,
@@ -314,6 +330,11 @@ _________________
         testAccounts.forEach((account) => {
             describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, () => {
                 it('Creating new transaction', async function () {
+                    base64ImageComponent = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Before Transaction created`,
+                        value: 'data:image/png;base64,' + base64ImageComponent,
+                    });
                     switch (account) {
                         case 'Acc01':
                             accountName = 'My Store';

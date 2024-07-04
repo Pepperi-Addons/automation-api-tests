@@ -1174,7 +1174,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             })
             .then((res) => res.Body);
 
-        //debugger;
+        debugger;
         if (
             logcash.createSchema1.Name.includes('search1_test') &&
             logcash.createSchema1.Hidden == false &&

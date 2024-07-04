@@ -3,11 +3,21 @@ import promised from 'chai-as-promised';
 import { describe, it, before, after } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../utilities/browser';
-import { WebAppLoginPage } from '../../pom';
+import {
+    WebAppAPI,
+    WebAppDialog,
+    WebAppHeader,
+    WebAppHomePage,
+    WebAppList,
+    WebAppLoginPage,
+    WebAppTopBar,
+} from '../../pom';
 import addContext from 'mochawesome/addContext';
 import GeneralService from '../../../services/general.service';
 import PricingConfiguration from '../../pom/addons/PricingConfiguration';
 import E2EUtils from '../../utilities/e2e_utils';
+import { PricingService } from '../../../services/pricing.service';
+import { OrderPage } from '../../pom/Pages/OrderPage';
 
 chai.use(promised);
 
@@ -17,6 +27,7 @@ export async function PricingConfigUpload(
     password: string,
     specificVersion: 'version07for05data' | 'noUom' | undefined = undefined,
 ) {
+    const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
     const pricingConfiguration = new PricingConfiguration();
     const generalService = new GeneralService(client);
     const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
@@ -24,8 +35,16 @@ export async function PricingConfigUpload(
     // const installedPricingVersionShort = installedPricingVersion?.split('.')[1];
     let driver: Browser;
     let e2eUtils: E2EUtils;
+    let webAppAPI: WebAppAPI;
     let webAppLoginPage: WebAppLoginPage;
-    let base64ImageComponent;
+    let webAppHomePage: WebAppHomePage;
+    let webAppHeader: WebAppHeader;
+    let webAppList: WebAppList;
+    let webAppTopBar: WebAppTopBar;
+    let webAppDialog: WebAppDialog;
+    let orderPage: OrderPage;
+    let pricingService: PricingService;
+    let screenShot;
     let pricingConfig;
 
     describe(`Setting Configuration File - Pricing Version: ${installedPricingVersion} ${
@@ -33,8 +52,26 @@ export async function PricingConfigUpload(
     }`, () => {
         before(async function () {
             driver = await Browser.initiateChrome();
+            webAppAPI = new WebAppAPI(driver, client);
             webAppLoginPage = new WebAppLoginPage(driver);
+            webAppHomePage = new WebAppHomePage(driver);
+            webAppHeader = new WebAppHeader(driver);
+            webAppList = new WebAppList(driver);
+            webAppTopBar = new WebAppTopBar(driver);
+            webAppDialog = new WebAppDialog(driver);
+            orderPage = new OrderPage(driver);
             e2eUtils = new E2EUtils(driver);
+            pricingService = new PricingService(
+                driver,
+                webAppLoginPage,
+                webAppHomePage,
+                webAppHeader,
+                webAppList,
+                webAppTopBar,
+                webAppDialog,
+                orderPage,
+                generalService,
+            );
         });
 
         after(async function () {
@@ -66,9 +103,9 @@ export async function PricingConfigUpload(
                         pricingConfig = pricingConfiguration.version1; // version 1.0 is not ready yet (May 2024)
                         break;
                 }
-                await uploadConfiguration(pricingConfig);
+                await pricingService.uploadConfiguration(pricingConfig);
                 addContext(this, {
-                    title: `Config =`,
+                    title: `Sent Config`,
                     value: JSON.stringify(pricingConfig, null, 2),
                 });
             });
@@ -76,9 +113,9 @@ export async function PricingConfigUpload(
         specificVersion === 'version07for05data' &&
             it(`Sending version07 for 05data configuration object to end point`, async function () {
                 pricingConfig = pricingConfiguration.version07for05data;
-                await uploadConfiguration(pricingConfig);
+                await pricingService.uploadConfiguration(pricingConfig);
                 addContext(this, {
-                    title: `Config =`,
+                    title: `Sent Config`,
                     value: JSON.stringify(pricingConfig, null, 2),
                 });
             });
@@ -87,20 +124,29 @@ export async function PricingConfigUpload(
             it('Sending configuration without UOM to end point', async function () {
                 const configVersion = installedPricingVersion?.startsWith('0.8') ? 'version08noUom' : 'version1noUom'; // version1noUom does not exist yet (May 2024)
                 pricingConfig = pricingConfiguration[configVersion];
-                await uploadConfiguration(pricingConfig);
+                await pricingService.uploadConfiguration(pricingConfig);
                 addContext(this, {
-                    title: `Config =`,
+                    title: `Sent Config`,
                     value: JSON.stringify(pricingConfig, null, 2),
                 });
             });
 
+        it('Validating configuration', async function () {
+            const actualConfig = await pricingService.getConfiguration();
+            addContext(this, {
+                title: `Actual Retrieved Config`,
+                value: JSON.stringify(actualConfig, null, 2),
+            });
+            expect(actualConfig).to.deep.equal(pricingConfig);
+        });
+
         describe(`Login to Pricing Test User after Configuration Upload | Ver ${installedPricingVersion}`, () => {
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
 
@@ -108,38 +154,44 @@ export async function PricingConfigUpload(
                 await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 
+            it('If Error popup appear - close it', async function () {
+                await driver.refresh();
+                const accessToken = await webAppAPI.getAccessToken();
+                await webAppAPI.pollForResyncResponse(accessToken, 100);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await driver.navigate(`${baseUrl}/HomePage`);
+                }
+                await webAppAPI.pollForResyncResponse(accessToken);
+            });
+
             it('Logout', async function () {
+                screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `Before logout`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+                const accessToken = await webAppAPI.getAccessToken();
+                await webAppAPI.pollForResyncResponse(accessToken, 100);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await driver.navigate(`${baseUrl}/HomePage`);
+                }
+                await webAppAPI.pollForResyncResponse(accessToken);
+                await driver.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 await webAppLoginPage.logout();
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `Logged out`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
         });
     });
-
-    async function uploadConfiguration(payload: any) {
-        const uploadConfigResponse = await generalService.fetchStatus(
-            `/addons/api/adb3c829-110c-4706-9168-40fba9c0eb52/api/configuration`,
-            {
-                method: 'POST',
-                body: JSON.stringify({
-                    Key: 'main',
-                    Config: JSON.stringify(payload),
-                }),
-            },
-        );
-        console.info('uploadConfigResponse: ', JSON.stringify(uploadConfigResponse, null, 2));
-        expect(uploadConfigResponse.Ok).to.equal(true);
-        expect(uploadConfigResponse.Status).to.equal(200);
-        expect(Object.keys(uploadConfigResponse.Body)).to.eql([
-            'ModificationDateTime',
-            'Hidden',
-            'CreationDateTime',
-            'Config',
-            'Key',
-        ]);
-        expect(uploadConfigResponse.Body.Key).to.equal('main');
-    }
 }

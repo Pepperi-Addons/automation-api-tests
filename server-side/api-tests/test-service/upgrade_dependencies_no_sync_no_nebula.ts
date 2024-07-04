@@ -1,8 +1,4 @@
-import GeneralService, {
-    testDataForNebulaDists,
-    testDataNoSyncNoNebula,
-    TesterFunctions,
-} from '../../services/general.service';
+import GeneralService, { testDataNoSyncNoNebula, TesterFunctions } from '../../services/general.service';
 
 export async function UpgradeDependenciesNoSyncNoNebula(
     generalService: GeneralService,
@@ -21,19 +17,19 @@ export async function UpgradeDependenciesNoSyncNoNebula(
         varKey = request.body.varKeyPro;
     }
     const chnageVersionResponseArr = await generalService.changeVersion(varKey, testDataNoSyncNoNebula, false);
-    const isInstalledArr = await generalService.areAddonsInstalled(testDataForNebulaDists);
+    const isInstalledArr = await generalService.areAddonsInstalled(testDataNoSyncNoNebula);
 
     //Services Framework, Cross Platforms API, WebApp Platform, Addons Manager, Data Views API, Settings Framework, ADAL
     describe('Upgrade Dependencies Addons', () => {
         isInstalledArr.forEach((isInstalled, index) => {
-            it(`Validate That Needed Addon Is Installed: ${Object.keys(testDataForNebulaDists)[index]}`, () => {
+            it(`Validate That Needed Addon Is Installed: ${Object.keys(testDataNoSyncNoNebula)[index]}`, () => {
                 expect(isInstalled).to.be.true;
             });
         });
 
-        for (const addonName in testDataForNebulaDists) {
-            const addonUUID = testDataForNebulaDists[addonName][0];
-            const version = testDataForNebulaDists[addonName][1];
+        for (const addonName in testDataNoSyncNoNebula) {
+            const addonUUID = testDataNoSyncNoNebula[addonName][0];
+            const version = testDataNoSyncNoNebula[addonName][1];
             const varLatestVersion = chnageVersionResponseArr[addonName][2];
             const changeType = chnageVersionResponseArr[addonName][3];
             describe(`${addonName}`, () => {
