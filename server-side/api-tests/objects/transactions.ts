@@ -783,6 +783,8 @@ export async function TransactionTests(generalService: GeneralService, tester: T
             items = await service.getItems();
             createdTransactionLines = await service.createTransactionLine({
                 TransactionInternalID: createdTransaction.InternalID,
+                DeliveryDate: '2020-09-01Z',
+                UnitDiscountPercentage: 50,
                 LineNumber: 0,
                 ItemExternalID: items[0].ExternalID,
                 UnitsQuantity: 1,
@@ -826,7 +828,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                     TSASingleLineAPI: 'Random text',
                     TotalUnitsPriceAfterDiscount: 0.0,
                     TotalUnitsPriceBeforeDiscount: 0.0,
-                    UnitDiscountPercentage: 0.0,
+                    UnitDiscountPercentage: 50,
                     UnitPrice: 0.0,
                     UnitPriceAfterDiscount: 0.0,
                 }),
@@ -870,6 +872,34 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                     .to.be.an('array')
                     .with.lengthOf(1),
             ]);
+        });
+
+        it('Validate API Names using search', async () => {
+            const lineValidation = await service.searchTransactionLine(
+                {
+                    Where: `UUID='${createdTransactionLines.UUID}'`,
+                    Fields: "InternalID,UUID,Archive,CreationDateTime,DeliveryDate,Hidden,LineNumber,ModificationDateTime,TotalUnitsPriceAfterDiscount,TotalUnitsPriceBeforeDiscount,UnitDiscountPercentage,UnitPrice,UnitPriceAfterDiscount,UnitsQuantity,Item.InternalID,Item.UUID,Item.ExternalID,Transaction.InternalID,Transaction.UUID,Transaction.ExternalID"
+                }
+            )
+            expect(lineValidation[0].InternalID).to.equal(createdTransactionLines.InternalID);
+            expect(lineValidation[0].UUID).to.include(createdTransactionLines.UUID);
+            expect(lineValidation[0].CreationDateTime).to.equal(createdTransactionLines.CreationDateTime);
+            expect(lineValidation[0].DeliveryDate).to.equal(createdTransactionLines.DeliveryDate);
+            expect(lineValidation[0].ModificationDateTime).to.equal(createdTransactionLines.ModificationDateTime);
+            expect(lineValidation[0].Archive).to.be.false;
+            expect(lineValidation[0].Hidden).to.be.false;
+            expect(lineValidation[0].TotalUnitsPriceAfterDiscount).to.equal(createdTransactionLines.TotalUnitsPriceAfterDiscount);
+            expect(lineValidation[0].TotalUnitsPriceBeforeDiscount).to.equal(createdTransactionLines.TotalUnitsPriceBeforeDiscount);
+            expect(lineValidation[0].UnitDiscountPercentage).to.equal(createdTransactionLines.UnitDiscountPercentage);
+            expect(lineValidation[0].UnitPrice).to.equal(createdTransactionLines.UnitPrice);
+            expect(lineValidation[0].UnitPriceAfterDiscount).to.equal(createdTransactionLines.UnitPriceAfterDiscount);
+            expect(lineValidation[0].UnitsQuantity).to.equal(createdTransactionLines.UnitsQuantity);
+            expect(lineValidation[0]['Item.InternalID']).to.equal(items[0].InternalID);
+            expect(lineValidation[0]['Item.UUID']).to.equal(items[0].UUID);
+            expect(lineValidation[0]['Item.ExternalID']).to.equal(items[0].ExternalID);
+            expect(lineValidation[0]['Transaction.InternalID']).to.equal(createdTransaction.InternalID);
+            expect(lineValidation[0]['Transaction.UUID']).to.equal(createdTransaction.UUID);
+            expect(lineValidation[0]['Transaction.ExternalID']).to.equal(createdTransaction.ExternalID);
         });
 
         it('Validate PNS after Insert', async () => {
@@ -1099,7 +1129,7 @@ export async function TransactionTests(generalService: GeneralService, tester: T
                 {
                     FieldID: 'UnitDiscountPercentage',
                     NewValue: 100,
-                    OldValue: 0,
+                    OldValue: 50,
                 },
                 {
                     FieldID: 'UnitPrice',
