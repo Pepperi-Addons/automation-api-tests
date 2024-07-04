@@ -7,7 +7,8 @@
   "Endpoints": [
     "installation.js",
     "tests.ts",
-    "logger.ts"
+    "logger.ts",
+    "async_test.ts"
   ],
   "Editors": [
     "editor"
