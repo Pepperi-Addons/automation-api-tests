@@ -875,12 +875,10 @@ export async function TransactionTests(generalService: GeneralService, tester: T
         });
 
         it('Validate API Names using search', async () => {
-            const lineValidation = await service.searchTransactionLine(
-                {
-                    Where: `UUID='${createdTransactionLines.UUID}'`,
-                    Fields: "InternalID,UUID,Archive,CreationDateTime,DeliveryDate,Hidden,LineNumber,ModificationDateTime,TotalUnitsPriceAfterDiscount,TotalUnitsPriceBeforeDiscount,UnitDiscountPercentage,UnitPrice,UnitPriceAfterDiscount,UnitsQuantity,Item.InternalID,Item.UUID,Item.ExternalID,Transaction.InternalID,Transaction.UUID,Transaction.ExternalID"
-                }
-            )
+            const lineValidation = await service.searchTransactionLine({
+                Where: `UUID='${createdTransactionLines.UUID}'`,
+                Fields: 'InternalID,UUID,Archive,CreationDateTime,DeliveryDate,Hidden,LineNumber,ModificationDateTime,TotalUnitsPriceAfterDiscount,TotalUnitsPriceBeforeDiscount,UnitDiscountPercentage,UnitPrice,UnitPriceAfterDiscount,UnitsQuantity,Item.InternalID,Item.UUID,Item.ExternalID,Transaction.InternalID,Transaction.UUID,Transaction.ExternalID',
+            });
             expect(lineValidation[0].InternalID).to.equal(createdTransactionLines.InternalID);
             expect(lineValidation[0].UUID).to.include(createdTransactionLines.UUID);
             expect(lineValidation[0].CreationDateTime).to.equal(createdTransactionLines.CreationDateTime);
@@ -888,8 +886,12 @@ export async function TransactionTests(generalService: GeneralService, tester: T
             expect(lineValidation[0].ModificationDateTime).to.equal(createdTransactionLines.ModificationDateTime);
             expect(lineValidation[0].Archive).to.be.false;
             expect(lineValidation[0].Hidden).to.be.false;
-            expect(lineValidation[0].TotalUnitsPriceAfterDiscount).to.equal(createdTransactionLines.TotalUnitsPriceAfterDiscount);
-            expect(lineValidation[0].TotalUnitsPriceBeforeDiscount).to.equal(createdTransactionLines.TotalUnitsPriceBeforeDiscount);
+            expect(lineValidation[0].TotalUnitsPriceAfterDiscount).to.equal(
+                createdTransactionLines.TotalUnitsPriceAfterDiscount,
+            );
+            expect(lineValidation[0].TotalUnitsPriceBeforeDiscount).to.equal(
+                createdTransactionLines.TotalUnitsPriceBeforeDiscount,
+            );
             expect(lineValidation[0].UnitDiscountPercentage).to.equal(createdTransactionLines.UnitDiscountPercentage);
             expect(lineValidation[0].UnitPrice).to.equal(createdTransactionLines.UnitPrice);
             expect(lineValidation[0].UnitPriceAfterDiscount).to.equal(createdTransactionLines.UnitPriceAfterDiscount);

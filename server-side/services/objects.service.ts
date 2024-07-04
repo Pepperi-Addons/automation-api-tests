@@ -169,7 +169,7 @@ export class ObjectsService {
         return this.papiClient.transactionLines.upsert(body);
     }
 
-    searchTransactionLine(body){
+    searchTransactionLine(body) {
         return this.papiClient.post('/transaction_lines/search', body);
     }
 
