@@ -173,7 +173,7 @@ _________________
     if (!installedPricingVersion?.startsWith('0.5')) {
         describe(`Pricing ** Partial Value ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
+        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, function () {
             before(async function () {
                 driver = await Browser.initiateChrome();
                 webAppAPI = new WebAppAPI(driver, client);
@@ -279,6 +279,12 @@ _________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
+                    afterEach(async function () {
+                        driver.sleep(500);
+                        await webAppHomePage.isDialogOnHomePAge(this);
+                        await webAppHomePage.collectEndTestData(this);
+                    });
+
                     it('Creating new transaction', async function () {
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
@@ -310,6 +316,12 @@ _________________
                     });
 
                     describe('Partial Value', () => {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         it('Navigating to "Great Perfumes" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(
@@ -317,9 +329,22 @@ _________________
                             );
                             driver.sleep(0.1 * 1000);
                         });
+
                         partialValueTestItems.forEach((partialValueTestItem) => {
                             describe(`Item: ***${partialValueTestItem}`, function () {
+                                afterEach(async function () {
+                                    driver.sleep(500);
+                                    await webAppHomePage.isDialogOnHomePAge(this);
+                                    await webAppHomePage.collectEndTestData(this);
+                                });
+
                                 describe('ORDER CENTER', function () {
+                                    afterEach(async function () {
+                                        driver.sleep(500);
+                                        await webAppHomePage.isDialogOnHomePAge(this);
+                                        await webAppHomePage.collectEndTestData(this);
+                                    });
+
                                     it(`Looking for "${partialValueTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(
                                             partialValueTestItem,
@@ -327,6 +352,7 @@ _________________
                                         );
                                         driver.sleep(1 * 1000);
                                     });
+
                                     partialValueTestStates.forEach((partialValueTestState) => {
                                         it(`Checking "${partialValueTestState}"`, async function () {
                                             if (partialValueTestState != 'baseline') {
@@ -422,12 +448,19 @@ _________________
                         });
 
                         describe('CART', function () {
+                            afterEach(async function () {
+                                driver.sleep(500);
+                                await webAppHomePage.isDialogOnHomePAge(this);
+                                await webAppHomePage.collectEndTestData(this);
+                            });
+
                             it('entering and verifying being in cart', async function () {
                                 await driver.click(orderPage.Cart_Button);
                                 await orderPage.isSpinnerDone();
                                 driver.sleep(1 * 1000);
                                 await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
                             });
+
                             it(`switch to 'Lines View'`, async function () {
                                 await orderPage.changeCartView('Lines');
                                 base64ImageComponent = await driver.saveScreenshots();
@@ -436,6 +469,7 @@ _________________
                                     value: 'data:image/png;base64,' + base64ImageComponent,
                                 });
                             });
+
                             it('verifying that the sum total of items in the cart is correct', async function () {
                                 const numberOfItemsInCart = partialValueTestItems.length;
                                 base64ImageComponent = await driver.saveScreenshots();
@@ -454,6 +488,7 @@ _________________
                                 expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                                 driver.sleep(1 * 1000);
                             });
+
                             partialValueCartTestItemsSets.forEach((partialValueCartTestItems, index) => {
                                 it(`filtering cart using smart filter Item External ID - Group ${
                                     index + 1
@@ -487,6 +522,7 @@ _________________
                                     });
                                     expect(Number(itemsInCart)).to.equal(partialValueCartTestItems.length);
                                 });
+
                                 partialValueCartTestItems.forEach((partialValueTestCartItem) => {
                                     it(`checking item "${partialValueTestCartItem}"`, async function () {
                                         const pricePartialTSAs = await pricingService.getTSAsOfPartialPerItem(
@@ -520,6 +556,7 @@ _________________
                                         driver.sleep(1 * 1000);
                                     });
                                 });
+
                                 it(`clearing smart filter`, async function () {
                                     await driver.click(orderPage.Cart_SmartFilter_ClearButton);
                                     await orderPage.isSpinnerDone();
@@ -548,6 +585,12 @@ _________________
             });
 
             describe('Cleanup', () => {
+                afterEach(async function () {
+                    driver.sleep(500);
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                    await webAppHomePage.collectEndTestData(this);
+                });
+
                 it('deleting all Activities', async () => {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();

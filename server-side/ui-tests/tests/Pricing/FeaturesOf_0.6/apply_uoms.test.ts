@@ -164,7 +164,7 @@ _________________
     if (!installedPricingVersion?.startsWith('0.5')) {
         describe(`Pricing ** UOM ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
+        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, function () {
             before(async function () {
                 driver = await Browser.initiateChrome();
                 webAppAPI = new WebAppAPI(driver, client);
@@ -270,6 +270,12 @@ _________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
+                    afterEach(async function () {
+                        driver.sleep(500);
+                        await webAppHomePage.isDialogOnHomePAge(this);
+                        await webAppHomePage.collectEndTestData(this);
+                    });
+
                     it('Creating new transaction', async function () {
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
@@ -301,18 +307,38 @@ _________________
                     });
 
                     describe('UOMs', () => {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         it('Navigating to "Hair4You" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Hair4You'));
                             driver.sleep(0.1 * 1000);
                         });
+
                         uomTestItems.forEach((uomTestItem) => {
                             describe(`Item: ***${uomTestItem}`, function () {
+                                afterEach(async function () {
+                                    driver.sleep(500);
+                                    await webAppHomePage.isDialogOnHomePAge(this);
+                                    await webAppHomePage.collectEndTestData(this);
+                                });
+
                                 describe('ORDER CENTER', function () {
+                                    afterEach(async function () {
+                                        driver.sleep(500);
+                                        await webAppHomePage.isDialogOnHomePAge(this);
+                                        await webAppHomePage.collectEndTestData(this);
+                                    });
+
                                     it(`Looking for "${uomTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(uomTestItem, driver);
                                         driver.sleep(1 * 1000);
                                     });
+
                                     uomTestStates.forEach((uomTestState) => {
                                         it(`Checking "${uomTestState}"`, async function () {
                                             if (uomTestState != 'baseline') {
@@ -414,7 +440,14 @@ _________________
                                 });
                             });
                         });
+
                         describe('CART', function () {
+                            afterEach(async function () {
+                                driver.sleep(500);
+                                await webAppHomePage.isDialogOnHomePAge(this);
+                                await webAppHomePage.collectEndTestData(this);
+                            });
+
                             it('entering and verifying being in cart', async function () {
                                 await driver.click(orderPage.Cart_Button);
                                 await orderPage.isSpinnerDone();
@@ -427,8 +460,10 @@ _________________
                                 driver.sleep(1 * 1000);
                                 await driver.untilIsVisible(orderPage.Cart_List_container);
                             });
+
                             // it(`switch to 'Grid View'`, async function () {
                             // });
+
                             it('verifying that the sum total of items in the cart is correct', async function () {
                                 let numberOfItemsInCart = uomTestCartItems.length;
                                 if (account === 'OtherAcc') {
@@ -453,6 +488,7 @@ _________________
                                 expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                                 driver.sleep(1 * 1000);
                             });
+
                             uomTestCartItems.forEach((uomTestCartItem) => {
                                 it(`${
                                     uomTestCartItem.name.includes('Free') && account === 'OtherAcc'
@@ -519,6 +555,12 @@ _________________
             });
 
             describe('Cleanup', () => {
+                afterEach(async function () {
+                    driver.sleep(500);
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                    await webAppHomePage.collectEndTestData(this);
+                });
+
                 it('deleting all Activities', async () => {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();

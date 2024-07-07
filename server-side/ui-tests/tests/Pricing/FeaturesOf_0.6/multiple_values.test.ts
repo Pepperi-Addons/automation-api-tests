@@ -255,7 +255,7 @@ ________________________________________________________________________________
     if (!installedPricingVersion?.startsWith('0.5')) {
         describe(`Pricing ** Multiple Values ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
+        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, function () {
             before(async function () {
                 driver = await Browser.initiateChrome();
                 webAppAPI = new WebAppAPI(driver, client);
@@ -361,6 +361,12 @@ ________________________________________________________________________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
+                    afterEach(async function () {
+                        driver.sleep(500);
+                        await webAppHomePage.isDialogOnHomePAge(this);
+                        await webAppHomePage.collectEndTestData(this);
+                    });
+
                     it('Creating new transaction', async function () {
                         switch (account) {
                             case 'Acc01':
@@ -402,10 +408,29 @@ ________________________________________________________________________________
                         expect(typeof duration_num).equals('number');
                         expect(duration_num).to.be.below(limit);
                     });
+
                     describe('Multiple Values (Out Of Category Item)', () => {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         multipleValuesTestItems_outOfCategory.forEach((multipleValuesTestItem) => {
                             describe(`Item: ***${multipleValuesTestItem}`, function () {
+                                afterEach(async function () {
+                                    driver.sleep(500);
+                                    await webAppHomePage.isDialogOnHomePAge(this);
+                                    await webAppHomePage.collectEndTestData(this);
+                                });
+
                                 describe('ORDER CENTER', function () {
+                                    afterEach(async function () {
+                                        driver.sleep(500);
+                                        await webAppHomePage.isDialogOnHomePAge(this);
+                                        await webAppHomePage.collectEndTestData(this);
+                                    });
+
                                     it(`Looking for "${multipleValuesTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(
                                             multipleValuesTestItem,
@@ -413,12 +438,19 @@ ________________________________________________________________________________
                                         );
                                         driver.sleep(1 * 1000);
                                     });
+
                                     [
                                         multipleValuesTestStates_each,
                                         multipleValuesTestStates_case,
                                         multipleValuesTestStates_box,
                                     ].forEach((uomStatesVeriable, index) => {
                                         describe(`${index == 0 ? 'Each' : index == 1 ? 'Case' : 'Box'}`, () => {
+                                            afterEach(async function () {
+                                                driver.sleep(500);
+                                                await webAppHomePage.isDialogOnHomePAge(this);
+                                                await webAppHomePage.collectEndTestData(this);
+                                            });
+
                                             index == 1 &&
                                                 it('Setting AOQM2 to 0', async function () {
                                                     await pricingService.changeSelectedQuantityOfSpecificItemInOrderCenter.bind(
@@ -426,6 +458,7 @@ ________________________________________________________________________________
                                                     )('Each' + '&Totals', multipleValuesTestItem, 0, driver, '2');
                                                     driver.sleep(0.1 * 1000);
                                                 });
+
                                             uomStatesVeriable.forEach((multipleValuesTestState) => {
                                                 it(`Checking "${multipleValuesTestState}"`, async function () {
                                                     if (multipleValuesTestState != 'baseline') {
@@ -528,13 +561,21 @@ ________________________________________________________________________________
                                         });
                                     });
                                 });
+
                                 describe('CART', function () {
+                                    afterEach(async function () {
+                                        driver.sleep(500);
+                                        await webAppHomePage.isDialogOnHomePAge(this);
+                                        await webAppHomePage.collectEndTestData(this);
+                                    });
+
                                     it('entering and verifying being in cart', async function () {
                                         await driver.click(orderPage.Cart_Button);
                                         await orderPage.isSpinnerDone();
                                         driver.sleep(1 * 1000);
                                         await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
                                     });
+
                                     it(`switch to 'Lines View'`, async function () {
                                         await orderPage.changeCartView('Lines');
                                         base64ImageComponent = await driver.saveScreenshots();
@@ -543,6 +584,7 @@ ________________________________________________________________________________
                                             value: 'data:image/png;base64,' + base64ImageComponent,
                                         });
                                     });
+
                                     it('verifying that the sum total of items in the cart is correct', async function () {
                                         const numberOfItemsInCart = multipleValuesTestItems_outOfCategory.length;
                                         base64ImageComponent = await driver.saveScreenshots();
@@ -561,6 +603,7 @@ ________________________________________________________________________________
                                         expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                                         driver.sleep(1 * 1000);
                                     });
+
                                     multipleValuesTestItems_outOfCategory.forEach((multipleValuesTestCartItem) => {
                                         it(`checking item "${multipleValuesTestCartItem}"`, async function () {
                                             const state = '10 Box';
@@ -589,6 +632,7 @@ ________________________________________________________________________________
                                             driver.sleep(1 * 1000);
                                         });
                                     });
+
                                     it('Click "Continue ordering" button', async function () {
                                         await driver.click(orderPage.Cart_ContinueOrdering_Button);
                                         await orderPage.isSpinnerDone();
@@ -611,6 +655,7 @@ ________________________________________________________________________________
                             });
                         });
                     });
+
                     // describe('Multiple Values (Category Items)', () => {
                     //     it('Navigating to "Facial Cosmetics" at Sidebar', async function () {
                     //         await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
@@ -1079,6 +1124,12 @@ ________________________________________________________________________________
             });
 
             describe('Cleanup', () => {
+                afterEach(async function () {
+                    driver.sleep(500);
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                    await webAppHomePage.collectEndTestData(this);
+                });
+
                 it('deleting all Activities', async () => {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
