@@ -1009,19 +1009,26 @@ _________________
                             const numberOfUnits = await driver.findElements(
                                 orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
                             );
+                            // const Drug0002_freeItem_numberOfUnits_fromDrug0004 = Number(
+                            //     await numberOfUnits[0].getAttribute('title'),
+                            // );
                             const Drug0002_freeItem_numberOfUnits_fromDrug0004 = Number(
-                                await numberOfUnits[0].getAttribute('title'),
+                                await numberOfUnits[0].getText(),
                             );
                             expect(Drug0002_freeItem_numberOfUnits_fromDrug0004).equals(2);
 
+                            // const Drug0002_freeItem_numberOfUnits_fromDrug0002 = Number(
+                            //     await numberOfUnits[2].getAttribute('title'),
+                            // );
                             const Drug0002_freeItem_numberOfUnits_fromDrug0002 = Number(
-                                await numberOfUnits[2].getAttribute('title'),
+                                await numberOfUnits[2].getText(),
                             );
                             expect(Drug0002_freeItem_numberOfUnits_fromDrug0002).equals(12);
                             const numberOfAOQM = await driver.findElements(
                                 orderPage.getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(item),
                             );
-                            const Drug0002_freeItem_numberOfAOQM = Number(await numberOfAOQM[0].getAttribute('title'));
+                            // const Drug0002_freeItem_numberOfAOQM = Number(await numberOfAOQM[0].getAttribute('title'));
+                            const Drug0002_freeItem_numberOfAOQM = Number(await numberOfAOQM[0].getText());
                             expect(Drug0002_freeItem_numberOfAOQM).equals(2);
                         });
                         it('verifying the specific item "ToBr10" was added to the cart on account "My Store" and NOT added on other account', async () => {
@@ -1069,16 +1076,18 @@ _________________
                                 const numberOfUnits = await driver.findElements(
                                     orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
                                 );
-                                const ToBr10_freeItem_numberOfUnits = Number(
-                                    await numberOfUnits[0].getAttribute('title'),
-                                );
+                                // const ToBr10_freeItem_numberOfUnits = Number(
+                                //     await numberOfUnits[0].getAttribute('title'),
+                                // );
+                                const ToBr10_freeItem_numberOfUnits = Number(await numberOfUnits[0].getText());
                                 expect(ToBr10_freeItem_numberOfUnits).equals(1);
                                 const numberOfAOQM = await driver.findElements(
                                     orderPage.getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(item),
                                 );
-                                const ToBr10_freeItem_numberOfAOQM = Number(
-                                    await numberOfAOQM[0].getAttribute('title'),
-                                );
+                                // const ToBr10_freeItem_numberOfAOQM = Number(
+                                //     await numberOfAOQM[0].getAttribute('title'),
+                                // );
+                                const ToBr10_freeItem_numberOfAOQM = Number(await numberOfAOQM[0].getText());
                                 expect(ToBr10_freeItem_numberOfAOQM).equals(1);
                             });
                             it('increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async function () {
@@ -1140,17 +1149,19 @@ _________________
                                 const numberOfUnits = await driver.findElements(
                                     orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
                                 );
-                                const ToBr55_freeItem_numberOfUnits = Number(
-                                    await numberOfUnits[1].getAttribute('title'),
-                                );
+                                // const ToBr55_freeItem_numberOfUnits = Number(
+                                //     await numberOfUnits[1].getAttribute('title'),
+                                // );
+                                const ToBr55_freeItem_numberOfUnits = Number(await numberOfUnits[1].getText());
                                 expect(ToBr55_freeItem_numberOfUnits).equals(6);
                                 const numberOfAOQM = await driver.findElements(
                                     orderPage.getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(item),
                                 );
                                 expect(numberOfAOQM).to.be.an('array').with.lengthOf(1);
-                                const ToBr55_freeItem_numberOfAOQM = Number(
-                                    await numberOfAOQM[0].getAttribute('title'),
-                                );
+                                // const ToBr55_freeItem_numberOfAOQM = Number(
+                                //     await numberOfAOQM[0].getAttribute('title'),
+                                // );
+                                const ToBr55_freeItem_numberOfAOQM = Number(await numberOfAOQM[0].getText());
                                 expect(ToBr55_freeItem_numberOfAOQM).equals(1);
                             });
                         }

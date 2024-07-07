@@ -184,8 +184,11 @@ export class PricingService {
             //     });
             // }
             if (locationInElementsArray) {
+                // const totalOfUnitsByLocationAsNum = Number(
+                //     await arrOfTotalOfUnitsMinusFree[locationInElementsArray].getAttribute('title'),
+                // );
                 const totalOfUnitsByLocationAsNum = Number(
-                    await arrOfTotalOfUnitsMinusFree[locationInElementsArray].getAttribute('title'),
+                    await arrOfTotalOfUnitsMinusFree[locationInElementsArray].getText(),
                 );
                 console.info(
                     'at getItemTotalAmount function -> totalOfUnitsByLocationAsNum: ',
@@ -193,14 +196,16 @@ export class PricingService {
                 );
                 return totalOfUnitsByLocationAsNum;
             }
-            const totalOfUnitsFirstInArrAsNum = Number(await arrOfTotalOfUnitsMinusFree[0].getAttribute('title'));
+            // const totalOfUnitsFirstInArrAsNum = Number(await arrOfTotalOfUnitsMinusFree[0].getAttribute('title'));
+            const totalOfUnitsFirstInArrAsNum = Number(await arrOfTotalOfUnitsMinusFree[0].getText());
             console.info(
                 'at getItemTotalAmount function -> totalOfUnitsFirstInArrAsNum: ',
                 totalOfUnitsFirstInArrAsNum,
             );
             return totalOfUnitsFirstInArrAsNum;
         }
-        const totalOfUnitsAsNum = Number(await arrOfTotalOfUnits[0].getAttribute('title'));
+        // const totalOfUnitsAsNum = Number(await arrOfTotalOfUnits[0].getAttribute('title'));
+        const totalOfUnitsAsNum = Number(await arrOfTotalOfUnits[0].getText());
         console.info('at getItemTotalAmount function -> totalOfUnitsAsNum: ', totalOfUnitsAsNum);
         return totalOfUnitsAsNum;
     }
