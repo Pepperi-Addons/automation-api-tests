@@ -868,16 +868,15 @@ export class PricingService {
             orderPage[nameOfFunctionToLocateSelectorOfUnitsQuantity](nameOfItem),
         );
         driver.sleep(1 * 1000);
+        // const unitsQuantity_number = Number(await numberOfUnits.getAttribute('title'));
+        const unitsQuantity_number = Number(await numberOfUnits.getText());
+        const uomXnumber_num = Number(await uomXnumber.getAttribute('title'));
         switch (uomValue) {
             case 'Each':
-                expect(Number(await numberOfUnits.getAttribute('title'))).equals(
-                    Number(await uomXnumber.getAttribute('title')),
-                );
+                expect(unitsQuantity_number).equals(uomXnumber_num);
                 break;
             case 'Case':
-                expect(Number(await numberOfUnits.getAttribute('title'))).equals(
-                    Number(await uomXnumber.getAttribute('title')) * 6,
-                );
+                expect(unitsQuantity_number).equals(uomXnumber_num * 6);
                 break;
             default:
                 break;
