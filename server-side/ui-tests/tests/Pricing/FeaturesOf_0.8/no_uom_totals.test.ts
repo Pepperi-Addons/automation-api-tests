@@ -125,7 +125,7 @@ _________________
     ) {
         describe(`Pricing ** NO-UOM ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
+        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, function () {
             before(async function () {
                 driver = await Browser.initiateChrome();
                 webAppLoginPage = new WebAppLoginPage(driver);
@@ -246,7 +246,7 @@ _________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    describe('NoUom', () => {
+                    describe('NoUom', function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
@@ -374,14 +374,14 @@ _________________
                 });
             });
 
-            describe('Cleanup', () => {
+            describe('Cleanup', function () {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.isDialogOnHomePAge(this);
                     await webAppHomePage.collectEndTestData(this);
                 });
 
-                it('deleting all Activities', async () => {
+                it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Activities');

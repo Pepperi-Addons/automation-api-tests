@@ -310,7 +310,7 @@ _________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    describe('Totals', () => {
+                    describe('Totals', function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
@@ -319,14 +319,14 @@ _________________
 
                         totalsTestStates.forEach((totalsTestState) => {
                             // "baseline" , "state1", "state2"
-                            describe(`"${totalsTestState}"`, () => {
+                            describe(`"${totalsTestState}"`, function () {
                                 afterEach(async function () {
                                     driver.sleep(500);
                                     await webAppHomePage.isDialogOnHomePAge(this);
                                     await webAppHomePage.collectEndTestData(this);
                                 });
 
-                                describe(`PREP`, () => {
+                                describe(`PREP`, function () {
                                     afterEach(async function () {
                                         driver.sleep(500);
                                         await webAppHomePage.isDialogOnHomePAge(this);
@@ -695,7 +695,7 @@ _________________
                 });
             });
 
-            describe('Cleanup', () => {
+            describe('Cleanup', function () {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.isDialogOnHomePAge(this);

@@ -240,7 +240,7 @@ _________________
                             : account == 'Acc03'
                             ? 'UDC "PricingTest2"'
                             : 'UDT "PPM_Values"'
-                    }`, () => {
+                    }`, function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
@@ -342,7 +342,7 @@ _________________
                             });
                         });
 
-                        describe(`CART`, () => {
+                        describe(`CART`, function () {
                             afterEach(async function () {
                                 driver.sleep(500);
                                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -391,7 +391,7 @@ _________________
 
                             udcTestItems.forEach(async (item) => {
                                 udcTestCartStates.forEach((udcTestState) => {
-                                    describe(`Checking "${udcTestState}"`, () => {
+                                    describe(`Checking "${udcTestState}"`, function () {
                                         afterEach(async function () {
                                             driver.sleep(500);
                                             await webAppHomePage.isDialogOnHomePAge(this);
@@ -460,14 +460,14 @@ _________________
                 });
             });
 
-            describe('Cleanup', () => {
+            describe('Cleanup', function () {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.isDialogOnHomePAge(this);
                     await webAppHomePage.collectEndTestData(this);
                 });
 
-                it('deleting all Activities', async () => {
+                it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Activities');

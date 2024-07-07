@@ -334,7 +334,7 @@ _________________
         });
 
         testAccounts.forEach((account) => {
-            describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, () => {
+            describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.isDialogOnHomePAge(this);
@@ -401,7 +401,7 @@ _________________
                     });
                 });
 
-                describe('Additional Items (Free Goods)', () => {
+                describe('Additional Items (Free Goods)', function () {
                     /*
                      _________________ 
                      _________________ Brief:
@@ -465,14 +465,14 @@ _________________
                         await webAppHomePage.collectEndTestData(this);
                     });
 
-                    describe('ORDER CENTER', () => {
+                    describe('ORDER CENTER', function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
                             await webAppHomePage.collectEndTestData(this);
                         });
 
-                        describe('item "ToBr55" - quantity that gets 1 item of "ToBr10" for free (from 5 units "Each") (only on "My store")', () => {
+                        describe('item "ToBr55" - quantity that gets 1 item of "ToBr10" for free (from 5 units "Each") (only on "My store")', function () {
                             afterEach(async function () {
                                 driver.sleep(500);
                                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -591,7 +591,7 @@ _________________
                             });
                         });
 
-                        describe('item "Drug0002" - quantity that gets 2 "Cases" of items for free (from 10 in "Case")', () => {
+                        describe('item "Drug0002" - quantity that gets 2 "Cases" of items for free (from 10 in "Case")', function () {
                             afterEach(async function () {
                                 driver.sleep(500);
                                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -717,7 +717,7 @@ _________________
                             });
                         });
 
-                        describe('item "Drug0004" - quantity that gets 2 items (in "Each") of "Drug0002" for free (from 3 in "Case")', () => {
+                        describe('item "Drug0004" - quantity that gets 2 items (in "Each") of "Drug0002" for free (from 3 in "Case")', function () {
                             afterEach(async function () {
                                 driver.sleep(500);
                                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -843,7 +843,7 @@ _________________
                         });
                     });
 
-                    describe('Transaction ID', () => {
+                    describe('Transaction ID', function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
@@ -864,7 +864,7 @@ _________________
                         });
                     });
 
-                    describe('Transition and Validation', () => {
+                    describe('Transition and Validation', function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
@@ -957,7 +957,7 @@ _________________
                         });
                     });
 
-                    describe('CART', () => {
+                    describe('CART', function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
@@ -1276,7 +1276,7 @@ _________________
                     });
                 });
 
-                describe('Group Rules (with exclusion)', () => {
+                describe('Group Rules (with exclusion)', function () {
                     /*
                      _________________ 
                      _________________ Brief:
@@ -1335,14 +1335,14 @@ _________________
                         await webAppHomePage.collectEndTestData(this);
                     });
 
-                    describe('ORDER CENTER', () => {
+                    describe('ORDER CENTER', function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
                             await webAppHomePage.collectEndTestData(this);
                         });
 
-                        it('Navigating to "Beauty Make Up"', async () => {
+                        it('Navigating to "Beauty Make Up"', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             driver.sleep(0.1 * 1000);
@@ -2049,7 +2049,7 @@ _________________
                         });
                     });
 
-                    describe('CART', () => {
+                    describe('CART', function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
@@ -2335,7 +2335,7 @@ _________________
                             });
                         });
 
-                        it('Click "Submit" button', async () => {
+                        it('Click "Submit" button', async function () {
                             await orderPage.isSpinnerDone();
                             await driver.untilIsVisible(orderPage.Cart_List_container);
                             await driver.click(orderPage.Cart_Submit_Button);
@@ -2344,7 +2344,7 @@ _________________
                     });
                 });
 
-                describe('Read Only', () => {
+                describe('Read Only', function () {
                     /*
                      _________________ 
                      _________________ Brief:
@@ -2377,7 +2377,7 @@ _________________
                         await webAppHomePage.collectEndTestData(this);
                     });
 
-                    describe('Validating Submission & UTD Changes via API', () => {
+                    describe('Validating Submission & UTD Changes via API', function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
@@ -2790,14 +2790,14 @@ _________________
                         });
                     });
 
-                    describe('Reset', () => {
+                    describe('Reset', function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
                             await webAppHomePage.collectEndTestData(this);
                         });
 
-                        it('reverting value of group discount rule in "PPM_Values" UDT to the original value', async () => {
+                        it('reverting value of group discount rule in "PPM_Values" UDT to the original value', async function () {
                             updatedUDTRowPOST = await objectsService.postUDT({
                                 MapDataExternalID: udtFirstTableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
@@ -2873,7 +2873,7 @@ _________________
             });
         });
 
-        describe('Return to HomePage', () => {
+        describe('Return to HomePage', function () {
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -2886,7 +2886,7 @@ _________________
             });
         });
 
-        describe('Cleanup', () => {
+        describe('Cleanup', function () {
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.isDialogOnHomePAge(this);

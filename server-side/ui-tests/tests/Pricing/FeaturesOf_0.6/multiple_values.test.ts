@@ -409,7 +409,7 @@ ________________________________________________________________________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    describe('Multiple Values (Out Of Category Item)', () => {
+                    describe('Multiple Values (Out Of Category Item)', function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
@@ -444,7 +444,7 @@ ________________________________________________________________________________
                                         multipleValuesTestStates_case,
                                         multipleValuesTestStates_box,
                                     ].forEach((uomStatesVeriable, index) => {
-                                        describe(`${index == 0 ? 'Each' : index == 1 ? 'Case' : 'Box'}`, () => {
+                                        describe(`${index == 0 ? 'Each' : index == 1 ? 'Case' : 'Box'}`, function () {
                                             afterEach(async function () {
                                                 driver.sleep(500);
                                                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -656,7 +656,7 @@ ________________________________________________________________________________
                         });
                     });
 
-                    // describe('Multiple Values (Category Items)', () => {
+                    // describe('Multiple Values (Category Items)', function () {
                     //     it('Navigating to "Facial Cosmetics" at Sidebar', async function () {
                     //         await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                     //         await driver.click(
@@ -674,7 +674,7 @@ ________________________________________________________________________________
                     //                     );
                     //                     driver.sleep(1 * 1000);
                     //                 });
-                    //                 describe('Each', () => {
+                    //                 describe('Each', function () {
                     //                     multipleValuesTestStates_each.forEach((multipleValuesTestState) => {
                     //                         it(`Checking "${multipleValuesTestState}"`, async function () {
                     //                             if (multipleValuesTestState != 'baseline') {
@@ -789,7 +789,7 @@ ________________________________________________________________________________
                     //                         });
                     //                     });
                     //                 });
-                    //                 describe('Case', () => {
+                    //                 describe('Case', function () {
                     //                     multipleValuesTestStates_case.forEach((multipleValuesTestState) => {
                     //                         it(`Checking "${multipleValuesTestState}"`, async function () {
                     //                             const splitedStateArgs = multipleValuesTestState.split(' ');
@@ -900,7 +900,7 @@ ________________________________________________________________________________
                     //                         });
                     //                     });
                     //                 });
-                    //                 describe('Box', () => {
+                    //                 describe('Box', function () {
                     //                     multipleValuesTestStates_box.forEach((multipleValuesTestState) => {
                     //                         it(`Checking "${multipleValuesTestState}"`, async function () {
                     //                             const splitedStateArgs = multipleValuesTestState.split(' ');
@@ -1123,14 +1123,14 @@ ________________________________________________________________________________
                 });
             });
 
-            describe('Cleanup', () => {
+            describe('Cleanup', function () {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.isDialogOnHomePAge(this);
                     await webAppHomePage.collectEndTestData(this);
                 });
 
-                it('deleting all Activities', async () => {
+                it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Activities');
