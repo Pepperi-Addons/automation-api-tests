@@ -327,7 +327,7 @@ _________________
         });
 
         testAccounts.forEach((account) => {
-            describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, () => {
+            describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.isDialogOnHomePAge(this);
@@ -393,7 +393,7 @@ _________________
                 });
 
                 testStates.forEach((state) => {
-                    describe(`ORDER CENTER "${state}"`, () => {
+                    describe(`ORDER CENTER "${state}"`, function () {
                         afterEach(async function () {
                             driver.sleep(500);
                             await webAppHomePage.isDialogOnHomePAge(this);
@@ -501,7 +501,7 @@ _________________
                     });
 
                     state !== 'baseline' &&
-                        describe(`OC Manual Line "${state}"`, () => {
+                        describe(`OC Manual Line "${state}"`, function () {
                             afterEach(async function () {
                                 driver.sleep(500);
                                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -625,7 +625,7 @@ _________________
                         });
 
                     state !== 'baseline' &&
-                        describe(`CART "${state}"`, () => {
+                        describe(`CART "${state}"`, function () {
                             afterEach(async function () {
                                 driver.sleep(500);
                                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -689,7 +689,7 @@ _________________
                                 });
                             });
 
-                            describe('back to Order Center and switch to Line View', () => {
+                            describe('back to Order Center and switch to Line View', function () {
                                 afterEach(async function () {
                                     driver.sleep(500);
                                     await webAppHomePage.isDialogOnHomePAge(this);
@@ -750,7 +750,7 @@ _________________
             });
         });
 
-        describe('Return to HomePage', () => {
+        describe('Return to HomePage', function () {
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.isDialogOnHomePAge(this);
@@ -763,7 +763,7 @@ _________________
             });
         });
 
-        describe('Cleanup', () => {
+        describe('Cleanup', function () {
             afterEach(async function () {
                 driver.sleep(500);
                 await webAppHomePage.isDialogOnHomePAge(this);

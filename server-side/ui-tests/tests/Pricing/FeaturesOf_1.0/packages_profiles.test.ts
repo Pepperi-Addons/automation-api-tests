@@ -252,7 +252,7 @@ _________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    // describe('Packages', () => {
+                    // describe('Packages', function () {
                     //      afterEach(async function () {
                     //          driver.sleep(500);
                     //          await webAppHomePage.isDialogOnHomePAge(this);
@@ -369,14 +369,14 @@ _________________
                 });
             });
 
-            describe('Cleanup', () => {
+            describe('Cleanup', function () {
                 afterEach(async function () {
                     driver.sleep(500);
                     await webAppHomePage.isDialogOnHomePAge(this);
                     await webAppHomePage.collectEndTestData(this);
                 });
 
-                it('deleting all Activities', async () => {
+                it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Activities');
