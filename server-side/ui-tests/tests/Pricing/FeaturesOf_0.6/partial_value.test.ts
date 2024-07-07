@@ -1,4 +1,4 @@
-import { describe, it, before, after } from 'mocha';
+import { describe, it, before, after, afterEach } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../../../services/general.service';
 import chai, { expect } from 'chai';
@@ -199,6 +199,12 @@ _________________
 
             after(async function () {
                 await driver.quit();
+            });
+
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.isDialogOnHomePAge(this);
+                await webAppHomePage.collectEndTestData(this);
             });
 
             it('Login', async function () {
