@@ -51,8 +51,8 @@ export abstract class BasePomObject {
 
     public async addConsoleLogsToContext(that) {
         const contextTitle = 'Console Logs';
-        const existingLogs: string[] | undefined = that?.currentTest?.context?.find((x) => x.title == contextTitle);
-        const consoleLogs: string[] = existingLogs ? existingLogs : [];
+        const existingLogs: string[] | undefined = that?.currentTest?.context?.filter((x) => x.title == contextTitle);
+        const consoleLogs: string[] = existingLogs === undefined ? [] : existingLogs;
         try {
             const logsFromBrowser = await this.browser.getConsoleLogs();
             consoleLogs.push(...logsFromBrowser);
