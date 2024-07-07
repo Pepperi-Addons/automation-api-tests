@@ -156,7 +156,7 @@ _________________
     if (!installedPricingVersion?.startsWith('0.5')) {
         describe(`Pricing ** Totals ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
+        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, function () {
             before(async function () {
                 driver = await Browser.initiateChrome();
                 webAppAPI = new WebAppAPI(driver, client);
@@ -262,6 +262,12 @@ _________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
+                    afterEach(async function () {
+                        driver.sleep(500);
+                        await webAppHomePage.isDialogOnHomePAge(this);
+                        await webAppHomePage.collectEndTestData(this);
+                    });
+
                     it('Creating new transaction', async function () {
                         switch (account) {
                             case 'Acc01':
@@ -305,10 +311,28 @@ _________________
                     });
 
                     describe('Totals', () => {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         totalsTestStates.forEach((totalsTestState) => {
                             // "baseline" , "state1", "state2"
                             describe(`"${totalsTestState}"`, () => {
+                                afterEach(async function () {
+                                    driver.sleep(500);
+                                    await webAppHomePage.isDialogOnHomePAge(this);
+                                    await webAppHomePage.collectEndTestData(this);
+                                });
+
                                 describe(`PREP`, () => {
+                                    afterEach(async function () {
+                                        driver.sleep(500);
+                                        await webAppHomePage.isDialogOnHomePAge(this);
+                                        await webAppHomePage.collectEndTestData(this);
+                                    });
+
                                     totalsTestState == 'state2' &&
                                         it('Click "Continue ordering" button', async function () {
                                             await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
@@ -331,6 +355,7 @@ _________________
                                                 value: 'data:image/png;base64,' + base64ImageComponent,
                                             });
                                         });
+
                                     it('Navigating to "Hand Cosmetics" at Sidebar', async function () {
                                         await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                                         await driver.click(
@@ -347,8 +372,20 @@ _________________
                                 });
 
                                 describe(`ORDER CENTER`, function () {
+                                    afterEach(async function () {
+                                        driver.sleep(500);
+                                        await webAppHomePage.isDialogOnHomePAge(this);
+                                        await webAppHomePage.collectEndTestData(this);
+                                    });
+
                                     totalsTestItems.forEach((totalsTestItem) => {
                                         describe(`Item: ***${totalsTestItem}`, function () {
+                                            afterEach(async function () {
+                                                driver.sleep(500);
+                                                await webAppHomePage.isDialogOnHomePAge(this);
+                                                await webAppHomePage.collectEndTestData(this);
+                                            });
+
                                             it(`Looking for "${totalsTestItem}" using the search box`, async function () {
                                                 await pricingService.searchInOrderCenter.bind(this)(
                                                     totalsTestItem,
@@ -356,6 +393,7 @@ _________________
                                                 );
                                                 driver.sleep(1 * 1000);
                                             });
+
                                             it(`Setting Amounts`, async function () {
                                                 const uom1 =
                                                     pricingData.testItemsValues.Totals[totalsTestItem][account][
@@ -388,6 +426,7 @@ _________________
                                                         driver.sleep(0.5 * 1000);
                                                 }
                                             });
+
                                             it(`Checking TSAs`, async function () {
                                                 base64ImageComponent = await driver.saveScreenshots();
                                                 addContext(this, {
@@ -517,6 +556,12 @@ _________________
 
                                 if (totalsTestState != 'baseline') {
                                     describe(`CART`, function () {
+                                        afterEach(async function () {
+                                            driver.sleep(500);
+                                            await webAppHomePage.isDialogOnHomePAge(this);
+                                            await webAppHomePage.collectEndTestData(this);
+                                        });
+
                                         it('entering and verifying being in cart', async function () {
                                             await driver.click(orderPage.Cart_Button);
                                             await orderPage.isSpinnerDone();
@@ -530,6 +575,7 @@ _________________
                                                     break;
                                             }
                                         });
+
                                         it(`switch to 'Lines View'`, async function () {
                                             await orderPage.changeCartView('Lines');
                                             base64ImageComponent = await driver.saveScreenshots();
@@ -538,6 +584,7 @@ _________________
                                                 value: 'data:image/png;base64,' + base64ImageComponent,
                                             });
                                         });
+
                                         it('verifying that the sum total of items in the cart is correct', async function () {
                                             const numberOfItemsInCart = totalsTestItems.length;
                                             base64ImageComponent = await driver.saveScreenshots();
@@ -649,6 +696,12 @@ _________________
             });
 
             describe('Cleanup', () => {
+                afterEach(async function () {
+                    driver.sleep(500);
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                    await webAppHomePage.collectEndTestData(this);
+                });
+
                 it('deleting all Activities', async () => {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();

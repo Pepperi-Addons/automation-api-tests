@@ -328,6 +328,12 @@ _________________
 
         testAccounts.forEach((account) => {
             describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, () => {
+                afterEach(async function () {
+                    driver.sleep(500);
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                    await webAppHomePage.collectEndTestData(this);
+                });
+
                 it('Creating new transaction', async function () {
                     base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -388,6 +394,12 @@ _________________
 
                 testStates.forEach((state) => {
                     describe(`ORDER CENTER "${state}"`, () => {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         testItems.forEach((item) => {
                             it(`checking item "${item.name}"`, async function () {
                                 await pricingService.searchInOrderCenter.bind(this)(item.name, driver);
@@ -490,6 +502,12 @@ _________________
 
                     state !== 'baseline' &&
                         describe(`OC Manual Line "${state}"`, () => {
+                            afterEach(async function () {
+                                driver.sleep(500);
+                                await webAppHomePage.isDialogOnHomePAge(this);
+                                await webAppHomePage.collectEndTestData(this);
+                            });
+
                             // state === '1unit' &&
                             it(`changing value of "UserLineDiscount" field of item "${manualLineDiscountItem}" to 10`, async function () {
                                 await pricingService.searchInOrderCenter.bind(this)(manualLineDiscountItem, driver);
@@ -520,6 +538,7 @@ _________________
                                 expect(manualLineDiscountItem_value).to.equal('10.00');
                                 driver.sleep(1 * 1000);
                             });
+
                             it(`validating "PriceManualLineUnitPriceAfter1" field of item "${manualLineDiscountItem}" updated`, async function () {
                                 base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
@@ -570,6 +589,7 @@ _________________
                                 });
                                 expect(priceManualLineUnitPriceAfter1_value_asNumber).equals(expectedValueRounded);
                             });
+
                             it(`checking all TSA fields of item "${manualLineDiscountItem}" after update`, async function () {
                                 base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
@@ -606,12 +626,19 @@ _________________
 
                     state !== 'baseline' &&
                         describe(`CART "${state}"`, () => {
+                            afterEach(async function () {
+                                driver.sleep(500);
+                                await webAppHomePage.isDialogOnHomePAge(this);
+                                await webAppHomePage.collectEndTestData(this);
+                            });
+
                             it('entering and verifying being in cart', async function () {
                                 await driver.click(orderPage.Cart_Button);
                                 await orderPage.isSpinnerDone();
                                 driver.sleep(1 * 1000);
                                 await driver.untilIsVisible(orderPage.Cart_List_container);
                             });
+
                             it(`switch to 'Grid View'`, async function () {
                                 await orderPage.changeCartView('Grid');
                                 base64ImageComponent = await driver.saveScreenshots();
@@ -620,6 +647,7 @@ _________________
                                     value: 'data:image/png;base64,' + base64ImageComponent,
                                 });
                             });
+
                             it('verify that the sum total of items in the cart is correct', async function () {
                                 base64ImageComponent = await driver.saveScreenshots();
                                 addContext(this, {
@@ -633,6 +661,7 @@ _________________
                                 expect(Number(itemsInCart)).to.equal(testItems.length);
                                 driver.sleep(1 * 1000);
                             });
+
                             testItems.forEach(async (item) => {
                                 it(`checking item "${item.name}"`, async function () {
                                     const totalUnitsAmount = await pricingService.getItemTotalAmount('Cart', item.name);
@@ -659,7 +688,14 @@ _________________
                                     });
                                 });
                             });
+
                             describe('back to Order Center and switch to Line View', () => {
+                                afterEach(async function () {
+                                    driver.sleep(500);
+                                    await webAppHomePage.isDialogOnHomePAge(this);
+                                    await webAppHomePage.collectEndTestData(this);
+                                });
+
                                 it('Click "Continue ordering" button', async function () {
                                     await driver.click(orderPage.Cart_ContinueOrdering_Button);
                                     await orderPage.isSpinnerDone();
@@ -678,6 +714,7 @@ _________________
                                         value: 'data:image/png;base64,' + base64ImageComponent,
                                     });
                                 });
+
                                 it(`reverting value of "UserLineDiscount" field of item "${manualLineDiscountItem}" back to 0`, async function () {
                                     await pricingService.searchInOrderCenter.bind(this)(manualLineDiscountItem, driver);
                                     base64ImageComponent = await driver.saveScreenshots();
@@ -712,7 +749,14 @@ _________________
                 });
             });
         });
+
         describe('Return to HomePage', () => {
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.isDialogOnHomePAge(this);
+                await webAppHomePage.collectEndTestData(this);
+            });
+
             it('Go Home', async function () {
                 await webAppHeader.goHome();
                 driver.sleep(1 * 1000);
@@ -720,6 +764,12 @@ _________________
         });
 
         describe('Cleanup', () => {
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.isDialogOnHomePAge(this);
+                await webAppHomePage.collectEndTestData(this);
+            });
+
             it('Deleting all Activities', async function () {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
