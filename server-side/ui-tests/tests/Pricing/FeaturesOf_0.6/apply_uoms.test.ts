@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { describe, it, before, after } from 'mocha';
+import { describe, it, before, after, afterEach } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../../utilities/browser';
 import {
@@ -190,6 +190,12 @@ _________________
 
             after(async function () {
                 await driver.quit();
+            });
+
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.isDialogOnHomePAge(this);
+                await webAppHomePage.collectEndTestData(this);
             });
 
             it('Login', async function () {
