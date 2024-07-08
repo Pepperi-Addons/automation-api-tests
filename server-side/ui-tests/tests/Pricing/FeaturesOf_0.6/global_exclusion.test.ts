@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { describe, it, before, after } from 'mocha';
+import { describe, it, before, after, afterEach } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../../utilities/browser';
 import {
@@ -202,7 +202,7 @@ ________________________________________________________________________________
     if (!installedPricingVersion?.startsWith('0.5')) {
         describe(`Pricing ** Exclusion Rules ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
+        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, function () {
             before(async function () {
                 driver = await Browser.initiateChrome();
                 webAppAPI = new WebAppAPI(driver, client);
@@ -227,6 +227,12 @@ ________________________________________________________________________________
 
             after(async function () {
                 await driver.quit();
+            });
+
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.isDialogOnHomePAge(this);
+                await webAppHomePage.collectEndTestData(this);
             });
 
             it('Login', async function () {
@@ -301,6 +307,12 @@ ________________________________________________________________________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
+                    afterEach(async function () {
+                        driver.sleep(500);
+                        await webAppHomePage.isDialogOnHomePAge(this);
+                        await webAppHomePage.collectEndTestData(this);
+                    });
+
                     it('Creating new transaction', async function () {
                         switch (account) {
                             case 'Acc01':
@@ -343,10 +355,28 @@ ________________________________________________________________________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    describe('Exclusion Rules', () => {
+                    describe('Exclusion Rules', function () {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         exclusionRulesTestItems.forEach((exclusionRulesTestItem) => {
                             describe(`Item: ***${exclusionRulesTestItem}`, function () {
+                                afterEach(async function () {
+                                    driver.sleep(500);
+                                    await webAppHomePage.isDialogOnHomePAge(this);
+                                    await webAppHomePage.collectEndTestData(this);
+                                });
+
                                 describe('ORDER CENTER', function () {
+                                    afterEach(async function () {
+                                        driver.sleep(500);
+                                        await webAppHomePage.isDialogOnHomePAge(this);
+                                        await webAppHomePage.collectEndTestData(this);
+                                    });
+
                                     it(`Looking for "${exclusionRulesTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(
                                             exclusionRulesTestItem,
@@ -354,6 +384,7 @@ ________________________________________________________________________________
                                         );
                                         driver.sleep(1 * 1000);
                                     });
+
                                     exclusionRulesTestStates.forEach((exclusionRulesTestState) => {
                                         it(`Checking "${exclusionRulesTestState}"`, async function () {
                                             if (exclusionRulesTestState != 'baseline') {
@@ -428,12 +459,19 @@ ________________________________________________________________________________
                         });
 
                         describe('CART', function () {
+                            afterEach(async function () {
+                                driver.sleep(500);
+                                await webAppHomePage.isDialogOnHomePAge(this);
+                                await webAppHomePage.collectEndTestData(this);
+                            });
+
                             it('entering and verifying being in cart', async function () {
                                 await driver.click(orderPage.Cart_Button);
                                 await orderPage.isSpinnerDone();
                                 driver.sleep(1 * 1000);
                                 await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
                             });
+
                             it(`switch to 'Lines View'`, async function () {
                                 await orderPage.changeCartView('Lines');
                                 base64ImageComponent = await driver.saveScreenshots();
@@ -442,6 +480,7 @@ ________________________________________________________________________________
                                     value: 'data:image/png;base64,' + base64ImageComponent,
                                 });
                             });
+
                             it('verifying that the sum total of items in the cart is correct', async function () {
                                 const numberOfItemsInCart = exclusionRulesTestItems.length;
                                 base64ImageComponent = await driver.saveScreenshots();
@@ -460,6 +499,7 @@ ________________________________________________________________________________
                                 expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                                 driver.sleep(1 * 1000);
                             });
+
                             exclusionRulesTestItems.forEach((exclusionRulesTestCartItem) => {
                                 it(`checking item "${exclusionRulesTestCartItem}"`, async function () {
                                     const NPMCalcMessage = await pricingService.getItemNPMCalcMessage(
@@ -539,8 +579,14 @@ ________________________________________________________________________________
                 });
             });
 
-            describe('Cleanup', () => {
-                it('deleting all Activities', async () => {
+            describe('Cleanup', function () {
+                afterEach(async function () {
+                    driver.sleep(500);
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                    await webAppHomePage.collectEndTestData(this);
+                });
+
+                it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Activities');

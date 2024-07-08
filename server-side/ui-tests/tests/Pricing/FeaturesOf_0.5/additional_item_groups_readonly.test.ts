@@ -1,4 +1,4 @@
-import { describe, it, before, after } from 'mocha';
+import { describe, it, before, after, afterEach } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../../../services/general.service';
 import chai, { expect } from 'chai';
@@ -221,7 +221,7 @@ _________________
         'PriceTaxUnitPriceAfter1',
     ];
 
-    describe(`Pricing ** Additional, Groups, Readonly ** UI tests | Ver ${installedPricingVersionLong}`, () => {
+    describe(`Pricing ** Additional, Groups, Readonly ** UI tests | Ver ${installedPricingVersionLong}`, function () {
         before(async function () {
             driver = await Browser.initiateChrome();
             webAppLoginPage = new WebAppLoginPage(driver);
@@ -246,6 +246,12 @@ _________________
 
         after(async function () {
             await driver.quit();
+        });
+
+        afterEach(async function () {
+            driver.sleep(500);
+            await webAppHomePage.isDialogOnHomePAge(this);
+            await webAppHomePage.collectEndTestData(this);
         });
 
         it('Login', async function () {
@@ -328,7 +334,13 @@ _________________
         });
 
         testAccounts.forEach((account) => {
-            describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, () => {
+            describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
+                afterEach(async function () {
+                    driver.sleep(500);
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                    await webAppHomePage.collectEndTestData(this);
+                });
+
                 it('Creating new transaction', async function () {
                     base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
@@ -389,7 +401,7 @@ _________________
                     });
                 });
 
-                describe('Additional Items (Free Goods)', () => {
+                describe('Additional Items (Free Goods)', function () {
                     /*
                      _________________ 
                      _________________ Brief:
@@ -446,8 +458,27 @@ _________________
                      _________________ 
                      _________________ 
                     */
-                    describe('ORDER CENTER', () => {
-                        describe('item "ToBr55" - quantity that gets 1 item of "ToBr10" for free (from 5 units "Each") (only on "My store")', () => {
+
+                    afterEach(async function () {
+                        driver.sleep(500);
+                        await webAppHomePage.isDialogOnHomePAge(this);
+                        await webAppHomePage.collectEndTestData(this);
+                    });
+
+                    describe('ORDER CENTER', function () {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
+                        describe('item "ToBr55" - quantity that gets 1 item of "ToBr10" for free (from 5 units "Each") (only on "My store")', function () {
+                            afterEach(async function () {
+                                driver.sleep(500);
+                                await webAppHomePage.isDialogOnHomePAge(this);
+                                await webAppHomePage.collectEndTestData(this);
+                            });
+
                             ['4 Each', '5 Each', '20 Each'].forEach(function (unitAmount, index) {
                                 it(`${unitAmount}`, async function () {
                                     item_forFreeGoods = 'ToBr55';
@@ -559,7 +590,14 @@ _________________
                                 driver.sleep(0.5 * 1000);
                             });
                         });
-                        describe('item "Drug0002" - quantity that gets 2 "Cases" of items for free (from 10 in "Case")', () => {
+
+                        describe('item "Drug0002" - quantity that gets 2 "Cases" of items for free (from 10 in "Case")', function () {
+                            afterEach(async function () {
+                                driver.sleep(500);
+                                await webAppHomePage.isDialogOnHomePAge(this);
+                                await webAppHomePage.collectEndTestData(this);
+                            });
+
                             ['9 Cases', '10 Cases'].forEach(function (unitAmount, index) {
                                 it(`${unitAmount}`, async function () {
                                     item_forFreeGoods = 'Drug0002';
@@ -678,7 +716,14 @@ _________________
                                 driver.sleep(0.5 * 1000);
                             });
                         });
-                        describe('item "Drug0004" - quantity that gets 2 items (in "Each") of "Drug0002" for free (from 3 in "Case")', () => {
+
+                        describe('item "Drug0004" - quantity that gets 2 items (in "Each") of "Drug0002" for free (from 3 in "Case")', function () {
+                            afterEach(async function () {
+                                driver.sleep(500);
+                                await webAppHomePage.isDialogOnHomePAge(this);
+                                await webAppHomePage.collectEndTestData(this);
+                            });
+
                             ['2 Cases', '3 Cases'].forEach(function (unitAmount, index) {
                                 it(`${unitAmount}`, async function () {
                                     item_forFreeGoods = 'Drug0004';
@@ -797,7 +842,14 @@ _________________
                             });
                         });
                     });
-                    describe('Transaction ID', () => {
+
+                    describe('Transaction ID', function () {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         it('getting the transaction ID through the UI', async function () {
                             await driver.refresh();
                             await orderPage.isSpinnerDone();
@@ -811,7 +863,14 @@ _________________
                             });
                         });
                     });
-                    describe('Transition and Validation', () => {
+
+                    describe('Transition and Validation', function () {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         it('exiting the transaction without submission', async function () {
                             await webAppHeader.goHome();
                             await webAppHomePage.isSpinnerDone();
@@ -823,6 +882,7 @@ _________________
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
+
                         it('verifying transaction ID', async () => {
                             console.info('transactionUUID:', transactionUUID);
                             driver.sleep(0.1 * 1000);
@@ -840,6 +900,7 @@ _________________
                                 expect(transactionInternalID).equals(transactionID);
                             }
                         });
+
                         it(`navigating to the account "${
                             account == 'Acc01' ? 'My Store' : 'Account for order scenarios'
                         }"`, async function () {
@@ -866,6 +927,7 @@ _________________
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
+
                         it('checking the latest activity - type: Sales Order, status: In Creation', async () => {
                             driver.sleep(0.1 * 1000);
                             const latestActivityID = await (
@@ -881,6 +943,7 @@ _________________
                             expect(latestActivityStatus).to.equal('In Creation');
                             expect(Number(latestActivityID)).to.equal(transactionInternalID);
                         });
+
                         it('entering the same transaction through activity list', async function () {
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
@@ -893,7 +956,14 @@ _________________
                             driver.sleep(0.1 * 1000);
                         });
                     });
-                    describe('CART', () => {
+
+                    describe('CART', function () {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         it(`switch to 'Grid View'`, async function () {
                             await orderPage.changeCartView('Grid');
                             base64ImageComponent = await driver.saveScreenshots();
@@ -902,6 +972,7 @@ _________________
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
+
                         it('verifying that the sum total of items in the cart is correct', async function () {
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
@@ -916,6 +987,7 @@ _________________
                             expect(Number(itemsInCart)).to.equal(itemsAddedToGetFreeGoods.length);
                             driver.sleep(1 * 1000);
                         });
+
                         it('changing the amount of "ToBr55" to produce free goods', async function () {
                             const item = 'ToBr55';
                             await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
@@ -926,6 +998,7 @@ _________________
                             );
                             driver.sleep(0.2 * 1000);
                         });
+
                         it('changing the amount of "Drug0002" to produce free goods', async function () {
                             const item = 'Drug0002';
                             await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
@@ -936,6 +1009,7 @@ _________________
                             );
                             driver.sleep(0.2 * 1000);
                         });
+
                         it('changing the amount of "Drug0004" to produce free goods', async function () {
                             const item = 'Drug0004';
                             await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
@@ -946,6 +1020,7 @@ _________________
                             );
                             driver.sleep(0.2 * 1000);
                         });
+
                         it('verifying that the sum total of items after the free goods were received is correct', async function () {
                             const itemsInCart = await (
                                 await driver.findElement(orderPage.Cart_Headline_Results_Number)
@@ -956,6 +1031,7 @@ _________________
                             );
                             driver.sleep(1 * 1000);
                         });
+
                         it('verifying the specific item "Drug0002" was added to the cart', async () => {
                             const cartFreeItemElements = await driver.findElements(
                                 orderPage.getSelectorOfFreeItemInCartByName(''),
@@ -1004,26 +1080,35 @@ _________________
                             });
                             driver.sleep(0.2 * 1000);
                         });
+
                         it('verify additional item "Drug0002" quantity is correct', async () => {
                             const item = 'Drug0002';
                             const numberOfUnits = await driver.findElements(
                                 orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
                             );
+                            // const Drug0002_freeItem_numberOfUnits_fromDrug0004 = Number(
+                            //     await numberOfUnits[0].getAttribute('title'),
+                            // );
                             const Drug0002_freeItem_numberOfUnits_fromDrug0004 = Number(
-                                await numberOfUnits[0].getAttribute('title'),
+                                await numberOfUnits[0].getText(),
                             );
                             expect(Drug0002_freeItem_numberOfUnits_fromDrug0004).equals(2);
 
+                            // const Drug0002_freeItem_numberOfUnits_fromDrug0002 = Number(
+                            //     await numberOfUnits[2].getAttribute('title'),
+                            // );
                             const Drug0002_freeItem_numberOfUnits_fromDrug0002 = Number(
-                                await numberOfUnits[2].getAttribute('title'),
+                                await numberOfUnits[2].getText(),
                             );
                             expect(Drug0002_freeItem_numberOfUnits_fromDrug0002).equals(12);
                             const numberOfAOQM = await driver.findElements(
                                 orderPage.getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(item),
                             );
-                            const Drug0002_freeItem_numberOfAOQM = Number(await numberOfAOQM[0].getAttribute('title'));
+                            // const Drug0002_freeItem_numberOfAOQM = Number(await numberOfAOQM[0].getAttribute('title'));
+                            const Drug0002_freeItem_numberOfAOQM = Number(await numberOfAOQM[0].getText());
                             expect(Drug0002_freeItem_numberOfAOQM).equals(2);
                         });
+
                         it('verifying the specific item "ToBr10" was added to the cart on account "My Store" and NOT added on other account', async () => {
                             const item = 'ToBr10';
                             switch (account) {
@@ -1063,24 +1148,28 @@ _________________
                             }
                             driver.sleep(2 * 1000);
                         });
+
                         if (account === 'Acc01') {
                             it('verify additional item "ToBr10" quantity is correct', async () => {
                                 const item = 'ToBr10';
                                 const numberOfUnits = await driver.findElements(
                                     orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
                                 );
-                                const ToBr10_freeItem_numberOfUnits = Number(
-                                    await numberOfUnits[0].getAttribute('title'),
-                                );
+                                // const ToBr10_freeItem_numberOfUnits = Number(
+                                //     await numberOfUnits[0].getAttribute('title'),
+                                // );
+                                const ToBr10_freeItem_numberOfUnits = Number(await numberOfUnits[0].getText());
                                 expect(ToBr10_freeItem_numberOfUnits).equals(1);
                                 const numberOfAOQM = await driver.findElements(
                                     orderPage.getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(item),
                                 );
-                                const ToBr10_freeItem_numberOfAOQM = Number(
-                                    await numberOfAOQM[0].getAttribute('title'),
-                                );
+                                // const ToBr10_freeItem_numberOfAOQM = Number(
+                                //     await numberOfAOQM[0].getAttribute('title'),
+                                // );
+                                const ToBr10_freeItem_numberOfAOQM = Number(await numberOfAOQM[0].getText());
                                 expect(ToBr10_freeItem_numberOfAOQM).equals(1);
                             });
+
                             it('increase quantity of item "ToBr55" over 20 units (Each) and see the additional item change to 1 case of "ToBr55"', async function () {
                                 const item = 'ToBr55';
                                 driver.refresh();
@@ -1094,6 +1183,7 @@ _________________
                                 );
                                 driver.sleep(0.2 * 1000);
                             });
+
                             it('verify additional item type have changed', async () => {
                                 let item = 'ToBr55';
                                 const ToBr55_itemsList = await driver.findElements(
@@ -1135,25 +1225,29 @@ _________________
                                     );
                                 }
                             });
+
                             it('verify additional item "ToBr55" quantity have changed', async () => {
                                 const item = 'ToBr55';
                                 const numberOfUnits = await driver.findElements(
                                     orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
                                 );
-                                const ToBr55_freeItem_numberOfUnits = Number(
-                                    await numberOfUnits[1].getAttribute('title'),
-                                );
+                                // const ToBr55_freeItem_numberOfUnits = Number(
+                                //     await numberOfUnits[1].getAttribute('title'),
+                                // );
+                                const ToBr55_freeItem_numberOfUnits = Number(await numberOfUnits[1].getText());
                                 expect(ToBr55_freeItem_numberOfUnits).equals(6);
                                 const numberOfAOQM = await driver.findElements(
                                     orderPage.getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(item),
                                 );
                                 expect(numberOfAOQM).to.be.an('array').with.lengthOf(1);
-                                const ToBr55_freeItem_numberOfAOQM = Number(
-                                    await numberOfAOQM[0].getAttribute('title'),
-                                );
+                                // const ToBr55_freeItem_numberOfAOQM = Number(
+                                //     await numberOfAOQM[0].getAttribute('title'),
+                                // );
+                                const ToBr55_freeItem_numberOfAOQM = Number(await numberOfAOQM[0].getText());
                                 expect(ToBr55_freeItem_numberOfAOQM).equals(1);
                             });
                         }
+
                         it('Click "Continue ordering" button + switch to "Line View"', async function () {
                             driver.sleep(0.5 * 1000);
                             base64ImageComponent = await driver.saveScreenshots();
@@ -1182,7 +1276,7 @@ _________________
                     });
                 });
 
-                describe('Group Rules (with exclusion)', () => {
+                describe('Group Rules (with exclusion)', function () {
                     /*
                      _________________ 
                      _________________ Brief:
@@ -1234,8 +1328,21 @@ _________________
                      _________________ 
                      _________________ 
                     */
-                    describe('ORDER CENTER', () => {
-                        it('Navigating to "Beauty Make Up"', async () => {
+
+                    afterEach(async function () {
+                        driver.sleep(500);
+                        await webAppHomePage.isDialogOnHomePAge(this);
+                        await webAppHomePage.collectEndTestData(this);
+                    });
+
+                    describe('ORDER CENTER', function () {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
+                        it('Navigating to "Beauty Make Up"', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             driver.sleep(0.1 * 1000);
@@ -1942,7 +2049,13 @@ _________________
                         });
                     });
 
-                    describe('CART', () => {
+                    describe('CART', function () {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         it('Entering and verifying being in Cart', async function () {
                             driver.sleep(0.1 * 1000);
                             await driver.click(orderPage.HtmlBody);
@@ -1957,6 +2070,7 @@ _________________
                             });
                             driver.sleep(1 * 1000);
                         });
+
                         it(`switch to 'Grid View'`, async function () {
                             await orderPage.changeCartView('Grid');
                             base64ImageComponent = await driver.saveScreenshots();
@@ -1965,6 +2079,7 @@ _________________
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
+
                         it('verifying that the sum total of items in the cart is correct', async function () {
                             let numberOfItemsInCart =
                                 itemsAddedToGetFreeGoods.length +
@@ -1990,6 +2105,7 @@ _________________
                             expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                             driver.sleep(1 * 1000);
                         });
+
                         // it(`setting all items amount to 1`, async function () {
                         groupRulesItems_CartTest.forEach(async (groupRuleItem_CartTest) => {
                             it(`setting "${groupRuleItem_CartTest}" item amount to 1 (${pricingData.groupRulesItems_CartTest_details[groupRuleItem_CartTest]['1EA']['title']})`, async function () {
@@ -2025,6 +2141,7 @@ _________________
                                 });
                             });
                         });
+
                         // it(`setting all items amount to original value`, async function () {
                         groupRulesItems_CartTest.forEach(async (groupRuleItem_CartTest) => {
                             it(`setting "${groupRuleItem_CartTest}" item amount to original value`, async function () {
@@ -2053,6 +2170,7 @@ _________________
                                 driver.sleep(0.2 * 1000);
                             });
                         });
+
                         groupRulesItems.forEach((groupRuleItem) => {
                             it(`checking item "${groupRuleItem.name}"`, async function () {
                                 let totalUnitsAmount;
@@ -2216,7 +2334,8 @@ _________________
                                 driver.sleep(1 * 1000);
                             });
                         });
-                        it('Click "Submit" button', async () => {
+
+                        it('Click "Submit" button', async function () {
                             await orderPage.isSpinnerDone();
                             await driver.untilIsVisible(orderPage.Cart_List_container);
                             await driver.click(orderPage.Cart_Submit_Button);
@@ -2225,7 +2344,7 @@ _________________
                     });
                 });
 
-                describe('Read Only', () => {
+                describe('Read Only', function () {
                     /*
                      _________________ 
                      _________________ Brief:
@@ -2251,7 +2370,20 @@ _________________
                      _________________ 
                      _________________ 
                     */
-                    describe('Validating Submission & UTD Changes via API', () => {
+
+                    afterEach(async function () {
+                        driver.sleep(500);
+                        await webAppHomePage.isDialogOnHomePAge(this);
+                        await webAppHomePage.collectEndTestData(this);
+                    });
+
+                    describe('Validating Submission & UTD Changes via API', function () {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         it('entering the same transaction post submission, checking the latest activity - ID', async function () {
                             await webAppList.isSpinnerDone();
                             await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
@@ -2261,6 +2393,7 @@ _________________
                             await driver.click(webAppList.HtmlBody);
                             expect(Number(latestActivityID)).to.equal(transactionInternalID);
                         });
+
                         it('checking the latest activity - type: Sales Order', async function () {
                             base64ImageComponent = await driver.saveScreenshots();
                             addContext(this, {
@@ -2274,6 +2407,7 @@ _________________
                             await driver.click(webAppList.HtmlBody);
                             expect(latestActivityType).to.equal('Sales Order');
                         });
+
                         it('checking the latest activity - status: Submitted', async () => {
                             await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Status);
                             const latestActivityStatus = await (
@@ -2282,6 +2416,7 @@ _________________
                             await driver.click(webAppList.HtmlBody);
                             expect(latestActivityStatus).to.equal('Submitted');
                         });
+
                         it('changing value of group discount rule in "PPM_Values" UDT', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
                                 MapDataExternalID: udtFirstTableName,
@@ -2307,6 +2442,7 @@ _________________
                             expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
                             expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
                         });
+
                         it('changing value of additional item rule in "PPM_Values" UDT', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
                                 MapDataExternalID: udtFirstTableName,
@@ -2332,12 +2468,14 @@ _________________
                             expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
                             expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
                         });
+
                         it('performing sync', async () => {
                             await webAppHeader.goHome();
                             driver.sleep(0.2 * 1000);
                             await webAppHomePage.isSpinnerDone();
                             await webAppHomePage.manualResync(client);
                         });
+
                         it('validating "PPM_Values" UDT values via API', async () => {
                             const updatedUDT = await objectsService.getUDT({
                                 where: "MapDataExternalID='" + udtFirstTableName + "'",
@@ -2351,6 +2489,7 @@ _________________
                                 );
                             // Add verification tests
                         });
+
                         it(`navigating to the account "${
                             account == 'Acc01' ? 'My Store' : 'Account for order scenarios'
                         }"`, async function () {
@@ -2367,6 +2506,7 @@ _________________
                             await webAppList.isSpinnerDone();
                             base64ImageComponent = await driver.saveScreenshots();
                         });
+
                         it('entering the same transaction through activity list', async function () {
                             await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
                             base64ImageComponent = await driver.saveScreenshots();
@@ -2401,7 +2541,14 @@ _________________
                             });
                         });
                     });
+
                     describe('CART', function () {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         it(`switch to 'Grid View'`, async function () {
                             await orderPage.changeCartView('Grid');
                             base64ImageComponent = await driver.saveScreenshots();
@@ -2410,6 +2557,7 @@ _________________
                                 value: 'data:image/png;base64,' + base64ImageComponent,
                             });
                         });
+
                         it('verifying that the sum total of items in the cart is correct', async function () {
                             await driver.untilIsVisible(orderPage.Cart_Totals); // Verify being in Cart
                             let numberOfItemsInCart =
@@ -2436,6 +2584,7 @@ _________________
                             expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                             driver.sleep(1 * 1000);
                         });
+
                         readonlyCartItems.forEach((readonlyCartItem) => {
                             it(`checking item "${readonlyCartItem.name}"`, async function () {
                                 let totalUnitsAmount;
@@ -2640,8 +2789,15 @@ _________________
                             });
                         });
                     });
-                    describe('Reset', () => {
-                        it('reverting value of group discount rule in "PPM_Values" UDT to the original value', async () => {
+
+                    describe('Reset', function () {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
+                        it('reverting value of group discount rule in "PPM_Values" UDT to the original value', async function () {
                             updatedUDTRowPOST = await objectsService.postUDT({
                                 MapDataExternalID: udtFirstTableName,
                                 MainKey: 'ZGD2@A003@Acc01@Beauty Make Up',
@@ -2666,6 +2822,7 @@ _________________
                             expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
                             expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
                         });
+
                         it('reverting value of additional item rule in "PPM_Values" UDT to the original value', async () => {
                             updatedUDTRowPOST = await objectsService.postUDT({
                                 MapDataExternalID: udtFirstTableName,
@@ -2691,12 +2848,14 @@ _________________
                             expect(updatedUDTRowPOST).to.have.property('Hidden').that.is.false;
                             expect(updatedUDTRowPOST).to.have.property('InternalID').that.is.above(0);
                         });
+
                         it('performing sync', async () => {
                             await webAppHeader.goHome();
                             driver.sleep(0.2 * 1000);
                             await webAppHomePage.isSpinnerDone();
                             await webAppHomePage.manualResync(client);
                         });
+
                         it('validating "PPM_Values" UDT values via API', async () => {
                             ppmVluesEnd = await objectsService.getUDT({
                                 where: `MapDataExternalID='${udtFirstTableName}'`,
@@ -2713,14 +2872,27 @@ _________________
                 });
             });
         });
-        describe('Return to HomePage', () => {
+
+        describe('Return to HomePage', function () {
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.isDialogOnHomePAge(this);
+                await webAppHomePage.collectEndTestData(this);
+            });
+
             it('Go Home', async function () {
                 await webAppHeader.goHome();
                 driver.sleep(1 * 1000);
             });
         });
 
-        describe('Cleanup', () => {
+        describe('Cleanup', function () {
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.isDialogOnHomePAge(this);
+                await webAppHomePage.collectEndTestData(this);
+            });
+
             it('Deleting all Activities', async () => {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();

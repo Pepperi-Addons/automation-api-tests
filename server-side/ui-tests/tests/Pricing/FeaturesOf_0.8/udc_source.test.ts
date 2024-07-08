@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { describe, it, before, after } from 'mocha';
+import { describe, it, before, after, afterEach } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../../utilities/browser';
 import {
@@ -124,7 +124,7 @@ _________________
     ) {
         describe(`Pricing ** UDC ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
+        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, function () {
             before(async function () {
                 driver = await Browser.initiateChrome();
                 webAppAPI = new WebAppAPI(driver, client);
@@ -150,6 +150,12 @@ _________________
 
             after(async function () {
                 await driver.quit();
+            });
+
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.isDialogOnHomePAge(this);
+                await webAppHomePage.collectEndTestData(this);
             });
 
             it('Login', async function () {
@@ -189,6 +195,12 @@ _________________
                         ? 'Store 3'
                         : 'Account for order scenarios'
                 }"`, function () {
+                    afterEach(async function () {
+                        driver.sleep(500);
+                        await webAppHomePage.isDialogOnHomePAge(this);
+                        await webAppHomePage.collectEndTestData(this);
+                    });
+
                     it('Creating new transaction', async function () {
                         account == 'Acc01'
                             ? (accountName = 'My Store')
@@ -228,7 +240,13 @@ _________________
                             : account == 'Acc03'
                             ? 'UDC "PricingTest2"'
                             : 'UDT "PPM_Values"'
-                    }`, () => {
+                    }`, function () {
+                        afterEach(async function () {
+                            driver.sleep(500);
+                            await webAppHomePage.isDialogOnHomePAge(this);
+                            await webAppHomePage.collectEndTestData(this);
+                        });
+
                         it('Navigating to "Great Perfumes" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(
@@ -236,13 +254,27 @@ _________________
                             );
                             driver.sleep(0.1 * 1000);
                         });
+
                         udcTestItems.forEach((udcTestItem) => {
                             describe(`Item: ***${udcTestItem}`, function () {
+                                afterEach(async function () {
+                                    driver.sleep(500);
+                                    await webAppHomePage.isDialogOnHomePAge(this);
+                                    await webAppHomePage.collectEndTestData(this);
+                                });
+
                                 describe('ORDER CENTER', function () {
+                                    afterEach(async function () {
+                                        driver.sleep(500);
+                                        await webAppHomePage.isDialogOnHomePAge(this);
+                                        await webAppHomePage.collectEndTestData(this);
+                                    });
+
                                     it(`Looking for "${udcTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(udcTestItem, driver);
                                         driver.sleep(1 * 1000);
                                     });
+
                                     udcTestStates.forEach((udcTestState) => {
                                         it(`Checking "${udcTestState}"`, async function () {
                                             if (udcTestState != 'baseline') {
@@ -310,7 +342,13 @@ _________________
                             });
                         });
 
-                        describe(`CART`, () => {
+                        describe(`CART`, function () {
+                            afterEach(async function () {
+                                driver.sleep(500);
+                                await webAppHomePage.isDialogOnHomePAge(this);
+                                await webAppHomePage.collectEndTestData(this);
+                            });
+
                             it('entering and verifying being in cart', async function () {
                                 await driver.click(orderPage.Cart_Button);
                                 await orderPage.isSpinnerDone();
@@ -327,6 +365,7 @@ _________________
                                     }
                                 }
                             });
+
                             it('verify that the sum total of items in the cart is correct', async function () {
                                 screenShot = await driver.saveScreenshots();
                                 addContext(this, {
@@ -340,6 +379,7 @@ _________________
                                 expect(Number(itemsInCart)).to.equal(udcTestItems.length);
                                 driver.sleep(1 * 1000);
                             });
+
                             it(`switch to 'Lines View'`, async function () {
                                 await orderPage.changeCartView('Lines');
                                 screenShot = await driver.saveScreenshots();
@@ -348,9 +388,16 @@ _________________
                                     value: 'data:image/png;base64,' + screenShot,
                                 });
                             });
+
                             udcTestItems.forEach(async (item) => {
                                 udcTestCartStates.forEach((udcTestState) => {
-                                    describe(`Checking "${udcTestState}"`, () => {
+                                    describe(`Checking "${udcTestState}"`, function () {
+                                        afterEach(async function () {
+                                            driver.sleep(500);
+                                            await webAppHomePage.isDialogOnHomePAge(this);
+                                            await webAppHomePage.collectEndTestData(this);
+                                        });
+
                                         it(`change ${item} quantity to ${udcTestState}`, async function () {
                                             const splitedStateArgs = udcTestState.split(' ');
                                             const amount = Number(splitedStateArgs[0]);
@@ -363,6 +410,7 @@ _________________
                                             );
                                             driver.sleep(0.2 * 1000);
                                         });
+
                                         it(`Checking TSAs`, async function () {
                                             const totalUnitsAmount = await pricingService.getItemTotalAmount(
                                                 'Cart',
@@ -412,8 +460,14 @@ _________________
                 });
             });
 
-            describe('Cleanup', () => {
-                it('deleting all Activities', async () => {
+            describe('Cleanup', function () {
+                afterEach(async function () {
+                    driver.sleep(500);
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                    await webAppHomePage.collectEndTestData(this);
+                });
+
+                it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Activities');

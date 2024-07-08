@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { describe, it, before, after } from 'mocha';
+import { describe, it, before, after, afterEach } from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../../utilities/browser';
 import { WebAppDialog, WebAppHeader, WebAppHomePage, WebAppList, WebAppLoginPage, WebAppTopBar } from '../../../pom';
@@ -126,7 +126,7 @@ _________________
     if (!installedPricingVersion?.startsWith('0.5') && !installedPricingVersion?.startsWith('0.6')) {
         describe(`Pricing ** Packages & Profiles ** UI tests  - ${
             client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, () => {
+        } | Ver ${installedPricingVersion} | Date Time: ${dateTime}`, function () {
             before(async function () {
                 driver = await Browser.initiateChrome();
                 webAppLoginPage = new WebAppLoginPage(driver);
@@ -150,6 +150,12 @@ _________________
 
             after(async function () {
                 await driver.quit();
+            });
+
+            afterEach(async function () {
+                driver.sleep(500);
+                await webAppHomePage.isDialogOnHomePAge(this);
+                await webAppHomePage.collectEndTestData(this);
             });
 
             it('Login', async function () {
@@ -210,6 +216,12 @@ _________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
+                    afterEach(async function () {
+                        driver.sleep(500);
+                        await webAppHomePage.isDialogOnHomePAge(this);
+                        await webAppHomePage.collectEndTestData(this);
+                    });
+
                     it('Creating new transaction', async function () {
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
@@ -240,7 +252,13 @@ _________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    // describe('Packages', () => {
+                    // describe('Packages', function () {
+                    //      afterEach(async function () {
+                    //          driver.sleep(500);
+                    //          await webAppHomePage.isDialogOnHomePAge(this);
+                    //          await webAppHomePage.collectEndTestData(this);
+                    //       });
+
                     //     it('Navigating to "Hair4You" at Sidebar', async function () {
                     //         await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                     //         await driver.click(orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Hair4You'));
@@ -351,8 +369,14 @@ _________________
                 });
             });
 
-            describe('Cleanup', () => {
-                it('deleting all Activities', async () => {
+            describe('Cleanup', function () {
+                afterEach(async function () {
+                    driver.sleep(500);
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                    await webAppHomePage.collectEndTestData(this);
+                });
+
+                it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
                     await webAppHomePage.clickOnBtn('Activities');

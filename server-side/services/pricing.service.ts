@@ -184,8 +184,11 @@ export class PricingService {
             //     });
             // }
             if (locationInElementsArray) {
+                // const totalOfUnitsByLocationAsNum = Number(
+                //     await arrOfTotalOfUnitsMinusFree[locationInElementsArray].getAttribute('title'),
+                // );
                 const totalOfUnitsByLocationAsNum = Number(
-                    await arrOfTotalOfUnitsMinusFree[locationInElementsArray].getAttribute('title'),
+                    await arrOfTotalOfUnitsMinusFree[locationInElementsArray].getText(),
                 );
                 console.info(
                     'at getItemTotalAmount function -> totalOfUnitsByLocationAsNum: ',
@@ -193,14 +196,16 @@ export class PricingService {
                 );
                 return totalOfUnitsByLocationAsNum;
             }
-            const totalOfUnitsFirstInArrAsNum = Number(await arrOfTotalOfUnitsMinusFree[0].getAttribute('title'));
+            // const totalOfUnitsFirstInArrAsNum = Number(await arrOfTotalOfUnitsMinusFree[0].getAttribute('title'));
+            const totalOfUnitsFirstInArrAsNum = Number(await arrOfTotalOfUnitsMinusFree[0].getText());
             console.info(
                 'at getItemTotalAmount function -> totalOfUnitsFirstInArrAsNum: ',
                 totalOfUnitsFirstInArrAsNum,
             );
             return totalOfUnitsFirstInArrAsNum;
         }
-        const totalOfUnitsAsNum = Number(await arrOfTotalOfUnits[0].getAttribute('title'));
+        // const totalOfUnitsAsNum = Number(await arrOfTotalOfUnits[0].getAttribute('title'));
+        const totalOfUnitsAsNum = Number(await arrOfTotalOfUnits[0].getText());
         console.info('at getItemTotalAmount function -> totalOfUnitsAsNum: ', totalOfUnitsAsNum);
         return totalOfUnitsAsNum;
     }
@@ -868,16 +873,15 @@ export class PricingService {
             orderPage[nameOfFunctionToLocateSelectorOfUnitsQuantity](nameOfItem),
         );
         driver.sleep(1 * 1000);
+        // const unitsQuantity_number = Number(await numberOfUnits.getAttribute('title'));
+        const unitsQuantity_number = Number(await numberOfUnits.getText());
+        const uomXnumber_num = Number(await uomXnumber.getAttribute('title'));
         switch (uomValue) {
             case 'Each':
-                expect(Number(await numberOfUnits.getAttribute('title'))).equals(
-                    Number(await uomXnumber.getAttribute('title')),
-                );
+                expect(unitsQuantity_number).equals(uomXnumber_num);
                 break;
             case 'Case':
-                expect(Number(await numberOfUnits.getAttribute('title'))).equals(
-                    Number(await uomXnumber.getAttribute('title')) * 6,
-                );
+                expect(unitsQuantity_number).equals(uomXnumber_num * 6);
                 break;
             default:
                 break;
