@@ -70,6 +70,12 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         it('Callback Function Verification - AuditLog verification: Finished', () => {
             assert(logcash.getAuditLogFromgetAsyncedCallback, logcash.getAuditLogFromgetAsyncedCallbackError);
         });
+        it('Callback with Relative URL Function Verification - AuditLog verification: Finished', () => {
+            assert(
+                logcash.getAuditLogFromgetAsyncedCallbackRelativeURL,
+                logcash.getAuditLogFromgetAsyncedCallbackRelativeURLError,
+            );
+        });
     });
 
     async function installDistributorAddon() {
@@ -481,13 +487,27 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         CallbackCash.callbackForAddonRelative = await service.post(
             `/addons/api/async/${addonUUID}/${jsFileName}/${functionName}?callback_encoded_url=/addons/api/${TestAddonUUID}/async_test/async_test`,
         );
-        debugger;
-        //await createUdtTable();
-
-        //getCloudWatchFromAsyncedCallback();
-
         //debugger;
-        //deleteVARAddon();
+        await getAuditLogFromgetAsyncedCallbackRelativeURL();
+    }
+
+    async function getAuditLogFromgetAsyncedCallbackRelativeURL() {
+        generalService.sleep(10000);
+        CallbackCash.getAuditLogFromgetAsyncedCallbackRelativeURL = await service.auditLogs
+            .uuid(CallbackCash.callbackForAddonRelative.ExecutionUUID)
+            .get();
+        //debugger;
+        CallbackCash.parsedResultFromPost2 = JSON.parse(
+            CallbackCash.getAuditLogFromgetAsyncedCallbackRelativeURL.AuditInfo.ResultObject,
+        );
+        if (CallbackCash.parsedResultFromPost2.resultObject.msg == 'hello world') {
+            logcash.getAuditLogFromgetAsyncedCallbackRelativeURL = true;
+        } else {
+            logcash.getAuditLogFromgetAsyncedCallbackRelativeURL = false;
+            logcash.getAuditLogFromgetAsyncedCallbackRelativeURLError =
+                'The async addon function post without params not returned value on audit log. ';
+        }
+        // await callbackForAddonRelative();
     }
 
     //Delete Addon
