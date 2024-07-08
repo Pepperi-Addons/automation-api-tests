@@ -8,7 +8,8 @@ export async function async_test(client: Client, request: Request) {
     ret['success'] = false;
     console.log('Message from Callback first');
     console.log('OLEG: ' + JSON.stringify(request)); // added to verify request
-    if (request.body.Result.resultObject.msg == 'hello world') {
+    //if (request.body.Result.resultObject.msg == 'hello world') {
+    if (request.body.Response.resultObject.msg == 'hello world') {
         ret['success'] = true;
         ret['resultObject'].msg = 'hello world - returned from callback function';
     } else {
