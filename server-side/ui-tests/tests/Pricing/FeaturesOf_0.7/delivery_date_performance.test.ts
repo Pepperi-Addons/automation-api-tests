@@ -1,6 +1,12 @@
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { describe, it, before, after, afterEach } from 'mocha';
+import {
+    describe,
+    it,
+    before,
+    after,
+    // afterEach
+} from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../../utilities/browser';
 import {
@@ -165,11 +171,11 @@ _________________
                 await driver.quit();
             });
 
-            afterEach(async function () {
-                driver.sleep(500);
-                await webAppHomePage.isDialogOnHomePAge(this);
-                await webAppHomePage.collectEndTestData(this);
-            });
+            // afterEach(async function () {
+            //     driver.sleep(500);
+            //     await webAppHomePage.isDialogOnHomePAge(this);
+            //     await webAppHomePage.collectEndTestData(this);
+            // });
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
@@ -243,12 +249,6 @@ _________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
-                    // afterEach(async function () {
-                    //     driver.sleep(500);
-                    //     await webAppHomePage.isDialogOnHomePAge(this);
-                    //     await webAppHomePage.collectEndTestData(this);
-                    // });
-
                     it('Creating new transaction', async function () {
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
@@ -289,12 +289,6 @@ _________________
                         ? 'Default'
                         : date
                 }`, function () {
-                    // afterEach(async function () {
-                    //     driver.sleep(500);
-                    //     await webAppHomePage.isDialogOnHomePAge(this);
-                    //     await webAppHomePage.collectEndTestData(this);
-                    // });
-
                     it('Creating new transaction', async function () {
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(nameOfAccount);
                         console.info('transactionUUID:', transactionUUID);
@@ -389,12 +383,6 @@ _________________
                             ? `Today (${dateTime.toDateString()})`
                             : date
                     }`, function () {
-                        // afterEach(async function () {
-                        //     driver.sleep(500);
-                        //     await webAppHomePage.isDialogOnHomePAge(this);
-                        //     await webAppHomePage.collectEndTestData(this);
-                        // });
-
                         it('Navigating to "Great Perfumes" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(
@@ -404,19 +392,7 @@ _________________
                         });
                         deliveryDateTestItems.forEach((deliveryDateTestItem) => {
                             describe(`Item: ***${deliveryDateTestItem}`, function () {
-                                // afterEach(async function () {
-                                //     driver.sleep(500);
-                                //     await webAppHomePage.isDialogOnHomePAge(this);
-                                //     await webAppHomePage.collectEndTestData(this);
-                                // });
-
                                 describe('ORDER CENTER', function () {
-                                    // afterEach(async function () {
-                                    //     driver.sleep(500);
-                                    //     await webAppHomePage.isDialogOnHomePAge(this);
-                                    //     await webAppHomePage.collectEndTestData(this);
-                                    // });
-
                                     it(`Looking for "${deliveryDateTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(
                                             deliveryDateTestItem,
@@ -529,12 +505,6 @@ _________________
                                 });
 
                                 describe(`CART`, function () {
-                                    // afterEach(async function () {
-                                    //     driver.sleep(500);
-                                    //     await webAppHomePage.isDialogOnHomePAge(this);
-                                    //     await webAppHomePage.collectEndTestData(this);
-                                    // });
-
                                     it('entering and verifying being in cart', async function () {
                                         await driver.click(orderPage.Cart_Button);
                                         await orderPage.isSpinnerDone();
@@ -565,15 +535,10 @@ _________________
                                         expect(Number(itemsInCart)).to.equal(deliveryDateTestItems.length);
                                         driver.sleep(1 * 1000);
                                     });
+
                                     deliveryDateTestItems.forEach(async (item) => {
                                         deliveryDateTestCartStates.forEach((deliveryDateTestState) => {
                                             describe(`Checking "${deliveryDateTestState}"`, function () {
-                                                // afterEach(async function () {
-                                                //     driver.sleep(500);
-                                                //     await webAppHomePage.isDialogOnHomePAge(this);
-                                                //     await webAppHomePage.collectEndTestData(this);
-                                                // });
-
                                                 it(`switch to 'Grid View'`, async function () {
                                                     await orderPage.changeCartView('Grid');
                                                     screenShot = await driver.saveScreenshots();
@@ -661,12 +626,6 @@ _________________
             });
 
             describe('Cleanup', function () {
-                // afterEach(async function () {
-                //     driver.sleep(500);
-                //     await webAppHomePage.isDialogOnHomePAge(this);
-                //     await webAppHomePage.collectEndTestData(this);
-                // });
-
                 it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
