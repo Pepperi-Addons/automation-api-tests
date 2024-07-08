@@ -270,11 +270,11 @@ _________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
-                    afterEach(async function () {
-                        driver.sleep(500);
-                        await webAppHomePage.isDialogOnHomePAge(this);
-                        await webAppHomePage.collectEndTestData(this);
-                    });
+                    // afterEach(async function () {
+                    //     driver.sleep(500);
+                    //     await webAppHomePage.isDialogOnHomePAge(this);
+                    //     await webAppHomePage.collectEndTestData(this);
+                    // });
 
                     it('Creating new transaction', async function () {
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
@@ -307,11 +307,11 @@ _________________
                     });
 
                     describe('UOMs', function () {
-                        afterEach(async function () {
-                            driver.sleep(500);
-                            await webAppHomePage.isDialogOnHomePAge(this);
-                            await webAppHomePage.collectEndTestData(this);
-                        });
+                        // afterEach(async function () {
+                        //     driver.sleep(500);
+                        //     await webAppHomePage.isDialogOnHomePAge(this);
+                        //     await webAppHomePage.collectEndTestData(this);
+                        // });
 
                         it('Navigating to "Hair4You" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
@@ -321,18 +321,18 @@ _________________
 
                         uomTestItems.forEach((uomTestItem) => {
                             describe(`Item: ***${uomTestItem}`, function () {
-                                afterEach(async function () {
-                                    driver.sleep(500);
-                                    await webAppHomePage.isDialogOnHomePAge(this);
-                                    await webAppHomePage.collectEndTestData(this);
-                                });
+                                // afterEach(async function () {
+                                //     driver.sleep(500);
+                                //     await webAppHomePage.isDialogOnHomePAge(this);
+                                //     await webAppHomePage.collectEndTestData(this);
+                                // });
 
                                 describe('ORDER CENTER', function () {
-                                    afterEach(async function () {
-                                        driver.sleep(500);
-                                        await webAppHomePage.isDialogOnHomePAge(this);
-                                        await webAppHomePage.collectEndTestData(this);
-                                    });
+                                    // afterEach(async function () {
+                                    //     driver.sleep(500);
+                                    //     await webAppHomePage.isDialogOnHomePAge(this);
+                                    //     await webAppHomePage.collectEndTestData(this);
+                                    // });
 
                                     it(`Looking for "${uomTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(uomTestItem, driver);
@@ -442,11 +442,11 @@ _________________
                         });
 
                         describe('CART', function () {
-                            afterEach(async function () {
-                                driver.sleep(500);
-                                await webAppHomePage.isDialogOnHomePAge(this);
-                                await webAppHomePage.collectEndTestData(this);
-                            });
+                            // afterEach(async function () {
+                            //     driver.sleep(500);
+                            //     await webAppHomePage.isDialogOnHomePAge(this);
+                            //     await webAppHomePage.collectEndTestData(this);
+                            // });
 
                             it('entering and verifying being in cart', async function () {
                                 await driver.click(orderPage.Cart_Button);
@@ -555,11 +555,11 @@ _________________
             });
 
             describe('Cleanup', function () {
-                afterEach(async function () {
-                    driver.sleep(500);
-                    await webAppHomePage.isDialogOnHomePAge(this);
-                    await webAppHomePage.collectEndTestData(this);
-                });
+                // afterEach(async function () {
+                //     driver.sleep(500);
+                //     await webAppHomePage.isDialogOnHomePAge(this);
+                //     await webAppHomePage.collectEndTestData(this);
+                // });
 
                 it('deleting all Activities', async function () {
                     await webAppHeader.goHome();

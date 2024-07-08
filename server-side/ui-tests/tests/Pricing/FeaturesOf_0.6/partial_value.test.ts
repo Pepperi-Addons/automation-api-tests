@@ -279,11 +279,11 @@ _________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
-                    afterEach(async function () {
-                        driver.sleep(500);
-                        await webAppHomePage.isDialogOnHomePAge(this);
-                        await webAppHomePage.collectEndTestData(this);
-                    });
+                    // afterEach(async function () {
+                    //     driver.sleep(500);
+                    //     await webAppHomePage.isDialogOnHomePAge(this);
+                    //     await webAppHomePage.collectEndTestData(this);
+                    // });
 
                     it('Creating new transaction', async function () {
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
@@ -316,11 +316,11 @@ _________________
                     });
 
                     describe('Partial Value', function () {
-                        afterEach(async function () {
-                            driver.sleep(500);
-                            await webAppHomePage.isDialogOnHomePAge(this);
-                            await webAppHomePage.collectEndTestData(this);
-                        });
+                        // afterEach(async function () {
+                        //     driver.sleep(500);
+                        //     await webAppHomePage.isDialogOnHomePAge(this);
+                        //     await webAppHomePage.collectEndTestData(this);
+                        // });
 
                         it('Navigating to "Great Perfumes" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
@@ -332,18 +332,18 @@ _________________
 
                         partialValueTestItems.forEach((partialValueTestItem) => {
                             describe(`Item: ***${partialValueTestItem}`, function () {
-                                afterEach(async function () {
-                                    driver.sleep(500);
-                                    await webAppHomePage.isDialogOnHomePAge(this);
-                                    await webAppHomePage.collectEndTestData(this);
-                                });
+                                // afterEach(async function () {
+                                //     driver.sleep(500);
+                                //     await webAppHomePage.isDialogOnHomePAge(this);
+                                //     await webAppHomePage.collectEndTestData(this);
+                                // });
 
                                 describe('ORDER CENTER', function () {
-                                    afterEach(async function () {
-                                        driver.sleep(500);
-                                        await webAppHomePage.isDialogOnHomePAge(this);
-                                        await webAppHomePage.collectEndTestData(this);
-                                    });
+                                    // afterEach(async function () {
+                                    //     driver.sleep(500);
+                                    //     await webAppHomePage.isDialogOnHomePAge(this);
+                                    //     await webAppHomePage.collectEndTestData(this);
+                                    // });
 
                                     it(`Looking for "${partialValueTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(
@@ -448,11 +448,11 @@ _________________
                         });
 
                         describe('CART', function () {
-                            afterEach(async function () {
-                                driver.sleep(500);
-                                await webAppHomePage.isDialogOnHomePAge(this);
-                                await webAppHomePage.collectEndTestData(this);
-                            });
+                            // afterEach(async function () {
+                            //     driver.sleep(500);
+                            //     await webAppHomePage.isDialogOnHomePAge(this);
+                            //     await webAppHomePage.collectEndTestData(this);
+                            // });
 
                             it('entering and verifying being in cart', async function () {
                                 await driver.click(orderPage.Cart_Button);
@@ -585,11 +585,11 @@ _________________
             });
 
             describe('Cleanup', function () {
-                afterEach(async function () {
-                    driver.sleep(500);
-                    await webAppHomePage.isDialogOnHomePAge(this);
-                    await webAppHomePage.collectEndTestData(this);
-                });
+                // afterEach(async function () {
+                //     driver.sleep(500);
+                //     await webAppHomePage.isDialogOnHomePAge(this);
+                //     await webAppHomePage.collectEndTestData(this);
+                // });
 
                 it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
