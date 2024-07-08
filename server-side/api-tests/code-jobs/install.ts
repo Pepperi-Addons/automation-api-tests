@@ -431,7 +431,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
                 '?callback=' +
                 CallbackCash.callbackForAddon, //.result,
         );
-        debugger;
+        //debugger;
         if (
             CallbackCash.getAsyncedCallback.ExecutionUUID.length == 36 &&
             CallbackCash.getAsyncedCallback.URI.includes('/audit_logs')
@@ -457,7 +457,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         CallbackCash.getAuditLogFromgetAsyncedCallback = await service.auditLogs
             .uuid(CallbackCash.getAsyncedCallback.ExecutionUUID)
             .get();
-        debugger;
+        //debugger;
         CallbackCash.parsedResultFromPost1 = JSON.parse(
             CallbackCash.getAuditLogFromgetAsyncedCallback.AuditInfo.ResultObject,
         );
