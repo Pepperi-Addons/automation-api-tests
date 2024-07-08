@@ -29,6 +29,6 @@ export async function async_test(client: Client, request: Request) {
     //const res =
     await papiClient.post('/bulk/user_defined_tables/json', bodyValue);
     console.log('Message from Callback after' + ret['resultObject'].msg);
-    debugger;
+    //debugger;
     return ret;
 }
