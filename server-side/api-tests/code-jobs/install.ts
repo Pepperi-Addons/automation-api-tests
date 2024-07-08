@@ -67,6 +67,9 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
         it('Callback Function Verification: Finished', () => {
             assert(logcash.getAsyncedCallback, logcash.getAsyncedCallbackError);
         });
+        it('Callback Function Verification - AuditLog verification: Finished', () => {
+            assert(logcash.getAuditLogFromgetAsyncedCallback, logcash.getAuditLogFromgetAsyncedCallbackError);
+        });
     });
 
     async function installDistributorAddon() {
@@ -428,7 +431,7 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
                 '?callback=' +
                 CallbackCash.callbackForAddon, //.result,
         );
-        debugger;
+        //debugger;
         if (
             CallbackCash.getAsyncedCallback.ExecutionUUID.length == 36 &&
             CallbackCash.getAsyncedCallback.URI.includes('/audit_logs')
@@ -445,6 +448,30 @@ export async function InstallTests(generalService: GeneralService, tester: Teste
                 functionName +
                 'and callback UUID is ' +
                 CallbackCash.callbackForAddon; //.result;
+        }
+        await getAuditLogFromgetAsyncedCallback();
+    }
+
+    async function getAuditLogFromgetAsyncedCallback() {
+        generalService.sleep(10000);
+        CallbackCash.getAuditLogFromgetAsyncedCallback = await service.auditLogs
+            .uuid(CallbackCash.getAsyncedCallback.ExecutionUUID)
+            .get();
+        //debugger;
+        CallbackCash.parsedResultFromPost1 = JSON.parse(
+            CallbackCash.getAuditLogFromgetAsyncedCallback.AuditInfo.ResultObject,
+        );
+        if (CallbackCash.parsedResultFromPost1.resultObject.msg == 'hello world') {
+            logcash.getAuditLogFromgetAsyncedCallback = true;
+        } else {
+            logcash.getAuditLogFromgetAsyncedCallback = false;
+            logcash.getAuditLogFromgetAsyncedCallbackError =
+                'The async addon function post without params not returned value on audit log. The addon UUID is ' +
+                addonUUID +
+                'JS file name is ' +
+                jsFileName +
+                'and function name is ' +
+                functionName;
         }
         await callbackForAddonRelative();
     }
