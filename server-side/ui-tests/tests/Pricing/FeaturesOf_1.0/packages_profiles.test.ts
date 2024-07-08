@@ -216,11 +216,11 @@ _________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
-                    afterEach(async function () {
-                        driver.sleep(500);
-                        await webAppHomePage.isDialogOnHomePAge(this);
-                        await webAppHomePage.collectEndTestData(this);
-                    });
+                    // afterEach(async function () {
+                    //     driver.sleep(500);
+                    //     await webAppHomePage.isDialogOnHomePAge(this);
+                    //     await webAppHomePage.collectEndTestData(this);
+                    // });
 
                     it('Creating new transaction', async function () {
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
@@ -370,11 +370,11 @@ _________________
             });
 
             describe('Cleanup', function () {
-                afterEach(async function () {
-                    driver.sleep(500);
-                    await webAppHomePage.isDialogOnHomePAge(this);
-                    await webAppHomePage.collectEndTestData(this);
-                });
+                // afterEach(async function () {
+                //     driver.sleep(500);
+                //     await webAppHomePage.isDialogOnHomePAge(this);
+                //     await webAppHomePage.collectEndTestData(this);
+                // });
 
                 it('deleting all Activities', async function () {
                     await webAppHeader.goHome();

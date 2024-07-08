@@ -262,11 +262,11 @@ _________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
-                    afterEach(async function () {
-                        driver.sleep(500);
-                        await webAppHomePage.isDialogOnHomePAge(this);
-                        await webAppHomePage.collectEndTestData(this);
-                    });
+                    // afterEach(async function () {
+                    //     driver.sleep(500);
+                    //     await webAppHomePage.isDialogOnHomePAge(this);
+                    //     await webAppHomePage.collectEndTestData(this);
+                    // });
 
                     it('Creating new transaction', async function () {
                         switch (account) {
@@ -311,27 +311,27 @@ _________________
                     });
 
                     describe('Totals', function () {
-                        afterEach(async function () {
-                            driver.sleep(500);
-                            await webAppHomePage.isDialogOnHomePAge(this);
-                            await webAppHomePage.collectEndTestData(this);
-                        });
+                        // afterEach(async function () {
+                        //     driver.sleep(500);
+                        //     await webAppHomePage.isDialogOnHomePAge(this);
+                        //     await webAppHomePage.collectEndTestData(this);
+                        // });
 
                         totalsTestStates.forEach((totalsTestState) => {
                             // "baseline" , "state1", "state2"
                             describe(`"${totalsTestState}"`, function () {
-                                afterEach(async function () {
-                                    driver.sleep(500);
-                                    await webAppHomePage.isDialogOnHomePAge(this);
-                                    await webAppHomePage.collectEndTestData(this);
-                                });
+                                // afterEach(async function () {
+                                //     driver.sleep(500);
+                                //     await webAppHomePage.isDialogOnHomePAge(this);
+                                //     await webAppHomePage.collectEndTestData(this);
+                                // });
 
                                 describe(`PREP`, function () {
-                                    afterEach(async function () {
-                                        driver.sleep(500);
-                                        await webAppHomePage.isDialogOnHomePAge(this);
-                                        await webAppHomePage.collectEndTestData(this);
-                                    });
+                                    // afterEach(async function () {
+                                    //     driver.sleep(500);
+                                    //     await webAppHomePage.isDialogOnHomePAge(this);
+                                    //     await webAppHomePage.collectEndTestData(this);
+                                    // });
 
                                     totalsTestState == 'state2' &&
                                         it('Click "Continue ordering" button', async function () {
@@ -372,19 +372,19 @@ _________________
                                 });
 
                                 describe(`ORDER CENTER`, function () {
-                                    afterEach(async function () {
-                                        driver.sleep(500);
-                                        await webAppHomePage.isDialogOnHomePAge(this);
-                                        await webAppHomePage.collectEndTestData(this);
-                                    });
+                                    // afterEach(async function () {
+                                    //     driver.sleep(500);
+                                    //     await webAppHomePage.isDialogOnHomePAge(this);
+                                    //     await webAppHomePage.collectEndTestData(this);
+                                    // });
 
                                     totalsTestItems.forEach((totalsTestItem) => {
                                         describe(`Item: ***${totalsTestItem}`, function () {
-                                            afterEach(async function () {
-                                                driver.sleep(500);
-                                                await webAppHomePage.isDialogOnHomePAge(this);
-                                                await webAppHomePage.collectEndTestData(this);
-                                            });
+                                            // afterEach(async function () {
+                                            //     driver.sleep(500);
+                                            //     await webAppHomePage.isDialogOnHomePAge(this);
+                                            //     await webAppHomePage.collectEndTestData(this);
+                                            // });
 
                                             it(`Looking for "${totalsTestItem}" using the search box`, async function () {
                                                 await pricingService.searchInOrderCenter.bind(this)(
@@ -556,11 +556,11 @@ _________________
 
                                 if (totalsTestState != 'baseline') {
                                     describe(`CART`, function () {
-                                        afterEach(async function () {
-                                            driver.sleep(500);
-                                            await webAppHomePage.isDialogOnHomePAge(this);
-                                            await webAppHomePage.collectEndTestData(this);
-                                        });
+                                        // afterEach(async function () {
+                                        //     driver.sleep(500);
+                                        //     await webAppHomePage.isDialogOnHomePAge(this);
+                                        //     await webAppHomePage.collectEndTestData(this);
+                                        // });
 
                                         it('entering and verifying being in cart', async function () {
                                             await driver.click(orderPage.Cart_Button);
@@ -696,11 +696,11 @@ _________________
             });
 
             describe('Cleanup', function () {
-                afterEach(async function () {
-                    driver.sleep(500);
-                    await webAppHomePage.isDialogOnHomePAge(this);
-                    await webAppHomePage.collectEndTestData(this);
-                });
+                // afterEach(async function () {
+                //     driver.sleep(500);
+                //     await webAppHomePage.isDialogOnHomePAge(this);
+                //     await webAppHomePage.collectEndTestData(this);
+                // });
 
                 it('deleting all Activities', async () => {
                     await webAppHeader.goHome();
