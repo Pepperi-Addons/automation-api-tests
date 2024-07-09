@@ -874,6 +874,8 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
             !installedPricingVersion?.startsWith('0.7')
         ) {
             await PricingConfigUpload(client, email, pass, 'noUom');
+            await PricingUdtInsertion(client, email, pass, '0.6', 'noUom'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
+            await PricingTotalsTests(email, pass, client, 'noUom');
             await PricingUdtInsertion(client, email, pass, '0.7', 'noUom'); // the argument 0.5|0.6|0.7 refers to the version from which the features originate, not to the installed version!
             // await PricingNoUomTotalsTests(email, pass, client);
             await PricingDeliveryDatePerformanceUdtErrorsTests(email, pass, client, 'noUom');
