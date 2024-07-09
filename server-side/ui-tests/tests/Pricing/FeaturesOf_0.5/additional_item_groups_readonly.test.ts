@@ -1036,7 +1036,7 @@ _________________
                         it('verify additional item "Drug0002" quantity is correct', async () => {
                             const item = 'Drug0002';
                             const numberOfUnits = await driver.findElements(
-                                orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
+                                orderPage.getSelectorOfNumberOfUnitsInCartByFreeItemName(item),
                             );
                             // const Drug0002_freeItem_numberOfUnits_fromDrug0004 = Number(
                             //     await numberOfUnits[0].getAttribute('title'),
@@ -1050,7 +1050,7 @@ _________________
                             //     await numberOfUnits[2].getAttribute('title'),
                             // );
                             const Drug0002_freeItem_numberOfUnits_fromDrug0002 = Number(
-                                await numberOfUnits[2].getText(),
+                                await numberOfUnits[1].getText(),
                             );
                             expect(Drug0002_freeItem_numberOfUnits_fromDrug0002).equals(12);
                             const numberOfAOQM = await driver.findElements(
@@ -1181,12 +1181,12 @@ _________________
                             it('verify additional item "ToBr55" quantity have changed', async () => {
                                 const item = 'ToBr55';
                                 const numberOfUnits = await driver.findElements(
-                                    orderPage.getSelectorOfNumberOfUnitsInCartByItemName(item),
+                                    orderPage.getSelectorOfNumberOfUnitsInCartByFreeItemName(item),
                                 );
                                 // const ToBr55_freeItem_numberOfUnits = Number(
                                 //     await numberOfUnits[1].getAttribute('title'),
                                 // );
-                                const ToBr55_freeItem_numberOfUnits = Number(await numberOfUnits[1].getText());
+                                const ToBr55_freeItem_numberOfUnits = Number(await numberOfUnits[0].getText());
                                 expect(ToBr55_freeItem_numberOfUnits).equals(6);
                                 const numberOfAOQM = await driver.findElements(
                                     orderPage.getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(item),
