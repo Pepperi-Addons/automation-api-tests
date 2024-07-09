@@ -116,7 +116,7 @@ _________________
     let ToBr55priceTSAs_OC: PriceTsaFields;
     let Drug0002priceTSAs_OC: PriceTsaFields;
     let Drug0004priceTSAs_OC: PriceTsaFields;
-    let base64ImageComponent;
+    let screenShot;
     let duration: string;
     let ppmValues: UserDefinedTableRow[];
     let ppmVluesEnd: UserDefinedTableRow[];
@@ -262,10 +262,10 @@ _________________
 
         it('Login', async function () {
             await webAppLoginPage.login(email, password);
-            base64ImageComponent = await driver.saveScreenshots();
+            screenShot = await driver.saveScreenshots();
             addContext(this, {
                 title: `At Home Page`,
-                value: 'data:image/png;base64,' + base64ImageComponent,
+                value: 'data:image/png;base64,' + screenShot,
             });
         });
 
@@ -342,10 +342,10 @@ _________________
         testAccounts.forEach((account) => {
             describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
                 it('Creating new transaction', async function () {
-                    base64ImageComponent = await driver.saveScreenshots();
+                    screenShot = await driver.saveScreenshots();
                     addContext(this, {
                         title: `Before Transaction created`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
+                        value: 'data:image/png;base64,' + screenShot,
                     });
                     switch (account) {
                         case 'Acc01':
@@ -362,10 +362,10 @@ _________________
                             transactionUUID = transactionUUID_OtherAcc;
                             break;
                     }
-                    base64ImageComponent = await driver.saveScreenshots();
+                    screenShot = await driver.saveScreenshots();
                     addContext(this, {
                         title: `New Slaes Order trasaction started`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
+                        value: 'data:image/png;base64,' + screenShot,
                     });
                 });
 
@@ -394,10 +394,10 @@ _________________
 
                 it(`switch to 'Line View'`, async function () {
                     await orderPage.changeOrderCenterPageView('Line View');
-                    base64ImageComponent = await driver.saveScreenshots();
+                    screenShot = await driver.saveScreenshots();
                     addContext(this, {
                         title: `After "Line View" was selected`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
+                        value: 'data:image/png;base64,' + screenShot,
                     });
                 });
 
@@ -484,10 +484,10 @@ _________________
                                                 ),
                                             );
                                             driver.sleep(0.5 * 1000);
-                                            base64ImageComponent = await driver.saveScreenshots();
+                                            screenShot = await driver.saveScreenshots();
                                             addContext(this, {
                                                 title: `At Order Center - after Plus Button clicked`,
-                                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                                value: 'data:image/png;base64,' + screenShot,
                                             });
                                             break;
 
@@ -598,10 +598,10 @@ _________________
                                             );
                                             orderPage.isSpinnerDone();
                                             driver.sleep(0.5 * 1000);
-                                            base64ImageComponent = await driver.saveScreenshots();
+                                            screenShot = await driver.saveScreenshots();
                                             addContext(this, {
                                                 title: `At Order Center - after Plus Button clicked`,
-                                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                                value: 'data:image/png;base64,' + screenShot,
                                             });
                                             break;
 
@@ -651,10 +651,10 @@ _________________
                                     ),
                                 );
                                 driver.sleep(0.25 * 1000);
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Order Center - after Minus Button clicked`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 Drug0002priceTSAs_OC = await pricingService.getItemTSAs(
                                     'OrderCenter',
@@ -717,10 +717,10 @@ _________________
                                                 ),
                                             );
                                             driver.sleep(0.5 * 1000);
-                                            base64ImageComponent = await driver.saveScreenshots();
+                                            screenShot = await driver.saveScreenshots();
                                             addContext(this, {
                                                 title: `At Order Center - after Plus Button clicked`,
-                                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                                value: 'data:image/png;base64,' + screenShot,
                                             });
                                             break;
 
@@ -770,10 +770,10 @@ _________________
                                     ),
                                 );
                                 driver.sleep(0.5 * 1000);
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Order Center - after Minus Button clicked`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 Drug0004priceTSAs_OC = await pricingService.getItemTSAs(
                                     'OrderCenter',
@@ -820,10 +820,10 @@ _________________
                             transactionID = Number(
                                 await (await driver.findElement(orderPage.TransactionID)).getAttribute('title'),
                             );
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Order Center`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                         });
                     });
@@ -834,10 +834,10 @@ _________________
                             await webAppHomePage.isSpinnerDone();
                             await driver.untilIsVisible(webAppHomePage.MainHomePageBtn);
                             driver.sleep(1 * 1000);
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Home Page`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                         });
 
@@ -865,24 +865,24 @@ _________________
                             await webAppHomePage.clickOnBtn('Accounts');
                             await webAppHeader.isSpinnerDone();
                             driver.sleep(0.1 * 1000);
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Accounts List`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             await webAppList.clickOnFromListRowWebElementByName(accountName);
                             await webAppList.isSpinnerDone();
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `After the Row of "${accountName}" Account in List was clicked`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             await webAppList.clickOnLinkFromListRowWebElementByText(accountName);
                             await webAppList.isSpinnerDone();
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `After the Link of "${accountName}" Account in List was clicked`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                         });
 
@@ -903,10 +903,10 @@ _________________
                         });
 
                         it('entering the same transaction through activity list', async function () {
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Back into Order Center after exiting the transaction`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             await webAppList.clickOnLinkFromListRowWebElement();
                             await webAppList.isSpinnerDone();
@@ -918,18 +918,18 @@ _________________
                     describe('CART', function () {
                         it(`switch to 'Grid View'`, async function () {
                             await orderPage.changeCartView('Grid');
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `After "Line View" was selected`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                         });
 
                         it('verifying that the sum total of items in the cart is correct', async function () {
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Cart`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             await driver.untilIsVisible(orderPage.Cart_List_container); // check to be in cart
                             const itemsInCart = await (
@@ -1033,11 +1033,19 @@ _________________
                             driver.sleep(0.2 * 1000);
                         });
 
-                        it('verify additional item "Drug0002" quantity is correct', async () => {
+                        it('verify additional item "Drug0002" quantity is correct', async function () {
+                            screenShot = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `At Cart`,
+                                value: 'data:image/png;base64,' + screenShot,
+                            });
                             const item = 'Drug0002';
-                            const numberOfUnits = await driver.findElements(
-                                orderPage.getSelectorOfNumberOfUnitsInCartByFreeItemName(item),
-                            );
+                            const selector = orderPage.getSelectorOfNumberOfUnitsInCartByFreeItemName(item);
+                            addContext(this, {
+                                title: `getSelectorOfNumberOfUnitsInCartByFreeItemName Response`,
+                                value: selector.value,
+                            });
+                            const numberOfUnits = await driver.findElements(selector);
                             // const Drug0002_freeItem_numberOfUnits_fromDrug0004 = Number(
                             //     await numberOfUnits[0].getAttribute('title'),
                             // );
@@ -1202,25 +1210,25 @@ _________________
 
                         it('Click "Continue ordering" button + switch to "Line View"', async function () {
                             driver.sleep(0.5 * 1000);
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Cart`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
                             await driver.click(orderPage.Cart_ContinueOrdering_Button);
                             await orderPage.isSpinnerDone();
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Order Center`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             await orderPage.changeOrderCenterPageView('Line View');
                             await orderPage.isSpinnerDone();
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `After "Line View" was selected`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
                             driver.sleep(0.2 * 1000);
@@ -1298,20 +1306,20 @@ _________________
                                 driver.sleep(0.1 * 1000);
                                 await pricingService.clearOrderCenterSearch();
                                 driver.sleep(0.5 * 1000);
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `Group Rules item - at baseline`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                             });
                         });
 
                         ['MakeUp001', 'MakeUp002'].forEach(function (item) {
                             it(`Adding ${item} at quantity of 1 Each and Checking at Order Center`, async function () {
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `Group Rules item - before adding`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 await pricingService.searchInOrderCenter.bind(this)(item, driver);
                                 driver.sleep(0.1 * 1000);
@@ -1333,10 +1341,10 @@ _________________
                                 await driver.click(
                                     orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(item),
                                 );
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `Group Rules item - after adding (by clicking the Plus button)`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 const uomXnumber = await driver.findElement(
                                     orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
@@ -1997,20 +2005,20 @@ _________________
                             driver.sleep(0.1 * 1000);
                             await driver.click(orderPage.Cart_Button);
                             await driver.untilIsVisible(orderPage.Cart_Totals);
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Cart`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             driver.sleep(1 * 1000);
                         });
 
                         it(`switch to 'Grid View'`, async function () {
                             await orderPage.changeCartView('Grid');
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `After "Line View" was selected`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                         });
 
@@ -2031,10 +2039,10 @@ _________________
                                 title: `Number of Items in Cart`,
                                 value: `form UI: ${itemsInCart} , expected: ${numberOfItemsInCart}`,
                             });
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Cart`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
                             driver.sleep(1 * 1000);
@@ -2317,10 +2325,10 @@ _________________
                         });
 
                         it('checking the latest activity - type: Sales Order', async function () {
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Checking the latest activity`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_Type);
                             const latestActivityType = await (
@@ -2420,21 +2428,21 @@ _________________
                             driver.sleep(0.1 * 1000);
                             addContext(this, {
                                 title: `About to select account "${account}"`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             await webAppList.clickOnFromListRowWebElementByName(accountName);
                             await webAppList.isSpinnerDone();
                             await webAppList.clickOnLinkFromListRowWebElementByText(`${accountName}`);
                             await webAppList.isSpinnerDone();
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                         });
 
                         it('entering the same transaction through activity list', async function () {
                             await webAppList.untilIsVisible(webAppList.Activities_TopActivityInList_ID);
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At activity list - before entering the trasaction`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             await webAppList.clickOnLinkFromListRowWebElement();
                             await webAppList.isSpinnerDone();
@@ -2456,10 +2464,10 @@ _________________
                                 );
                             }
                             driver.sleep(0.1 * 1000);
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `Entered the trasaction`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                         });
                     });
@@ -2467,10 +2475,10 @@ _________________
                     describe('CART', function () {
                         it(`switch to 'Grid View'`, async function () {
                             await orderPage.changeCartView('Grid');
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `After "Grid View" was selected`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                         });
 
@@ -2484,10 +2492,10 @@ _________________
                             if (account === 'OtherAcc') {
                                 numberOfItemsInCart--;
                             }
-                            base64ImageComponent = await driver.saveScreenshots();
+                            screenShot = await driver.saveScreenshots();
                             addContext(this, {
                                 title: `At Cart`,
-                                value: 'data:image/png;base64,' + base64ImageComponent,
+                                value: 'data:image/png;base64,' + screenShot,
                             });
                             const itemsInCart = await (
                                 await driver.findElement(orderPage.Cart_Headline_Results_Number)
