@@ -46,7 +46,7 @@ export class OrderPage extends WebAppList {
 
     public ItemQuantity_NumberOfUnits_Readonly: By = By.xpath('//pep-quantity-selector//button[@id="UnitsQuantity"]');
     public ItemQuantity_NumberOfUnits_Readonly_cartGrid: By = By.xpath(
-        '//pep-quantity-selector//div[contains(@class,"caution")]//span[contains(@class,"mat-input-element")]',
+        '//div[5]//pep-quantity-selector//div[contains(@class,"caution")]//span[contains(@class,"mat-input-element")]',
     );
     public ItemQuantity_byUOM_InteractableNumber: By = By.xpath(
         '//pep-quantity-selector//input[@id="TSAAOQMQuantity1"]',
