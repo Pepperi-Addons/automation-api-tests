@@ -130,7 +130,7 @@ _________________
     let accountName: string;
     let duration: string;
     let ppmValues: UserDefinedTableRow[];
-    let base64ImageComponent;
+    let screenShot;
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     const uomTestStates = [
@@ -206,10 +206,10 @@ _________________
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
 
@@ -277,6 +277,12 @@ _________________
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
                     it('Creating new transaction', async function () {
+                        screenShot = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Before Transaction created`,
+                            value: 'data:image/png;base64,' + screenShot,
+                        });
+                        await webAppHomePage.isDialogOnHomePAge(this);
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
                         console.info('transactionUUID:', transactionUUID);
@@ -428,10 +434,10 @@ _________________
                                 await driver.click(orderPage.Cart_Button);
                                 await orderPage.isSpinnerDone();
                                 await orderPage.changeCartView('Grid');
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `After "Line View" was selected`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 driver.sleep(1 * 1000);
                                 await driver.untilIsVisible(orderPage.Cart_List_container);
@@ -445,10 +451,10 @@ _________________
                                 if (account === 'OtherAcc') {
                                     numberOfItemsInCart--;
                                 }
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Cart`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 const numberOfItemsElement = await driver.findElement(
                                     orderPage.Cart_Headline_Results_Number,

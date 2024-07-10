@@ -202,6 +202,12 @@ _________________
                         : 'Account for order scenarios'
                 }"`, function () {
                     it('Creating new transaction', async function () {
+                        screenShot = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Before Transaction created`,
+                            value: 'data:image/png;base64,' + screenShot,
+                        });
+                        await webAppHomePage.isDialogOnHomePAge(this);
                         account == 'Acc01'
                             ? (accountName = 'My Store')
                             : account == 'Acc02'

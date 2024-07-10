@@ -159,7 +159,7 @@ _________________
     let transactionUUID_Acc01: string;
     let transactionUUID_OtherAcc: string;
     let accountName: string;
-    let base64ImageComponent;
+    let screenShot;
     let duration: string;
     let ppmValues: UserDefinedTableRow[];
 
@@ -219,10 +219,10 @@ _________________
 
         it('Login', async function () {
             await webAppLoginPage.login(email, password);
-            base64ImageComponent = await driver.saveScreenshots();
+            screenShot = await driver.saveScreenshots();
             addContext(this, {
                 title: `At Home Page`,
-                value: 'data:image/png;base64,' + base64ImageComponent,
+                value: 'data:image/png;base64,' + screenShot,
             });
         });
 
@@ -262,10 +262,10 @@ _________________
 
         it('Logout-Login', async function () {
             await e2eutils.logOutLogIn(email, password, client);
-            base64ImageComponent = await driver.saveScreenshots();
+            screenShot = await driver.saveScreenshots();
             addContext(this, {
                 title: `At Home Page`,
-                value: 'data:image/png;base64,' + base64ImageComponent,
+                value: 'data:image/png;base64,' + screenShot,
             });
         });
 
@@ -335,11 +335,12 @@ _________________
         testAccounts.forEach((account) => {
             describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
                 it('Creating new transaction', async function () {
-                    base64ImageComponent = await driver.saveScreenshots();
+                    screenShot = await driver.saveScreenshots();
                     addContext(this, {
                         title: `Before Transaction created`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
+                        value: 'data:image/png;base64,' + screenShot,
                     });
+                    await webAppHomePage.isDialogOnHomePAge(this);
                     switch (account) {
                         case 'Acc01':
                             accountName = 'My Store';
@@ -353,10 +354,10 @@ _________________
                             console.info('transactionUUID_OtherAcc:', transactionUUID_OtherAcc);
                             break;
                     }
-                    base64ImageComponent = await driver.saveScreenshots();
+                    screenShot = await driver.saveScreenshots();
                     addContext(this, {
                         title: `New Slaes Order trasaction started`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
+                        value: 'data:image/png;base64,' + screenShot,
                     });
                 });
 
@@ -385,10 +386,10 @@ _________________
 
                 it(`switch to 'Line View'`, async function () {
                     await orderPage.changeOrderCenterPageView('Line View');
-                    base64ImageComponent = await driver.saveScreenshots();
+                    screenShot = await driver.saveScreenshots();
                     addContext(this, {
                         title: `After "Line View" was selected`,
-                        value: 'data:image/png;base64,' + base64ImageComponent,
+                        value: 'data:image/png;base64,' + screenShot,
                     });
                 });
 
@@ -499,10 +500,10 @@ _________________
                             // state === '1unit' &&
                             it(`changing value of "UserLineDiscount" field of item "${manualLineDiscountItem}" to 10`, async function () {
                                 await pricingService.searchInOrderCenter.bind(this)(manualLineDiscountItem, driver);
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At OC Before ${manualLineDiscountItem} UserLineDiscount change`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 driver.sleep(0.2 * 1000);
                                 await pricingService.changeValueOfTSAUserLineDiscountOfSpecificItem(
@@ -510,10 +511,10 @@ _________________
                                     manualLineDiscountItem,
                                 );
                                 driver.sleep(0.2 * 1000);
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At OC After ${manualLineDiscountItem} UserLineDiscount change`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 const manualLineDiscountItem_value = await (
                                     await driver.findElement(
@@ -528,10 +529,10 @@ _________________
                             });
 
                             it(`validating "PriceManualLineUnitPriceAfter1" field of item "${manualLineDiscountItem}" updated`, async function () {
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At OC After ${manualLineDiscountItem} UserLineDiscount change`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 const priceDiscountUnitPriceAfter1_value = await (
                                     await driver.findElement(
@@ -579,10 +580,10 @@ _________________
                             });
 
                             it(`checking all TSA fields of item "${manualLineDiscountItem}" after update`, async function () {
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At OC After ${manualLineDiscountItem} UserLineDiscount change`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 const priceTSAs = await pricingService.getItemTSAs(
                                     'OrderCenter',
@@ -623,18 +624,18 @@ _________________
 
                             it(`switch to 'Grid View'`, async function () {
                                 await orderPage.changeCartView('Grid');
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `After "Grid" View was selected`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                             });
 
                             it('verify that the sum total of items in the cart is correct', async function () {
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Cart`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 const itemsInCart = await (
                                     await driver.findElement(orderPage.Cart_Headline_Results_Number)
@@ -677,26 +678,26 @@ _________________
                                     await orderPage.isSpinnerDone();
                                     await orderPage.changeOrderCenterPageView('Line View');
                                     await orderPage.isSpinnerDone();
-                                    base64ImageComponent = await driver.saveScreenshots();
+                                    screenShot = await driver.saveScreenshots();
                                     addContext(this, {
                                         title: `After "Line View" was selected`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                        value: 'data:image/png;base64,' + screenShot,
                                     });
                                     await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
                                     driver.sleep(1 * 1000);
-                                    base64ImageComponent = await driver.saveScreenshots();
+                                    screenShot = await driver.saveScreenshots();
                                     addContext(this, {
                                         title: `Order Center - Loaded`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                        value: 'data:image/png;base64,' + screenShot,
                                     });
                                 });
 
                                 it(`reverting value of "UserLineDiscount" field of item "${manualLineDiscountItem}" back to 0`, async function () {
                                     await pricingService.searchInOrderCenter.bind(this)(manualLineDiscountItem, driver);
-                                    base64ImageComponent = await driver.saveScreenshots();
+                                    screenShot = await driver.saveScreenshots();
                                     addContext(this, {
                                         title: `${manualLineDiscountItem} UserLineDiscount before change`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                        value: 'data:image/png;base64,' + screenShot,
                                     });
                                     driver.sleep(0.2 * 1000);
                                     await pricingService.changeValueOfTSAUserLineDiscountOfSpecificItem(
@@ -704,10 +705,10 @@ _________________
                                         manualLineDiscountItem,
                                     );
                                     driver.sleep(0.2 * 1000);
-                                    base64ImageComponent = await driver.saveScreenshots();
+                                    screenShot = await driver.saveScreenshots();
                                     addContext(this, {
                                         title: `${manualLineDiscountItem} UserLineDiscount after change to 0`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                        value: 'data:image/png;base64,' + screenShot,
                                     });
                                     const manualLineDiscountItem_value = await (
                                         await driver.findElement(
