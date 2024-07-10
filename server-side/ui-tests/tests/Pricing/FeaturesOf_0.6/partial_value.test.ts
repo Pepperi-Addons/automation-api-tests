@@ -149,7 +149,7 @@ _________________
     let accountName: string;
     let duration: string;
     let ppmValues: UserDefinedTableRow[];
-    let base64ImageComponent;
+    let screenShot;
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     const partialValueTestItems = ['Frag006', 'Frag008', 'Frag009', 'Frag011', 'Frag021'];
@@ -215,10 +215,10 @@ _________________
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
 
@@ -286,6 +286,12 @@ _________________
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
                     it('Creating new transaction', async function () {
+                        screenShot = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Before Transaction created`,
+                            value: 'data:image/png;base64,' + screenShot,
+                        });
+                        await webAppHomePage.isDialogOnHomePAge(this);
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
                         console.info('transactionUUID:', transactionUUID);
@@ -439,19 +445,19 @@ _________________
 
                             it(`switch to 'Lines View'`, async function () {
                                 await orderPage.changeCartView('Lines');
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `After "Line View" was selected`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                             });
 
                             it('verifying that the sum total of items in the cart is correct', async function () {
                                 const numberOfItemsInCart = partialValueTestItems.length;
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Cart`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 const itemsInCart = await (
                                     await driver.findElement(orderPage.Cart_Headline_Results_Number)
@@ -487,10 +493,10 @@ _________________
                                         await driver.findElement(orderPage.Cart_Headline_Results_Number)
                                     ).getText();
                                     driver.sleep(0.2 * 1000);
-                                    base64ImageComponent = await driver.saveScreenshots();
+                                    screenShot = await driver.saveScreenshots();
                                     addContext(this, {
                                         title: `After Smart Filter Activated`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                        value: 'data:image/png;base64,' + screenShot,
                                     });
                                     addContext(this, {
                                         title: `After Smart Filter - Number of Items in Cart`,
@@ -543,10 +549,10 @@ _________________
                                         await driver.findElement(orderPage.Cart_Headline_Results_Number)
                                     ).getText();
                                     driver.sleep(0.2 * 1000);
-                                    base64ImageComponent = await driver.saveScreenshots();
+                                    screenShot = await driver.saveScreenshots();
                                     addContext(this, {
                                         title: `After Smart Filter Cleared`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                        value: 'data:image/png;base64,' + screenShot,
                                     });
                                     addContext(this, {
                                         title: `After Smart Filter Cleared - Number of Items in Cart`,

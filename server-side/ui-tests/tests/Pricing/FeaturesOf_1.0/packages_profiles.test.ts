@@ -116,7 +116,7 @@ _________________
     let accountName: string;
     let duration: string;
     let ppmValues: UserDefinedTableRow[];
-    let base64ImageComponent;
+    let screenShot;
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     // const packagesTestItems = ['Hair001', 'Hair002', 'Hair012'];
@@ -166,10 +166,10 @@ _________________
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
 
@@ -223,6 +223,12 @@ _________________
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
                     it('Creating new transaction', async function () {
+                        screenShot = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Before Transaction created`,
+                            value: 'data:image/png;base64,' + screenShot,
+                        });
+                        await webAppHomePage.isDialogOnHomePAge(this);
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
                         console.info('transactionUUID:', transactionUUID);

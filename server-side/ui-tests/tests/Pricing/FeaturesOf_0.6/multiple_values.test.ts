@@ -200,7 +200,7 @@ ________________________________________________________________________________
     let transactionUUID_OtherAcc: string;
     let accountName: string;
     let duration: string;
-    let base64ImageComponent;
+    let screenShot;
     let ppmValues: UserDefinedTableRow[];
 
     const testAccounts = ['Acc01', 'OtherAcc'];
@@ -297,10 +297,10 @@ ________________________________________________________________________________
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
 
@@ -368,6 +368,12 @@ ________________________________________________________________________________
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
                     it('Creating new transaction', async function () {
+                        screenShot = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Before Transaction created`,
+                            value: 'data:image/png;base64,' + screenShot,
+                        });
+                        await webAppHomePage.isDialogOnHomePAge(this);
                         switch (account) {
                             case 'Acc01':
                                 accountName = 'My Store';
@@ -548,19 +554,19 @@ ________________________________________________________________________________
 
                                     it(`switch to 'Lines View'`, async function () {
                                         await orderPage.changeCartView('Lines');
-                                        base64ImageComponent = await driver.saveScreenshots();
+                                        screenShot = await driver.saveScreenshots();
                                         addContext(this, {
                                             title: `After "Line View" was selected`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
+                                            value: 'data:image/png;base64,' + screenShot,
                                         });
                                     });
 
                                     it('verifying that the sum total of items in the cart is correct', async function () {
                                         const numberOfItemsInCart = multipleValuesTestItems_outOfCategory.length;
-                                        base64ImageComponent = await driver.saveScreenshots();
+                                        screenShot = await driver.saveScreenshots();
                                         addContext(this, {
                                             title: `At Cart`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
+                                            value: 'data:image/png;base64,' + screenShot,
                                         });
                                         const itemsInCart = await (
                                             await driver.findElement(orderPage.Cart_Headline_Results_Number)
@@ -608,17 +614,17 @@ ________________________________________________________________________________
                                         await orderPage.isSpinnerDone();
                                         await orderPage.changeOrderCenterPageView('Line View');
                                         await orderPage.isSpinnerDone();
-                                        base64ImageComponent = await driver.saveScreenshots();
+                                        screenShot = await driver.saveScreenshots();
                                         addContext(this, {
                                             title: `After "Line View" was selected`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
+                                            value: 'data:image/png;base64,' + screenShot,
                                         });
                                         await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
                                         driver.sleep(1 * 1000);
-                                        base64ImageComponent = await driver.saveScreenshots();
+                                        screenShot = await driver.saveScreenshots();
                                         addContext(this, {
                                             title: `Order Center - Loaded`,
-                                            value: 'data:image/png;base64,' + base64ImageComponent,
+                                            value: 'data:image/png;base64,' + screenShot,
                                         });
                                     });
                                 });
@@ -994,19 +1000,19 @@ ________________________________________________________________________________
                     //         });
                     //         it(`switch to 'Lines View'`, async function () {
                     //             await orderPage.changeCartView('Lines');
-                    //             base64ImageComponent = await driver.saveScreenshots();
+                    //             screenShot = await driver.saveScreenshots();
                     //             addContext(this, {
                     //                 title: `After "Line View" was selected`,
-                    //                 value: 'data:image/png;base64,' + base64ImageComponent,
+                    //                 value: 'data:image/png;base64,' + screenShot,
                     //             });
                     //         });
                     //         it('verifying that the sum total of items in the cart is correct', async function () {
                     //             const numberOfItemsInCart =
                     //                 multipleValuesTestItems_outOfCategory.length + multipleValuesTestItems.length;
-                    //             base64ImageComponent = await driver.saveScreenshots();
+                    //             screenShot = await driver.saveScreenshots();
                     //             addContext(this, {
                     //                 title: `At Cart`,
-                    //                 value: 'data:image/png;base64,' + base64ImageComponent,
+                    //                 value: 'data:image/png;base64,' + screenShot,
                     //             });
                     //             const itemsInCart = await (
                     //                 await driver.findElement(orderPage.Cart_Headline_Results_Number)
@@ -1038,10 +1044,10 @@ ________________________________________________________________________________
                     //                 await driver.findElement(orderPage.Cart_Headline_Results_Number)
                     //             ).getText();
                     //             driver.sleep(0.2 * 1000);
-                    //             base64ImageComponent = await driver.saveScreenshots();
+                    //             screenShot = await driver.saveScreenshots();
                     //             addContext(this, {
                     //                 title: `After Smart Filter Activated`,
-                    //                 value: 'data:image/png;base64,' + base64ImageComponent,
+                    //                 value: 'data:image/png;base64,' + screenShot,
                     //             });
                     //             addContext(this, {
                     //                 title: `After Smart Filter - Number of Items in Cart`,

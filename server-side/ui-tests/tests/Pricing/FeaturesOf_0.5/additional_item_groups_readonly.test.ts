@@ -347,6 +347,7 @@ _________________
                         title: `Before Transaction created`,
                         value: 'data:image/png;base64,' + screenShot,
                     });
+                    await webAppHomePage.isDialogOnHomePAge(this);
                     switch (account) {
                         case 'Acc01':
                             accountName = 'My Store';
@@ -2403,7 +2404,7 @@ _________________
                             await webAppHeader.goHome();
                             driver.sleep(0.2 * 1000);
                             await webAppHomePage.isSpinnerDone();
-                            await webAppHomePage.manualResync(client);
+                            await e2eutils.performManualSync(client);
                         });
 
                         it('validating "PPM_Values" UDT values via API', async () => {
@@ -2771,7 +2772,7 @@ _________________
                             await webAppHeader.goHome();
                             driver.sleep(0.2 * 1000);
                             await webAppHomePage.isSpinnerDone();
-                            await webAppHomePage.manualResync(client);
+                            await e2eutils.performManualSync(client);
                         });
 
                         it('validating "PPM_Values" UDT values via API', async () => {
