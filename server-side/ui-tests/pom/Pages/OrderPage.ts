@@ -58,7 +58,7 @@ export class OrderPage extends WebAppList {
         '//pep-quantity-selector//button[@id="TSAAOQMQuantity1"]',
     );
     public AdditionalItemQuantity_byUOM_Number_Cart_gridView: By = By.xpath(
-        '//pep-quantity-selector//div[contains(@class,"regular")]//span[contains(@class,"mat-input-element")]',
+        '//div[4]//pep-quantity-selector//div[contains(@class,"regular")]//span[contains(@class,"mat-input-element")]',
     );
     public ItemQuantity_Minus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[3]/button');
     public ItemQuantity2_Minus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[3]/button');
