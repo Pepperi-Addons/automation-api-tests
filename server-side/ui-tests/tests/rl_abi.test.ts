@@ -1,7 +1,7 @@
 import promised from 'chai-as-promised';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { Browser } from '../utilities/browser';
-import { WebAppLoginPage, WebAppHomePage, WebAppHeader, WebAppList } from '../pom';
+import { WebAppLoginPage, WebAppHomePage, WebAppHeader, WebAppList, WebAppAPI } from '../pom';
 import { describe, it, afterEach, before, after, Context } from 'mocha';
 import chai, { expect } from 'chai';
 import { ResourceListABI } from '../pom/addons/ResourceListABI';
@@ -32,6 +32,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     const openCatalogService = new OpenCatalogService(generalService);
     const dateTime = new Date();
     const coreResourcesUUID = 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f';
+    const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -478,6 +479,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
     );
 
     let driver: Browser;
+    let webAppAPI: WebAppAPI;
     let webAppLoginPage: WebAppLoginPage;
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
@@ -582,6 +584,7 @@ export async function ResourceListAbiTests(email: string, password: string, clie
         describe('RL ABI UI tests', async () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
+                webAppAPI = new WebAppAPI(driver, client);
                 webAppLoginPage = new WebAppLoginPage(driver);
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
@@ -600,6 +603,20 @@ export async function ResourceListAbiTests(email: string, password: string, clie
 
             it('Manual Resync', async function () {
                 await e2eUtils.performManualResync.bind(this)(client, driver);
+            });
+
+            it('If Error popup appear - close it', async function () {
+                await driver.refresh();
+                const accessToken = await webAppAPI.getAccessToken();
+                await webAppAPI.pollForResyncResponse(accessToken, 100);
+                try {
+                    await webAppHomePage.isDialogOnHomePAge(this);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    await driver.navigate(`${baseUrl}/HomePage`);
+                }
+                await webAppAPI.pollForResyncResponse(accessToken);
             });
 
             it('Entering Resource List ABI tests Addon', async () => {
