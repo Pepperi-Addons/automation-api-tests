@@ -827,13 +827,14 @@ export class PricingService {
         driver: Browser,
         view?: 'LinesView',
     ): Promise<void> {
+        const orderPage = new OrderPage(driver);
         const nameOfFunctionToLocateSelectorOfUnitsQuantity = `getSelectorOfNumberOfUnitsInCart${
             view ? view : ''
         }ByItemName`;
-        const orderPage = new OrderPage(driver);
+        const nameOfFunctionToLocateSelectorOfUomValue = `getSelectorOfUomValueInCart${view ? view : ''}ByItemName`;
         driver.sleep(0.05 * 1000);
         let itemUomValue: WebElement = await driver.findElement(
-            orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem),
+            orderPage[nameOfFunctionToLocateSelectorOfUomValue](nameOfItem),
         );
         if ((await itemUomValue.getText()) !== uomValue) {
             await itemUomValue.click();
@@ -842,11 +843,11 @@ export class PricingService {
             driver.sleep(0.1 * 1000);
             await driver.click(orderPage.TopBar);
             driver.sleep(0.1 * 1000);
-            itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
+            itemUomValue = await driver.findElement(orderPage[nameOfFunctionToLocateSelectorOfUomValue](nameOfItem));
         }
         driver.sleep(0.05 * 1000);
         await orderPage.isSpinnerDone();
-        itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
+        itemUomValue = await driver.findElement(orderPage[nameOfFunctionToLocateSelectorOfUomValue](nameOfItem));
         driver.sleep(0.1 * 1000);
         expect(await itemUomValue.getText()).equals(uomValue);
         let uomXnumber = await driver.findElement(
