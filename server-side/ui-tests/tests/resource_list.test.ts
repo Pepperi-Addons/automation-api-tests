@@ -1168,7 +1168,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     await webAppHeader.isSpinnerDone();
                     driver.sleep(0.1 * 1000);
                     await resourceListUtils.addHomePageButtonByProfile(slugDisplayName, 'Rep');
-                    await webAppHomePage.manualResync(client);
+                    await resourceListUtils.performManualSync(client);
                     await webAppHomePage.validateATDIsApearingOnHomeScreen(slugDisplayName);
                     addContext(this, {
                         title: `${slugDisplayName}`,
@@ -1283,7 +1283,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     await webAppHomePage.isSpinnerDone();
                     driver.sleep(0.5 * 1000);
                     await resourceListUtils.removeHomePageButtonByProfile(slugDisplayName, 'Rep');
-                    await webAppHomePage.manualResync(client);
+                    await resourceListUtils.performManualSync(client);
                     const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugDisplayName);
                     const screenShot = await driver.saveScreenshots();
                     addContext(this, {
@@ -1588,6 +1588,24 @@ export async function ResourceListTests(email: string, password: string, client:
                         : await resourceListUtils.performManualSync(client);
                 });
 
+                syncStatusOfReferenceAccount &&
+                    it('If Error popup appear - close it', async function () {
+                        await driver.refresh();
+                        const accessToken = await webAppAPI.getAccessToken();
+                        let errorDialogAppear = true;
+                        do {
+                            await webAppAPI.pollForResyncResponse(accessToken, 100);
+                            try {
+                                errorDialogAppear = await webAppHomePage.isErrorDialogOnHomePage(this);
+                            } catch (error) {
+                                console.error(error);
+                            } finally {
+                                await driver.navigate(`${baseUrl}/HomePage`);
+                            }
+                            await webAppAPI.pollForResyncResponse(accessToken);
+                        } while (errorDialogAppear);
+                    });
+
                 it(`Logout Login`, async () => {
                     await resourceListUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
@@ -1839,6 +1857,24 @@ export async function ResourceListTests(email: string, password: string, client:
                         ? await resourceListUtils.performManualResync.bind(this)(client, driver)
                         : await resourceListUtils.performManualSync(client);
                 });
+
+                syncStatusOfReferenceAccount &&
+                    it('If Error popup appear - close it', async function () {
+                        await driver.refresh();
+                        const accessToken = await webAppAPI.getAccessToken();
+                        let errorDialogAppear = true;
+                        do {
+                            await webAppAPI.pollForResyncResponse(accessToken, 100);
+                            try {
+                                errorDialogAppear = await webAppHomePage.isErrorDialogOnHomePage(this);
+                            } catch (error) {
+                                console.error(error);
+                            } finally {
+                                await driver.navigate(`${baseUrl}/HomePage`);
+                            }
+                            await webAppAPI.pollForResyncResponse(accessToken);
+                        } while (errorDialogAppear);
+                    });
 
                 it(`Logout Login`, async () => {
                     await resourceListUtils.logOutLogIn(email, password, client);
@@ -2315,7 +2351,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         `${resource_name_pipeline} `,
                         'Rep',
                     );
-                    await webAppHomePage.manualResync(client);
+                    await resourceListUtils.performManualSync(client);
                     const leftoversButtonsOnHomeScreen =
                         await webAppHomePage.buttonsApearingOnHomeScreenByPartialText.bind(this)(
                             driver,
