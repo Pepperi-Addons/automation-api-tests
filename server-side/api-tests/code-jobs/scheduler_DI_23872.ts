@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import GeneralService, { TesterFunctions } from '../../services/general.service';
 
-export async function SchedulerTester_Part2(generalService: GeneralService, request, tester: TesterFunctions) {
-    await SchedulerTests_Part2(generalService, request, tester);
+export async function AsyncTester_Part2_Stop_Restart(generalService: GeneralService, request, tester: TesterFunctions) {
+    await Async_Part2_Stop_Restart(generalService, request, tester);
 }
 
-export async function SchedulerTests_Part2(generalService: GeneralService, request, tester: TesterFunctions) {
+export async function Async_Part2_Stop_Restart(generalService: GeneralService, request, tester: TesterFunctions) {
     const service = generalService.papiClient;
     const describe = tester.describe;
     const it = tester.it;
