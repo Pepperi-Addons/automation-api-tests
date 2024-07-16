@@ -222,6 +222,12 @@ export class OrderPage extends WebAppList {
         );
     }
 
+    public getSelectorOfUomValueInCartLinesViewByItemName(name: string) {
+        return By.xpath(
+            `${this.getSelectorOfItemInCartLinesViewByName(name).value}${this.Cart_UnitOfMeasure_Selector_Value.value}`,
+        );
+    }
+
     public getSelectorOfNumberOfUnitsInCartByItemName(name: string) {
         return By.xpath(
             `${this.getSelectorOfItemInCartByName(name).value}${

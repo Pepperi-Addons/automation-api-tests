@@ -27,6 +27,7 @@ import PricingRules from '../../../pom/addons/PricingRules';
 import GeneralService from '../../../../services/general.service';
 import addContext from 'mochawesome/addContext';
 import { PricingDataNoUom } from '../../../pom/addons/PricingDataNoUom';
+import E2EUtils from '../../../utilities/e2e_utils';
 
 chai.use(promised);
 
@@ -178,6 +179,7 @@ ________________________________________________________________________________
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
+    let e2eUtils: E2EUtils;
     let transactionUUID_Acc01: string;
     let transactionUUID_OtherAcc: string;
     let accountName: string;
@@ -219,6 +221,7 @@ ________________________________________________________________________________
                 webAppTopBar = new WebAppTopBar(driver);
                 webAppDialog = new WebAppDialog(driver);
                 orderPage = new OrderPage(driver);
+                e2eUtils = new E2EUtils(driver);
                 pricingService = new PricingService(
                     driver,
                     webAppLoginPage,
@@ -251,7 +254,7 @@ ________________________________________________________________________________
             });
 
             it('Manual Sync', async () => {
-                await webAppHomePage.manualResync(client);
+                await e2eUtils.performManualSync(client);
             });
 
             it('If Error popup appear - close it', async function () {
