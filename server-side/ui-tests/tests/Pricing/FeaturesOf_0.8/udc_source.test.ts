@@ -377,8 +377,9 @@ _________________
                                         it(`change ${item} quantity to ${udcTestState}`, async function () {
                                             const splitedStateArgs = udcTestState.split(' ');
                                             const amount = Number(splitedStateArgs[0]);
+                                            const uom = splitedStateArgs[1];
                                             await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
-                                                'Each',
+                                                uom,
                                                 item,
                                                 amount,
                                                 driver,
