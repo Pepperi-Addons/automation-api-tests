@@ -111,7 +111,7 @@ import { UDC300KTestser } from '../../api-tests/user_defined_collections_300K_ov
 import { ImportLimitCSVAdalFromDimx } from './import_300k_DIMX.test';
 import { UDC150KOverwriteTestser } from '../../api-tests/user_defined_collections_150K_overwrite';
 import { UDC100KOverwriteTestser } from '../../api-tests/user_defined_collections_100K_overwrite';
-import { SchedulerTester_Part2 } from '../../api-tests/code-jobs/scheduler_DI_23872';
+import { AsyncTester_Part2_Stop_Restart } from '../../api-tests/code-jobs/scheduler_DI_23872';
 import { DevTest } from './DevTests';
 import { XTimesSync } from './XTimesSyncE2E.test';
 import { IdosPapiTests } from './ido_papi_tests.test';
@@ -1509,7 +1509,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
     }
 
     if (tests === 'StopRestart_Async') {
-        await SchedulerTester_Part2(
+        await AsyncTester_Part2_Stop_Restart(
             generalService,
             {
                 body: {
@@ -2288,38 +2288,51 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20L1%20EU%20-%20Async%20Addon%20Stop%20Restart%20-%20CLI';
                 const jobPathSB =
                     'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20L1%20Stage%20-%20Async%20Addon%20Stop%20Restart%20-%20CLI';
+                const jobPathPROD2 =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20L2%20Production%20-%20Async%20Addon%20Install%20And%20Execution';
+                const jobPathEU2 =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20L2%20EU%20-%20Async%20Addon%20Install%20And%20Execution';
+                const jobPathSB2 =
+                    'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20L2%20Stage%20-%20Async%20Addon%20Install%20And%20Execution';
                 const {
-                    JenkinsBuildResultsAllEnvs,
-                    latestRunProd,
-                    latestRunEU,
-                    latestRunSB,
                     addonEntryUUIDProd,
                     addonEntryUUIDEu,
                     addonEntryUUIDSb,
+                    latestRunProdReturn,
+                    latestRunEUReturn,
+                    latestRunSBReturn,
+                    JenkinsBuildResultsAllEnvsToReturn,
                     addonVersionProd,
                     addonVersionEU,
                     addonVersionSb,
-                } = await appTestsRunnnerService.jenkinsSingleJobTestRunner(
+                    jobPathToReturnProd,
+                    jobPathToReturnSB,
+                    jobPathToReturnEU,
+                } = await appTestsRunnnerService.jenkinsDoubleJobTestRunner(
                     addonName,
                     addonUUID,
                     jobPathPROD,
                     jobPathEU,
                     jobPathSB,
                     buildToken,
+                    jobPathPROD2,
+                    jobPathEU2,
+                    jobPathSB2,
                 );
-                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvs;
-                latestRunProdEx = latestRunProd;
-                latestRunEUEx = latestRunEU;
-                latestRunSBEx = latestRunSB;
-                pathProdEx = jobPathPROD;
-                pathEUEx = jobPathEU;
-                pathSBEx = jobPathSB;
+                JenkinsBuildResultsAllEnvsEx = JenkinsBuildResultsAllEnvsToReturn;
+                latestRunProdEx = latestRunProdReturn;
+                latestRunEUEx = latestRunEUReturn;
+                latestRunSBEx = latestRunSBReturn;
+                pathProdEx = jobPathToReturnProd;
+                pathEUEx = jobPathToReturnEU;
+                pathSBEx = jobPathToReturnSB;
                 addonEntryUUIDProdEx = addonEntryUUIDProd;
                 addonEntryUUIDEuEx = addonEntryUUIDEu;
                 addonEntryUUIDSbEx = addonEntryUUIDSb;
                 addonVersionProdEx = addonVersionProd;
                 addonVersionEUEx = addonVersionEU;
                 addonVersionSbEx = addonVersionSb;
+                debugger;
                 break;
             }
             case 'PAPI-DATA-INDEX':
