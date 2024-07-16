@@ -102,6 +102,32 @@ export class WebAppHomePage extends WebAppPage {
         return;
     }
 
+    /**Implementation for the purpose of evoiding test stuck over Resync Error Popup shown */
+    public async isErrorDialogOnHomePage(that): Promise<boolean> {
+        const webAppDialog = new WebAppDialog(this.browser);
+        //Wait 5 seconds and validate there are no dialogs opening up after placing order
+        try {
+            await expect(this.browser.findElement(webAppDialog.Title, 5000)).eventually.to.be.rejectedWith(
+                `After wait time of: 5000, for selector of 'pep-dialog .dialog-title', The test must end`,
+            );
+            return false;
+        } catch (error) {
+            const base64Image = await this.browser.saveScreenshots();
+            addContext(that, {
+                title: `Probably Resync Error Dialog is shown`,
+                value: 'PERFORMANCE check is advised',
+            });
+            addContext(that, {
+                title: `This bug happen some time, don't stop the test here, but add this as image`,
+                value: 'data:image/png;base64,' + base64Image,
+            });
+
+            //Remove this dialog box and continue the test
+            await webAppDialog.selectDialogBox('Close');
+            return true;
+        }
+    }
+
     /**
      * This can only be used from HomePage and when HomePage include button that lead to Transaction ATD
      * This will nevigate to the scope_items of a new transaction, deep link "/transactions/scope_items/${newUUID}"
