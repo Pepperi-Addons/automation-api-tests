@@ -818,10 +818,10 @@ export class PricingService {
         });
     }
 
-    /* UI FUNCTION: specify uom ('Each' | 'Case'), item name and desired quantity. the function do not perform a search before change */
+    /* UI FUNCTION: specify uom ('Each' | 'Case' | 'Box'), item name and desired quantity. the function do not perform a search before change */
     public async changeSelectedQuantityOfSpecificItemInCart(
         this: Context,
-        uomValue: 'Each' | 'Case',
+        uomValue: string, // 'Each' | 'Case' | 'Box'
         nameOfItem: string,
         quantityOfItem: number,
         driver: Browser,
