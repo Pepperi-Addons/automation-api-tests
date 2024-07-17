@@ -180,15 +180,18 @@ _________________
             it('If Error popup appear - close it', async function () {
                 await driver.refresh();
                 const accessToken = await webAppAPI.getAccessToken();
-                await webAppAPI.pollForResyncResponse(accessToken, 100);
-                try {
-                    await webAppHomePage.isDialogOnHomePAge(this);
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    await driver.navigate(`${baseUrl}/HomePage`);
-                }
-                await webAppAPI.pollForResyncResponse(accessToken);
+                let errorDialogAppear = true;
+                do {
+                    await webAppAPI.pollForResyncResponse(accessToken, 100);
+                    try {
+                        errorDialogAppear = await webAppHomePage.isErrorDialogOnHomePage(this);
+                    } catch (error) {
+                        console.error(error);
+                    } finally {
+                        await driver.navigate(`${baseUrl}/HomePage`);
+                    }
+                    await webAppAPI.pollForResyncResponse(accessToken);
+                } while (errorDialogAppear);
             });
 
             testAccounts.forEach((account) => {
