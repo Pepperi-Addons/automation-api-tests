@@ -96,7 +96,7 @@ import { OldLegacyResourcesTests } from './api-tests/old_legacy_resources';
 import { Adal40KImportAndPurgeTest } from './api-tests/adal_40k_import_export_and_purge';
 import { UnistallAddonFromAllUsers } from './api-tests/uninstall_addon_from_all_auto_users';
 import { UpgradeDependenciesTestsWithNewSync } from './api-tests/test-service/upgrade_dependencies_with_new_sync';
-import { SchedulerTests_Part2 } from './api-tests/code-jobs/scheduler_DI_23872';
+import { Async_Part2_Stop_Restart } from './api-tests/code-jobs/scheduler_DI_23872';
 import { UpgradeDependenciesTestsWithNewSyncNoNebula } from './api-tests/test-service/upgrade_dependencies_with_new_sync_no_nebula';
 import { UpgradeDependenciesForNebulaTests } from './api-tests/test-service/upgrade_dependencies_for_nebula_dists';
 import { UpgradeDependenciesNoSyncNoNebula } from './api-tests/test-service/upgrade_dependencies_no_sync_no_nebula';
@@ -697,7 +697,7 @@ export async function scheduler_part2(client: Client, request: Request, testerFu
     testName = 'Scheduler';
     service.PrintMemoryUseToLog('Start', testName);
     testerFunctions = service.initiateTesterFunctions(client, testName);
-    await SchedulerTests_Part2(service, request, testerFunctions);
+    await Async_Part2_Stop_Restart(service, request, testerFunctions);
     await test_data(client, testerFunctions);
     service.PrintMemoryUseToLog('End', testName);
     return await testerFunctions.run();

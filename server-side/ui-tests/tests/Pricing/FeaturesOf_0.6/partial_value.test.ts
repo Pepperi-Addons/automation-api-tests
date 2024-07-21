@@ -1,4 +1,10 @@
-import { describe, it, before, after, afterEach } from 'mocha';
+import {
+    describe,
+    it,
+    before,
+    after,
+    // afterEach
+} from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import GeneralService from '../../../../services/general.service';
 import chai, { expect } from 'chai';
@@ -143,7 +149,7 @@ _________________
     let accountName: string;
     let duration: string;
     let ppmValues: UserDefinedTableRow[];
-    let base64ImageComponent;
+    let screenShot;
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     const partialValueTestItems = ['Frag006', 'Frag008', 'Frag009', 'Frag011', 'Frag021'];
@@ -201,18 +207,18 @@ _________________
                 await driver.quit();
             });
 
-            afterEach(async function () {
-                driver.sleep(500);
-                await webAppHomePage.isDialogOnHomePAge(this);
-                await webAppHomePage.collectEndTestData(this);
-            });
+            // afterEach(async function () {
+            //     driver.sleep(500);
+            //     await webAppHomePage.isDialogOnHomePAge(this);
+            //     await webAppHomePage.collectEndTestData(this);
+            // });
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
 
@@ -223,15 +229,18 @@ _________________
             it('If Error popup appear - close it', async function () {
                 await driver.refresh();
                 const accessToken = await webAppAPI.getAccessToken();
-                await webAppAPI.pollForResyncResponse(accessToken, 100);
-                try {
-                    await webAppHomePage.isDialogOnHomePAge(this);
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    await driver.navigate(`${baseUrl}/HomePage`);
-                }
-                await webAppAPI.pollForResyncResponse(accessToken);
+                let errorDialogAppear = true;
+                do {
+                    await webAppAPI.pollForResyncResponse(accessToken, 100);
+                    try {
+                        errorDialogAppear = await webAppHomePage.isErrorDialogOnHomePage(this);
+                    } catch (error) {
+                        console.error(error);
+                    } finally {
+                        await driver.navigate(`${baseUrl}/HomePage`);
+                    }
+                    await webAppAPI.pollForResyncResponse(accessToken);
+                } while (errorDialogAppear);
             });
 
             it('get UDT Values (PPM_Values)', async () => {
@@ -279,13 +288,13 @@ _________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
-                    // afterEach(async function () {
-                    //     driver.sleep(500);
-                    //     await webAppHomePage.isDialogOnHomePAge(this);
-                    //     await webAppHomePage.collectEndTestData(this);
-                    // });
-
                     it('Creating new transaction', async function () {
+                        screenShot = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Before Transaction created`,
+                            value: 'data:image/png;base64,' + screenShot,
+                        });
+                        await webAppHomePage.isDialogOnHomePAge(this);
                         account == 'Acc01' ? (accountName = 'My Store') : (accountName = 'Account for order scenarios');
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
                         console.info('transactionUUID:', transactionUUID);
@@ -316,12 +325,6 @@ _________________
                     });
 
                     describe('Partial Value', function () {
-                        // afterEach(async function () {
-                        //     driver.sleep(500);
-                        //     await webAppHomePage.isDialogOnHomePAge(this);
-                        //     await webAppHomePage.collectEndTestData(this);
-                        // });
-
                         it('Navigating to "Great Perfumes" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(
@@ -332,19 +335,7 @@ _________________
 
                         partialValueTestItems.forEach((partialValueTestItem) => {
                             describe(`Item: ***${partialValueTestItem}`, function () {
-                                // afterEach(async function () {
-                                //     driver.sleep(500);
-                                //     await webAppHomePage.isDialogOnHomePAge(this);
-                                //     await webAppHomePage.collectEndTestData(this);
-                                // });
-
                                 describe('ORDER CENTER', function () {
-                                    // afterEach(async function () {
-                                    //     driver.sleep(500);
-                                    //     await webAppHomePage.isDialogOnHomePAge(this);
-                                    //     await webAppHomePage.collectEndTestData(this);
-                                    // });
-
                                     it(`Looking for "${partialValueTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(
                                             partialValueTestItem,
@@ -448,12 +439,6 @@ _________________
                         });
 
                         describe('CART', function () {
-                            // afterEach(async function () {
-                            //     driver.sleep(500);
-                            //     await webAppHomePage.isDialogOnHomePAge(this);
-                            //     await webAppHomePage.collectEndTestData(this);
-                            // });
-
                             it('entering and verifying being in cart', async function () {
                                 await driver.click(orderPage.Cart_Button);
                                 await orderPage.isSpinnerDone();
@@ -463,19 +448,19 @@ _________________
 
                             it(`switch to 'Lines View'`, async function () {
                                 await orderPage.changeCartView('Lines');
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `After "Line View" was selected`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                             });
 
                             it('verifying that the sum total of items in the cart is correct', async function () {
                                 const numberOfItemsInCart = partialValueTestItems.length;
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Cart`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 const itemsInCart = await (
                                     await driver.findElement(orderPage.Cart_Headline_Results_Number)
@@ -511,10 +496,10 @@ _________________
                                         await driver.findElement(orderPage.Cart_Headline_Results_Number)
                                     ).getText();
                                     driver.sleep(0.2 * 1000);
-                                    base64ImageComponent = await driver.saveScreenshots();
+                                    screenShot = await driver.saveScreenshots();
                                     addContext(this, {
                                         title: `After Smart Filter Activated`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                        value: 'data:image/png;base64,' + screenShot,
                                     });
                                     addContext(this, {
                                         title: `After Smart Filter - Number of Items in Cart`,
@@ -567,10 +552,10 @@ _________________
                                         await driver.findElement(orderPage.Cart_Headline_Results_Number)
                                     ).getText();
                                     driver.sleep(0.2 * 1000);
-                                    base64ImageComponent = await driver.saveScreenshots();
+                                    screenShot = await driver.saveScreenshots();
                                     addContext(this, {
                                         title: `After Smart Filter Cleared`,
-                                        value: 'data:image/png;base64,' + base64ImageComponent,
+                                        value: 'data:image/png;base64,' + screenShot,
                                     });
                                     addContext(this, {
                                         title: `After Smart Filter Cleared - Number of Items in Cart`,
@@ -585,12 +570,6 @@ _________________
             });
 
             describe('Cleanup', function () {
-                // afterEach(async function () {
-                //     driver.sleep(500);
-                //     await webAppHomePage.isDialogOnHomePAge(this);
-                //     await webAppHomePage.collectEndTestData(this);
-                // });
-
                 it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();

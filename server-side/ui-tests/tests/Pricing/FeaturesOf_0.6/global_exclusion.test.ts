@@ -1,6 +1,12 @@
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { describe, it, before, after, afterEach } from 'mocha';
+import {
+    describe,
+    it,
+    before,
+    after,
+    // afterEach
+} from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../../utilities/browser';
 import {
@@ -21,6 +27,7 @@ import PricingRules from '../../../pom/addons/PricingRules';
 import GeneralService from '../../../../services/general.service';
 import addContext from 'mochawesome/addContext';
 import { PricingDataNoUom } from '../../../pom/addons/PricingDataNoUom';
+import E2EUtils from '../../../utilities/e2e_utils';
 
 chai.use(promised);
 
@@ -172,12 +179,13 @@ ________________________________________________________________________________
     let webAppTopBar: WebAppTopBar;
     let webAppDialog: WebAppDialog;
     let orderPage: OrderPage;
+    let e2eUtils: E2EUtils;
     let transactionUUID_Acc01: string;
     let transactionUUID_OtherAcc: string;
     let accountName: string;
     let duration: string;
     let ppmValues: UserDefinedTableRow[];
-    let base64ImageComponent;
+    let screenShot;
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     const exclusionRulesTestItems = ['PMS-03-FBC6_l_2', 'MaLi36', 'Frag008'];
@@ -213,6 +221,7 @@ ________________________________________________________________________________
                 webAppTopBar = new WebAppTopBar(driver);
                 webAppDialog = new WebAppDialog(driver);
                 orderPage = new OrderPage(driver);
+                e2eUtils = new E2EUtils(driver);
                 pricingService = new PricingService(
                     driver,
                     webAppLoginPage,
@@ -229,37 +238,40 @@ ________________________________________________________________________________
                 await driver.quit();
             });
 
-            afterEach(async function () {
-                driver.sleep(500);
-                await webAppHomePage.isDialogOnHomePAge(this);
-                await webAppHomePage.collectEndTestData(this);
-            });
+            // afterEach(async function () {
+            //     driver.sleep(500);
+            //     await webAppHomePage.isDialogOnHomePAge(this);
+            //     await webAppHomePage.collectEndTestData(this);
+            // });
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
-                base64ImageComponent = await driver.saveScreenshots();
+                screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
-                    value: 'data:image/png;base64,' + base64ImageComponent,
+                    value: 'data:image/png;base64,' + screenShot,
                 });
             });
 
             it('Manual Sync', async () => {
-                await webAppHomePage.manualResync(client);
+                await e2eUtils.performManualSync(client);
             });
 
             it('If Error popup appear - close it', async function () {
                 await driver.refresh();
                 const accessToken = await webAppAPI.getAccessToken();
-                await webAppAPI.pollForResyncResponse(accessToken, 100);
-                try {
-                    await webAppHomePage.isDialogOnHomePAge(this);
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    await driver.navigate(`${baseUrl}/HomePage`);
-                }
-                await webAppAPI.pollForResyncResponse(accessToken);
+                let errorDialogAppear = true;
+                do {
+                    await webAppAPI.pollForResyncResponse(accessToken, 100);
+                    try {
+                        errorDialogAppear = await webAppHomePage.isErrorDialogOnHomePage(this);
+                    } catch (error) {
+                        console.error(error);
+                    } finally {
+                        await driver.navigate(`${baseUrl}/HomePage`);
+                    }
+                    await webAppAPI.pollForResyncResponse(accessToken);
+                } while (errorDialogAppear);
             });
 
             it('get UDT Values (PPM_Values)', async () => {
@@ -307,13 +319,13 @@ ________________________________________________________________________________
 
             testAccounts.forEach((account) => {
                 describe(`ACCOUNT "${account == 'Acc01' ? 'My Store' : 'Account for order scenarios'}"`, function () {
-                    // afterEach(async function () {
-                    //     driver.sleep(500);
-                    //     await webAppHomePage.isDialogOnHomePAge(this);
-                    //     await webAppHomePage.collectEndTestData(this);
-                    // });
-
                     it('Creating new transaction', async function () {
+                        screenShot = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Before Transaction created`,
+                            value: 'data:image/png;base64,' + screenShot,
+                        });
+                        await webAppHomePage.isDialogOnHomePAge(this);
                         switch (account) {
                             case 'Acc01':
                                 accountName = 'My Store';
@@ -356,27 +368,9 @@ ________________________________________________________________________________
                     });
 
                     describe('Exclusion Rules', function () {
-                        // afterEach(async function () {
-                        //     driver.sleep(500);
-                        //     await webAppHomePage.isDialogOnHomePAge(this);
-                        //     await webAppHomePage.collectEndTestData(this);
-                        // });
-
                         exclusionRulesTestItems.forEach((exclusionRulesTestItem) => {
                             describe(`Item: ***${exclusionRulesTestItem}`, function () {
-                                // afterEach(async function () {
-                                //     driver.sleep(500);
-                                //     await webAppHomePage.isDialogOnHomePAge(this);
-                                //     await webAppHomePage.collectEndTestData(this);
-                                // });
-
                                 describe('ORDER CENTER', function () {
-                                    // afterEach(async function () {
-                                    //     driver.sleep(500);
-                                    //     await webAppHomePage.isDialogOnHomePAge(this);
-                                    //     await webAppHomePage.collectEndTestData(this);
-                                    // });
-
                                     it(`Looking for "${exclusionRulesTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(
                                             exclusionRulesTestItem,
@@ -459,12 +453,6 @@ ________________________________________________________________________________
                         });
 
                         describe('CART', function () {
-                            // afterEach(async function () {
-                            //     driver.sleep(500);
-                            //     await webAppHomePage.isDialogOnHomePAge(this);
-                            //     await webAppHomePage.collectEndTestData(this);
-                            // });
-
                             it('entering and verifying being in cart', async function () {
                                 await driver.click(orderPage.Cart_Button);
                                 await orderPage.isSpinnerDone();
@@ -474,19 +462,19 @@ ________________________________________________________________________________
 
                             it(`switch to 'Lines View'`, async function () {
                                 await orderPage.changeCartView('Lines');
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `After "Line View" was selected`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                             });
 
                             it('verifying that the sum total of items in the cart is correct', async function () {
                                 const numberOfItemsInCart = exclusionRulesTestItems.length;
-                                base64ImageComponent = await driver.saveScreenshots();
+                                screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Cart`,
-                                    value: 'data:image/png;base64,' + base64ImageComponent,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
                                 const itemsInCart = await (
                                     await driver.findElement(orderPage.Cart_Headline_Results_Number)
@@ -580,12 +568,6 @@ ________________________________________________________________________________
             });
 
             describe('Cleanup', function () {
-                // afterEach(async function () {
-                //     driver.sleep(500);
-                //     await webAppHomePage.isDialogOnHomePAge(this);
-                //     await webAppHomePage.collectEndTestData(this);
-                // });
-
                 it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();

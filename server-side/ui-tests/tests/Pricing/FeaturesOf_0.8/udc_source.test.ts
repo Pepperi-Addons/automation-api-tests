@@ -1,6 +1,12 @@
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
-import { describe, it, before, after, afterEach } from 'mocha';
+import {
+    describe,
+    it,
+    before,
+    after,
+    // afterEach
+} from 'mocha';
 import { Client } from '@pepperi-addons/debug-server';
 import { Browser } from '../../../utilities/browser';
 import {
@@ -152,11 +158,11 @@ _________________
                 await driver.quit();
             });
 
-            afterEach(async function () {
-                driver.sleep(500);
-                await webAppHomePage.isDialogOnHomePAge(this);
-                await webAppHomePage.collectEndTestData(this);
-            });
+            // afterEach(async function () {
+            //     driver.sleep(500);
+            //     await webAppHomePage.isDialogOnHomePAge(this);
+            //     await webAppHomePage.collectEndTestData(this);
+            // });
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
@@ -174,15 +180,18 @@ _________________
             it('If Error popup appear - close it', async function () {
                 await driver.refresh();
                 const accessToken = await webAppAPI.getAccessToken();
-                await webAppAPI.pollForResyncResponse(accessToken, 100);
-                try {
-                    await webAppHomePage.isDialogOnHomePAge(this);
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    await driver.navigate(`${baseUrl}/HomePage`);
-                }
-                await webAppAPI.pollForResyncResponse(accessToken);
+                let errorDialogAppear = true;
+                do {
+                    await webAppAPI.pollForResyncResponse(accessToken, 100);
+                    try {
+                        errorDialogAppear = await webAppHomePage.isErrorDialogOnHomePage(this);
+                    } catch (error) {
+                        console.error(error);
+                    } finally {
+                        await driver.navigate(`${baseUrl}/HomePage`);
+                    }
+                    await webAppAPI.pollForResyncResponse(accessToken);
+                } while (errorDialogAppear);
             });
 
             testAccounts.forEach((account) => {
@@ -195,13 +204,13 @@ _________________
                         ? 'Store 3'
                         : 'Account for order scenarios'
                 }"`, function () {
-                    // afterEach(async function () {
-                    //     driver.sleep(500);
-                    //     await webAppHomePage.isDialogOnHomePAge(this);
-                    //     await webAppHomePage.collectEndTestData(this);
-                    // });
-
                     it('Creating new transaction', async function () {
+                        screenShot = await driver.saveScreenshots();
+                        addContext(this, {
+                            title: `Before Transaction created`,
+                            value: 'data:image/png;base64,' + screenShot,
+                        });
+                        await webAppHomePage.isDialogOnHomePAge(this);
                         account == 'Acc01'
                             ? (accountName = 'My Store')
                             : account == 'Acc02'
@@ -241,12 +250,6 @@ _________________
                             ? 'UDC "PricingTest2"'
                             : 'UDT "PPM_Values"'
                     }`, function () {
-                        // afterEach(async function () {
-                        //     driver.sleep(500);
-                        //     await webAppHomePage.isDialogOnHomePAge(this);
-                        //     await webAppHomePage.collectEndTestData(this);
-                        // });
-
                         it('Navigating to "Great Perfumes" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(
@@ -257,19 +260,7 @@ _________________
 
                         udcTestItems.forEach((udcTestItem) => {
                             describe(`Item: ***${udcTestItem}`, function () {
-                                // afterEach(async function () {
-                                //     driver.sleep(500);
-                                //     await webAppHomePage.isDialogOnHomePAge(this);
-                                //     await webAppHomePage.collectEndTestData(this);
-                                // });
-
                                 describe('ORDER CENTER', function () {
-                                    // afterEach(async function () {
-                                    //     driver.sleep(500);
-                                    //     await webAppHomePage.isDialogOnHomePAge(this);
-                                    //     await webAppHomePage.collectEndTestData(this);
-                                    // });
-
                                     it(`Looking for "${udcTestItem}" using the search box`, async function () {
                                         await pricingService.searchInOrderCenter.bind(this)(udcTestItem, driver);
                                         driver.sleep(1 * 1000);
@@ -343,12 +334,6 @@ _________________
                         });
 
                         describe(`CART`, function () {
-                            // afterEach(async function () {
-                            //     driver.sleep(500);
-                            //     await webAppHomePage.isDialogOnHomePAge(this);
-                            //     await webAppHomePage.collectEndTestData(this);
-                            // });
-
                             it('entering and verifying being in cart', async function () {
                                 await driver.click(orderPage.Cart_Button);
                                 await orderPage.isSpinnerDone();
@@ -392,17 +377,12 @@ _________________
                             udcTestItems.forEach(async (item) => {
                                 udcTestCartStates.forEach((udcTestState) => {
                                     describe(`Checking "${udcTestState}"`, function () {
-                                        // afterEach(async function () {
-                                        //     driver.sleep(500);
-                                        //     await webAppHomePage.isDialogOnHomePAge(this);
-                                        //     await webAppHomePage.collectEndTestData(this);
-                                        // });
-
                                         it(`change ${item} quantity to ${udcTestState}`, async function () {
                                             const splitedStateArgs = udcTestState.split(' ');
                                             const amount = Number(splitedStateArgs[0]);
+                                            const uom = splitedStateArgs[1];
                                             await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(this)(
-                                                'Each',
+                                                uom,
                                                 item,
                                                 amount,
                                                 driver,
@@ -461,12 +441,6 @@ _________________
             });
 
             describe('Cleanup', function () {
-                // afterEach(async function () {
-                //     driver.sleep(500);
-                //     await webAppHomePage.isDialogOnHomePAge(this);
-                //     await webAppHomePage.collectEndTestData(this);
-                // });
-
                 it('deleting all Activities', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();

@@ -46,7 +46,7 @@ export class OrderPage extends WebAppList {
 
     public ItemQuantity_NumberOfUnits_Readonly: By = By.xpath('//pep-quantity-selector//button[@id="UnitsQuantity"]');
     public ItemQuantity_NumberOfUnits_Readonly_cartGrid: By = By.xpath(
-        '//pep-quantity-selector//span[contains(@class,"mat-input-element")]',
+        '//div[5]//pep-quantity-selector//div[contains(@class,"caution")]//span[contains(@class,"mat-input-element")]',
     );
     public ItemQuantity_byUOM_InteractableNumber: By = By.xpath(
         '//pep-quantity-selector//input[@id="TSAAOQMQuantity1"]',
@@ -56,6 +56,9 @@ export class OrderPage extends WebAppList {
     );
     public AdditionalItemQuantity_byUOM_Number_Cart: By = By.xpath(
         '//pep-quantity-selector//button[@id="TSAAOQMQuantity1"]',
+    );
+    public AdditionalItemQuantity_byUOM_Number_Cart_gridView: By = By.xpath(
+        '//div[4]//pep-quantity-selector//div[contains(@class,"regular")]//span[contains(@class,"mat-input-element")]',
     );
     public ItemQuantity_Minus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[3]/button');
     public ItemQuantity2_Minus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[3]/button');
@@ -219,6 +222,12 @@ export class OrderPage extends WebAppList {
         );
     }
 
+    public getSelectorOfUomValueInCartLinesViewByItemName(name: string) {
+        return By.xpath(
+            `${this.getSelectorOfItemInCartLinesViewByName(name).value}${this.Cart_UnitOfMeasure_Selector_Value.value}`,
+        );
+    }
+
     public getSelectorOfNumberOfUnitsInCartByItemName(name: string) {
         return By.xpath(
             `${this.getSelectorOfItemInCartByName(name).value}${
@@ -237,7 +246,9 @@ export class OrderPage extends WebAppList {
 
     public getSelectorOfNumberOfUnitsInCartByFreeItemName(name: string) {
         return By.xpath(
-            `${this.getSelectorOfFreeItemInCartByName(name).value}${this.ItemQuantity_NumberOfUnits_Readonly.value}`,
+            `${this.getSelectorOfFreeItemInCartByName(name).value}${
+                this.ItemQuantity_NumberOfUnits_Readonly_cartGrid.value
+            }`,
         );
     }
 
@@ -263,7 +274,9 @@ export class OrderPage extends WebAppList {
 
     public getSelectorOfReadOnlyAoqmQuantityInCartByAdditionalItemName(name: string) {
         return By.xpath(
-            `${this.getSelectorOfItemInCartByName(name).value}${this.AdditionalItemQuantity_byUOM_Number_Cart.value}`,
+            `${this.getSelectorOfFreeItemInCartByName(name).value}${
+                this.AdditionalItemQuantity_byUOM_Number_Cart_gridView.value
+            }`,
         );
     }
     // End of specific pricing selectors //

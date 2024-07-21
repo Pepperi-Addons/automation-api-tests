@@ -818,22 +818,26 @@ export class PricingService {
         });
     }
 
-    /* UI FUNCTION: specify uom ('Each' | 'Case'), item name and desired quantity. the function do not perform a search before change */
+    /* UI FUNCTION: specify uom ('Each' | 'Case' | 'Box'), item name and desired quantity. the function do not perform a search before change */
     public async changeSelectedQuantityOfSpecificItemInCart(
         this: Context,
-        uomValue: 'Each' | 'Case',
+        uomValue: string, // 'Each' | 'Case' | 'Box'
         nameOfItem: string,
         quantityOfItem: number,
         driver: Browser,
         view?: 'LinesView',
     ): Promise<void> {
+        const orderPage = new OrderPage(driver);
         const nameOfFunctionToLocateSelectorOfUnitsQuantity = `getSelectorOfNumberOfUnitsInCart${
             view ? view : ''
         }ByItemName`;
-        const orderPage = new OrderPage(driver);
+        const nameOfFunctionToLocateSelectorOfUomValue = `getSelectorOfUomValueInCart${view ? view : ''}ByItemName`;
+        const nameOfFunctionToLocateSelectorOfCustomField = `getSelectorOfCustomFieldInCart${
+            view ? view : ''
+        }ByItemName`;
         driver.sleep(0.05 * 1000);
         let itemUomValue: WebElement = await driver.findElement(
-            orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem),
+            orderPage[nameOfFunctionToLocateSelectorOfUomValue](nameOfItem),
         );
         if ((await itemUomValue.getText()) !== uomValue) {
             await itemUomValue.click();
@@ -842,15 +846,15 @@ export class PricingService {
             driver.sleep(0.1 * 1000);
             await driver.click(orderPage.TopBar);
             driver.sleep(0.1 * 1000);
-            itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
+            itemUomValue = await driver.findElement(orderPage[nameOfFunctionToLocateSelectorOfUomValue](nameOfItem));
         }
         driver.sleep(0.05 * 1000);
         await orderPage.isSpinnerDone();
-        itemUomValue = await driver.findElement(orderPage.getSelectorOfUomValueInCartByItemName(nameOfItem));
+        itemUomValue = await driver.findElement(orderPage[nameOfFunctionToLocateSelectorOfUomValue](nameOfItem));
         driver.sleep(0.1 * 1000);
         expect(await itemUomValue.getText()).equals(uomValue);
         let uomXnumber = await driver.findElement(
-            orderPage.getSelectorOfCustomFieldInCartByItemName('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
+            orderPage[nameOfFunctionToLocateSelectorOfCustomField]('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
         );
         for (let i = 0; i < 6; i++) {
             await uomXnumber.sendKeys(Key.BACK_SPACE);
@@ -863,7 +867,7 @@ export class PricingService {
         await driver.click(orderPage.TopBar);
         driver.sleep(1 * 1000);
         uomXnumber = await driver.findElement(
-            orderPage.getSelectorOfCustomFieldInCartByItemName('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
+            orderPage[nameOfFunctionToLocateSelectorOfCustomField]('ItemQuantity_byUOM_InteractableNumber', nameOfItem),
         );
         driver.sleep(1 * 1000);
         await orderPage.isSpinnerDone();
