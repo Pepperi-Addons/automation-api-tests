@@ -3041,7 +3041,7 @@ export class PricingDataNoUom {
                                 ((1 - (8.0 * 6 + 8.0 * 1) / (8.0 * 0.95 * 6 + 8.0 * 0.95 * 1)) * 100 + Number.EPSILON) *
                                     100,
                             ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.round((8.0 - 8.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        PriceTaxUnitDiff: Math.round((8.0 * 0.95 - 8.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
                         PriceBaseUnitPriceAfter1: 8.0,
                         PriceDiscountUnitPriceAfter1: 8.0 * 0.95,
                         PriceGroupDiscountUnitPriceAfter1: 8.0,
