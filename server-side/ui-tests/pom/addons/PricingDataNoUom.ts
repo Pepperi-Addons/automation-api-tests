@@ -2859,14 +2859,15 @@ export class PricingDataNoUom {
                         qty1: 1,
                         uom2: 'Each',
                         qty2: 1,
-                        unitQuantity: 1 * 6 + 1 * 1,
+                        unitQuantity: 1 * 6 + 1 * 1, // 7
                         PriceTaxTotal: Math.round((8.0 * 0.95 * 6 + 8.0 * 0.95 * 1 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
                         PriceTaxTotalDiff:
                             Math.round((8.0 * 0.95 * 6 + 8.0 * 0.95 * 1 - (8.0 * 6 + 8.0 * 1) + Number.EPSILON) * 100) /
                             100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
                         PriceTaxTotalPercent:
                             Math.round(
-                                ((1 - (8.0 * 6 + 8.0 * 1) / (8.0 * 6 + 8.0 * 0.95 * 1)) * 100 + Number.EPSILON) * 100,
+                                ((1 - (8.0 * 6 + 8.0 * 1) / (8.0 * 0.95 * 6 + 8.0 * 0.95 * 1)) * 100 + Number.EPSILON) *
+                                    100,
                             ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
                         PriceTaxUnitDiff: Math.round((8.0 - 8.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
                         PriceBaseUnitPriceAfter1: 8.0,
@@ -2914,20 +2915,20 @@ export class PricingDataNoUom {
                         qty1: 3,
                         uom2: 'Box',
                         qty2: 4,
-                        unitQuantity: 3 * 6 + 4 * 24,
+                        unitQuantity: 3 * 6 + 4 * 24, // 114
                         PriceTaxTotal:
-                            Math.round((8.0 * 0.9 * 3 * 6 + 8.0 * 0.98 * 4 * 24 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                            Math.round((8.0 * 0.9 * 3 * 6 + 8.0 * 0.9 * 4 * 24 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
                         PriceTaxTotalDiff:
                             Math.round(
                                 (8.0 * 0.9 * 3 * 6 +
-                                    8.0 * 0.98 * 4 * 24 -
+                                    8.0 * 0.9 * 4 * 24 -
                                     (8.0 * 3 * 6 + 8.0 * 4 * 24) +
                                     Number.EPSILON) *
                                     100,
                             ) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
                         PriceTaxTotalPercent:
                             Math.round(
-                                ((1 - (8.0 * 3 * 6 + 8.0 * 4 * 24) / (8.0 * 0.9 * 3 * 6 + 8.0 * 0.98 * 4 * 24)) * 100 +
+                                ((1 - (8.0 * 3 * 6 + 8.0 * 4 * 24) / (8.0 * 0.9 * 3 * 6 + 8.0 * 0.9 * 4 * 24)) * 100 +
                                     Number.EPSILON) *
                                     100,
                             ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
@@ -2939,8 +2940,8 @@ export class PricingDataNoUom {
                         PriceTaxUnitPriceAfter1: 8.0 * 0.9,
                         PriceDiscount2UnitPriceAfter1: 8.0,
                         PriceBaseUnitPriceAfter2: 8.0,
-                        PriceDiscountUnitPriceAfter2: 8.0 * 0.98,
-                        PriceTaxUnitPriceAfter2: 8.0 * 0.98,
+                        PriceDiscountUnitPriceAfter2: 8.0 * 0.9,
+                        PriceTaxUnitPriceAfter2: 8.0 * 0.9,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
@@ -3030,7 +3031,7 @@ export class PricingDataNoUom {
                         qty1: 1,
                         uom2: 'Each',
                         qty2: 1,
-                        unitQuantity: 1 * 6 + 1 * 1,
+                        unitQuantity: 1 * 6 + 1 * 1, // 7
                         PriceTaxTotal: Math.round((8.0 * 0.95 * 6 + 8.0 * 0.95 * 1 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
                         PriceTaxTotalDiff:
                             Math.round((8.0 * 0.95 * 6 + 8.0 * 0.95 * 1 - (8.0 * 6 + 8.0 * 1) + Number.EPSILON) * 100) /
@@ -3086,20 +3087,20 @@ export class PricingDataNoUom {
                         qty1: 3,
                         uom2: 'Box',
                         qty2: 4,
-                        unitQuantity: 3 * 6 + 4 * 24,
+                        unitQuantity: 3 * 6 + 4 * 24, // 114
                         PriceTaxTotal:
-                            Math.round((8.0 * 0.9 * 3 * 6 + 8.0 * 0.98 * 4 * 24 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                            Math.round((8.0 * 0.9 * 3 * 6 + 8.0 * 0.9 * 4 * 24 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
                         PriceTaxTotalDiff:
                             Math.round(
                                 (8.0 * 0.9 * 3 * 6 +
-                                    8.0 * 0.98 * 4 * 24 -
+                                    8.0 * 0.9 * 4 * 24 -
                                     (8.0 * 3 * 6 + 8.0 * 4 * 24) +
                                     Number.EPSILON) *
                                     100,
                             ) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
                         PriceTaxTotalPercent:
                             Math.round(
-                                ((1 - (8.0 * 3 * 6 + 8.0 * 4 * 24) / (8.0 * 0.9 * 3 * 6 + 8.0 * 0.98 * 4 * 24)) * 100 +
+                                ((1 - (8.0 * 3 * 6 + 8.0 * 4 * 24) / (8.0 * 0.9 * 3 * 6 + 8.0 * 0.9 * 4 * 24)) * 100 +
                                     Number.EPSILON) *
                                     100,
                             ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
@@ -3111,8 +3112,8 @@ export class PricingDataNoUom {
                         PriceTaxUnitPriceAfter1: 8.0 * 0.9,
                         PriceDiscount2UnitPriceAfter1: 8.0,
                         PriceBaseUnitPriceAfter2: 8.0,
-                        PriceDiscountUnitPriceAfter2: 8.0 * 0.98,
-                        PriceTaxUnitPriceAfter2: 8.0 * 0.98,
+                        PriceDiscountUnitPriceAfter2: 8.0 * 0.9,
+                        PriceTaxUnitPriceAfter2: 8.0 * 0.9,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
