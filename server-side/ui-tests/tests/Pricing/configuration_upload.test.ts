@@ -105,8 +105,10 @@ export async function PricingConfigUpload(
                         break;
 
                     default:
+                        // if configuration file would change for versions above 0.8 - default might need to be changed
                         console.info('AT installedPricingVersion Default');
-                        pricingConfig = pricingConfiguration.version1; // version 1.0 is not ready yet (May 2024)
+                        pricingConfig = pricingConfiguration.version08; // configuration file is not expected to be expended beyond 0.8 (July 2024)
+                        // version 1.0 is not ready yet (May 2024)
                         break;
                 }
                 await pricingService.uploadConfiguration(pricingConfig);
