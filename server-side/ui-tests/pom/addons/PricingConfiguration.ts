@@ -3004,8 +3004,7 @@ export default class PricingConfiguration {
         ],
     };
 
-    // TOBE edited when version 1.0 is ready
-    public version1 = {
+    public version08packages = {
         PPM_General: {
             QuantityCriteriaField: 'UnitsQuantity',
             PriceCriteriaField: 'TSATotalLinePrice',
@@ -3103,8 +3102,8 @@ export default class PricingConfiguration {
                         },
                     },
                     {
-                        Key: 'Tax',
-                        ConditionsOrder: ['MTAX'],
+                        Key: 'Package',
+                        ConditionsOrder: [],
                         InitialPrice: {
                             Type: 'Block',
                             Name: 'ManualLine',
@@ -3113,76 +3112,11 @@ export default class PricingConfiguration {
                             Type: 'Block',
                             Name: 'ManualLine',
                         },
-                    },
-                    {
-                        Key: 'MultipleValuesAccount',
-                        ConditionsOrder: ['ZDM3'],
-                        InitialPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
+                        UserManual: {
+                            ValueField: 'TSAPromoLineDiscount',
+                            NameField: 'TSAPromoLineDiscountName',
+                            TypeField: 'TSAPromoLineDiscountType',
                         },
-                        CalculatedOfPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                    },
-                    {
-                        Key: 'MultipleValuesCategory',
-                        ConditionsOrder: ['ZDM2'],
-                        InitialPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                        CalculatedOfPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                    },
-                    {
-                        Key: 'MultipleValuesItem',
-                        ConditionsOrder: ['ZDM1'],
-                        InitialPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                        CalculatedOfPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                    },
-                    {
-                        Key: 'MultipleValues',
-                        ConditionsOrder: ['ZDM1', 'ZDM2'],
-                        InitialPrice: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesAccount',
-                        },
-                        CalculatedOfPrice: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesAccount',
-                        },
-                    },
-                    {
-                        Key: 'PartialValue',
-                        ConditionsOrder: ['ZDH1'],
-                        InitialPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                        CalculatedOfPrice: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                    },
-                ],
-                ExclusionRules: [
-                    {
-                        Condition: 'ZDS4',
-                        ExcludeConditions: ['ZDS6', 'ZDS7'],
-                    },
-                    {
-                        Condition: 'ZDS1',
-                        ExcludeConditions: ['ZDS6'],
                     },
                 ],
                 CalculatedItemFields: [
@@ -3259,30 +3193,6 @@ export default class PricingConfiguration {
                         },
                     },
                     {
-                        Name: 'TSAPriceTaxUnitPriceAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'Tax',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 1,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceTaxUnitPriceAfter2',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'Tax',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 2,
-                        },
-                    },
-                    {
                         Name: 'TSAPriceDiscount2UnitPriceAfter1',
                         Type: '=',
                         Operand1: {
@@ -3294,175 +3204,10 @@ export default class PricingConfiguration {
                             UomIndex: 1,
                         },
                     },
-                    {
-                        Name: 'TSAPriceMultiAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValues',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 1,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiAfter2',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValues',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 2,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiAccountAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesAccount',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 1,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiAccountAfter2',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesAccount',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 2,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiCategoryAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesCategory',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 1,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiCategoryAfter2',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesCategory',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 2,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiItemAfter1',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesItem',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 1,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceMultiItemAfter2',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'MultipleValuesItem',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 2,
-                        },
-                    },
-                    {
-                        Name: 'TSAPricePartial',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'PartialValue',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 2,
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceTaxTotal',
-                        Type: '=',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'Tax',
-                        },
-                        BlockPriceField: {
-                            Type: 'Total',
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceTaxTotalPercent',
-                        Type: '%',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'Tax',
-                        },
-                        Operand2: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                        BlockPriceField: {
-                            Type: 'Total',
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceTaxTotalDiff',
-                        Type: '-',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'Tax',
-                        },
-                        Operand2: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                        BlockPriceField: {
-                            Type: 'Total',
-                        },
-                    },
-                    {
-                        Name: 'TSAPriceTaxUnitDiff',
-                        Type: '-',
-                        Operand1: {
-                            Type: 'Block',
-                            Name: 'Tax',
-                        },
-                        Operand2: {
-                            Type: 'Block',
-                            Name: 'Base',
-                        },
-                        BlockPriceField: {
-                            Type: 'Unit',
-                            UomIndex: 1,
-                        },
-                    },
                 ],
                 AdditionalItemPricing: {
                     BasedOnBlock: 'Base',
-                    ContinueCalcFromBlock: 'Tax',
+                    ContinueCalcFromBlock: 'ManualLine',
                 },
             },
         ],
@@ -3517,35 +3262,6 @@ export default class PricingConfiguration {
                 Name: 'ZGD2 Group Rules Discount',
                 TablesSearchOrder: ['A004', 'A003', 'A002'],
             },
-            {
-                Key: 'MTAX',
-                Name: 'MTAX',
-                TablesSearchOrder: ['A002', 'A004'],
-            },
-            {
-                Key: 'ZDM1',
-                Name: 'ZDM1 Best Out Of Multiple Options Discount For Specific Item',
-                TablesSearchOrder: ['A010', 'A008'],
-            },
-            {
-                Key: 'ZDM2',
-                Name: 'ZDM2 Best Out Of Multiple Options Discount For Category',
-                TablesSearchOrder: ['A007'],
-            },
-            {
-                Key: 'ZDM3',
-                Name: 'ZDM3 Best Out Of Multiple Options Discount For Account',
-                TablesSearchOrder: ['A009', 'A006'],
-            },
-            {
-                Key: 'ZDH1',
-                Name: 'ZDH1 Hierarchy Discount',
-                TablesSearchOrder: [
-                    { Name: 'A011' },
-                    { Name: 'A011', Keys: [{ Name: 'TransactionAccountTSAPricingHierarchy', Split: 7 }] },
-                    { Name: 'A011', Keys: [{ Name: 'TransactionAccountTSAPricingHierarchy', Split: 4 }] },
-                ],
-            },
         ],
         PPM_Tables: [
             {
@@ -3567,30 +3283,6 @@ export default class PricingConfiguration {
             {
                 Key: 'A005',
                 KeyFields: ['ItemMainCategory'],
-            },
-            {
-                Key: 'A006',
-                KeyFields: ['TransactionAccountTSAPricingContracts'],
-            },
-            {
-                Key: 'A007',
-                KeyFields: ['TransactionAccountTSAPricingContracts', 'ItemMainCategory'],
-            },
-            {
-                Key: 'A008',
-                KeyFields: ['TransactionAccountTSAPricingContracts', 'ItemExternalID'],
-            },
-            {
-                Key: 'A009',
-                KeyFields: ['TransactionAccountExternalID', 'TransactionAccountTSAPricingContracts'],
-            },
-            {
-                Key: 'A010',
-                KeyFields: ['TransactionAccountExternalID', 'TransactionAccountTSAPricingContracts', 'ItemExternalID'],
-            },
-            {
-                Key: 'A011',
-                KeyFields: ['TransactionAccountTSAPricingHierarchy', 'ItemExternalID'],
             },
         ],
     };
