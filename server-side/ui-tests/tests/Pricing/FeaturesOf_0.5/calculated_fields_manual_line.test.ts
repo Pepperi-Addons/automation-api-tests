@@ -499,7 +499,7 @@ _________________
                     });
 
                     state !== 'baseline' &&
-                        describe(`OC Manual Line "${state}"`, function () {
+                        describe(`Applying Manual Line Discount (at Order Center) "${state}"`, function () {
                             // state === '1unit' &&
                             it(`changing value of "UserLineDiscount" field of item "${manualLineDiscountItem}" to 10`, async function () {
                                 await pricingService.searchInOrderCenter.bind(this)(manualLineDiscountItem, driver);

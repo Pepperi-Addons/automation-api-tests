@@ -2017,7 +2017,6 @@ export class PricingData06 {
         },
         Totals: {
             MaNa142: {
-                // totals
                 ItemPrice: 37.75,
                 Acc01: {
                     baseline: {
@@ -2026,11 +2025,18 @@ export class PricingData06 {
                         uom2: 'Each',
                         qty2: 0,
                         unitQuantity: 0,
-                        PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 0, // 40.0 * 0 + 8.0 * 0,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0, // Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2058,14 +2064,19 @@ export class PricingData06 {
                         qty1: 1,
                         uom2: 'Each',
                         qty2: 1,
-                        unitQuantity: 7,
-                        PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 7, // 1 * 6 + 1 * 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 48.0, // 40.0 * 1 + 8.0 * 1,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0.0, // Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // Math.floor(((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1)) * 100 + Number.EPSILON) * 100) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2093,14 +2104,19 @@ export class PricingData06 {
                         qty1: 3,
                         uom2: 'Box',
                         qty2: 4,
-                        unitQuantity: 3 * 6 + 4 * 24,
-                        PriceTaxTotal: 40.0 * 3 + 160.0 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 3 + 160.0 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 114, // 3 * 6 + 4 * 24,
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 760.0, // 40.0 * 3 + 160.0 * 4,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0.0, // Math.round((40.0 * 3 + 160.0 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // Math.floor(((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 3 + 160.0 * 4)) * 100 + Number.EPSILON) * 100) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2138,11 +2154,18 @@ export class PricingData06 {
                         uom2: 'Each',
                         qty2: 0,
                         unitQuantity: 0,
-                        PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 0.0, // 40.0 * 0 + 8.0 * 0,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0.0, // Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2170,14 +2193,19 @@ export class PricingData06 {
                         qty1: 1,
                         uom2: 'Each',
                         qty2: 1,
-                        unitQuantity: 7,
-                        PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 7, // 1 * 6 + 1 * 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 48.0, // 40.0 * 1 + 8.0 * 1,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0.0, // Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // Math.floor(((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1)) * 100 + Number.EPSILON) * 100) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2205,14 +2233,19 @@ export class PricingData06 {
                         qty1: 3,
                         uom2: 'Box',
                         qty2: 4,
-                        unitQuantity: 3 * 6 + 4 * 24,
-                        PriceTaxTotal: 40.0 * 3 + 160.0 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 3 + 160.0 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 114, // 3 * 6 + 4 * 24,
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 760.0, // 40.0 * 3 + 160.0 * 4,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0.0, // Math.round((40.0 * 3 + 160.0 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // Math.floor(((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 3 + 160.0 * 4)) * 100 + Number.EPSILON) * 100) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2254,11 +2287,18 @@ export class PricingData06 {
                         uom2: 'Each',
                         qty2: 0,
                         unitQuantity: 0,
-                        PriceTaxTotal: 48.0 * 0 + 9.6 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((48.0 * 0 + 9.6 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((48.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 0.0, // 48.0 * 0 + 9.6 * 0,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0.0, // Math.round((48.0 * 0 + 9.6 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((48.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2293,14 +2333,19 @@ export class PricingData06 {
                         qty1: 1,
                         uom2: 'Each',
                         qty2: 1,
-                        unitQuantity: 7,
-                        PriceTaxTotal: 48.0 * 1 + 9.6 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((48.0 * 1 + 9.6 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (48.0 * 1 + 9.6 * 1) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((48.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 7, // 1 * 6 + 1 * 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 57.6, // 48.0 * 1 + 9.6 * 1,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 9.6, // Math.round((48.0 * 1 + 9.6 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.16, // Math.floor(((1 - (40.0 * 1 + 8.0 * 1) / (48.0 * 1 + 9.6 * 1)) * 100 + Number.EPSILON) * 100) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 8.0, // Math.floor((48.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2335,14 +2380,19 @@ export class PricingData06 {
                         qty1: 2,
                         uom2: 'Each',
                         qty2: 3,
-                        unitQuantity: 7,
-                        PriceTaxTotal: 48.0 * 2 + 9.6 * 3, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((48.0 * 2 + 9.6 * 3 - (40.0 * 2 + 8.0 * 3) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 2 + 8.0 * 3) / (48.0 * 2 + 9.6 * 3) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((48.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 7, // 1 * 6 + 1 * 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 124.8, // 48.0 * 2 + 9.6 * 3,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 20.8, // Math.round((48.0 * 2 + 9.6 * 3 - (40.0 * 2 + 8.0 * 3) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.16, // Math.floor(((1 - (40.0 * 2 + 8.0 * 3) / (48.0 * 2 + 9.6 * 3)) * 100 + Number.EPSILON) * 100) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 8.0, // Math.floor((48.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2387,11 +2437,18 @@ export class PricingData06 {
                         uom2: 'Each',
                         qty2: 0,
                         unitQuantity: 0,
-                        PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 0.0, // 40.0 * 0 + 8.0 * 0,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0.0, // Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2419,14 +2476,19 @@ export class PricingData06 {
                         qty1: 1,
                         uom2: 'Each',
                         qty2: 1,
-                        unitQuantity: 7,
-                        PriceTaxTotal: 40.0 * 1 + 8.0 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 7, // 1 * 6 + 1 * 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 48.0, // 40.0 * 1 + 8.0 * 1,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0.0, // Math.round((40.0 * 1 + 8.0 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // Math.floor(((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 1)) * 100 + Number.EPSILON) * 100) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2454,14 +2516,19 @@ export class PricingData06 {
                         qty1: 2,
                         uom2: 'Each',
                         qty2: 3,
-                        unitQuantity: 7,
-                        PriceTaxTotal: 40.0 * 2 + 8.0 * 3, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 2 + 8.0 * 3 - (40.0 * 2 + 8.0 * 3) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.floor((1 - (40.0 * 2 + 8.0 * 3) / (40.0 * 2 + 8.0 * 3) + Number.EPSILON) * 10000) /
-                            100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 15, // 6 * 2 + 1 * 3
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 104.0, // 40.0 * 2 + 8.0 * 3,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0.0, // Math.round((40.0 * 2 + 8.0 * 3 - (40.0 * 2 + 8.0 * 3) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // Math.floor(((1 - (40.0 * 2 + 8.0 * 3) / (40.0 * 2 + 8.0 * 3)) * 100 + Number.EPSILON) * 100) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // /// // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2494,7 +2561,6 @@ export class PricingData06 {
                 },
             },
             MaNa18: {
-                // totals
                 ItemPrice: 39.0,
                 Acc01: {
                     baseline: {
@@ -2503,11 +2569,18 @@ export class PricingData06 {
                         uom2: 'Each',
                         qty2: 0,
                         unitQuantity: 0,
-                        PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 0.0, // 40.0 * 0 + 8.0 * 0,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0.0, // Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // /// // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2535,15 +2608,19 @@ export class PricingData06 {
                         qty1: 1,
                         uom2: 'Each',
                         qty2: 1,
-                        unitQuantity: 7,
-                        PriceTaxTotal: 40.0 * 1 + 8.0 * 0.95 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 1 + 8.0 * 0.95 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.round(
-                                (1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 0.95 * 1) + Number.EPSILON) * 10000,
-                            ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 7, // 6 * 1 + 1 * 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 47.6, // 40.0 * 1 + 8.0 * 0.95 * 1,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: -0.4, // Math.round((40.0 * 1 + 8.0 * 0.95 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: -0.0, // Math.round((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 0.95 * 1) + Number.EPSILON) * 10000,) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2578,27 +2655,28 @@ export class PricingData06 {
                         qty1: 3,
                         uom2: 'Box',
                         qty2: 4,
-                        unitQuantity: 3 * 6 + 4 * 24,
-                        PriceTaxTotal: 40.0 * 0.9 * 3 + 160.0 * 0.98 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round(
-                                (40.0 * 0.9 * 3 + 160.0 * 0.98 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100,
-                            ) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.round(
-                                (1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 0.9 * 3 + 160.0 * 0.98 * 4) + Number.EPSILON) *
-                                    10000,
-                            ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 * 0.9 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 114, // 3 * 6 + 4 * 24,
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 735.2, // 40.0 * 0.9 * 3 + 160.0 * 0.98 * 4,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: -24.8, // Math.round((40.0 * 0.9 * 3 + 160.0 * 0.98 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: -3.37, // Math.round(((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 0.9 * 3 + 160.0 * 0.98 * 4)) * 100 + Number.EPSILON) * 100) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: -4.0, // Math.floor((40.0 * 0.9 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
-                        PriceDiscountUnitPriceAfter1: 40.0 * 0.9,
+                        PriceDiscountUnitPriceAfter1: 36.0, // 40.0 * 0.9,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
-                        PriceManualLineUnitPriceAfter1: 40.0 * 0.9,
-                        PriceTaxUnitPriceAfter1: 40.0 * 0.9,
+                        PriceManualLineUnitPriceAfter1: 36.0, // 40.0 * 0.9,
+                        PriceTaxUnitPriceAfter1: 36.0, // 40.0 * 0.9,
                         PriceDiscount2UnitPriceAfter1: 40.0,
                         PriceBaseUnitPriceAfter2: 160.0,
-                        PriceDiscountUnitPriceAfter2: 160.0 * 0.98,
-                        PriceTaxUnitPriceAfter2: 160.0 * 0.98,
+                        PriceDiscountUnitPriceAfter2: 156.8, // 160.0 * 0.98,
+                        PriceTaxUnitPriceAfter2: 156.8, // 160.0 * 0.98,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
@@ -2637,11 +2715,18 @@ export class PricingData06 {
                         uom2: 'Each',
                         qty2: 0,
                         unitQuantity: 0,
-                        PriceTaxTotal: 40.0 * 0 + 8.0 * 0, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100 || (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 0.0, // 40.0 * 0 + 8.0 * 0,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: 0.0, // Math.round((40.0 * 0 + 8.0 * 0 - (40.0 * 0 + 8.0 * 0) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: 0.0, // (1 - 0.0 / 0.0) * 100
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2669,15 +2754,19 @@ export class PricingData06 {
                         qty1: 1,
                         uom2: 'Each',
                         qty2: 1,
-                        unitQuantity: 7,
-                        PriceTaxTotal: 40.0 * 1 + 8.0 * 0.95 * 1, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round((40.0 * 1 + 8.0 * 0.95 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.round(
-                                (1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 0.95 * 1) + Number.EPSILON) * 10000,
-                            ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 7, // 1 * 6 + 1 * 1
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 47.6, // 40.0 * 1 + 8.0 * 0.95 * 1,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: -0.4, // Math.round((40.0 * 1 + 8.0 * 0.95 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
+                        // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: -0.84, // Math.round(((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 0.95 * 1)) * 100 + Number.EPSILON) * 100) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: 0.0, // Math.floor((40.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2685,8 +2774,8 @@ export class PricingData06 {
                         PriceTaxUnitPriceAfter1: 40.0,
                         PriceDiscount2UnitPriceAfter1: 40.0,
                         PriceBaseUnitPriceAfter2: 8.0,
-                        PriceDiscountUnitPriceAfter2: 8.0 * 0.95,
-                        PriceTaxUnitPriceAfter2: 8.0 * 0.95,
+                        PriceDiscountUnitPriceAfter2: 7.6, // 8.0 * 0.95,
+                        PriceTaxUnitPriceAfter2: 7.6, // 8.0 * 0.95,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
@@ -2712,27 +2801,28 @@ export class PricingData06 {
                         qty1: 3,
                         uom2: 'Box',
                         qty2: 4,
-                        unitQuantity: 3 * 6 + 4 * 24,
-                        PriceTaxTotal: 40.0 * 0.9 * 3 + 160.0 * 0.98 * 4, // PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
-                        PriceTaxTotalDiff:
-                            Math.round(
-                                (40.0 * 0.9 * 3 + 160.0 * 0.98 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100,
-                            ) / 100, // TaxTotal - BaseTotal || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent:
-                            Math.round(
-                                (1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 0.9 * 3 + 160.0 * 0.98 * 4) + Number.EPSILON) *
-                                    10000,
-                            ) / 100, // (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxUnitDiff: Math.floor((40.0 * 0.9 - 40.0 + Number.EPSILON) * 100) / 100, // PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1 || operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base || by units , UomIndex = 1
+                        unitQuantity: 114, // 3 * 6 + 4 * 24,
+                        // PriceTaxTotal = PriceTaxUnitPriceAfter1 * qty1 + PriceTaxUnitPriceAfter2 * qty2
+                        PriceTaxTotal: 735.2, // 40.0 * 0.9 * 3 + 160.0 * 0.98 * 4,
+                        // PriceTaxTotalDiff = TaxTotal - BaseTotal
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalDiff: -24.8, // Math.round((40.0 * 0.9 * 3 + 160.0 * 0.98 * 4 - (40.0 * 3 + 160.0 * 4) + Number.EPSILON) * 100) / 100,
+                        // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100 || (1 - (operand2 / operand1)) * 100
+                        // // operand1 -> Block=Tax , operand2 -> Block=Base
+                        PriceTaxTotalPercent: -3.37, // Math.round(((1 - (40.0 * 3 + 160.0 * 4) / (40.0 * 0.9 * 3 + 160.0 * 0.98 * 4)) * 100 + Number.EPSILON) * 100) / 100,
+                        // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
+                        // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
+                        // // // by units , UomIndex = 1
+                        PriceTaxUnitDiff: -4.0, //Math.floor((40.0 * 0.9 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
-                        PriceDiscountUnitPriceAfter1: 40.0 * 0.9,
+                        PriceDiscountUnitPriceAfter1: 36.0, // 40.0 * 0.9,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
-                        PriceManualLineUnitPriceAfter1: 40.0 * 0.9,
-                        PriceTaxUnitPriceAfter1: 40.0 * 0.9,
+                        PriceManualLineUnitPriceAfter1: 36.0, // 40.0 * 0.9,
+                        PriceTaxUnitPriceAfter1: 36.0, // 40.0 * 0.9,
                         PriceDiscount2UnitPriceAfter1: 40.0,
                         PriceBaseUnitPriceAfter2: 160.0,
-                        PriceDiscountUnitPriceAfter2: 160.0 * 0.98,
-                        PriceTaxUnitPriceAfter2: 160.0 * 0.98,
+                        PriceDiscountUnitPriceAfter2: 156.8, // 160.0 * 0.98,
+                        PriceTaxUnitPriceAfter2: 156.8, // 160.0 * 0.98,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',

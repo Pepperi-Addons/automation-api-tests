@@ -56,7 +56,7 @@ export async function PricingUdtInsertion(
     describe('UDT Upsert - Test Suite', () => {
         describe(`UDT: "${udtFirstTableName}" insertion`, () => {
             specialVersion === undefined &&
-                it('getting data object according to installed version', async function () {
+                it('getting rules object according to tested features', async function () {
                     switch (testingFeatures) {
                         case '0.5':
                             console.info('AT testingFeatures for ppmValues_content CASE 0.5');
