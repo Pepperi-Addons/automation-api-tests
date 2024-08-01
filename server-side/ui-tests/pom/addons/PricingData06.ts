@@ -2278,7 +2278,6 @@ export class PricingData06 {
                 },
             },
             MaNa23: {
-                // totals
                 ItemPrice: 40.25,
                 Acc01: {
                     baseline: {
@@ -2298,7 +2297,7 @@ export class PricingData06 {
                         // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
                         // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
                         // // // by units , UomIndex = 1
-                        PriceTaxUnitDiff: 0.0, // Math.floor((48.0 - 40.0 + Number.EPSILON) * 100) / 100,
+                        PriceTaxUnitDiff: 8.0, // Math.floor((48.0 - 40.0 + Number.EPSILON) * 100) / 100,
                         PriceBaseUnitPriceAfter1: 40.0,
                         PriceDiscountUnitPriceAfter1: 40.0,
                         PriceGroupDiscountUnitPriceAfter1: 40.0,
@@ -2341,7 +2340,7 @@ export class PricingData06 {
                         PriceTaxTotalDiff: 9.6, // Math.round((48.0 * 1 + 9.6 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100,
                         // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
                         // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent: 0.16, // Math.floor(((1 - (40.0 * 1 + 8.0 * 1) / (48.0 * 1 + 9.6 * 1)) * 100 + Number.EPSILON) * 100) / 100,
+                        PriceTaxTotalPercent: 16.66, // Math.floor(((1 - (40.0 * 1 + 8.0 * 1) / (48.0 * 1 + 9.6 * 1)) * 100 + Number.EPSILON) * 100) / 100,
                         // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
                         // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
                         // // // by units , UomIndex = 1
@@ -2388,7 +2387,7 @@ export class PricingData06 {
                         PriceTaxTotalDiff: 20.8, // Math.round((48.0 * 2 + 9.6 * 3 - (40.0 * 2 + 8.0 * 3) + Number.EPSILON) * 100) / 100,
                         // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
                         // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent: 0.16, // Math.floor(((1 - (40.0 * 2 + 8.0 * 3) / (48.0 * 2 + 9.6 * 3)) * 100 + Number.EPSILON) * 100) / 100,
+                        PriceTaxTotalPercent: 16.66, // Math.floor(((1 - (40.0 * 2 + 8.0 * 3) / (48.0 * 2 + 9.6 * 3)) * 100 + Number.EPSILON) * 100) / 100,
                         // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
                         // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
                         // // // by units , UomIndex = 1
@@ -2616,7 +2615,7 @@ export class PricingData06 {
                         PriceTaxTotalDiff: -0.4, // Math.round((40.0 * 1 + 8.0 * 0.95 * 1 - (40.0 * 1 + 8.0 * 1) + Number.EPSILON) * 100) / 100,
                         // PriceTaxTotalPercent = (1 - (BaseTotal / TaxTotal)) * 100
                         // // (1 - (operand2 / operand1)) * 100 || operand1 -> Block=Tax , operand2 -> Block=Base
-                        PriceTaxTotalPercent: -0.0, // Math.round((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 0.95 * 1) + Number.EPSILON) * 10000,) / 100,
+                        PriceTaxTotalPercent: -0.84, // Math.round((1 - (40.0 * 1 + 8.0 * 1) / (40.0 * 1 + 8.0 * 0.95 * 1) + Number.EPSILON) * 10000,) / 100,
                         // PriceTaxUnitDiff = PriceTaxUnitPriceAfter1 - PriceBaseUnitPriceAfter1
                         // // operand1 - operand2 || operand1 -> Block=Tax , operand2 -> Block=Base
                         // // // by units , UomIndex = 1
@@ -2628,8 +2627,8 @@ export class PricingData06 {
                         PriceTaxUnitPriceAfter1: 40.0,
                         PriceDiscount2UnitPriceAfter1: 40.0,
                         PriceBaseUnitPriceAfter2: 8.0,
-                        PriceDiscountUnitPriceAfter2: 8.0 * 0.95,
-                        PriceTaxUnitPriceAfter2: 8.0 * 0.95,
+                        PriceDiscountUnitPriceAfter2: 7.6, // 8.0 * 0.95,
+                        PriceTaxUnitPriceAfter2: 7.6, // 8.0 * 0.95,
                         NPMCalcMessage: [
                             {
                                 Name: 'Base',
