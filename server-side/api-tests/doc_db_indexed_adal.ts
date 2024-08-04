@@ -1174,7 +1174,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             })
             .then((res) => res.Body);
 
-        debugger;
+        //debugger;
         if (
             logcash.createSchema1.Name.includes('search1_test') &&
             logcash.createSchema1.Hidden == false &&
@@ -2521,7 +2521,7 @@ export async function DocDBIndexedAdal(generalService: GeneralService, request, 
             logcash.updateTestTableSecStatus = false;
             logcash.updateTestTableSecError = 'Update data to Accounts table failed';
         }
-        generalService.sleep(10000);
+        generalService.sleep(30000);
         await getFromElasticTable3();
     }
 

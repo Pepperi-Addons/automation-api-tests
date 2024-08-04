@@ -105,8 +105,10 @@ export async function PricingConfigUpload(
                         break;
 
                     default:
+                        // if configuration file would change for versions above 0.8 - default might need to be changed
                         console.info('AT installedPricingVersion Default');
-                        pricingConfig = pricingConfiguration.version1; // version 1.0 is not ready yet (May 2024)
+                        pricingConfig = pricingConfiguration.version08; // configuration file is not expected to be expended beyond 0.8 (July 2024)
+                        // version 1.0 is not ready yet (May 2024)
                         break;
                 }
                 await pricingService.uploadConfiguration(pricingConfig);
@@ -163,15 +165,18 @@ export async function PricingConfigUpload(
             it('If Error popup appear - close it', async function () {
                 await driver.refresh();
                 const accessToken = await webAppAPI.getAccessToken();
-                await webAppAPI.pollForResyncResponse(accessToken, 100);
-                try {
-                    await webAppHomePage.isDialogOnHomePAge(this);
-                } catch (error) {
-                    console.error(error);
-                } finally {
-                    await driver.navigate(`${baseUrl}/HomePage`);
-                }
-                await webAppAPI.pollForResyncResponse(accessToken);
+                let errorDialogAppear = true;
+                do {
+                    await webAppAPI.pollForResyncResponse(accessToken, 100);
+                    try {
+                        errorDialogAppear = await webAppHomePage.isErrorDialogOnHomePage(this);
+                    } catch (error) {
+                        console.error(error);
+                    } finally {
+                        await driver.navigate(`${baseUrl}/HomePage`);
+                    }
+                    await webAppAPI.pollForResyncResponse(accessToken);
+                } while (errorDialogAppear);
             });
 
             it('Logout', async function () {
