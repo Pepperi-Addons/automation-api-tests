@@ -37,7 +37,7 @@ const surveySpesificTestData = {
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON --
     'Services Framework': ['00000000-0000-0000-0000-000000000a91', '9.6.%'], //PAPI locked on TLS 2 version --
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi --
-    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.31.%'], //CPAS --
+    'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.40.%'], //CPAS --
     'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
     'Key Management Service': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
