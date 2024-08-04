@@ -69,6 +69,7 @@ export const testData = {
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
     'Data Index Framework': ['00000000-0000-0000-0000-00000e1a571c', ''], // REQUIRED FOR ADAL NEW VERSIONS (2.0.19 and above)
     'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', ''],
+    'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''], // REQUIRED FOR PUSH NOTIFICATIONS NEW VERSIONS (1.5.4x and above)
     ...systemAddons,
     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''], //OUR TESTING ADDON --
     'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
@@ -90,6 +91,7 @@ baseAddonsForNebula.configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '0
 baseAddonsForNebula['Cross Platform Engine Data'] = ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'];
 baseAddonsForNebula.sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
 baseAddonsForNebula['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.3.%']; //1.3.x is for neubla
+baseAddonsForNebula['User Defined Collections'] = ['122c0e9d-c240-4865-b446-f37ece866c22', ''];
 export const testDataForNebulaDists = {
     ...baseAddonsForNebula,
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
