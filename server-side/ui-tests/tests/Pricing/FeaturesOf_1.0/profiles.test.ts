@@ -21,7 +21,7 @@ import addContext from 'mochawesome/addContext';
 
 chai.use(promised);
 
-export async function PricingPackagesProfilesTests(email: string, password: string, client: Client) {
+export async function PricingProfilesTests(email: string, password: string, client: Client) {
     /*
 ________________________ 
 _________________ Brief:
