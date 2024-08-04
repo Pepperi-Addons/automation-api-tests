@@ -91,6 +91,7 @@ baseAddonsForNebula.configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '0
 baseAddonsForNebula['Cross Platform Engine Data'] = ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'];
 baseAddonsForNebula.sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
 baseAddonsForNebula['File Service Framework'] = ['00000000-0000-0000-0000-0000000f11e5', '1.3.%']; //1.3.x is for neubla
+baseAddonsForNebula['User Defined Collections'] = ['122c0e9d-c240-4865-b446-f37ece866c22', ''];
 export const testDataForNebulaDists = {
     ...baseAddonsForNebula,
     Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
