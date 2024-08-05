@@ -34,7 +34,8 @@ import { PricingPartialValueTests } from './Pricing/FeaturesOf_0.6/partial_value
 import { PricingMultipleValuesTests } from './Pricing/FeaturesOf_0.6/multiple_values.test';
 import { PricingDeliveryDatePerformanceUdtErrorsTests } from './Pricing/FeaturesOf_0.7/delivery_date_performance.test';
 import { PricingUdcSourceTests } from './Pricing/FeaturesOf_0.8/udc_source.test';
-import { PricingPackagesProfilesTests } from './Pricing/FeaturesOf_1.0/packages_profiles.test';
+import { PricingPackagesTests } from './Pricing/FeaturesOf_0.8/packages.test';
+import { PricingProfilesTests } from './Pricing/FeaturesOf_1.0/profiles.test';
 import { ResourceListAbiTests } from './rl_abi.test';
 import { InstallationsTest } from './installations.test';
 import { StorybookColorPickerTests } from './storybook/storybook_color_picker.test';
@@ -103,7 +104,8 @@ export {
     PricingPartialValueTests,
     PricingMultipleValuesTests,
     PricingDeliveryDatePerformanceUdtErrorsTests,
-    PricingPackagesProfilesTests,
+    PricingPackagesTests,
+    PricingProfilesTests,
     PricingUdcSourceTests,
     ResourceListAbiTests,
     ListsAbiTests,

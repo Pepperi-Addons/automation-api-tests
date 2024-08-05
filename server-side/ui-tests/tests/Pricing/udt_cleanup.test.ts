@@ -15,6 +15,8 @@ export async function PricingUdtCleanup(client: Client) {
     const objectsService = new ObjectsService(generalService);
     const pricingRules = new PricingRules();
     const dateTime = new Date();
+    const allInstalledAddons = await generalService.getInstalledAddons({ page_size: -1 });
+    const latestAvailablePricingVersion = allInstalledAddons.find((addon) => addon.Addon.Name == 'Pricing')?.Version;
     const udtFirstTableName = 'PPM_Values';
     const udtSecondTableName = 'PPM_AccountValues';
     const ppmValues_content = {
@@ -32,7 +34,7 @@ export async function PricingUdtCleanup(client: Client) {
 
     describe(`UDT Values Deletion - Test Suite - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-    } | ${dateTime}`, () => {
+    } | ${dateTime} | Pricing Version ${latestAvailablePricingVersion}`, () => {
         describe(`UDT: "${udtFirstTableName}" cleanup`, () => {
             it(`retrieving "${udtFirstTableName}" UDT values via API`, async function () {
                 ppmValuesEnd = await objectsService.getUDT({
