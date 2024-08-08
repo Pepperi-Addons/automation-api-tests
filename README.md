@@ -21,6 +21,8 @@ You can create breakpoints by using "debugger" command OR using VSC breakpoints.
 1. for E2E tests which are found inside the 'ui-tests' folder, use the "Listen To NPM Scripts" launch target command, once debugger is running, you need to run the relevant test using npm.
 2. for API tests which are found inside the 'api-tests' folder, use the "Launch API Server" launch target command, once debugger is running, you need to call the relevant test endpoint using postman.
 
+---
+
 ### Local specific
 - make sure you have the var_sk file which is ignored in Git.
 - make sure you have the body template to call test endpoints:
