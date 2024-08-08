@@ -26,12 +26,16 @@ You can create breakpoints by using "debugger" command OR using VSC breakpoints.
 ### Local specific
 - make sure you have the var_sk file which is ignored in Git.
 - make sure you have the body template to call test endpoints:
+```json
 {
     "varKeyPro": "{{varKeyPro}}",
     "varKeyEU": "{{varKeyEU}}",
     "varKeyStage": "{{varKeyStage}}",
     "addonUUID": "eb26afcd-3cf2-482e-9ab1-b53c41a6adbe"
 }
+```
+
+---
 
 ### Online specific
 - Log groups: 
