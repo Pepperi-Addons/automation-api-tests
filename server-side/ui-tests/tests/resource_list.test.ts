@@ -125,6 +125,7 @@ export async function ResourceListTests(email: string, password: string, client:
         'GenericResource',
         'ModificationDateTime',
         'SyncData',
+        'SyncDataDirty', // DI-28156
         'CreationDateTime',
         'UserDefined',
         'Fields',
@@ -1607,6 +1608,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
 
                 it(`Logout Login`, async () => {
+                    await resourceListUtils.closeErrorPopupPostResync(client);
                     await resourceListUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 });
