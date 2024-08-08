@@ -1,12 +1,13 @@
 # Pepperi's Automation Framework 
 
 ## High Level
-The Automation Framwork is Pepperi's main testing tool, contaning API & E2E tests and the CI/CD component responsible for running the tests once a development release branch is merged, devloped & maintained by the QA Team.
+The Automation Framwork is Pepperi's main testing tool, contaning API & E2E tests and the CI/CD component responsible for running the tests once a development release branch is merged, developed & maintained by the QA team.
 
 ---
 
 ## Releases
 Our releases are done based on need, not a release plan, always use latest available version.
+
 ---
 
 ## Deployment
