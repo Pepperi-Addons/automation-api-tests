@@ -1,107 +1,48 @@
-# @pepperi-addons Typescript Template
+# Pepperi's Automation Framework 
 
-A template for creating a pepperi addon with an angular app for the client-side & a typescript nodejs app for the server-side
+## High Level
+The Automation Framwork is Pepperi's main testing tool, contaning API & E2E tests and the CI/CD component responsible for running the tests once a development release branch is merged, devloped & maintained by the QA Team.
 
-* debugging server side right in vscode 
-* a build script for creating all compiled files for addon
-* a publish script for uploading the addon
-
-
-
-## Installation
 ---
-#### System Requirements
-`node --version` > 12.0.0
 
-`npm --version` > 6.0.0
-
-
-#### Install by running 
-``` bash
-npm init @pepperi-addons
-```
-or 
-``` bash
-npx @pepperi-addons/create
-```
-
-## Project structure
+## Releases
+Our releases are done based on need, not a release plan, always use latest available version.
 ---
-The following is an overview of the project structure. 
-The node_modules folder is in use by `npm`
 
-#### Folders
-|Folder | Description |
-| ---:  | :---       |
-| .vscode | vscode tasks & launch |
-| client-side | an angular app that is the UI of the plugin |
-| server-side | a typescripe node.js app for writing an addon API |
-| publish | all files to be published to the addon are created in this folder |
-| publish/api | the api endpoints created |
-| publish/assets | put any assets you might need for the front end (eg. translation files, images) |
+## Deployment
+Use "publish-addon" manually.
 
-#### Additional files
-`addon.config.json` contains information for publishing the addon
-
-`var_sk` put the var API secret key here, for publishing the addon. Make sure not to commit this file. How to get the secret you ask? It's a secret!
-
-`README.md` This file. You can file info here regarding your project.
+---
 
 ## Debugging
+- you can create breakpoints by using "debugger" command OR using VSC breakpoints.
+1. for E2E tests which are found inside the 'ui-tests' folder, use the "Listen To NPM Scripts" launch target command, once debugger is running, you need to run the relevant test using npm.
+2. for API tests which are found inside the 'api-tests' folder, use the "Launch API Server" launch target command, once debugger is running, you need to call the relevant test endpoint using postman.
+
+### Local specific
+- make sure you have the var_sk file which is ignored in Git.
+- make sure you have the body template to call test endpoints:
+{
+    "varKeyPro": "{{varKeyPro}}",
+    "varKeyEU": "{{varKeyEU}}",
+    "varKeyStage": "{{varKeyStage}}",
+    "addonUUID": "eb26afcd-3cf2-482e-9ab1-b53c41a6adbe"
+}
+
+### Online specific
+- Log groups: 
+  - for API tests which run on async lambdas `/aws/lambda/`ExecuteAsyncTaskExecutionSystemAddonSync`, filter by action UUID.
+  - for tests which run using CLI on Jenkins / locally - your only option is reading Jenkins / local logs.
+
 ---
-To debug your addon in `Visual Studio Code`, press `F5` or `Run->Start Debugging`.
-You can then checkout your *API* at http://localhost:4400/api/foo. Be sure to supply a JWT for it to work.
 
-To view the addon UI, open https://app.pepperi.com/settings/your-app-uuid/editor?dev=true
+## Dependencies
 
-If you haven't created the addon yet you can use our placeholder plugin: 
-https://app.sandbox.pepperi.com/settings/a8f4698f-eb75-4a75-bdf6-1524eb9f6baf/editor?dev=true
-
-Open the browser inspector to make sure that the editor file is served locally
-
-
-## Publishing
+NONE.
 ---
-When you are ready to publish your addon. Update the `addon.config.json` file, with your addons info (AddonUUID etc.). Change the `AddonVersion` to 1.0.0. The publish script will automatically bump the version patch number every time you publish the app. (eg. the next version will be 1.0.1).
 
-To publish your addon you will need the secret-key. It is unique per addon. Put it in the var_sk file.
+## APIs
+1. every test which is exposed using API calls is found under - '/tests/<TEST_NAME>', which you should call using POST method with the template body.
+2. other tests are using NPM CLI API, calling: 'npm run ui-show-report' command.
 
-Then run: 
-``` bash 
-npm run publish-addon
-```
-
-## Addon API
 ---
-An addon API is a javascript file that exports functions that can be called through the api.
-For example in `server-side/api.ts` we export a function `foo` like so:
-``` typescript
-export async function foo(client: Client, request: Request) {
-    const service = new MyService(client)
-    const res = await service.getAddons()
-    return res
-};
-```
-This function will run for the following API call:
-https://papi.pepperi.com/v1.0/addons/api/a8f4698f-eb75-4a75-bdf6-1524eb9f6baf/api/foo
-
-You can acess the API call method, query and body in `request.method` `request.query` and `request.body` respectfully.
-
-You can add as many files as you like in both typescript & javascript. These can `require` other files & packags. The build script will create a output file for every endpoint specified in: `addon.config.json` *Endpoints* field.
-
-To debug these api's locally, just press F5, and call:
-http://localhost:4400/api/foo
-
-
-## Addon Editor
----
-The editor is the addon's UI and is developed as an Angular app.
-
-## Contributions
----
-This project is far from being complete, and is missing in tooling, documentation, examples and more. We are also interested in creating other templates like a html-css-js front-end with a vanilla node.js backend. You are welcome to contribute at: 
-https://github.com/Pepperi-Addons/create-addon
-
-Please create your on addon in a repo under:
-https://github.com/Pepperi-Addons
-so that we can all learn from each other
