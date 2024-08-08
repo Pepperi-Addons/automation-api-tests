@@ -39,7 +39,7 @@ You can create breakpoints by using "debugger" command OR using VSC breakpoints.
 
 ### Online specific
 - Log groups: 
-  - for API tests which run on async lambdas: `/aws/lambda/`ExecuteAsyncTaskExecutionSystemAddonSync`, filter by action UUID.
+  - for API tests which run on async lambdas: `/aws/lambda/ExecuteAsyncTaskExecutionSystemAddonSync`, filter by action UUID.
   - for tests which run using CLI on Jenkins / locally - your only option is reading Jenkins / local logs.
 
 - Running data for async lambda tests is taken from "qa automation" bitbucket repo.
