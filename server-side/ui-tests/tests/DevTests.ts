@@ -133,6 +133,9 @@ export class DevTest {
             case 'JOURNEY':
             case 'JOURNEY-TRACKER':
                 return '41011fbf-debf-40d8-8990-767738b8af03';
+            case 'USER-DEFINED-COLLECTIONS':
+            case 'UDC':
+                return '122c0e9d-c240-4865-b446-f37ece866c22';
             case 'NODE':
             case 'CPI-NODE':
                 return 'bb6ee826-1c6b-4a11-9758-40a46acb69c5';
@@ -260,6 +263,12 @@ export class DevTest {
                     }
                 }
                 debugger;
+            }
+            if (this.addonUUID === '122c0e9d-c240-4865-b446-f37ece866c22') {
+                //UDC
+                const depObjSync = {};
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
+                addonDep.push(depObjSync);
             }
             if (this.addonUUID === '41011fbf-debf-40d8-8990-767738b8af03') {
                 //journey
@@ -1308,6 +1317,7 @@ export class DevTest {
                     'assetsTesterPROD@pepperitest.com',
                     'assetsTesterSB@pepperitest.com',
                 ];
+
             case 'DATA INDEX':
             case 'DATA-INDEX':
                 return ['DataIndexEU@pepperitest.com', 'DataIndexProd@pepperitest.com', 'DataIndexSB@pepperitest.com'];
@@ -1329,6 +1339,13 @@ export class DevTest {
                     'SyncSchedulerEU@pepperitest.com',
                     'SyncSchedulerPROD@pepperitest.com',
                     'SyncSchedulerSB@pepperitest.com',
+                ];
+            case 'USER-DEFINED-COLLECTIONS':
+            case 'UDC':
+                return [
+                    'UdcAppTestEU@pepperitest.com',
+                    'UdcAppTestProd@pepperitest.com',
+                    'UdcAppTestSB@pepperitest.com',
                 ];
             case 'SYNC':
                 debugger;
