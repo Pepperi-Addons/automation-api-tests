@@ -431,6 +431,26 @@ export default class E2EUtils extends BasePomObject {
         await webAppAPI.pollForResyncResponse(accessToken);
     }
 
+    public async closeErrorPopupPostResync(client: Client) {
+        const webAppAPI: WebAppAPI = new WebAppAPI(this.browser, client);
+        const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
+        const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
+        await this.browser.refresh();
+        const accessToken = await webAppAPI.getAccessToken();
+        let errorDialogAppear = true;
+        do {
+            await webAppAPI.pollForResyncResponse(accessToken, 100);
+            try {
+                errorDialogAppear = await webAppHomePage.isErrorDialogOnHomePage(this);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                await this.browser.navigate(`${baseUrl}/HomePage`);
+            }
+            await webAppAPI.pollForResyncResponse(accessToken);
+        } while (errorDialogAppear);
+    }
+
     public async logOutLogIn(email: string, password: string, client: Client) {
         const webAppHeader: WebAppHeader = new WebAppHeader(this.browser);
         const webAppLoginPage: WebAppLoginPage = new WebAppLoginPage(this.browser);
