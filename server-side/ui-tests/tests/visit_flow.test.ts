@@ -32,10 +32,12 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
         VisitFlow: ['2b462e9e-16b5-4e7a-b1e6-9e2bfb61db7e', ''],
         'pepperi-pack': ['4817f4fe-9ff6-435e-9415-96b1142675eb', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
-        // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%'], // versions 2.0.% are open sync and are irrelevant to this test
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
+        // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%'], // versions 2.0.% are open sync and are irrelevant to this test
+        configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
-        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.3.88'], // PFS makes create session loop
+        'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], // PFS makes create session loop
+        // 'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.3.88'], // PFS makes create session loop
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // current phased version 0.5.10 | dependency > 0.5.7
         // Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', '0.6.26'], // current phased version 0.6.26 | dependency > 0.6.3
         // 'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', '0.0.8'],
