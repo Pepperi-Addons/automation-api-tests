@@ -16,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@pepperi-addons/papi-sdk": "^1.45.3",
-    "@pepperi-addons/scripts": "^2.0.16"
+    "@pepperi-addons/scripts": "^2.0.16",
+    "chromedriver": "^127.0.2"
   }
 }
