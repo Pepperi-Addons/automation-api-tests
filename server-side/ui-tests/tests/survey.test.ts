@@ -45,8 +45,8 @@ const surveySpesificTestData = {
     'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''], // evgeny - 24/3/24; new CPI Data addon versions
     'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], //1.4.22 in the interim 1.4.X PFS version
     'System Health': ['f8b9fa6f-aa4d-4c8d-a78c-75aabc03c8b3', ''],
-    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.%'], //locked for survey
-    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'], //sync is now public
+    configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', '1.%.%'], //locked for survey
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'], //sync is now public
     'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.0.%'],
     'Settings Framework': ['354c5123-a7d0-4f52-8fce-3cf1ebc95314', ''],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', ''],
@@ -207,7 +207,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         'Services Framework': ['00000000-0000-0000-0000-000000000a91', ''],
         'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.68'],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'], //locked because cpi-data 1.x.y is for open sync
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '1.%.%'], //locked because cpi-data 1.x.y is for sync 3.x.y which we work with now
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         Crawler: ['f489d076-381f-4cf7-aa63-33c6489eb017', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', '2.0.24'],
