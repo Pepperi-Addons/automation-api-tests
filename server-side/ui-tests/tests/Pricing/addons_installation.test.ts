@@ -31,7 +31,8 @@ export async function PricingAddonsUpsert(varPass: string, client: Client, prcVe
             'bb6ee826-1c6b-4a11-9758-40a46acb69c5',
             `${prcVer?.startsWith('0.5') ? '1.4.%' : ''}`,
         ], //CPI-NODE (Cross Platform Engine) | dependency > 1.5.39
-        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'],
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+        // 'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', '0.6.%'],  // restriction due to Nebula & Sync 1.%
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''],
         // Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], // current phased version 0.9.38 | dependency > 0.9.31
         // Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', ''], // current phased version 1.0.23 | dependency > 1.0.23
