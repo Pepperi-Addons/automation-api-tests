@@ -2014,6 +2014,96 @@ export class PricingData06 {
                     },
                 },
             },
+            Drug0009: {
+                ItemPrice: 38.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 38.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: 141.75,
+                                    },
+                                ],
+                                New: 180,
+                                Amount: 141.75,
+                            },
+                        ],
+                        '1 Fraction': [],
+                        '2 Fraction': [],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                        '1 Fraction': [],
+                        '2 Fraction': [],
+                    },
+                },
+                PriceBaseUnitPriceAfter1: {
+                    Acc01: {
+                        baseline: 180.0,
+                        '1 Fraction': 10.0,
+                        '2 Fraction': 10.0,
+                    },
+                    OtherAcc: {
+                        baseline: 180.0,
+                        '1 Fraction': 10.0,
+                        '2 Fraction': 10.0,
+                    },
+                },
+                PriceDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        baseline: 50.0,
+                        '1 Fraction': 10.0,
+                        '2 Fraction': 10.0,
+                    },
+                    OtherAcc: {
+                        baseline: 180.0,
+                        '1 Fraction': 10.0,
+                        '2 Fraction': 10.0,
+                    },
+                },
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        baseline: 50.0,
+                        '1 Fraction': 10.0,
+                        '2 Fraction': 10.0,
+                    },
+                    OtherAcc: {
+                        baseline: 180.0,
+                        '1 Fraction': 10.0,
+                        '2 Fraction': 10.0,
+                    },
+                },
+                PriceManualLineUnitPriceAfter1: {
+                    Acc01: {
+                        baseline: 50.0,
+                        '1 Fraction': 10.0,
+                        '2 Fraction': 10.0,
+                    },
+                    OtherAcc: {
+                        baseline: 180.0,
+                        '1 Fraction': 10.0,
+                        '2 Fraction': 10.0,
+                    },
+                },
+                PriceTaxUnitPriceAfter1: {
+                    Acc01: {
+                        baseline: 50.0,
+                        '1 Fraction': 10.0,
+                        '2 Fraction': 10.0,
+                    },
+                    OtherAcc: {
+                        baseline: 180.0,
+                        '1 Fraction': 10.0,
+                        '2 Fraction': 10.0,
+                    },
+                },
+            },
         },
         Totals: {
             MaNa142: {

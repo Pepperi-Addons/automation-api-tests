@@ -139,6 +139,7 @@ _________________
         '2 Each',
         '4 Each',
         '5 Each',
+        '2 Box',
         '19 Each',
         '20 Each',
         '1 Case',
@@ -146,18 +147,34 @@ _________________
         '4 Case',
         '5 Case',
         '19 Case',
+        '4 Each',
         '20 Case',
         '1 Box',
         '2 Box',
         '3 Box',
+        '19 Case',
         '4 Box',
     ];
+    const uomFractionTestStates = [
+        // https://pepperi.atlassian.net/browse/DI-28361
+        'baseline',
+        '1 Fraction', // DI-28361
+        '2 Fraction', // DI-28361
+    ];
     const uomTestItems = ['Hair001', 'Hair002', 'Hair012'];
+    const uomFractionTestItems = ['Drug0009'];
     const uomTestCartItems = [
         { name: 'Hair001', amount: 96 },
         { name: 'Hair002', amount: 96 },
         { name: 'Hair012', amount: 96 },
         { name: 'MaFa24 Free Case', amount: 6 },
+    ];
+    const uomFractionTestCartItems = [
+        { name: 'Hair001', amount: 96 },
+        { name: 'Hair002', amount: 96 },
+        { name: 'Hair012', amount: 96 },
+        { name: 'MaFa24 Free Case', amount: 6 },
+        { name: 'Drug0009', amount: 0 },
     ];
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
@@ -315,7 +332,7 @@ _________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    describe('UOMs', function () {
+                    describe('Regular UOMs', function () {
                         it('Navigating to "Hair4You" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Hair4You'));
@@ -418,16 +435,6 @@ _________________
                                             driver.sleep(0.2 * 1000);
                                         });
                                     });
-                                    // switch (uomTestItem) {
-                                    //     case 'Hair002':
-                                    //         it(`Looking for "${uomTestItem}" using the search box`, async () => {});
-                                    //         break;
-                                    //     case 'Hair012':
-                                    //         break;
-
-                                    //     default:
-                                    //         break;
-                                    // }
                                 });
                             });
                         });
@@ -446,9 +453,6 @@ _________________
                                 await driver.untilIsVisible(orderPage.Cart_List_container);
                             });
 
-                            // it(`switch to 'Grid View'`, async function () {
-                            // });
-
                             it('verifying that the sum total of items in the cart is correct', async function () {
                                 let numberOfItemsInCart = uomTestCartItems.length;
                                 if (account === 'OtherAcc') {
@@ -463,7 +467,6 @@ _________________
                                     orderPage.Cart_Headline_Results_Number,
                                 );
                                 const itemsInCart = await numberOfItemsElement.getText();
-                                // await driver.click(orderPage.HtmlBody);
                                 await driver.click(orderPage.Cart_List_container);
                                 driver.sleep(0.2 * 1000);
                                 addContext(this, {
@@ -532,6 +535,376 @@ _________________
                                         expect(totalUnitsAmount).equals(uomTestCartItem.amount);
                                     }
                                     driver.sleep(1 * 1000);
+                                });
+                            });
+                        });
+                    });
+
+                    describe('Fraction UOMs', function () {
+                        it('Click "Continue ordering" button', async function () {
+                            await driver.click(orderPage.Cart_ContinueOrdering_Button);
+                            await orderPage.isSpinnerDone();
+                            await orderPage.changeOrderCenterPageView('Line View');
+                            await orderPage.isSpinnerDone();
+                            screenShot = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After "Line View" was selected`,
+                                value: 'data:image/png;base64,' + screenShot,
+                            });
+                            await driver.untilIsVisible(orderPage.getSelectorOfItemInOrderCenterByName(''));
+                            driver.sleep(1 * 1000);
+                            screenShot = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Order Center - Loaded`,
+                                value: 'data:image/png;base64,' + screenShot,
+                            });
+                        });
+
+                        it('Navigating to "Pharmacy" at Sidebar', async function () {
+                            await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
+                            await driver.click(orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Pharmacy'));
+                            driver.sleep(0.1 * 1000);
+                        });
+
+                        uomFractionTestItems.forEach((uomFractionTestItem) => {
+                            describe(`Item: ***${uomFractionTestItem}`, function () {
+                                describe('ORDER CENTER', function () {
+                                    it(`Looking for "${uomFractionTestItem}" using the search box`, async function () {
+                                        await pricingService.searchInOrderCenter.bind(this)(
+                                            uomFractionTestItem,
+                                            driver,
+                                        );
+                                        driver.sleep(1 * 1000);
+                                    });
+                                    it(`Changing UOM to "Fraction"`, async function () {
+                                        const uomSelector = orderPage.UnitOfMeasure_Selector_Value;
+                                        await driver.click(uomSelector);
+                                        driver.sleep(0.05 * 1000);
+                                        await driver.click(
+                                            orderPage.getSelectorOfUnitOfMeasureOptionByText('Fraction'),
+                                        );
+                                        driver.sleep(0.1 * 1000);
+                                        await driver.click(orderPage.ItemQuantity_NumberOfUnits_Readonly); // clicking on "neutral" element to make the previously selected element de-actived
+                                        driver.sleep(0.1 * 1000);
+                                        const itemUomValue = await driver.findElement(uomSelector);
+                                        driver.sleep(0.05 * 1000);
+                                        await orderPage.isSpinnerDone();
+                                        expect(await itemUomValue.getText()).equals('Fraction');
+                                    });
+
+                                    uomFractionTestStates.forEach((uomFractionTestState) => {
+                                        it(`Checking "${uomFractionTestState}"${
+                                            uomFractionTestState != 'baseline' ? ' - by clicking the Plus button' : ''
+                                        }`, async function () {
+                                            const plusButtonSelector =
+                                                orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(
+                                                    uomFractionTestItem,
+                                                );
+                                            const splitedStateArgs: string[] = uomFractionTestState.split(' ');
+                                            const chosenUom: string = splitedStateArgs[1];
+                                            let amount: number =
+                                                uomFractionTestState != 'baseline' ? Number(splitedStateArgs[0]) : 1;
+                                            while (amount > 0) {
+                                                const state: string =
+                                                    uomFractionTestState != 'baseline'
+                                                        ? [amount.toString(), chosenUom].join(' ')
+                                                        : 'baseline';
+                                                addContext(this, {
+                                                    title: `State Args`,
+                                                    value: `Chosen UOM: ${chosenUom}, Amount: ${amount.toString()}`,
+                                                });
+                                                if (state != 'baseline') {
+                                                    await driver.click(plusButtonSelector);
+                                                    driver.sleep(0.5 * 1000);
+                                                }
+                                                screenShot = await driver.saveScreenshots();
+                                                addContext(this, {
+                                                    title: `At Order Center - after Plus Button clicked`,
+                                                    value: 'data:image/png;base64,' + screenShot,
+                                                });
+                                                const priceTSAs = await pricingService.getItemTSAs(
+                                                    'OrderCenter',
+                                                    uomFractionTestItem,
+                                                );
+                                                console.info(`${uomFractionTestItem} ${state} priceTSAs:`, priceTSAs);
+                                                expect(typeof priceTSAs).equals('object');
+                                                expect(Object.keys(priceTSAs)).to.eql([
+                                                    'PriceBaseUnitPriceAfter1',
+                                                    'PriceDiscountUnitPriceAfter1',
+                                                    'PriceGroupDiscountUnitPriceAfter1',
+                                                    'PriceManualLineUnitPriceAfter1',
+                                                    'PriceTaxUnitPriceAfter1',
+                                                    'NPMCalcMessage',
+                                                ]);
+                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                                                const NPMCalcMessage =
+                                                    pricingData.testItemsValues.Uom[uomFractionTestItem][
+                                                        'NPMCalcMessage'
+                                                    ][account][state];
+                                                addContext(this, {
+                                                    title: `State Args`,
+                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
+                                                        UI_NPMCalcMessage,
+                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                        NPMCalcMessage,
+                                                    )}`,
+                                                });
+                                                expect(UI_NPMCalcMessage.length).equals(NPMCalcMessage.length);
+                                                priceFields.forEach((priceField) => {
+                                                    const fieldValue = priceTSAs[priceField];
+                                                    const expectedFieldValue =
+                                                        pricingData.testItemsValues.Uom[uomFractionTestItem][
+                                                            priceField
+                                                        ][account][state];
+                                                    addContext(this, {
+                                                        title: `${priceField}`,
+                                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                                    });
+                                                    expect(fieldValue).equals(expectedFieldValue);
+                                                });
+                                                driver.sleep(0.2 * 1000);
+                                                amount--;
+                                            }
+                                        });
+
+                                        uomFractionTestState != 'baseline' &&
+                                            it(`Clicking Minus button and re-checking - untill amount gets to 0`, async function () {
+                                                const minusButtonSelector =
+                                                    orderPage.getSelectorOfItemQuantityMinusButtonInOrderCenterByName(
+                                                        uomFractionTestItem,
+                                                    );
+                                                const splitedStateArgs: string[] = uomFractionTestState.split(' ');
+                                                const chosenUom: string = splitedStateArgs[1];
+                                                const amount: number =
+                                                    uomFractionTestState != 'baseline'
+                                                        ? Number(splitedStateArgs[0])
+                                                        : 1;
+                                                while (amount > 0) {
+                                                    const state: string =
+                                                        uomFractionTestState != 'baseline'
+                                                            ? [amount.toString(), chosenUom].join(' ')
+                                                            : 'baseline';
+                                                    addContext(this, {
+                                                        title: `State Args`,
+                                                        value: `Chosen UOM: ${chosenUom}, Amount: ${amount.toString()}`,
+                                                    });
+                                                    if (state != 'baseline') {
+                                                        await driver.click(minusButtonSelector);
+                                                        driver.sleep(0.5 * 1000);
+                                                    }
+                                                    screenShot = await driver.saveScreenshots();
+                                                    addContext(this, {
+                                                        title: `At Order Center - after Minus Button clicked`,
+                                                        value: 'data:image/png;base64,' + screenShot,
+                                                    });
+                                                    const priceTSAs = await pricingService.getItemTSAs(
+                                                        'OrderCenter',
+                                                        uomFractionTestItem,
+                                                    );
+                                                    console.info(
+                                                        `${uomFractionTestItem} ${state} priceTSAs:`,
+                                                        priceTSAs,
+                                                    );
+                                                    expect(typeof priceTSAs).equals('object');
+                                                    expect(Object.keys(priceTSAs)).to.eql([
+                                                        'PriceBaseUnitPriceAfter1',
+                                                        'PriceDiscountUnitPriceAfter1',
+                                                        'PriceGroupDiscountUnitPriceAfter1',
+                                                        'PriceManualLineUnitPriceAfter1',
+                                                        'PriceTaxUnitPriceAfter1',
+                                                        'NPMCalcMessage',
+                                                    ]);
+                                                    const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                                                    const NPMCalcMessage =
+                                                        pricingData.testItemsValues.Uom[uomFractionTestItem][
+                                                            'NPMCalcMessage'
+                                                        ][account][state];
+                                                    addContext(this, {
+                                                        title: `State Args`,
+                                                        value: `NPMCalcMessage from UI: ${JSON.stringify(
+                                                            UI_NPMCalcMessage,
+                                                        )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                            NPMCalcMessage,
+                                                        )}`,
+                                                    });
+                                                    expect(UI_NPMCalcMessage.length).equals(NPMCalcMessage.length);
+                                                    priceFields.forEach((priceField) => {
+                                                        const fieldValue = priceTSAs[priceField];
+                                                        const expectedFieldValue =
+                                                            pricingData.testItemsValues.Uom[uomFractionTestItem][
+                                                                priceField
+                                                            ][account][state];
+                                                        addContext(this, {
+                                                            title: `${priceField}`,
+                                                            value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                                        });
+                                                        expect(fieldValue).equals(expectedFieldValue);
+                                                    });
+                                                    driver.sleep(0.2 * 1000);
+                                                }
+                                            });
+                                    });
+                                });
+                                describe('Preparation to Cart', function () {
+                                    it(`Clicking the Plus button once - to have the item at Cart`, async function () {
+                                        const plusButtonSelector =
+                                            orderPage.getSelectorOfItemQuantityPlusButtonInOrderCenterByName(
+                                                uomFractionTestItem,
+                                            );
+                                        await driver.click(plusButtonSelector);
+                                        driver.sleep(0.5 * 1000);
+                                        screenShot = await driver.saveScreenshots();
+                                        addContext(this, {
+                                            title: `At Order Center - after Plus Button clicked`,
+                                            value: 'data:image/png;base64,' + screenShot,
+                                        });
+                                    });
+                                });
+                            });
+                        });
+
+                        describe('CART', function () {
+                            it('entering and verifying being in cart', async function () {
+                                await driver.click(orderPage.Cart_Button);
+                                await orderPage.isSpinnerDone();
+                                await orderPage.changeCartView('Grid');
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `After "Line View" was selected`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                                driver.sleep(1 * 1000);
+                                await driver.untilIsVisible(orderPage.Cart_List_container);
+                            });
+
+                            it('verifying that the sum total of items in the cart is correct', async function () {
+                                let numberOfItemsInCart = uomFractionTestCartItems.length;
+                                if (account === 'OtherAcc') {
+                                    numberOfItemsInCart--;
+                                }
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At Cart`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                                const numberOfItemsElement = await driver.findElement(
+                                    orderPage.Cart_Headline_Results_Number,
+                                );
+                                const itemsInCart = await numberOfItemsElement.getText();
+                                await driver.click(orderPage.Cart_List_container);
+                                driver.sleep(0.2 * 1000);
+                                addContext(this, {
+                                    title: `Number of Items in Cart`,
+                                    value: `form UI: ${itemsInCart} , expected: ${numberOfItemsInCart}`,
+                                });
+                                expect(Number(itemsInCart)).to.equal(numberOfItemsInCart);
+                                driver.sleep(1 * 1000);
+                            });
+
+                            uomFractionTestCartItems.forEach((uomFractionTestCartItem) => {
+                                it(`${
+                                    uomFractionTestCartItem.name.includes('Free') && account === 'OtherAcc'
+                                        ? 'no additional item found'
+                                        : `checking item "${uomFractionTestCartItem.name}"`
+                                }`, async function () {
+                                    const state = uomFractionTestCartItem.name != 'Drug0009' ? '4 Box' : '1 Fraction';
+                                    const uomFractionTestCartItemSplited = uomFractionTestCartItem.name.split(' ');
+                                    const itemName = uomFractionTestCartItemSplited[0];
+                                    const isFreePlusUOM = uomFractionTestCartItemSplited[1];
+                                    let totalUnitsAmount: number;
+                                    let priceTSAs;
+                                    switch (true) {
+                                        case isFreePlusUOM != undefined:
+                                            if (account === 'Acc01') {
+                                                totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                                    'Cart',
+                                                    itemName,
+                                                );
+                                                priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
+                                            } else {
+                                                totalUnitsAmount = 0;
+                                                const additionalItems = await driver.isElementVisible(
+                                                    orderPage.getSelectorOfFreeItemInCartByName(''),
+                                                );
+                                                expect(additionalItems).equals(false);
+                                            }
+                                            break;
+
+                                        default:
+                                            totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                                'Cart',
+                                                itemName,
+                                            );
+                                            priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
+                                            break;
+                                    }
+                                    console.info(`Cart ${itemName} totalUnitsAmount: ${totalUnitsAmount}`);
+                                    console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
+                                    addContext(this, {
+                                        title: `Total Units amount of item`,
+                                        value: `form UI: ${totalUnitsAmount} , expected: ${uomFractionTestCartItem.amount}`,
+                                    });
+                                    priceFields.forEach((priceField) => {
+                                        const expectedValue =
+                                            pricingData.testItemsValues.Uom[itemName][priceField][account][
+                                                isFreePlusUOM ? 'cart' : state
+                                            ];
+                                        addContext(this, {
+                                            title: `TSA field "${priceField}" Values`,
+                                            value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                        });
+                                        expect(priceTSAs[priceField]).equals(expectedValue);
+                                    });
+                                    expect(totalUnitsAmount).equals(uomFractionTestCartItem.amount);
+                                    driver.sleep(1 * 1000);
+                                });
+                            });
+
+                            it('clicking PLUS button of "Drug0009"', async function () {
+                                const itemName = 'Drug0009';
+                                const state = '2 Fraction';
+                                const plusButtonSelector =
+                                    orderPage.getSelectorOfItemQuantityPlusButtonInCartByName(itemName);
+                                await driver.click(plusButtonSelector);
+                                driver.sleep(0.5 * 1000);
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At Order Center - after Plus Button clicked`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                                const priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
+                                priceFields.forEach((priceField) => {
+                                    const expectedValue =
+                                        pricingData.testItemsValues.Uom[itemName][priceField][account][state];
+                                    addContext(this, {
+                                        title: `TSA field "${priceField}" Values`,
+                                        value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                    });
+                                    expect(priceTSAs[priceField]).equals(expectedValue);
+                                });
+                            });
+
+                            it('clicking MINUS button of "Drug0009"', async function () {
+                                const itemName = 'Drug0009';
+                                const state = '1 Fraction';
+                                const minusButtonSelector =
+                                    orderPage.getSelectorOfItemQuantityMinusButtonInCartByName(itemName);
+                                await driver.click(minusButtonSelector);
+                                driver.sleep(0.5 * 1000);
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At Order Center - after Minus Button clicked`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                                const priceTSAs = await pricingService.getItemTSAs('Cart', itemName);
+                                priceFields.forEach((priceField) => {
+                                    const expectedValue =
+                                        pricingData.testItemsValues.Uom[itemName][priceField][account][state];
+                                    addContext(this, {
+                                        title: `TSA field "${priceField}" Values`,
+                                        value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                    });
+                                    expect(priceTSAs[priceField]).equals(expectedValue);
                                 });
                             });
                         });
