@@ -65,7 +65,7 @@ import { StorybookTextboxTests } from './storybook/storybook_textbox.test';
 import { StorybookQueryBuilderTests } from './storybook/storybook_query_builder.test';
 import { StorybookSmartFiltersTests } from './storybook/storybook_smart_filters.test';
 import { NeltPerformanceTests } from './Nelt_performance/nelt_performance.test';
-import { ListsAbiTests } from './lists_abi.test';
+import { ListsFormsAbiTests } from './lists_forms_abi.test';
 import { CustomCollectionsUpsert } from './custom_collections_upsert.test';
 
 export {
@@ -108,7 +108,7 @@ export {
     PricingProfilesTests,
     PricingUdcSourceTests,
     ResourceListAbiTests,
-    ListsAbiTests,
+    ListsFormsAbiTests,
     InstallationsTest,
     StorybookAttachmentTests,
     StorybookButtonTests,

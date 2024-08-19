@@ -73,8 +73,10 @@ export async function UomTests(email: string, password: string, varPass: string,
         // 'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '16.80.12'], //has to be hardcoded because upgrade dependencies cant handle this
         // 'cpi-node': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', '0.3.7'],
         uom: ['1238582e-9b32-4d21-9567-4e17379f41bb', ''], //latest
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%'], // open sync that works without Nebula
-        // Nebula: ['00000000-0000-0000-0000-000000006a91', ''],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''],
+        configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+        'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+        // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%'], // open sync that works without Nebula
         // 'Activity Data Index': ['10979a11-d7f4-41df-8993-f06bfd778304', '1.1.22'],
     };
 
