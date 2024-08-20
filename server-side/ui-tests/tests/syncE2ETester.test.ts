@@ -138,7 +138,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData(this);
             });
-            it(`0. Pre-Test Step: Check That Sync Version Is Above 2`, async function () {
+            it(`0. Pre-Test Step: Check That Sync Version Is Above 3`, async function () {
                 const installedAddons = await generalService.getInstalledAddons();
                 const syncVersion = installedAddons.find(
                     (addonObject) => addonObject.Addon.UUID === '5122dc6d-745b-4f46-bb8e-bd25225d350a',
@@ -146,7 +146,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 const nebulaObject = installedAddons.find(
                     (addonObject) => addonObject.Addon.UUID === '00000000-0000-0000-0000-000000006a91',
                 );
-                expect(syncVersion).to.include('2.0');
+                expect(syncVersion).to.include('3.0');
                 expect(nebulaObject).to.be.undefined;
                 console.log(`Sync Version: ${syncVersion}, With NO Nebula!`);
                 debugger;
