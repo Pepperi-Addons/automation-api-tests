@@ -448,6 +448,9 @@ export async function FlowTests(email: string, password: string, client: Client,
                 for (let index = 0; index < allFlows.length; index++) {
                     const flow = allFlows[index];
                     const hideResponse = await flowService.hideFlowViaAPI(generalService, flow.Key);
+                    console.log(
+                        `---> deleting the flow which key is: ${flow.Key}, returned: ${JSON.stringify(hideResponse)}`,
+                    );
                     expect(hideResponse.Ok).to.equal(true);
                     expect(hideResponse.Status).to.equal(200);
                     expect(hideResponse.Body.Key).to.equal(flow.Key);
