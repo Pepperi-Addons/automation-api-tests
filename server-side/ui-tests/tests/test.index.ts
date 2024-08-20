@@ -83,7 +83,7 @@ import {
     StorybookQueryBuilderTests,
     StorybookSmartFiltersTests,
     NeltPerformanceTests,
-    ListsAbiTests,
+    ListsFormsAbiTests,
     CustomCollectionsUpsert,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
@@ -603,7 +603,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
     }
 
     if (tests === 'ListsAbi') {
-        await ListsAbiTests(email, pass, client, varPass);
+        await ListsFormsAbiTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
