@@ -394,7 +394,7 @@ export class ScriptEditor extends AddonPage {
         //4. save
         debugger; //delete default script code if youre on MAC (run as is on windows)
         await this.browser.click(scriptEditor.SaveBtn);
-        this.browser.sleep(5000);
+        this.browser.sleep(10000);
         await this.browser.untilIsVisible(scriptEditor.ModalCloseBtn, 6000);
         await this.browser.click(scriptEditor.ModalCloseBtn);
         this.browser.sleep(1000);

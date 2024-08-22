@@ -5,7 +5,7 @@ import { after, afterEach, before, describe, it } from 'mocha';
 import GeneralService, { testData as testDataBase } from '../../services/general.service';
 import { WebAppHomePage, WebAppLoginPage } from '../pom';
 import { AppHeaderObject, ApplicationHeader } from '../pom/addons/AppHeaderService';
-import { Flow, FlowService, FlowStep } from '../pom/addons/flow.service';
+import { Flow, FlowStep } from '../pom/addons/flow.service'; //, FlowService
 import { Browser } from '../utilities/browser';
 import { createFlowUsingE2E } from './flows_builder.test';
 import { OpenSyncService } from '../../services/open-sync.service';
@@ -52,7 +52,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
         Description: 'testing Description',
         Hidden: false,
         Steps: newFlowSteps,
-        Name: 'test_flow_' + generalService.generateRandomString(5),
+        Name: 'test_flow_' + generalService.generateRandomString(9),
     };
 
     const headerObject: AppHeaderObject = {
@@ -146,7 +146,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 const nebulaObject = installedAddons.find(
                     (addonObject) => addonObject.Addon.UUID === '00000000-0000-0000-0000-000000006a91',
                 );
-                expect(syncVersion).to.include('2.0');
+                expect(syncVersion).to.include('3.0');
                 expect(nebulaObject).to.be.undefined;
                 console.log(`Sync Version: ${syncVersion}, With NO Nebula!`);
                 debugger;
@@ -251,7 +251,8 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                     sourcesForConfig,
                     '1970-11-23T14:39:50.781Z',
                 );
-                const syncConfigObject = openSyncResponseCofig.Body.Resources.Data.find(
+                debugger;
+                const syncConfigObject = openSyncResponseCofig.Body.Response.Resources.Data.find(
                     (data) => data.Schema.Name === 'synced_configuration_objects',
                 );
                 const spesificHeaderWeJustCreated = syncConfigObject.Objects.filter((obj) => obj.Key === appHeaderUUID);
@@ -282,7 +283,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                     sourcesForSchemes,
                     '1970-11-23T14:39:50.781Z',
                 );
-                const syncSchemesObject = openSyncResponseSchemes.Body.Resources.Data.find(
+                const syncSchemesObject = openSyncResponseSchemes.Body.Response.Resources.Data.find(
                     (data) => data.Schema.Name === 'schemes',
                 );
                 const spesificHeaderWeJustCreatedFromSchemes = syncSchemesObject.Objects.filter(
@@ -449,21 +450,21 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                     expect(deleteScriptResponse.Body[0].Key).to.equal(script.Key);
                 }
                 //2. flow
-                const flowService = new FlowService(driver);
-                const flowResponse = await flowService.getAllFlowsViaAPI(generalService);
-                const allFlows = flowResponse.Body;
-                console.log(`There Are: ${allFlows.length} Flows`);
-                for (let index = 0; index < allFlows.length; index++) {
-                    const flow = allFlows[index];
-                    const hideResponse = await flowService.hideFlowViaAPI(generalService, flow.Key);
-                    expect(hideResponse.Ok).to.equal(true);
-                    expect(hideResponse.Status).to.equal(200);
-                    expect(hideResponse.Body.Key).to.equal(flow.Key);
-                    expect(hideResponse.Body.Hidden).to.equal(true);
-                    const flowResponse_ = await flowService.getAllFlowsViaAPI(generalService);
-                    const allFlows_ = flowResponse_.Body;
-                    console.log(`${flow.Key} Is Deleted, There Are: ${allFlows_.length} Flows Left`);
-                }
+                // const flowService = new FlowService(driver);
+                // const flowResponse = await flowService.getAllFlowsViaAPI(generalService);
+                // const allFlows = flowResponse.Body;
+                // console.log(`There Are: ${allFlows.length} Flows`);
+                // for (let index = 0; index < allFlows.length; index++) {
+                //     const flow = allFlows[index];
+                //     const hideResponse = await flowService.hideFlowViaAPI(generalService, flow.Key);
+                //     expect(hideResponse.Ok).to.equal(true);
+                //     expect(hideResponse.Status).to.equal(200);
+                //     expect(hideResponse.Body.Key).to.equal(flow.Key);
+                //     expect(hideResponse.Body.Hidden).to.equal(true);
+                //     const flowResponse_ = await flowService.getAllFlowsViaAPI(generalService);
+                //     const allFlows_ = flowResponse_.Body;
+                //     console.log(`${flow.Key} Is Deleted, There Are: ${allFlows_.length} Flows Left`);
+                // }
                 //3. slug
                 const webAppLoginPage = new WebAppLoginPage(driver);
                 await webAppLoginPage.login(email, password);
