@@ -246,6 +246,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 const sourcesForConfig = [
                     { AddonUUID: '84c999c3-84b7-454e-9a86-71b7abc96554', LastSyncDateTime: '1970-02-18T08:48:44.880Z' },
                 ];
+                console.log(`======> app header: looking for: ${appHeaderUUID}`);
                 const openSyncResponseCofig = await openSyncService.getSyncedConfigurationObjectBasedOnResource(
                     sourcesForConfig,
                     '1970-11-23T14:39:50.781Z',
