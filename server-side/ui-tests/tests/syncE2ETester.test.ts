@@ -64,6 +64,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
     // #region Upgrade open sync dependencies
     await generalService.baseAddonVersionsInstallation(varPass, testDataBase);
     const testData = {
+        nebulus: ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', '%'], //dependecy of udc
         ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''], //cpi-node
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.31.%'], //cpas
