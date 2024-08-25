@@ -21,6 +21,58 @@ import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 chai.use(promised);
 
 export async function VisitFlowTests(varPass: string, client: Client, email: string, password: string) {
+    /** Description **/
+    /* full user flow of the Visit Flow feature *
+     * including: Addons upgrades, configuration of Visit Flow UDCs values via API, configuration of Page & Slug, adding them to Account Dashboard Layout *
+     * TEST STEPS:
+     *   1. Addons Upgrade
+     *   2. Login
+     *   3. Manual Resync (via UI and listening to endpoint GetSyncStatus)
+     *   4. Pages Leftovers Cleanup (starting with "VisitFlow Page Auto_") via API
+     *   5. Pages Leftovers Cleanup (starting with "Blank") via API
+     *   6. Making sure UDCs custom (manually inserted) fields are NOT removed upon version upgrade (via API)
+     *   7. Inserting Data to the UDC VisitFlowGroups (via API)
+     *   8. Creating a Page with VisitFlow Block (via UI + block addition via API)
+     *   9. Inserting Data to the UDC: VisitFlows (via API)
+     *   10. Creating and Mapping a Slug (via UI + mapping the created page to the created slug via API)
+     *   11. Configuring Account Dashboard (adding the slug to the menu of a specific user dashboard display)
+     *       -> Logout & Login + Manual Sync (activated through 'Accounts' list and listening to endpoint GetSyncStatus)
+     *   12. Going Through a Basic Visit Flow:
+     *       1. Navigating to a specific Account & Entering Visit Flow slug from Menu
+     *       2. If more than one visit - Choosing a Visit Flow
+     *       3. Checking off "Start" (Visit Flow Activity Form)
+     *       4. Checking off "Orders" (picking one item -> entering cart -> submitting order)
+     *       5. Checking off "End" (Visit Flow Activity Form - and making sure the visit is closed)
+     *   13. Survey Prep
+     *       1. Configuring Survey (via UI - survey builder)
+     *       2. Configuring Survey in UDC: Flows
+     *       3. Performing Manual Sync
+     *       4. Loging Out and Loging In as Rep
+     *       5. Navigating to a specific Account & Entering Visit Flow slug from Menu
+     *       6. If more than one visit - Choosing a Visit Flow
+     *       7. Checking off "Start" (Visit Flow Activity Form)
+     *       8. Checking off "Survey" (only validating the step appears in the flow - survey DO NOT OPEN!!!)
+     *       9. Checking off "End" (Visit Flow Activity Form - and making sure the visit is closed)
+     *       10. Deleting Activities (via UI)
+     *       11. Sign back in as Admin
+     *   14. Teardown
+     *       1. Getting VF_VisitFlowMainActivity activity (via API)  (to make sure it was created)
+     *       2. Getting Sales Order transaction (via API)
+     *       3. Unconfiguring Slug from Account Dashboard
+     *       4. Deleting Survey Template via API
+     *       5. Deleting Slug via API
+     *       6. Deleting Page via UI
+     *       7. Verifying VF_VisitFlowMainActivity activity was formed
+     *       8. Verifying Sales Order transaction was formed
+     *       9. Deleting UDCs "VisitFlowGroups" listings
+     *       10. Deleting UDCs "VisitFlows" listings
+     *       11. Deleting LEFTOVERS UDCs "VisitFlowGroups" listings
+     *       12. Deleting LEFTOVERS UDCs "VisitFlows" listings
+     *       13. Deleting LEFTOVERS "MockVisit" listings from UDC "VisitFlows"
+     *       14. Deleting Activities (via UI)
+     *   15. Displaying Addons installed versions
+     */
+
     const date = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
@@ -35,6 +87,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
         // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%'], // versions 2.0.% are open sync and are irrelevant to this test
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+        Nebulus: ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', ''], // dependency of UDC
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], // PFS makes create session loop
         // 'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.3.88'], // PFS makes create session loop

@@ -57,6 +57,8 @@ export async function ListsFormsAbiTests(email: string, password: string, client
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
+        Nebulus: ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', ''], // dependency of UDC
+        'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], // UDC current phased version 0.8.29 | dependency > 0.8.11
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
