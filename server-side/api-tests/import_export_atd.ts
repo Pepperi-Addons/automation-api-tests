@@ -243,6 +243,7 @@ async function ImportExportATDTests(generalService: GeneralService, request, tes
 
     //#region Upgrade ImportExportATD and Data Views API
     const testData = {
+        nebulus: ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', '%'], //dependecy of udc
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
         'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
