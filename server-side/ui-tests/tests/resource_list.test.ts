@@ -84,6 +84,7 @@ export async function ResourceListTests(email: string, password: string, client:
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // to prevent open sync from being installed (2.0.%) | 3.% is suitable for both Nebula AND open sync
         'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''], // needed for filtering by account (ReferenceAccount collections)
+        Nebulus: ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', ''], // dependency of UDC
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],

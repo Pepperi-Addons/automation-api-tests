@@ -87,6 +87,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 0.2.58
         // sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%'], // versions 2.0.% are open sync and are irrelevant to this test
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
+        Nebulus: ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', ''], // dependency of UDC
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', ''], // PFS makes create session loop
         // 'File Service Framework': ['00000000-0000-0000-0000-0000000f11e5', '1.3.88'], // PFS makes create session loop
