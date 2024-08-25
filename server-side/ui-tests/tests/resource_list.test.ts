@@ -23,6 +23,14 @@ chai.use(promised);
 
 /* Basic Functionality test of Resource List */
 export async function ResourceListTests(email: string, password: string, client: Client, varPass: string) {
+    /** Description **
+     * This test focuses on views (lists) and thier editors - which were configured through the settings (under: Pages -> Resource Views) *
+     * TEST STEPS:
+     *   1. Addons Upgrade
+     *   2.
+     *   3. Login
+     *   4. Manual Resync (via UI and listening to endpoint GetSyncStatus)
+     */
     const date = new Date();
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
