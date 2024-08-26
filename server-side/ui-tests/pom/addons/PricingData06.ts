@@ -2063,7 +2063,7 @@ export class PricingData06 {
                     Acc01: {
                         baseline: 180.0,
                         '1 Fraction': 21.0,
-                        '2 Fraction': 10.0,
+                        '2 Fraction': 21.0,
                     },
                     OtherAcc: {
                         baseline: 38.25,
@@ -2075,7 +2075,7 @@ export class PricingData06 {
                     Acc01: {
                         baseline: 180.0,
                         '1 Fraction': 21.0,
-                        '2 Fraction': 10.0,
+                        '2 Fraction': 21.0,
                     },
                     OtherAcc: {
                         baseline: 38.25,
@@ -2087,7 +2087,7 @@ export class PricingData06 {
                     Acc01: {
                         baseline: 180.0,
                         '1 Fraction': 21.0,
-                        '2 Fraction': 10.0,
+                        '2 Fraction': 21.0,
                     },
                     OtherAcc: {
                         baseline: 38.25,
@@ -2099,7 +2099,7 @@ export class PricingData06 {
                     Acc01: {
                         baseline: 180.0,
                         '1 Fraction': 21.0,
-                        '2 Fraction': 10.0,
+                        '2 Fraction': 21.0,
                     },
                     OtherAcc: {
                         baseline: 38.25,
@@ -2111,7 +2111,7 @@ export class PricingData06 {
                     Acc01: {
                         baseline: 180.0,
                         '1 Fraction': 21.0,
-                        '2 Fraction': 10.0,
+                        '2 Fraction': 21.0,
                     },
                     OtherAcc: {
                         baseline: 38.25,

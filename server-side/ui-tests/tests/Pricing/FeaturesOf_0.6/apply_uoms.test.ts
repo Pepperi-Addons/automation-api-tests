@@ -606,26 +606,34 @@ _________________
                                                 );
                                             const splitedStateArgs: string[] = uomFractionTestState.split(' ');
                                             const chosenUom: string = splitedStateArgs[1];
-                                            let amount: number =
+                                            const limit: number =
                                                 uomFractionTestState != 'baseline' ? Number(splitedStateArgs[0]) : 1;
-                                            while (amount > 0) {
+                                            let loopIndex = 1;
+                                            while (loopIndex <= limit) {
                                                 const state: string =
                                                     uomFractionTestState != 'baseline'
-                                                        ? [amount.toString(), chosenUom].join(' ')
+                                                        ? `${loopIndex} Fraction`
                                                         : 'baseline';
                                                 addContext(this, {
                                                     title: `State Args`,
-                                                    value: `Chosen UOM: ${chosenUom}, Amount: ${amount.toString()}`,
+                                                    value: `Chosen UOM: ${chosenUom}, Amount: ${loopIndex.toString()}, State: ${state}, Limit: ${limit}`,
+                                                });
+                                                screenShot = await driver.saveScreenshots();
+                                                addContext(this, {
+                                                    title: `At Order Center - loop index ${loopIndex}`,
+                                                    value: 'data:image/png;base64,' + screenShot,
                                                 });
                                                 if (state != 'baseline') {
                                                     await driver.click(plusButtonSelector);
                                                     driver.sleep(0.5 * 1000);
+                                                    await driver.click(orderPage.ItemQuantity_NumberOfUnits_Readonly); // clicking on "neutral" element to make the previously selected element de-actived
+                                                    driver.sleep(0.1 * 1000);
+                                                    screenShot = await driver.saveScreenshots();
+                                                    addContext(this, {
+                                                        title: `At Order Center - after Plus Button clicked`,
+                                                        value: 'data:image/png;base64,' + screenShot,
+                                                    });
                                                 }
-                                                screenShot = await driver.saveScreenshots();
-                                                addContext(this, {
-                                                    title: `At Order Center - after Plus Button clicked`,
-                                                    value: 'data:image/png;base64,' + screenShot,
-                                                });
                                                 const priceTSAs = await pricingService.getItemTSAs(
                                                     'OrderCenter',
                                                     uomFractionTestItem,
@@ -671,7 +679,7 @@ _________________
                                                     expect(fieldValue).equals(expectedFieldValue);
                                                 });
                                                 driver.sleep(0.2 * 1000);
-                                                amount--;
+                                                loopIndex++;
                                             }
                                         });
 
@@ -694,11 +702,15 @@ _________________
                                                             : 'baseline';
                                                     addContext(this, {
                                                         title: `State Args`,
-                                                        value: `Chosen UOM: ${chosenUom}, Amount: ${amount.toString()}`,
+                                                        value: `Chosen UOM: ${chosenUom}, Amount: ${amount.toString()}, State: ${state}`,
                                                     });
                                                     if (state != 'baseline') {
                                                         await driver.click(minusButtonSelector);
                                                         driver.sleep(0.5 * 1000);
+                                                        await driver.click(
+                                                            orderPage.ItemQuantity_NumberOfUnits_Readonly,
+                                                        ); // clicking on "neutral" element to make the previously selected element de-actived
+                                                        driver.sleep(0.1 * 1000);
                                                     }
                                                     screenShot = await driver.saveScreenshots();
                                                     addContext(this, {
@@ -766,6 +778,8 @@ _________________
                                             );
                                         await driver.click(plusButtonSelector);
                                         driver.sleep(0.5 * 1000);
+                                        await driver.click(orderPage.ItemQuantity_NumberOfUnits_Readonly); // clicking on "neutral" element to make the previously selected element de-actived
+                                        driver.sleep(0.1 * 1000);
                                         screenShot = await driver.saveScreenshots();
                                         addContext(this, {
                                             title: `At Order Center - after Plus Button clicked`,
@@ -880,6 +894,8 @@ _________________
                                     orderPage.getSelectorOfItemQuantityPlusButtonInCartByName(itemName);
                                 await driver.click(plusButtonSelector);
                                 driver.sleep(0.5 * 1000);
+                                await driver.click(orderPage.Cart_Headline_Results_Number); // clicking on "neutral" element to make the previously selected element de-actived
+                                driver.sleep(0.1 * 1000);
                                 screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Order Center - after Plus Button clicked`,
@@ -904,6 +920,8 @@ _________________
                                     orderPage.getSelectorOfItemQuantityMinusButtonInCartByName(itemName);
                                 await driver.click(minusButtonSelector);
                                 driver.sleep(0.5 * 1000);
+                                await driver.click(orderPage.Cart_Headline_Results_Number); // clicking on "neutral" element to make the previously selected element de-actived
+                                driver.sleep(0.1 * 1000);
                                 screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Order Center - after Minus Button clicked`,
