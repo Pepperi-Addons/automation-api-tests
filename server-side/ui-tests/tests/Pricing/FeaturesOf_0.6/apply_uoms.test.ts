@@ -385,8 +385,12 @@ _________________
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                         UI_NPMCalcMessage,
+                                                        null,
+                                                        2,
                                                     )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
                                                         baseline_NPMCalcMessage,
+                                                        null,
+                                                        2,
                                                     )}`,
                                                 });
                                                 expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
@@ -645,8 +649,12 @@ _________________
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                         UI_NPMCalcMessage,
+                                                        null,
+                                                        2,
                                                     )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
                                                         NPMCalcMessage,
+                                                        null,
+                                                        2,
                                                     )}`,
                                                 });
                                                 expect(UI_NPMCalcMessage.length).equals(NPMCalcMessage.length);
@@ -675,7 +683,7 @@ _________________
                                                     );
                                                 const splitedStateArgs: string[] = uomFractionTestState.split(' ');
                                                 const chosenUom: string = splitedStateArgs[1];
-                                                const amount: number =
+                                                let amount: number =
                                                     uomFractionTestState != 'baseline'
                                                         ? Number(splitedStateArgs[0])
                                                         : 1;
@@ -723,8 +731,12 @@ _________________
                                                         title: `State Args`,
                                                         value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                             UI_NPMCalcMessage,
+                                                            null,
+                                                            2,
                                                         )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
                                                             NPMCalcMessage,
+                                                            null,
+                                                            2,
                                                         )}`,
                                                     });
                                                     expect(UI_NPMCalcMessage.length).equals(NPMCalcMessage.length);
@@ -741,6 +753,7 @@ _________________
                                                         expect(fieldValue).equals(expectedFieldValue);
                                                     });
                                                     driver.sleep(0.2 * 1000);
+                                                    amount--;
                                                 }
                                             });
                                     });
