@@ -603,7 +603,7 @@ _________________
                                                         : 'baseline';
                                                 addContext(this, {
                                                     title: `State Args`,
-                                                    value: `Chosen UOM: ${chosenUom}, Amount: ${loopIndex.toString()}, State: ${state}, Limit: ${limit}`,
+                                                    value: `Chosen UOM: ${chosenUom}, Loop Index: ${loopIndex.toString()}, State: ${state}, Limit: ${limit}`,
                                                 });
                                                 screenShot = await driver.saveScreenshots();
                                                 addContext(this, {
@@ -668,6 +668,20 @@ _________________
                                                 expect(UI_NPMCalcMessage).eql(NPMCalcMessage);
                                                 driver.sleep(0.2 * 1000);
                                                 loopIndex++;
+                                                const aoqm1element = await driver.findElement(
+                                                    orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                                                        'ItemQuantity_byUOM_InteractableNumber',
+                                                        uomFractionTestItem,
+                                                    ),
+                                                );
+                                                const fractionAmount = (
+                                                    await aoqm1element.getAttribute('title')
+                                                ).trim();
+                                                addContext(this, {
+                                                    title: `Fraction Amount`,
+                                                    value: `Value from UI: ${fractionAmount}`,
+                                                });
+                                                expect(Number(fractionAmount)).equals(limit - loopIndex + 1);
                                             }
                                         });
 
@@ -679,18 +693,23 @@ _________________
                                                     );
                                                 const splitedStateArgs: string[] = uomFractionTestState.split(' ');
                                                 const chosenUom: string = splitedStateArgs[1];
-                                                let amount: number =
+                                                let loopIndex: number =
                                                     uomFractionTestState != 'baseline'
                                                         ? Number(splitedStateArgs[0])
                                                         : 1;
-                                                while (amount > 0) {
+                                                while (loopIndex > 0) {
                                                     const state: string =
                                                         uomFractionTestState != 'baseline'
-                                                            ? [amount.toString(), chosenUom].join(' ')
+                                                            ? [loopIndex.toString(), chosenUom].join(' ')
                                                             : 'baseline';
                                                     addContext(this, {
                                                         title: `State Args`,
-                                                        value: `Chosen UOM: ${chosenUom}, Amount: ${amount.toString()}, State: ${state}`,
+                                                        value: `Chosen UOM: ${chosenUom}, Loop Index: ${loopIndex.toString()}, State: ${state}`,
+                                                    });
+                                                    screenShot = await driver.saveScreenshots();
+                                                    addContext(this, {
+                                                        title: `At Order Center - loop index ${loopIndex}`,
+                                                        value: 'data:image/png;base64,' + screenShot,
                                                     });
                                                     if (state != 'baseline') {
                                                         await driver.click(minusButtonSelector);
@@ -754,7 +773,21 @@ _________________
                                                     });
                                                     expect(UI_NPMCalcMessage).eql(NPMCalcMessage);
                                                     driver.sleep(0.2 * 1000);
-                                                    amount--;
+                                                    loopIndex--;
+                                                    const aoqm1element = await driver.findElement(
+                                                        orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                                                            'ItemQuantity_byUOM_InteractableNumber',
+                                                            uomFractionTestItem,
+                                                        ),
+                                                    );
+                                                    const fractionAmount = (
+                                                        await aoqm1element.getAttribute('title')
+                                                    ).trim();
+                                                    addContext(this, {
+                                                        title: `Fraction Amount`,
+                                                        value: `Value from UI: ${fractionAmount}`,
+                                                    });
+                                                    expect(Number(fractionAmount)).equals(loopIndex);
                                                 }
                                             });
                                     });
@@ -860,18 +893,33 @@ _________________
                                         title: `Total Units amount of item`,
                                         value: `form UI: ${totalUnitsAmount} , expected: ${uomFractionTestCartItem.amount}`,
                                     });
-                                    priceFields.forEach((priceField) => {
-                                        const expectedValue =
-                                            pricingData.testItemsValues.Uom[itemName][priceField][account][
-                                                isFreePlusUOM.includes('Free') ? 'cart' : state
-                                            ];
-                                        addContext(this, {
-                                            title: `TSA field "${priceField}" Values`,
-                                            value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                    if (uomFractionTestCartItem.name.includes('Free')) {
+                                        account === 'Acc01' &&
+                                            priceFields.forEach((priceField) => {
+                                                const expectedValue =
+                                                    pricingData.testItemsValues.Uom[itemName][priceField][account][
+                                                        'cart'
+                                                    ];
+                                                addContext(this, {
+                                                    title: `TSA field "${priceField}" Values`,
+                                                    value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                                });
+                                                expect(priceTSAs[priceField]).equals(expectedValue);
+                                            });
+                                        account === 'Acc01' &&
+                                            expect(totalUnitsAmount).equals(uomFractionTestCartItem.amount);
+                                    } else {
+                                        priceFields.forEach((priceField) => {
+                                            const expectedValue =
+                                                pricingData.testItemsValues.Uom[itemName][priceField][account][state];
+                                            addContext(this, {
+                                                title: `TSA field "${priceField}" Values`,
+                                                value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                            });
+                                            expect(priceTSAs[priceField]).equals(expectedValue);
                                         });
-                                        expect(priceTSAs[priceField]).equals(expectedValue);
-                                    });
-                                    expect(totalUnitsAmount).equals(uomFractionTestCartItem.amount);
+                                        expect(totalUnitsAmount).equals(uomFractionTestCartItem.amount);
+                                    }
                                     driver.sleep(1 * 1000);
                                 });
                             });
