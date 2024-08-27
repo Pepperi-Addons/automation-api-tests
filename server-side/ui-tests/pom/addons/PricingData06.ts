@@ -2,7 +2,6 @@ export class PricingData06 {
     public testItemsValues = {
         Uom: {
             Hair001: {
-                // UOMs
                 ItemPrice: 44.25,
                 NPMCalcMessage: {
                     Acc01: {
@@ -11,193 +10,513 @@ export class PricingData06 {
                                 Name: 'Base',
                                 Base: 0,
                                 Conditions: [
-                                    { Name: 'ZBASE_A003', Type: 'S', Value: 200, Amount: 0, Uom: ['BOX'] },
-                                    { Name: 'ZBASE_A003', Type: 'S', Value: 50, Amount: 0, Uom: ['CS'] },
-                                    { Name: 'ZBASE_A003', Type: 'S', Value: 10, Amount: 0, Uom: ['EA'] },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 0,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
+                                    },
                                 ],
                                 New: 0,
                                 Amount: 0,
                             },
                         ],
-                        '1 Each': [],
-                        '2 Each': [],
-                        '4 Each': [],
-                        '5 Each': [],
-                        '19 Each': [
+                        '1 Each': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 190.0, // 10.0 * 19
+                                Name: 'Base',
+                                Base: 44.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -57.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -34.25,
                                     },
                                 ],
-                                New: 133.0,
-                                Amount: -57.0,
+                                New: 10,
+                                Amount: -34.25,
+                            },
+                        ],
+                        '2 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 88.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -68.5,
+                                    },
+                                ],
+                                New: 20,
+                                Amount: -68.5,
+                            },
+                        ],
+                        '4 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 177,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -137,
+                                    },
+                                ],
+                                New: 40,
+                                Amount: -137,
+                            },
+                        ],
+                        '5 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 221.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -171.25,
+                                    },
+                                ],
+                                New: 50,
+                                Amount: -171.25,
+                            },
+                        ],
+                        '19 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 840.75,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -650.75,
+                                    },
+                                ],
+                                New: 190,
+                                Amount: -650.75,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 190,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -57,
+                                    },
+                                ],
+                                New: 133,
+                                Amount: -57,
                             },
                         ],
                         '20 Each': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 200.0, // 10.0 * 20
+                                Name: 'Base',
+                                Base: 885,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -60.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -685,
                                     },
                                 ],
-                                New: 140.0,
-                                Amount: -60.0,
+                                New: 200,
+                                Amount: -685,
                             },
-                        ],
-                        '1 Case': [],
-                        '2 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 100.0, // 50.0 * 2
+                                Base: 200,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Name: 'ZDM3_A009',
                                         Type: '%',
                                         Value: -30,
-                                        Amount: -30.0,
+                                        Amount: -60,
                                     },
                                 ],
-                                New: 70.0,
-                                Amount: -30.0,
+                                New: 140,
+                                Amount: -60,
+                            },
+                        ],
+                        '1 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 44.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 5.75,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
+                                    },
+                                ],
+                                New: 50,
+                                Amount: 5.75,
+                            },
+                        ],
+                        '2 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 88.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 11.5,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
+                                    },
+                                ],
+                                New: 100,
+                                Amount: 11.5,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 100,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -30,
+                                    },
+                                ],
+                                New: 70,
+                                Amount: -30,
                             },
                         ],
                         '4 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 200.0, // 50.0 * 4
+                                Name: 'Base',
+                                Base: 177,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -60.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 23,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 140.0,
-                                Amount: -60.0,
+                                New: 200,
+                                Amount: 23,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 200,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -60,
+                                    },
+                                ],
+                                New: 140,
+                                Amount: -60,
                             },
                         ],
                         '5 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 250.0, // 50.0 * 5
+                                Name: 'Base',
+                                Base: 221.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -75.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 28.75,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 175.0,
-                                Amount: -75.0,
+                                New: 250,
+                                Amount: 28.75,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 250,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -75,
+                                    },
+                                ],
+                                New: 175,
+                                Amount: -75,
                             },
                         ],
                         '19 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 950.0, // 50.0 * 19
+                                Name: 'Base',
+                                Base: 840.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -285.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 109.25,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 665.0,
-                                Amount: -285.0,
+                                New: 950,
+                                Amount: 109.25,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 950,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -285,
+                                    },
+                                ],
+                                New: 665,
+                                Amount: -285,
                             },
                         ],
                         '20 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 1000.0, // 50.0 * 20
+                                Name: 'Base',
+                                Base: 885,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -300.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 115,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 700.0,
-                                Amount: -300.0,
+                                New: 1000,
+                                Amount: 115,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 1000,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -300,
+                                    },
+                                ],
+                                New: 700,
+                                Amount: -300,
                             },
                         ],
                         '1 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 200.0, // 200.0 * 1
+                                Name: 'Base',
+                                Base: 44.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -60.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 155.75,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 140.0,
-                                Amount: -60.0,
+                                New: 200,
+                                Amount: 155.75,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 200,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -60,
+                                    },
+                                ],
+                                New: 140,
+                                Amount: -60,
                             },
                         ],
                         '2 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 400.0, // 200.0 * 2
+                                Name: 'Base',
+                                Base: 88.5,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -120.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 311.5,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 280.0,
-                                Amount: -120.0,
+                                New: 400,
+                                Amount: 311.5,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 400,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -120,
+                                    },
+                                ],
+                                New: 280,
+                                Amount: -120,
                             },
                         ],
                         '3 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 600.0, // 200.0 * 3
+                                Name: 'Base',
+                                Base: 132.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -180.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 467.25,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 420.0,
-                                Amount: -180.0,
+                                New: 600,
+                                Amount: 467.25,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 600,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -180,
+                                    },
+                                ],
+                                New: 420,
+                                Amount: -180,
                             },
                         ],
                         '4 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 800.0, // 200.0 * 4
+                                Name: 'Base',
+                                Base: 177,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -240.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 623,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 560.0,
-                                Amount: -240.0,
+                                New: 800,
+                                Amount: 623,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 800,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -240,
+                                    },
+                                ],
+                                New: 560,
+                                Amount: -240,
                             },
                         ],
                     },
@@ -210,10 +529,10 @@ export class PricingData06 {
                         '19 Each': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 840.75, // 44.25 * 19
+                                Base: 840.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -126.1125,
@@ -226,10 +545,10 @@ export class PricingData06 {
                         '20 Each': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 885.0, // 44.25 * 20
+                                Base: 885,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -132.75,
@@ -243,10 +562,10 @@ export class PricingData06 {
                         '2 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 88.5, // 44.25 * 2
+                                Base: 88.5,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -13.275,
@@ -259,10 +578,10 @@ export class PricingData06 {
                         '4 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 177.0, // 44.25 * 4
+                                Base: 177,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -26.55,
@@ -275,10 +594,10 @@ export class PricingData06 {
                         '5 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 221.25, // 44.25 * 5
+                                Base: 221.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -33.1875,
@@ -291,10 +610,10 @@ export class PricingData06 {
                         '19 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 840.75, // 44.25 * 19
+                                Base: 840.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -126.1125,
@@ -307,10 +626,10 @@ export class PricingData06 {
                         '20 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 885.0, // 44.25 * 20
+                                Base: 885,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -132.75,
@@ -323,10 +642,10 @@ export class PricingData06 {
                         '1 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 44.25, // 44.25 * 1
+                                Base: 44.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -6.6375,
@@ -339,10 +658,10 @@ export class PricingData06 {
                         '2 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 88.5, // 44.25 * 2
+                                Base: 88.5,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -13.275,
@@ -355,10 +674,10 @@ export class PricingData06 {
                         '3 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 132.75, // 44.25 * 3
+                                Base: 132.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -19.9125,
@@ -371,10 +690,10 @@ export class PricingData06 {
                         '4 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 177.0, // 44.25 * 4
+                                Base: 177,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -26.55,
@@ -588,7 +907,6 @@ export class PricingData06 {
                 },
             },
             Hair002: {
-                // UOMs
                 ItemPrice: 45.25,
                 NPMCalcMessage: {
                     Acc01: {
@@ -604,253 +922,624 @@ export class PricingData06 {
                                 Amount: 0,
                             },
                         ],
-                        '1 Each': [],
+                        '1 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 45.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -35.25,
+                                    },
+                                ],
+                                New: 10,
+                                Amount: -35.25,
+                            },
+                        ],
                         '2 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 90.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -70.5,
+                                    },
+                                ],
+                                New: 20,
+                                Amount: -70.5,
+                            },
                             {
                                 Name: 'Discount',
                                 Base: 20,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -2, Amount: -0.4 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -2,
+                                        Amount: -0.4,
+                                    },
+                                ],
                                 New: 19.6,
                                 Amount: -0.4,
                             },
                         ],
                         '4 Each': [
                             {
+                                Name: 'Base',
+                                Base: 181,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -141,
+                                    },
+                                ],
+                                New: 40,
+                                Amount: -141,
+                            },
+                            {
                                 Name: 'Discount',
                                 Base: 40,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -2, Amount: -0.8 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -2,
+                                        Amount: -0.8,
+                                    },
+                                ],
                                 New: 39.2,
                                 Amount: -0.8,
                             },
                         ],
                         '5 Each': [
                             {
+                                Name: 'Base',
+                                Base: 226.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -176.25,
+                                    },
+                                ],
+                                New: 50,
+                                Amount: -176.25,
+                            },
+                            {
                                 Name: 'Discount',
                                 Base: 50,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -5, Amount: -2.5 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -5,
+                                        Amount: -2.5,
+                                    },
+                                ],
                                 New: 47.5,
                                 Amount: -2.5,
                             },
                         ],
                         '19 Each': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 190.0, // 10.0 * 19
+                                Name: 'Base',
+                                Base: 859.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -57.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -669.75,
                                     },
                                 ],
-                                New: 133.0,
-                                Amount: -57.0,
+                                New: 190,
+                                Amount: -669.75,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 190,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -5, Amount: -9.5 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -5,
+                                        Amount: -9.5,
+                                    },
+                                ],
                                 New: 180.5,
                                 Amount: -9.5,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 190,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -57,
+                                    },
+                                ],
+                                New: 133,
+                                Amount: -57,
                             },
                         ],
                         '20 Each': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 200.0, // 10.0 * 20
+                                Name: 'Base',
+                                Base: 905,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -60.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -705,
                                     },
                                 ],
-                                New: 140.0,
-                                Amount: -60.0,
+                                New: 200,
+                                Amount: -705,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 200,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -10, Amount: -20 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -10,
+                                        Amount: -20,
+                                    },
+                                ],
                                 New: 180,
                                 Amount: -20,
                             },
-                        ],
-                        '1 Case': [],
-                        '2 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 100.0, // 50.0 * 2
+                                Base: 200,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
+                                        Name: 'ZDM3_A009',
                                         Type: '%',
                                         Value: -30,
-                                        Amount: -30.0,
+                                        Amount: -60,
                                     },
                                 ],
-                                New: 70.0,
-                                Amount: -30.0,
+                                New: 140,
+                                Amount: -60,
+                            },
+                        ],
+                        '1 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 45.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 4.75,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
+                                    },
+                                ],
+                                New: 50,
+                                Amount: 4.75,
+                            },
+                        ],
+                        '2 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 90.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 9.5,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
+                                    },
+                                ],
+                                New: 100,
+                                Amount: 9.5,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 100,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -30,
+                                    },
+                                ],
+                                New: 70,
+                                Amount: -30,
                             },
                         ],
                         '4 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 200.0, // 50.0 * 4
+                                Name: 'Base',
+                                Base: 181,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -60.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 19,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 140.0,
-                                Amount: -60.0,
+                                New: 200,
+                                Amount: 19,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 200,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: 'P', Value: -7.5, Amount: -30, Uom: ['CS'] }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: 'P',
+                                        Value: -7.5,
+                                        Amount: -30,
+                                        Uom: ['CS'],
+                                    },
+                                ],
                                 New: 170,
                                 Amount: -30,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 200,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -60,
+                                    },
+                                ],
+                                New: 140,
+                                Amount: -60,
                             },
                         ],
                         '5 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 250.0, // 50.0 * 5
+                                Name: 'Base',
+                                Base: 226.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -75.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 23.75,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 175.0,
-                                Amount: -75.0,
+                                New: 250,
+                                Amount: 23.75,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 250,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: 'P', Value: -7.5, Amount: -37.5, Uom: ['CS'] }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: 'P',
+                                        Value: -7.5,
+                                        Amount: -37.5,
+                                        Uom: ['CS'],
+                                    },
+                                ],
                                 New: 212.5,
                                 Amount: -37.5,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 250,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -75,
+                                    },
+                                ],
+                                New: 175,
+                                Amount: -75,
                             },
                         ],
                         '19 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 950.0, // 50.0 * 19
+                                Name: 'Base',
+                                Base: 859.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -285.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 90.25,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 665.0,
-                                Amount: -285.0,
+                                New: 950,
+                                Amount: 90.25,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 950,
                                 Conditions: [
-                                    { Name: 'ZDS1_A001', Type: 'P', Value: -7.5, Amount: -142.5, Uom: ['CS'] },
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: 'P',
+                                        Value: -7.5,
+                                        Amount: -142.5,
+                                        Uom: ['CS'],
+                                    },
                                 ],
                                 New: 807.5,
                                 Amount: -142.5,
                             },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 950,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -285,
+                                    },
+                                ],
+                                New: 665,
+                                Amount: -285,
+                            },
                         ],
                         '20 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 1000.0, // 50.0 * 20
+                                Name: 'Base',
+                                Base: 905,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -300.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: 95,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 700.0,
-                                Amount: -300.0,
+                                New: 1000,
+                                Amount: 95,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 1000,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: 'P', Value: -7.5, Amount: -150, Uom: ['CS'] }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: 'P',
+                                        Value: -7.5,
+                                        Amount: -150,
+                                        Uom: ['CS'],
+                                    },
+                                ],
                                 New: 850,
                                 Amount: -150,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 1000,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -300,
+                                    },
+                                ],
+                                New: 700,
+                                Amount: -300,
                             },
                         ],
                         '1 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 200.0, // 200.0 * 1
+                                Name: 'Base',
+                                Base: 45.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -60.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 154.75,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 140.0,
-                                Amount: -60.0,
+                                New: 200,
+                                Amount: 154.75,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 200,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -60,
+                                    },
+                                ],
+                                New: 140,
+                                Amount: -60,
                             },
                         ],
                         '2 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 400.0, // 200.0 * 2
+                                Name: 'Base',
+                                Base: 90.5,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -120.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 309.5,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 280.0,
-                                Amount: -120.0,
+                                New: 400,
+                                Amount: 309.5,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 400,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -120,
+                                    },
+                                ],
+                                New: 280,
+                                Amount: -120,
                             },
                         ],
                         '3 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 600.0, // 200.0 * 3
+                                Name: 'Base',
+                                Base: 135.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -180.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 464.25,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 420.0,
-                                Amount: -180.0,
+                                New: 600,
+                                Amount: 464.25,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 600,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -180,
+                                    },
+                                ],
+                                New: 420,
+                                Amount: -180,
                             },
                         ],
                         '4 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 800.0, // 200.0 * 4
+                                Name: 'Base',
+                                Base: 181,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -240.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 619,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 560.0,
-                                Amount: -240.0,
+                                New: 800,
+                                Amount: 619,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 800,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -240,
+                                    },
+                                ],
+                                New: 560,
+                                Amount: -240,
                             },
                         ],
                     },
@@ -860,37 +1549,72 @@ export class PricingData06 {
                         '2 Each': [
                             {
                                 Name: 'Discount',
-                                Base: 20,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -2, Amount: -0.4 }],
-                                New: 19.6,
-                                Amount: -0.4,
+                                Base: 90.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -2,
+                                        Amount: -1.81,
+                                    },
+                                ],
+                                New: 88.69,
+                                Amount: -1.81,
                             },
                         ],
                         '4 Each': [
                             {
                                 Name: 'Discount',
-                                Base: 40,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -2, Amount: -0.8 }],
-                                New: 39.2,
-                                Amount: -0.8,
+                                Base: 181,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -2,
+                                        Amount: -3.62,
+                                    },
+                                ],
+                                New: 177.38,
+                                Amount: -3.62,
                             },
                         ],
                         '5 Each': [
                             {
                                 Name: 'Discount',
-                                Base: 50,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -5, Amount: -2.5 }],
-                                New: 47.5,
-                                Amount: -2.5,
+                                Base: 226.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -5,
+                                        Amount: -11.3125,
+                                    },
+                                ],
+                                New: 214.9375,
+                                Amount: -11.3125,
                             },
                         ],
                         '19 Each': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 859.75, // 45.25 * 19
+                                Name: 'Discount',
+                                Base: 859.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -5,
+                                        Amount: -42.9875,
+                                    },
+                                ],
+                                New: 816.7625,
+                                Amount: -42.9875,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 859.75,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -128.9625,
@@ -899,21 +1623,28 @@ export class PricingData06 {
                                 New: 730.7875,
                                 Amount: -128.9625,
                             },
-                            {
-                                Name: 'Discount',
-                                Base: 190,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -5, Amount: -9.5 }],
-                                New: 180.5,
-                                Amount: -9.5,
-                            },
                         ],
                         '20 Each': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 905.0, // 45.25 * 20
+                                Name: 'Discount',
+                                Base: 905,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDS1_A001',
+                                        Type: '%',
+                                        Value: -10,
+                                        Amount: -90.5,
+                                    },
+                                ],
+                                New: 814.5,
+                                Amount: -90.5,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 905,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -135.75,
@@ -922,22 +1653,15 @@ export class PricingData06 {
                                 New: 769.25,
                                 Amount: -135.75,
                             },
-                            {
-                                Name: 'Discount',
-                                Base: 200,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: '%', Value: -10, Amount: -20 }],
-                                New: 180,
-                                Amount: -20,
-                            },
                         ],
                         '1 Case': [],
                         '2 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 90.5, // 45.25 * 2
+                                Base: 90.5,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -13.575,
@@ -949,11 +1673,26 @@ export class PricingData06 {
                         ],
                         '4 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 181.0, // 45.25 * 4
+                                Name: 'Discount',
+                                Base: 181,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDS1_A001',
+                                        Type: 'P',
+                                        Value: -7.5,
+                                        Amount: -30,
+                                        Uom: ['CS'],
+                                    },
+                                ],
+                                New: 151,
+                                Amount: -30,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 181,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -27.15,
@@ -962,21 +1701,29 @@ export class PricingData06 {
                                 New: 153.85,
                                 Amount: -27.15,
                             },
-                            {
-                                Name: 'Discount',
-                                Base: 200,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: 'P', Value: -7.5, Amount: -30, Uom: ['CS'] }],
-                                New: 170,
-                                Amount: -30,
-                            },
                         ],
                         '5 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 226.25, // 45.25 * 5
+                                Name: 'Discount',
+                                Base: 226.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDS1_A001',
+                                        Type: 'P',
+                                        Value: -7.5,
+                                        Amount: -37.5,
+                                        Uom: ['CS'],
+                                    },
+                                ],
+                                New: 188.75,
+                                Amount: -37.5,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 226.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -33.9375,
@@ -985,21 +1732,29 @@ export class PricingData06 {
                                 New: 192.3125,
                                 Amount: -33.9375,
                             },
-                            {
-                                Name: 'Discount',
-                                Base: 250,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: 'P', Value: -7.5, Amount: -37.5, Uom: ['CS'] }],
-                                New: 212.5,
-                                Amount: -37.5,
-                            },
                         ],
                         '19 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 859.75, // 45.25 * 19
+                                Name: 'Discount',
+                                Base: 859.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDS1_A001',
+                                        Type: 'P',
+                                        Value: -7.5,
+                                        Amount: -142.5,
+                                        Uom: ['CS'],
+                                    },
+                                ],
+                                New: 717.25,
+                                Amount: -142.5,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 859.75,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -128.9625,
@@ -1008,23 +1763,29 @@ export class PricingData06 {
                                 New: 730.7875,
                                 Amount: -128.9625,
                             },
-                            {
-                                Name: 'Discount',
-                                Base: 950,
-                                Conditions: [
-                                    { Name: 'ZDS1_A001', Type: 'P', Value: -7.5, Amount: -142.5, Uom: ['CS'] },
-                                ],
-                                New: 807.5,
-                                Amount: -142.5,
-                            },
                         ],
                         '20 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 905.0, // 45.25 * 20
+                                Name: 'Discount',
+                                Base: 905,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDS1_A001',
+                                        Type: 'P',
+                                        Value: -7.5,
+                                        Amount: -150,
+                                        Uom: ['CS'],
+                                    },
+                                ],
+                                New: 755,
+                                Amount: -150,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 905,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -135.75,
@@ -1033,21 +1794,14 @@ export class PricingData06 {
                                 New: 769.25,
                                 Amount: -135.75,
                             },
-                            {
-                                Name: 'Discount',
-                                Base: 1000,
-                                Conditions: [{ Name: 'ZDS1_A001', Type: 'P', Value: -7.5, Amount: -150, Uom: ['CS'] }],
-                                New: 850,
-                                Amount: -150,
-                            },
                         ],
                         '1 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 45.25, // 45.25 * 1
+                                Base: 45.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -6.7875,
@@ -1060,10 +1814,10 @@ export class PricingData06 {
                         '2 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 90.5, // 45.25 * 2
+                                Base: 90.5,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -13.575,
@@ -1076,10 +1830,10 @@ export class PricingData06 {
                         '3 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 135.75, // 45.25 * 3
+                                Base: 135.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -20.3625,
@@ -1092,10 +1846,10 @@ export class PricingData06 {
                         '4 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 181.0, // 45.25 * 4
+                                Base: 181,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -27.15,
@@ -1309,7 +2063,6 @@ export class PricingData06 {
                 },
             },
             Hair012: {
-                // UOMs
                 ItemPrice: 55.25,
                 NPMCalcMessage: {
                     Acc01: {
@@ -1325,277 +2078,665 @@ export class PricingData06 {
                                 Amount: 0,
                             },
                         ],
-                        '1 Each': [],
-                        '2 Each': [],
-                        '4 Each': [],
+                        '1 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 55.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -45.25,
+                                    },
+                                ],
+                                New: 10,
+                                Amount: -45.25,
+                            },
+                        ],
+                        '2 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 110.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -90.5,
+                                    },
+                                ],
+                                New: 20,
+                                Amount: -90.5,
+                            },
+                        ],
+                        '4 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 221,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -181,
+                                    },
+                                ],
+                                New: 40,
+                                Amount: -181,
+                            },
+                        ],
                         '5 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 276.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -226.25,
+                                    },
+                                ],
+                                New: 50,
+                                Amount: -226.25,
+                            },
                             {
                                 Name: 'Discount',
                                 Base: 50,
-                                Conditions: [{ Name: 'ZDS2_A002', Type: 'additionalItem', Value: 1, Amount: 1 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 1,
+                                        Amount: 1,
+                                    },
+                                ],
                                 New: 50,
                                 Amount: 0,
                             },
                         ],
                         '19 Each': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 190.0, // 10.0 * 19
+                                Name: 'Base',
+                                Base: 1049.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -57.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -859.75,
                                     },
                                 ],
-                                New: 133.0,
-                                Amount: -57.0,
+                                New: 190,
+                                Amount: -859.75,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 190,
-                                Conditions: [{ Name: 'ZDS2_A002', Type: 'additionalItem', Value: 3, Amount: 3 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 3,
+                                        Amount: 3,
+                                    },
+                                ],
                                 New: 190,
                                 Amount: 0,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 190,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -57,
+                                    },
+                                ],
+                                New: 133,
+                                Amount: -57,
                             },
                         ],
                         '20 Each': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 200.0, // 10.0 * 20
+                                Name: 'Base',
+                                Base: 1105,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -60.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: -905,
                                     },
                                 ],
-                                New: 140.0,
-                                Amount: -60.0,
+                                New: 200,
+                                Amount: -905,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 200,
-                                Conditions: [{ Name: 'ZDS2_A002', Type: 'additionalItem', Value: 1, Amount: 1 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 1,
+                                        Amount: 1,
+                                    },
+                                ],
                                 New: 200,
                                 Amount: 0,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 200,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -60,
+                                    },
+                                ],
+                                New: 140,
+                                Amount: -60,
                             },
                         ],
                         '1 Case': [
                             {
+                                Name: 'Base',
+                                Base: 55.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: -5.25,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
+                                    },
+                                ],
+                                New: 50,
+                                Amount: -5.25,
+                            },
+                            {
                                 Name: 'Discount',
                                 Base: 50,
-                                Conditions: [{ Name: 'ZDS2_A002', Type: 'additionalItem', Value: 1, Amount: 1 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 1,
+                                        Amount: 1,
+                                    },
+                                ],
                                 New: 50,
                                 Amount: 0,
                             },
                         ],
                         '2 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 100.0, // 50.0 * 2
+                                Name: 'Base',
+                                Base: 110.5,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -30.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: -10.5,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 70.0,
-                                Amount: -30.0,
+                                New: 100,
+                                Amount: -10.5,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 100,
-                                Conditions: [{ Name: 'ZDS2_A002', Type: 'additionalItem', Value: 2, Amount: 2 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 2,
+                                        Amount: 2,
+                                    },
+                                ],
                                 New: 100,
                                 Amount: 0,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 100,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -30,
+                                    },
+                                ],
+                                New: 70,
+                                Amount: -30,
                             },
                         ],
                         '4 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 200.0, // 50.0 * 4
+                                Name: 'Base',
+                                Base: 221,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -60.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: -21,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 140.0,
-                                Amount: -60.0,
+                                New: 200,
+                                Amount: -21,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 200,
-                                Conditions: [{ Name: 'ZDS2_A002', Type: 'additionalItem', Value: 1, Amount: 1 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 1,
+                                        Amount: 1,
+                                    },
+                                ],
                                 New: 200,
                                 Amount: 0,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 200,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -60,
+                                    },
+                                ],
+                                New: 140,
+                                Amount: -60,
                             },
                         ],
                         '5 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 250.0, // 50.0 * 5
+                                Name: 'Base',
+                                Base: 276.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -75.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: -26.25,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 175.0,
-                                Amount: -75.0,
+                                New: 250,
+                                Amount: -26.25,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 250,
-                                Conditions: [{ Name: 'ZDS2_A002', Type: 'additionalItem', Value: 1, Amount: 1 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 1,
+                                        Amount: 1,
+                                    },
+                                ],
                                 New: 250,
                                 Amount: 0,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 250,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -75,
+                                    },
+                                ],
+                                New: 175,
+                                Amount: -75,
                             },
                         ],
                         '19 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 950.0, // 50.0 * 19
+                                Name: 'Base',
+                                Base: 1049.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -285.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: -99.75,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 665.0,
-                                Amount: -285.0,
+                                New: 950,
+                                Amount: -99.75,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 950,
-                                Conditions: [{ Name: 'ZDS2_A002', Type: 'additionalItem', Value: 5, Amount: 5 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 5,
+                                        Amount: 5,
+                                    },
+                                ],
                                 New: 950,
                                 Amount: 0,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 950,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -285,
+                                    },
+                                ],
+                                New: 665,
+                                Amount: -285,
                             },
                         ],
                         '20 Case': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 1000.0, // 50.0 * 20
+                                Name: 'Base',
+                                Base: 1105,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -300.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 50,
+                                        Amount: -105,
+                                        Uom: ['CS'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 700.0,
-                                Amount: -300.0,
+                                New: 1000,
+                                Amount: -105,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 1000,
-                                Conditions: [{ Name: 'ZDS2_A002', Type: 'additionalItem', Value: 6, Amount: 6 }],
+                                Conditions: [
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 6,
+                                        Amount: 6,
+                                    },
+                                ],
                                 New: 1000,
                                 Amount: 0,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 1000,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -300,
+                                    },
+                                ],
+                                New: 700,
+                                Amount: -300,
                             },
                         ],
                         '1 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 200.0, // 200.0 * 1
+                                Name: 'Base',
+                                Base: 55.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -60.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 144.75,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 140.0,
-                                Amount: -60.0,
+                                New: 200,
+                                Amount: 144.75,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 200,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -60,
+                                    },
+                                ],
+                                New: 140,
+                                Amount: -60,
                             },
                         ],
                         '2 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 400.0, // 200.0 * 2
+                                Name: 'Base',
+                                Base: 110.5,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -120.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 289.5,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 280.0,
-                                Amount: -120.0,
+                                New: 400,
+                                Amount: 289.5,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 400,
                                 Conditions: [
-                                    { Name: 'ZDS2_A002', Type: 'additionalItem', Value: 1, Amount: 1, Uom: ['BOX'] },
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 1,
+                                        Amount: 1,
+                                        Uom: ['BOX'],
+                                    },
                                 ],
                                 New: 400,
                                 Amount: 0,
                             },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 400,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -120,
+                                    },
+                                ],
+                                New: 280,
+                                Amount: -120,
+                            },
                         ],
                         '3 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 600.0, // 200.0 * 3
+                                Name: 'Base',
+                                Base: 165.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -180.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 434.25,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 420.0,
-                                Amount: -180.0,
+                                New: 600,
+                                Amount: 434.25,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 600,
                                 Conditions: [
-                                    { Name: 'ZDS2_A002', Type: 'additionalItem', Value: 1, Amount: 1, Uom: ['BOX'] },
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 1,
+                                        Amount: 1,
+                                        Uom: ['BOX'],
+                                    },
                                 ],
                                 New: 600,
                                 Amount: 0,
                             },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 600,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -180,
+                                    },
+                                ],
+                                New: 420,
+                                Amount: -180,
+                            },
                         ],
                         '4 Box': [
                             {
-                                Name: 'MultipleValuesAccount',
-                                Base: 800.0, // 200.0 * 4
+                                Name: 'Base',
+                                Base: 221,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A009 Account_Contract3_ALL_UOMS',
-                                        Type: '%',
-                                        Value: -30,
-                                        Amount: -240.0,
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 200,
+                                        Amount: 579,
+                                        Uom: ['BOX'],
+                                    },
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 10,
+                                        Amount: 0,
+                                        Uom: ['EA'],
                                     },
                                 ],
-                                New: 560.0,
-                                Amount: -240.0,
+                                New: 800,
+                                Amount: 579,
                             },
                             {
                                 Name: 'Discount',
                                 Base: 800,
                                 Conditions: [
-                                    { Name: 'ZDS2_A002', Type: 'additionalItem', Value: 1, Amount: 1, Uom: ['BOX'] },
+                                    {
+                                        Name: 'ZDS2_A002',
+                                        Type: 'additionalItem',
+                                        Value: 1,
+                                        Amount: 1,
+                                        Uom: ['BOX'],
+                                    },
                                 ],
                                 New: 800,
                                 Amount: 0,
+                            },
+                            {
+                                Name: 'MultipleValuesAccount',
+                                Base: 800,
+                                Conditions: [
+                                    {
+                                        Name: 'ZDM3_A009',
+                                        Type: '%',
+                                        Value: -30,
+                                        Amount: -240,
+                                    },
+                                ],
+                                New: 560,
+                                Amount: -240,
                             },
                         ],
                     },
@@ -1608,10 +2749,10 @@ export class PricingData06 {
                         '19 Each': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 1049.75, // 55.25 * 19
+                                Base: 1049.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -157.4625,
@@ -1624,10 +2765,10 @@ export class PricingData06 {
                         '20 Each': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 1105.0, // 55.25 * 20
+                                Base: 1105,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -165.75,
@@ -1641,10 +2782,10 @@ export class PricingData06 {
                         '2 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 110.5, // 55.25 * 2
+                                Base: 110.5,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -16.575,
@@ -1657,10 +2798,10 @@ export class PricingData06 {
                         '4 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 221.0, // 55.25 * 4
+                                Base: 221,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -33.15,
@@ -1673,10 +2814,10 @@ export class PricingData06 {
                         '5 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 276.25, // 55.25 * 5
+                                Base: 276.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -41.4375,
@@ -1689,10 +2830,10 @@ export class PricingData06 {
                         '19 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 1049.75, // 55.25 * 19
+                                Base: 1049.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -157.4625,
@@ -1705,10 +2846,10 @@ export class PricingData06 {
                         '20 Case': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 1105.0, // 55.25 * 20
+                                Base: 1105,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -165.75,
@@ -1721,10 +2862,10 @@ export class PricingData06 {
                         '1 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 55.25, // 55.25 * 1
+                                Base: 55.25,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -8.2875,
@@ -1737,10 +2878,10 @@ export class PricingData06 {
                         '2 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 110.5, // 55.25 * 2
+                                Base: 110.5,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -16.575,
@@ -1753,10 +2894,10 @@ export class PricingData06 {
                         '3 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 165.75, // 55.25 * 3
+                                Base: 165.75,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -24.8625,
@@ -1769,10 +2910,10 @@ export class PricingData06 {
                         '4 Box': [
                             {
                                 Name: 'MultipleValuesAccount',
-                                Base: 221.0, // 55.25 * 4
+                                Base: 221,
                                 Conditions: [
                                     {
-                                        Name: 'ZDM3_A006 Contract2_ALL_UOMS',
+                                        Name: 'ZDM3_A006',
                                         Type: '%',
                                         Value: -15,
                                         Amount: -33.15,
@@ -2021,17 +3162,17 @@ export class PricingData06 {
                         baseline: [
                             {
                                 Name: 'Base',
-                                Base: 38.25,
+                                Base: 0,
                                 Conditions: [
                                     {
                                         Name: 'ZBASE_A003',
                                         Type: 'S',
                                         Value: 30,
-                                        Amount: 141.75,
+                                        Amount: 0,
                                     },
                                 ],
-                                New: 180,
-                                Amount: 141.75,
+                                New: 0,
+                                Amount: 0,
                             },
                         ],
                         '1 Fraction': [
@@ -2046,10 +3187,17 @@ export class PricingData06 {
                         '2 Fraction': [
                             {
                                 Name: 'Base',
-                                Base: 38.25,
-                                Conditions: [{ Name: 'ZBASE_A003', Type: 'S', Value: 30, Amount: -17.25 }],
-                                New: 21,
-                                Amount: -17.25,
+                                Base: 76.5,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -34.5,
+                                    },
+                                ],
+                                New: 42,
+                                Amount: -34.5,
                             },
                         ],
                     },
