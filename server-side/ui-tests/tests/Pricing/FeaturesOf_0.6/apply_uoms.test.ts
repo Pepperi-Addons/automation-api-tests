@@ -37,7 +37,7 @@ _________________ Brief:
           
 * Pricing Per UOM
 * in previous version there was set price to only one Unit Of Measure, and the others were multiplication by the UOM factor 
-* now a set price is available for each UOM separately
+* now a set price is available for each UOM separately (for example: a Case of Coca Cola (6 bottles) cost 20$, but a Single bottle cost 5$)
 * the test agenda is to make sure calculations per each UOM are performed correctly
 ______________________________________ 
 _________________ The Relevant Blocks:
@@ -80,17 +80,35 @@ _________________ The Relevant Rules:
  
 _________________ 
 _________________ Order Of Actions:
-          
+
 1. Looping over accounts
+
+ Regular UOMs [[Each (factor 1), Case (factor 6), Box (factor 24)]] --> the relevant variables: "testAccounts", "uomTestStates", "uomTestItems", "uomTestCartItems"
  
     2. Looping over items
  
         3. At Order Center: Looping over states
         ----> retrieving pricing fields values from UI and comparing to expected data ( pricingData.testItemsValues.Uom[uomTestItem][priceField][account][uomTestState] )
- 
-        4. At Cart: Looping over states
+    
+    4. Looping over cart items
+
+        5. At Cart: Looping over states
         ----> same check as at order center
  
+ Partial UOM [[Fraction (factor 0.7)]] --> the relevant variables: "testAccounts", "uomFractionTestStates", "uomFractionTestItems", "uomFractionTestCartItems"
+
+    6. Looping over fraction items
+ 
+        7. At Order Center: Looping over fraction states
+        ----> retrieving pricing fields values from UI and comparing to expected data 
+                ( pricingData.testItemsValues.Uom[uomFractionTestItem][priceField][account][uomFractionTestState] )
+                increasing the amount by clicking the plus button & checking, then decreasing by clicking the minus button & checking
+ 
+    8. Looping over fraction cart items
+
+        9. At Cart: Looping over fraction states
+        ----> for the regular items same check as at order center, for fraction item - increasing the amount by clicking the plus button & checking, 
+                then decreasing by clicking the minus button & checking 
 _________________ 
 _________________ 
 */
@@ -133,6 +151,14 @@ _________________
     let screenShot;
 
     const testAccounts = ['Acc01', 'OtherAcc'];
+
+    const uomTestItems = ['Hair001', 'Hair002', 'Hair012'];
+    const uomTestCartItems = [
+        { name: 'Hair001', amount: 96 },
+        { name: 'Hair002', amount: 96 },
+        { name: 'Hair012', amount: 96 },
+        { name: 'MaFa24 Free Case', amount: 6 },
+    ];
     const uomTestStates = [
         'baseline',
         '1 Each',
@@ -155,20 +181,8 @@ _________________
         '19 Case',
         '4 Box',
     ];
-    const uomFractionTestStates = [
-        // https://pepperi.atlassian.net/browse/DI-28361
-        'baseline',
-        '1 Fraction', // DI-28361
-        '2 Fraction', // DI-28361
-    ];
-    const uomTestItems = ['Hair001', 'Hair002', 'Hair012'];
+
     const uomFractionTestItems = ['Drug0009'];
-    const uomTestCartItems = [
-        { name: 'Hair001', amount: 96 },
-        { name: 'Hair002', amount: 96 },
-        { name: 'Hair012', amount: 96 },
-        { name: 'MaFa24 Free Case', amount: 6 },
-    ];
     const uomFractionTestCartItems = [
         { name: 'Hair001', amount: 96 },
         { name: 'Hair002', amount: 96 },
@@ -176,6 +190,13 @@ _________________
         { name: 'MaFa24 Free Case', amount: 6 },
         { name: 'Drug0009', amount: 0 },
     ];
+    const uomFractionTestStates = [
+        // https://pepperi.atlassian.net/browse/DI-28361
+        'baseline',
+        '1 Fraction', // DI-28361
+        '2 Fraction', // DI-28361
+    ];
+
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
         'PriceDiscountUnitPriceAfter1',
@@ -214,12 +235,6 @@ _________________
             after(async function () {
                 await driver.quit();
             });
-
-            // afterEach(async function () {
-            //     driver.sleep(500);
-            //     await webAppHomePage.isDialogOnHomePAge(this);
-            //     await webAppHomePage.collectEndTestData(this);
-            // });
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
@@ -375,51 +390,26 @@ _________________
                                                 'PriceTaxUnitPriceAfter1',
                                                 'NPMCalcMessage',
                                             ]);
-                                            if (uomTestState === 'baseline') {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues.Uom[uomTestItem]['NPMCalcMessage'][
-                                                        account
-                                                    ][uomTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                    )}`,
-                                                });
-                                                expect(UI_NPMCalcMessage.length).equals(baseline_NPMCalcMessage.length);
-                                            } else {
-                                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                const baseline_NPMCalcMessage =
-                                                    pricingData.testItemsValues.Uom[uomTestItem]['NPMCalcMessage'][
-                                                        account
-                                                    ]['baseline'];
-                                                const data_NPMCalcMessage =
-                                                    pricingData.testItemsValues.Uom[uomTestItem]['NPMCalcMessage'][
-                                                        account
-                                                    ][uomTestState];
-                                                addContext(this, {
-                                                    title: `State Args`,
-                                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
-                                                        UI_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
-                                                        baseline_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}, \nNPMCalcMessage (at ${uomTestState}) from Data: ${JSON.stringify(
-                                                        data_NPMCalcMessage,
-                                                        null,
-                                                        2,
-                                                    )}`,
-                                                });
-                                                expect(UI_NPMCalcMessage.length).equals(
-                                                    baseline_NPMCalcMessage.length + data_NPMCalcMessage.length,
-                                                );
-                                            }
+
+                                            const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                                            const data_NPMCalcMessage =
+                                                pricingData.testItemsValues.Uom[uomTestItem]['NPMCalcMessage'][account][
+                                                    uomTestState
+                                                ];
+                                            addContext(this, {
+                                                title: `State Args`,
+                                                value: `NPMCalcMessage from UI: ${JSON.stringify(
+                                                    UI_NPMCalcMessage,
+                                                    null,
+                                                    2,
+                                                )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                    data_NPMCalcMessage,
+                                                    null,
+                                                    2,
+                                                )}`,
+                                            });
+                                            expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
+
                                             priceFields.forEach((priceField) => {
                                                 const fieldValue = priceTSAs[priceField];
                                                 const expectedFieldValue =
@@ -432,6 +422,7 @@ _________________
                                                 });
                                                 expect(fieldValue).equals(expectedFieldValue);
                                             });
+                                            expect(UI_NPMCalcMessage).eql(data_NPMCalcMessage);
                                             driver.sleep(0.2 * 1000);
                                         });
                                     });
@@ -602,26 +593,34 @@ _________________
                                                 );
                                             const splitedStateArgs: string[] = uomFractionTestState.split(' ');
                                             const chosenUom: string = splitedStateArgs[1];
-                                            let amount: number =
+                                            const limit: number =
                                                 uomFractionTestState != 'baseline' ? Number(splitedStateArgs[0]) : 1;
-                                            while (amount > 0) {
+                                            let loopIndex = 1;
+                                            while (loopIndex <= limit) {
                                                 const state: string =
                                                     uomFractionTestState != 'baseline'
-                                                        ? [amount.toString(), chosenUom].join(' ')
+                                                        ? `${loopIndex} Fraction`
                                                         : 'baseline';
                                                 addContext(this, {
                                                     title: `State Args`,
-                                                    value: `Chosen UOM: ${chosenUom}, Amount: ${amount.toString()}`,
+                                                    value: `Chosen UOM: ${chosenUom}, Loop Index: ${loopIndex.toString()}, State: ${state}, Limit: ${limit}`,
+                                                });
+                                                screenShot = await driver.saveScreenshots();
+                                                addContext(this, {
+                                                    title: `At Order Center - loop index ${loopIndex}`,
+                                                    value: 'data:image/png;base64,' + screenShot,
                                                 });
                                                 if (state != 'baseline') {
                                                     await driver.click(plusButtonSelector);
                                                     driver.sleep(0.5 * 1000);
+                                                    await driver.click(orderPage.ItemQuantity_NumberOfUnits_Readonly); // clicking on "neutral" element to make the previously selected element de-actived
+                                                    driver.sleep(0.1 * 1000);
+                                                    screenShot = await driver.saveScreenshots();
+                                                    addContext(this, {
+                                                        title: `At Order Center - after Plus Button clicked`,
+                                                        value: 'data:image/png;base64,' + screenShot,
+                                                    });
                                                 }
-                                                screenShot = await driver.saveScreenshots();
-                                                addContext(this, {
-                                                    title: `At Order Center - after Plus Button clicked`,
-                                                    value: 'data:image/png;base64,' + screenShot,
-                                                });
                                                 const priceTSAs = await pricingService.getItemTSAs(
                                                     'OrderCenter',
                                                     uomFractionTestItem,
@@ -645,8 +644,12 @@ _________________
                                                     title: `State Args`,
                                                     value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                         UI_NPMCalcMessage,
-                                                    )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                        null,
+                                                        2,
+                                                    )}, NPMCalcMessage (at ${state}) from Data: ${JSON.stringify(
                                                         NPMCalcMessage,
+                                                        null,
+                                                        2,
                                                     )}`,
                                                 });
                                                 expect(UI_NPMCalcMessage.length).equals(NPMCalcMessage.length);
@@ -662,8 +665,23 @@ _________________
                                                     });
                                                     expect(fieldValue).equals(expectedFieldValue);
                                                 });
+                                                expect(UI_NPMCalcMessage).eql(NPMCalcMessage);
                                                 driver.sleep(0.2 * 1000);
-                                                amount--;
+                                                loopIndex++;
+                                                const aoqm1element = await driver.findElement(
+                                                    orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                                                        'ItemQuantity_byUOM_InteractableNumber',
+                                                        uomFractionTestItem,
+                                                    ),
+                                                );
+                                                const fractionAmount = (
+                                                    await aoqm1element.getAttribute('title')
+                                                ).trim();
+                                                addContext(this, {
+                                                    title: `Fraction Amount`,
+                                                    value: `Value from UI: ${fractionAmount}`,
+                                                });
+                                                expect(Number(fractionAmount)).equals(limit - loopIndex + 1);
                                             }
                                         });
 
@@ -675,22 +693,31 @@ _________________
                                                     );
                                                 const splitedStateArgs: string[] = uomFractionTestState.split(' ');
                                                 const chosenUom: string = splitedStateArgs[1];
-                                                const amount: number =
+                                                let loopIndex: number =
                                                     uomFractionTestState != 'baseline'
                                                         ? Number(splitedStateArgs[0])
                                                         : 1;
-                                                while (amount > 0) {
+                                                while (loopIndex > 0) {
                                                     const state: string =
                                                         uomFractionTestState != 'baseline'
-                                                            ? [amount.toString(), chosenUom].join(' ')
+                                                            ? [loopIndex.toString(), chosenUom].join(' ')
                                                             : 'baseline';
                                                     addContext(this, {
                                                         title: `State Args`,
-                                                        value: `Chosen UOM: ${chosenUom}, Amount: ${amount.toString()}`,
+                                                        value: `Chosen UOM: ${chosenUom}, Loop Index: ${loopIndex.toString()}, State: ${state}`,
+                                                    });
+                                                    screenShot = await driver.saveScreenshots();
+                                                    addContext(this, {
+                                                        title: `At Order Center - loop index ${loopIndex}`,
+                                                        value: 'data:image/png;base64,' + screenShot,
                                                     });
                                                     if (state != 'baseline') {
                                                         await driver.click(minusButtonSelector);
                                                         driver.sleep(0.5 * 1000);
+                                                        await driver.click(
+                                                            orderPage.ItemQuantity_NumberOfUnits_Readonly,
+                                                        ); // clicking on "neutral" element to make the previously selected element de-actived
+                                                        driver.sleep(0.1 * 1000);
                                                     }
                                                     screenShot = await driver.saveScreenshots();
                                                     addContext(this, {
@@ -723,8 +750,12 @@ _________________
                                                         title: `State Args`,
                                                         value: `NPMCalcMessage from UI: ${JSON.stringify(
                                                             UI_NPMCalcMessage,
-                                                        )}, NPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                                            null,
+                                                            2,
+                                                        )}, NPMCalcMessage (at ${state}) from Data: ${JSON.stringify(
                                                             NPMCalcMessage,
+                                                            null,
+                                                            2,
                                                         )}`,
                                                     });
                                                     expect(UI_NPMCalcMessage.length).equals(NPMCalcMessage.length);
@@ -740,7 +771,23 @@ _________________
                                                         });
                                                         expect(fieldValue).equals(expectedFieldValue);
                                                     });
+                                                    expect(UI_NPMCalcMessage).eql(NPMCalcMessage);
                                                     driver.sleep(0.2 * 1000);
+                                                    loopIndex--;
+                                                    const aoqm1element = await driver.findElement(
+                                                        orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
+                                                            'ItemQuantity_byUOM_InteractableNumber',
+                                                            uomFractionTestItem,
+                                                        ),
+                                                    );
+                                                    const fractionAmount = (
+                                                        await aoqm1element.getAttribute('title')
+                                                    ).trim();
+                                                    addContext(this, {
+                                                        title: `Fraction Amount`,
+                                                        value: `Value from UI: ${fractionAmount}`,
+                                                    });
+                                                    expect(Number(fractionAmount)).equals(loopIndex);
                                                 }
                                             });
                                     });
@@ -753,6 +800,8 @@ _________________
                                             );
                                         await driver.click(plusButtonSelector);
                                         driver.sleep(0.5 * 1000);
+                                        await driver.click(orderPage.ItemQuantity_NumberOfUnits_Readonly); // clicking on "neutral" element to make the previously selected element de-actived
+                                        driver.sleep(0.1 * 1000);
                                         screenShot = await driver.saveScreenshots();
                                         addContext(this, {
                                             title: `At Order Center - after Plus Button clicked`,
@@ -844,18 +893,33 @@ _________________
                                         title: `Total Units amount of item`,
                                         value: `form UI: ${totalUnitsAmount} , expected: ${uomFractionTestCartItem.amount}`,
                                     });
-                                    priceFields.forEach((priceField) => {
-                                        const expectedValue =
-                                            pricingData.testItemsValues.Uom[itemName][priceField][account][
-                                                isFreePlusUOM ? 'cart' : state
-                                            ];
-                                        addContext(this, {
-                                            title: `TSA field "${priceField}" Values`,
-                                            value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                    if (uomFractionTestCartItem.name.includes('Free')) {
+                                        account === 'Acc01' &&
+                                            priceFields.forEach((priceField) => {
+                                                const expectedValue =
+                                                    pricingData.testItemsValues.Uom[itemName][priceField][account][
+                                                        'cart'
+                                                    ];
+                                                addContext(this, {
+                                                    title: `TSA field "${priceField}" Values`,
+                                                    value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                                });
+                                                expect(priceTSAs[priceField]).equals(expectedValue);
+                                            });
+                                        account === 'Acc01' &&
+                                            expect(totalUnitsAmount).equals(uomFractionTestCartItem.amount);
+                                    } else {
+                                        priceFields.forEach((priceField) => {
+                                            const expectedValue =
+                                                pricingData.testItemsValues.Uom[itemName][priceField][account][state];
+                                            addContext(this, {
+                                                title: `TSA field "${priceField}" Values`,
+                                                value: `form UI: ${priceTSAs[priceField]} , expected: ${expectedValue}`,
+                                            });
+                                            expect(priceTSAs[priceField]).equals(expectedValue);
                                         });
-                                        expect(priceTSAs[priceField]).equals(expectedValue);
-                                    });
-                                    expect(totalUnitsAmount).equals(uomFractionTestCartItem.amount);
+                                        expect(totalUnitsAmount).equals(uomFractionTestCartItem.amount);
+                                    }
                                     driver.sleep(1 * 1000);
                                 });
                             });
@@ -867,6 +931,8 @@ _________________
                                     orderPage.getSelectorOfItemQuantityPlusButtonInCartByName(itemName);
                                 await driver.click(plusButtonSelector);
                                 driver.sleep(0.5 * 1000);
+                                await driver.click(orderPage.Cart_Headline_Results_Number); // clicking on "neutral" element to make the previously selected element de-actived
+                                driver.sleep(0.1 * 1000);
                                 screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Order Center - after Plus Button clicked`,
@@ -891,6 +957,8 @@ _________________
                                     orderPage.getSelectorOfItemQuantityMinusButtonInCartByName(itemName);
                                 await driver.click(minusButtonSelector);
                                 driver.sleep(0.5 * 1000);
+                                await driver.click(orderPage.Cart_Headline_Results_Number); // clicking on "neutral" element to make the previously selected element de-actived
+                                driver.sleep(0.1 * 1000);
                                 screenShot = await driver.saveScreenshots();
                                 addContext(this, {
                                     title: `At Order Center - after Minus Button clicked`,
