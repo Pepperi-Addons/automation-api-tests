@@ -274,12 +274,12 @@ export class DevTest {
                 //journey
                 for (let index = 0; index < addonDep.length; index++) {
                     const dep = addonDep[index];
-                    if (dep.pfs) {
-                        addonDep[index].pfs = ['00000000-0000-0000-0000-0000000f11e5', '%'];
-                        debugger;
-                    }
                     if (dep.sync) {
                         addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
+                        debugger;
+                    }
+                    if (dep.pfs) {
+                        addonDep[index].pfs = ['00000000-0000-0000-0000-0000000f11e5', '%'];
                         debugger;
                     }
                     if (dep.configurations) {
@@ -411,6 +411,8 @@ export class DevTest {
                 this.addonUUID === 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f' //Core
             ) {
                 const depObj = {};
+
+                depObj['Nebulus'] = ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', '0.2.%'];
                 depObj['User Defined Collections'] = ['122c0e9d-c240-4865-b446-f37ece866c22', ''];
                 addonDep.push(depObj);
             }
