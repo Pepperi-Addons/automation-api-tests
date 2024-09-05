@@ -253,7 +253,7 @@ export class DevTest {
             if (this.addonUUID === 'ad909780-0c23-401e-8e8e-f514cc4f6aa2') {
                 //assets
                 const depObjSync = {};
-                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                 addonDep.push(depObjSync);
                 for (let index = 0; index < addonDep.length; index++) {
                     const dep = addonDep[index];
@@ -295,7 +295,7 @@ export class DevTest {
             if (this.addonUUID === '50062e0c-9967-4ed4-9102-f2bc50602d41') {
                 //page builder
                 const depObjSync = {};
-                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                 addonDep.push(depObjSync);
                 debugger;
             }
@@ -305,14 +305,14 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
             }
             if (this.addonUUID === '8b4a1bd8-a2eb-4241-85ac-89c9e724e900') {
                 //KMS
                 const depObjSync = {};
-                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                 addonDep.push(depObjSync);
             }
             if (this.addonUUID === '84c999c3-84b7-454e-9a86-71b7abc96554') {
@@ -321,7 +321,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;
@@ -332,7 +332,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;
@@ -343,7 +343,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;
@@ -354,7 +354,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;
