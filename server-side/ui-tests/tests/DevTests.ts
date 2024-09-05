@@ -321,7 +321,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;
@@ -332,7 +332,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;
@@ -343,7 +343,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;
@@ -354,7 +354,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;

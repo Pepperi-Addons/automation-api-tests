@@ -24,7 +24,7 @@ export async function UDCTestsPermission(generalService: GeneralService, request
     //#region Upgrade UDC
     const testData = {
         nebulus: ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', '%'], //dependecy of udc
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'],
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'],
         'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', ''],
         Crawler: ['f489d076-381f-4cf7-aa63-33c6489eb017', ''],
         'Cross Platform Engine': ['bb6ee826-1c6b-4a11-9758-40a46acb69c5', ''],

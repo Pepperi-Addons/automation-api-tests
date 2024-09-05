@@ -211,7 +211,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
         Crawler: ['f489d076-381f-4cf7-aa63-33c6489eb017', ''],
         Nebula: ['00000000-0000-0000-0000-000000006a91', '%'],
-        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.0.118'], //locked because sync 2.x.y is for open sync
+        sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'], //locked because sync 2.x.y is for open sync
         'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         nebulus: ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', '%'], //dependecy of udc
