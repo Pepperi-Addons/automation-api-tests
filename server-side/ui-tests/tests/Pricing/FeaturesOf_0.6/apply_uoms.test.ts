@@ -667,7 +667,6 @@ _________________
                                                 });
                                                 expect(UI_NPMCalcMessage).eql(NPMCalcMessage);
                                                 driver.sleep(0.2 * 1000);
-                                                loopIndex++;
                                                 const aoqm1element = await driver.findElement(
                                                     orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
                                                         'ItemQuantity_byUOM_InteractableNumber',
@@ -679,9 +678,19 @@ _________________
                                                 ).trim();
                                                 addContext(this, {
                                                     title: `Fraction Amount`,
-                                                    value: `Value from UI: ${fractionAmount}`,
+                                                    value: `Value from UI: ${fractionAmount}, Expected: ${
+                                                        state == 'baseline' ? '0' : loopIndex.toString()
+                                                    }`,
                                                 });
-                                                expect(Number(fractionAmount)).equals(limit - loopIndex + 1);
+                                                console.info(
+                                                    `Fraction Amount - Value from UI: ${fractionAmount}, Expected: ${
+                                                        state == 'baseline' ? '0' : loopIndex.toString()
+                                                    }`,
+                                                );
+                                                expect(Number(fractionAmount)).equals(
+                                                    state == 'baseline' ? 0 : loopIndex,
+                                                );
+                                                loopIndex++;
                                             }
                                         });
 
@@ -693,25 +702,26 @@ _________________
                                                     );
                                                 const splitedStateArgs: string[] = uomFractionTestState.split(' ');
                                                 const chosenUom: string = splitedStateArgs[1];
-                                                let loopIndex: number =
-                                                    uomFractionTestState != 'baseline'
-                                                        ? Number(splitedStateArgs[0])
-                                                        : 1;
-                                                while (loopIndex > 0) {
+                                                const limit = Number(splitedStateArgs[0]);
+                                                let currentAmount: number =
+                                                    uomFractionTestState != 'baseline' ? limit : 1;
+                                                while (currentAmount > 0) {
                                                     const state: string =
                                                         uomFractionTestState != 'baseline'
-                                                            ? [loopIndex.toString(), chosenUom].join(' ')
+                                                            ? [(currentAmount - 1).toString(), chosenUom].join(' ')
                                                             : 'baseline';
                                                     addContext(this, {
                                                         title: `State Args`,
-                                                        value: `Chosen UOM: ${chosenUom}, Loop Index: ${loopIndex.toString()}, State: ${state}`,
+                                                        value: `Chosen UOM: ${chosenUom}, Current amount: ${currentAmount.toString()}, State: ${state}`,
                                                     });
                                                     screenShot = await driver.saveScreenshots();
                                                     addContext(this, {
-                                                        title: `At Order Center - loop index ${loopIndex}`,
+                                                        title: `At Order Center - loop index ${
+                                                            limit - currentAmount + 1
+                                                        }`,
                                                         value: 'data:image/png;base64,' + screenShot,
                                                     });
-                                                    if (state != 'baseline') {
+                                                    if (uomFractionTestState != 'baseline') {
                                                         await driver.click(minusButtonSelector);
                                                         driver.sleep(0.5 * 1000);
                                                         await driver.click(
@@ -742,7 +752,7 @@ _________________
                                                         'NPMCalcMessage',
                                                     ]);
                                                     const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
-                                                    const NPMCalcMessage =
+                                                    const data_NPMCalcMessage =
                                                         pricingData.testItemsValues.Uom[uomFractionTestItem][
                                                             'NPMCalcMessage'
                                                         ][account][state];
@@ -753,12 +763,12 @@ _________________
                                                             null,
                                                             2,
                                                         )}, NPMCalcMessage (at ${state}) from Data: ${JSON.stringify(
-                                                            NPMCalcMessage,
+                                                            data_NPMCalcMessage,
                                                             null,
                                                             2,
                                                         )}`,
                                                     });
-                                                    expect(UI_NPMCalcMessage.length).equals(NPMCalcMessage.length);
+                                                    expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
                                                     priceFields.forEach((priceField) => {
                                                         const fieldValue = priceTSAs[priceField];
                                                         const expectedFieldValue =
@@ -771,9 +781,9 @@ _________________
                                                         });
                                                         expect(fieldValue).equals(expectedFieldValue);
                                                     });
-                                                    expect(UI_NPMCalcMessage).eql(NPMCalcMessage);
+                                                    expect(UI_NPMCalcMessage).eql(data_NPMCalcMessage);
                                                     driver.sleep(0.2 * 1000);
-                                                    loopIndex--;
+                                                    currentAmount--;
                                                     const aoqm1element = await driver.findElement(
                                                         orderPage.getSelectorOfCustomFieldInOrderCenterByItemName(
                                                             'ItemQuantity_byUOM_InteractableNumber',
@@ -787,7 +797,7 @@ _________________
                                                         title: `Fraction Amount`,
                                                         value: `Value from UI: ${fractionAmount}`,
                                                     });
-                                                    expect(Number(fractionAmount)).equals(loopIndex);
+                                                    expect(Number(fractionAmount)).equals(currentAmount);
                                                 }
                                             });
                                     });
