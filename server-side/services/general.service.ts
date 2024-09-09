@@ -29,7 +29,7 @@ export const systemAddons: any = {
     'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
     'Core Data Source Interface': ['00000000-0000-0000-0000-00000000c07e', ''],
     'WebApp API Framework': ['00000000-0000-0000-0000-0000003eba91', '17.%.%'], //CPAS
-    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'], //open-sync
+    sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'], //open-sync
     configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
     'Key Management Service': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],
     'Resource Tracer': ['8b4a1bd8-a2eb-4241-85ac-89c9e724e900', ''],

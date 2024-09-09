@@ -253,7 +253,7 @@ export class DevTest {
             if (this.addonUUID === 'ad909780-0c23-401e-8e8e-f514cc4f6aa2') {
                 //assets
                 const depObjSync = {};
-                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                 addonDep.push(depObjSync);
                 for (let index = 0; index < addonDep.length; index++) {
                     const dep = addonDep[index];
@@ -274,20 +274,20 @@ export class DevTest {
                 //journey
                 for (let index = 0; index < addonDep.length; index++) {
                     const dep = addonDep[index];
-                    if (dep.pfs) {
-                        addonDep[index].pfs = ['00000000-0000-0000-0000-0000000f11e5', '1.4.%'];
+                    if (dep.sync) {
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                         debugger;
                     }
-                    if (dep.sync) {
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '1.%.%'];
+                    if (dep.pfs) {
+                        addonDep[index].pfs = ['00000000-0000-0000-0000-0000000f11e5', '%'];
                         debugger;
                     }
                     if (dep.configurations) {
-                        addonDep[index].configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '0.7.35']; //changed on 3/7/24 - this is phased version currently
+                        addonDep[index].configurations = ['84c999c3-84b7-454e-9a86-71b7abc96554', '%'];
                         debugger;
                     }
                     if (dep.nebula) {
-                        addonDep[index].nebula = ['00000000-0000-0000-0000-000000006a91', '1.5.28']; //changed on 3/7/24 - this is phased version currently
+                        addonDep[index].nebula = ['00000000-0000-0000-0000-000000006a91', '%'];
                         debugger;
                     }
                 }
@@ -295,7 +295,7 @@ export class DevTest {
             if (this.addonUUID === '50062e0c-9967-4ed4-9102-f2bc50602d41') {
                 //page builder
                 const depObjSync = {};
-                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                 addonDep.push(depObjSync);
                 debugger;
             }
@@ -305,14 +305,14 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
             }
             if (this.addonUUID === '8b4a1bd8-a2eb-4241-85ac-89c9e724e900') {
                 //KMS
                 const depObjSync = {};
-                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                depObjSync['sync'] = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                 addonDep.push(depObjSync);
             }
             if (this.addonUUID === '84c999c3-84b7-454e-9a86-71b7abc96554') {
@@ -321,7 +321,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;
@@ -332,7 +332,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;
@@ -343,7 +343,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;
@@ -354,7 +354,7 @@ export class DevTest {
                     const dep = addonDep[index];
                     if (dep.sync) {
                         debugger;
-                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '2.%.%'];
+                        addonDep[index].sync = ['5122dc6d-745b-4f46-bb8e-bd25225d350a', '3.%.%'];
                     }
                 }
                 debugger;
@@ -411,6 +411,8 @@ export class DevTest {
                 this.addonUUID === 'fc5a5974-3b30-4430-8feb-7d5b9699bc9f' //Core
             ) {
                 const depObj = {};
+
+                depObj['Nebulus'] = ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', '0.2.%'];
                 depObj['User Defined Collections'] = ['122c0e9d-c240-4865-b446-f37ece866c22', ''];
                 addonDep.push(depObj);
             }
