@@ -3175,6 +3175,22 @@ export class PricingData06 {
                                 Amount: 0,
                             },
                         ],
+                        '0 Fraction': [
+                            {
+                                Name: 'Base',
+                                Base: 38.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -17.25,
+                                    },
+                                ],
+                                New: 21,
+                                Amount: -17.25,
+                            },
+                        ],
                         '1 Fraction': [
                             {
                                 Name: 'Base',
@@ -3203,6 +3219,7 @@ export class PricingData06 {
                     },
                     OtherAcc: {
                         baseline: [],
+                        '0 Fraction': [],
                         '1 Fraction': [],
                         '2 Fraction': [],
                     },
@@ -3210,11 +3227,13 @@ export class PricingData06 {
                 PriceBaseUnitPriceAfter1: {
                     Acc01: {
                         baseline: 180.0,
+                        '0 Fraction': 21.0,
                         '1 Fraction': 21.0,
                         '2 Fraction': 21.0,
                     },
                     OtherAcc: {
                         baseline: 38.25,
+                        '0 Fraction': 38.25,
                         '1 Fraction': 38.25,
                         '2 Fraction': 38.25,
                     },
@@ -3222,11 +3241,13 @@ export class PricingData06 {
                 PriceDiscountUnitPriceAfter1: {
                     Acc01: {
                         baseline: 180.0,
+                        '0 Fraction': 21.0,
                         '1 Fraction': 21.0,
                         '2 Fraction': 21.0,
                     },
                     OtherAcc: {
                         baseline: 38.25,
+                        '0 Fraction': 38.25,
                         '1 Fraction': 38.25,
                         '2 Fraction': 38.25,
                     },
@@ -3234,11 +3255,13 @@ export class PricingData06 {
                 PriceGroupDiscountUnitPriceAfter1: {
                     Acc01: {
                         baseline: 180.0,
+                        '0 Fraction': 21.0,
                         '1 Fraction': 21.0,
                         '2 Fraction': 21.0,
                     },
                     OtherAcc: {
                         baseline: 38.25,
+                        '0 Fraction': 38.25,
                         '1 Fraction': 38.25,
                         '2 Fraction': 38.25,
                     },
@@ -3246,11 +3269,13 @@ export class PricingData06 {
                 PriceManualLineUnitPriceAfter1: {
                     Acc01: {
                         baseline: 180.0,
+                        '0 Fraction': 21.0,
                         '1 Fraction': 21.0,
                         '2 Fraction': 21.0,
                     },
                     OtherAcc: {
                         baseline: 38.25,
+                        '0 Fraction': 38.25,
                         '1 Fraction': 38.25,
                         '2 Fraction': 38.25,
                     },
@@ -3258,11 +3283,13 @@ export class PricingData06 {
                 PriceTaxUnitPriceAfter1: {
                     Acc01: {
                         baseline: 180.0,
+                        '0 Fraction': 21.0,
                         '1 Fraction': 21.0,
                         '2 Fraction': 21.0,
                     },
                     OtherAcc: {
                         baseline: 38.25,
+                        '0 Fraction': 38.25,
                         '1 Fraction': 38.25,
                         '2 Fraction': 38.25,
                     },
