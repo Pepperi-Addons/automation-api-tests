@@ -781,6 +781,8 @@ _________________
                                                         });
                                                         expect(fieldValue).equals(expectedFieldValue);
                                                     });
+                                                    // NOTICE: when the amount is "0 Fraction" (minus clicks gets back to 0) - NPMCalcMessage remains like "1 Fraction"
+                                                    // Maybe one day Eyal Rozenberg will decide that it needs to be [] - and then expected data will have to adjust | Sep. 2024
                                                     expect(UI_NPMCalcMessage).eql(data_NPMCalcMessage);
                                                     driver.sleep(0.2 * 1000);
                                                     currentAmount--;
