@@ -56,7 +56,6 @@ export async function CreateDistributorTests(
             afterEach(async function () {
                 const webAppHomePage = new WebAppHomePage(driver);
                 await webAppHomePage.collectEndTestData(this);
-                await driver.close();
                 await driver.quit();
             });
 
@@ -72,10 +71,10 @@ export async function CreateDistributorTests(
                 let distributorCompany;
                 let distributorPassword;
                 if (userName && pass) {
-                    distributorFirstName = `QA_${userName}`;
+                    distributorFirstName = `RnD`;
                     distributorLastName = userName;
                     distributorEmail = `${userName}@pepperitest.com`;
-                    distributorCompany = 'QA';
+                    distributorCompany = 'Pepperi';
                     distributorPassword = pass;
                     console.log(`creating user with email: ${distributorEmail}`);
                     clientArr.push({ Email: distributorEmail, Password: distributorPassword });
@@ -254,10 +253,11 @@ export async function CreateDistributorTests(
                 const testData = {
                     'Automated Jobs': ['fcb7ced2-4c81-4705-9f2b-89310d45e6c7', ''],
                     'API Testing Framework': ['eb26afcd-3cf2-482e-9ab1-b53c41a6adbe', ''],
+                    'Generic Resource': ['df90dba6-e7cc-477b-95cf-2c70114e44e0', ''],
                     'Item Trade Promotions': ['b5c00007-0941-44ab-9f0e-5da2773f2f04', ''],
                     'Order Trade Promotions': ['375425f5-cd2f-4372-bb88-6ff878f40630', ''],
                     'Package Trade Promotions': ['90b11a55-b36d-48f1-88dc-6d8e06d08286', ''],
-                    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '17.14.'], //17.14.97
+                    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], //17.14.97
                 };
 
                 const isInstalledArr = await adminService.areAddonsInstalled(testData);

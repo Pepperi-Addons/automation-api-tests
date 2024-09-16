@@ -25,7 +25,7 @@ export async function PricingConfigUpload(
     client: Client,
     email: string,
     password: string,
-    specificVersion: 'version07for05data' | 'noUom' | undefined = undefined,
+    specificVersion: 'version07for05data' | 'noUom' | 'packages' | undefined = undefined,
 ) {
     const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
     const pricingConfiguration = new PricingConfiguration();
@@ -130,7 +130,19 @@ export async function PricingConfigUpload(
 
         specificVersion === 'noUom' &&
             it('Sending configuration without UOM to end point', async function () {
-                const configVersion = installedPricingVersion?.startsWith('0.8') ? 'version08noUom' : 'version1noUom'; // version1noUom does not exist yet (May 2024)
+                // const configVersion = installedPricingVersion?.startsWith('0.8') ? 'version08noUom' : 'version1noUom'; // version1noUom does not exist yet (May 2024)
+                const configVersion = 'version08noUom';
+                pricingConfig = pricingConfiguration[configVersion];
+                await pricingService.uploadConfiguration(pricingConfig);
+                addContext(this, {
+                    title: `Sent Config`,
+                    value: JSON.stringify(pricingConfig, null, 2),
+                });
+            });
+
+        specificVersion === 'packages' &&
+            it('Sending configuration with PACKAGES to end point', async function () {
+                const configVersion = 'version08packages';
                 pricingConfig = pricingConfiguration[configVersion];
                 await pricingService.uploadConfiguration(pricingConfig);
                 addContext(this, {

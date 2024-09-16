@@ -1104,7 +1104,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingUdcCleanup(client);
         await PricingAddonsUpsert(varPass, client, prcVer);
         await PricingUdtInsertion(client, email, pass, '1.0');
-        await PricingConfigUpload(client, email, pass);
+        await PricingConfigUpload(client, email, pass, 'packages');
         await PricingPackagesTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();

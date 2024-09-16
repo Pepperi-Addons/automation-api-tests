@@ -44,6 +44,8 @@ export class OrderPage extends WebAppList {
     );
     public TimePicker_minutes_00: By = By.xpath(`${this.TimePicker_minutes_active.value}/div`);
 
+    public PackageItem_OrderButton: By = By.xpath('//button[@title="Order"][@id="UnitsQuantity"]');
+
     public ItemQuantity_NumberOfUnits_Readonly: By = By.xpath('//pep-quantity-selector//button[@id="UnitsQuantity"]');
     public ItemQuantity_NumberOfUnits_Readonly_cartGrid: By = By.xpath(
         '//div[5]//pep-quantity-selector//div[contains(@class,"caution")]//span[contains(@class,"mat-input-element")]',
@@ -65,6 +67,8 @@ export class OrderPage extends WebAppList {
     public ItemQuantity_Plus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[5]/button');
     public ItemQuantity2_Plus_Button: By = By.xpath('//pep-quantity-selector//mat-form-field/div/div/div[5]/button');
 
+    public Package_Done_Button: By = By.xpath('//button[@data-qa="Done"]');
+
     public Cart_Button: By = By.xpath('//button[@data-qa="cartButton"]');
     public Cart_Totals: By = By.xpath('//list-totals-view');
     public Cart_Total_Header: By = By.xpath('//pep-textbox[@data-qa="PSAGrandTotalHeader"]');
@@ -84,6 +88,7 @@ export class OrderPage extends WebAppList {
     );
     public TransactionUUID: By = By.id('UUID');
     public TransactionID: By = By.id('WrntyID');
+    public TransactionTypeName: By = By.xpath('//span[@title="Transaction Type Name"]/parent::div/span[@id="Type"]');
 
     public UnitOfMeasure_Selector_Value: By = By.xpath('//span[@id="TSAAOQMUOM1"]');
     public UnitOfMeasure2_Selector_Value: By = By.xpath('//span[@id="TSAAOQMUOM2"]');
@@ -176,6 +181,12 @@ export class OrderPage extends WebAppList {
             path += this.ItemQuantity_Minus_Button.value;
         }
         return By.xpath(path);
+    }
+
+    public getSelectorOfPackageItemOrderButtonInOrderCenterByName(itemName: string) {
+        return By.xpath(
+            `${this.getSelectorOfItemInOrderCenterByName(itemName).value}${this.PackageItem_OrderButton.value}`,
+        );
     }
 
     public getSelectorOfItemQuantityPlusButtonInCartByName(itemName: string) {
