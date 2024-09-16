@@ -705,6 +705,20 @@ export class PricingService {
         });
     }
 
+    public async pickPackageItem(this: Context, nameOfItem: string, driver: Browser): Promise<void> {
+        const orderPage = new OrderPage(driver);
+        await orderPage.isSpinnerDone();
+        driver.sleep(0.1 * 1000);
+        await driver.click(orderPage.getSelectorOfPackageItemOrderButtonInOrderCenterByName(nameOfItem));
+        driver.sleep(0.1 * 1000);
+        await orderPage.isSpinnerDone();
+        this.base64Image = await driver.saveScreenshots();
+        addContext(this, {
+            title: `After Order Button of "${nameOfItem}" was clicked`,
+            value: 'data:image/png;base64,' + this.base64Image,
+        });
+    }
+
     /* UI FUNCTION: specify uom ('Each' | 'Case' | 'Box') at uomValue. if TOTALS are required the string '&Totals' should be added to the uom specified. the function do not perform a search before change */
     public async changeSelectedQuantityOfSpecificItemInOrderCenter(
         // for calculation of both AOQM fields "&Totals" needs to be added to uomValue

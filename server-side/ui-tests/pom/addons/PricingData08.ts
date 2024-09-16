@@ -685,7 +685,988 @@ export class PricingData08 {
             },
         },
         Packages: {
-            PPI_1722164109733: {},
+            PPI_1722164109733: {
+                ItemPrice: 30.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: 0,
+                                    },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                    },
+                },
+                PriceBaseUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            '1 Each': 30,
+                        },
+                        baseline: 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            '1 Each': 30.25,
+                        },
+                        baseline: 30.25,
+                    },
+                },
+                PriceDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            '1 Each': 30,
+                        },
+                        baseline: 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            '1 Each': 30.25,
+                        },
+                        baseline: 30.25,
+                    },
+                },
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            '1 Each': 30,
+                        },
+                        baseline: 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            '1 Each': 30.25,
+                        },
+                        baseline: 30.25,
+                    },
+                },
+                PriceManualLineUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            '1 Each': 30,
+                        },
+                        baseline: 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            '1 Each': 30.25,
+                        },
+                        baseline: 30.25,
+                    },
+                },
+                PriceTaxUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            '1 Each': 30,
+                        },
+                        baseline: 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            '1 Each': 30.25,
+                        },
+                        baseline: 30.25,
+                    },
+                },
+            },
+            Drug0001: {
+                ItemPrice: 30.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: 0,
+                                    },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                        '1 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 30.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -0.25,
+                                    },
+                                ],
+                                New: 30,
+                                Amount: -0.25,
+                            },
+                        ],
+                        '1 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 30.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -0.25,
+                                    },
+                                ],
+                                New: 30,
+                                Amount: -0.25,
+                            },
+                        ],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                        '1 Each': [],
+                        '1 Case': [],
+                    },
+                },
+                PriceBaseUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceManualLineUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceTaxUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+            },
+            Drug0003: {
+                ItemPrice: 30.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: 0,
+                                    },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                        '1 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 32.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -2.25,
+                                    },
+                                ],
+                                New: 30,
+                                Amount: -2.25,
+                            },
+                        ],
+                        '1 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 32.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -2.25,
+                                    },
+                                ],
+                                New: 30,
+                                Amount: -2.25,
+                            },
+                        ],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                        '1 Each': [],
+                        '1 Case': [],
+                    },
+                },
+                PriceBaseUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceManualLineUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceTaxUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+            },
+            Drug0002: {
+                ItemPrice: 30.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: 0,
+                                    },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                        '1 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 31.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -1.25,
+                                    },
+                                ],
+                                New: 30,
+                                Amount: -1.25,
+                            },
+                        ],
+                        '1 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 31.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -1.25,
+                                    },
+                                ],
+                                New: 30,
+                                Amount: -1.25,
+                            },
+                        ],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                        '1 Each': [],
+                        '1 Case': [],
+                    },
+                },
+                PriceBaseUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceManualLineUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceTaxUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+            },
+            Drug0004: {
+                ItemPrice: 30.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: 0,
+                                    },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                        '1 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 33.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -3.25,
+                                    },
+                                ],
+                                New: 30,
+                                Amount: -3.25,
+                            },
+                        ],
+                        '1 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 33.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -3.25,
+                                    },
+                                ],
+                                New: 30,
+                                Amount: -3.25,
+                            },
+                        ],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                        '1 Each': [],
+                        '1 Case': [],
+                    },
+                },
+                PriceBaseUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceManualLineUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceTaxUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+            },
+            Drug0005: {
+                ItemPrice: 30.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: 0,
+                                    },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                        '1 Each': [
+                            {
+                                Name: 'Base',
+                                Base: 34.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -4.25,
+                                    },
+                                ],
+                                New: 30,
+                                Amount: -4.25,
+                            },
+                        ],
+                        '1 Case': [
+                            {
+                                Name: 'Base',
+                                Base: 34.25,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: -4.25,
+                                    },
+                                ],
+                                New: 30,
+                                Amount: -4.25,
+                            },
+                        ],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                        '1 Each': [],
+                        '1 Case': [],
+                    },
+                },
+                PriceBaseUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceManualLineUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+                PriceTaxUnitPriceAfter1: {
+                    Acc01: {
+                        cart: {
+                            // '1 Each': 30,
+                            '1 Case': 30 * 6,
+                        },
+                        baseline: 30 * 6,
+                        '1 Each': 30,
+                        '1 Case': 30 * 6,
+                    },
+                    OtherAcc: {
+                        cart: {
+                            // '1 Each': 30.25,
+                            '1 Case': 30.25,
+                        },
+                        baseline: 30.25,
+                        '1 Each': 30.25,
+                        '1 Case': 30.25,
+                    },
+                },
+            },
+            Drug0009: {
+                ItemPrice: 38.25,
+                NPMCalcMessage: {
+                    Acc01: {
+                        baseline: [
+                            {
+                                Name: 'Base',
+                                Base: 0,
+                                Conditions: [
+                                    {
+                                        Name: 'ZBASE_A003',
+                                        Type: 'S',
+                                        Value: 30,
+                                        Amount: 0,
+                                    },
+                                ],
+                                New: 0,
+                                Amount: 0,
+                            },
+                        ],
+                        '1 Fraction': [
+                            {
+                                Name: 'Base',
+                                Base: 38.25,
+                                Conditions: [{ Name: 'ZBASE_A003', Type: 'S', Value: 30, Amount: -17.25 }],
+                                New: 21,
+                                Amount: -17.25,
+                            },
+                        ],
+                    },
+                    OtherAcc: {
+                        baseline: [],
+                        '1 Fraction': [],
+                    },
+                },
+                PriceBaseUnitPriceAfter1: {
+                    Acc01: {
+                        baseline: 180.0,
+                        '1 Fraction': 21.0,
+                    },
+                    OtherAcc: {
+                        baseline: 38.25,
+                        '1 Fraction': 38.25,
+                    },
+                },
+                PriceDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        baseline: 180.0,
+                        '1 Fraction': 21.0,
+                    },
+                    OtherAcc: {
+                        baseline: 38.25,
+                        '1 Fraction': 38.25,
+                    },
+                },
+                PriceGroupDiscountUnitPriceAfter1: {
+                    Acc01: {
+                        baseline: 180.0,
+                        '1 Fraction': 21.0,
+                    },
+                    OtherAcc: {
+                        baseline: 38.25,
+                        '1 Fraction': 38.25,
+                    },
+                },
+                PriceManualLineUnitPriceAfter1: {
+                    Acc01: {
+                        baseline: 180.0,
+                        '1 Fraction': 21.0,
+                    },
+                    OtherAcc: {
+                        baseline: 38.25,
+                        '1 Fraction': 38.25,
+                    },
+                },
+                PriceTaxUnitPriceAfter1: {
+                    Acc01: {
+                        baseline: 180.0,
+                        '1 Fraction': 21.0,
+                    },
+                    OtherAcc: {
+                        baseline: 38.25,
+                        '1 Fraction': 38.25,
+                    },
+                },
+            },
         },
         Profiles: {
             // TODO

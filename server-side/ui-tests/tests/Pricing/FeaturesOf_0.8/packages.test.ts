@@ -124,9 +124,34 @@ _________________
 
     const testAccounts = ['Acc01', 'OtherAcc'];
     const mainPackagesTestItems = ['PPI_1722164109733'];
-    const packagesTestItems = ['PPI_1722164109733'];
-    const packagesTestStates = ['baseline', '1 Each', '5 Case', '3 Box'];
-    const packagesTestCartStates = ['1 Each', '5 Case', '3 Box'];
+    const packagesTestItems = {
+        Drug0001: {
+            states: ['baseline', '1 Each', '1 Case'],
+            cartState: '1 Case',
+        },
+        Drug0003: {
+            states: ['baseline', '1 Case', '1 Box'],
+            cartState: '1 Box',
+        },
+        Drug0002: {
+            states: ['baseline', '5 Case', '10 Case'],
+            cartState: '10 Case',
+        },
+        Drug0004: {
+            states: ['baseline', '1 Case', '3 Case'],
+            cartState: '3 Case',
+        },
+        Drug0005: {
+            states: ['baseline', '1 Case', '1 Each'],
+            cartState: '1 Each',
+        },
+        Drug0009: {
+            states: ['baseline', '1 Fraction'],
+            cartState: '1 Fraction',
+        },
+    };
+    // const packagesTestStates = ['baseline', '1 Each', '1 Case'];
+    // const packagesTestCartState = '1 Case';
     const priceFields = [
         'PriceBaseUnitPriceAfter1',
         'PriceDiscountUnitPriceAfter1',
@@ -167,12 +192,6 @@ _________________
             after(async function () {
                 await driver.quit();
             });
-
-            // afterEach(async function () {
-            //     driver.sleep(500);
-            //     await webAppHomePage.isDialogOnHomePAge(this);
-            //     await webAppHomePage.collectEndTestData(this);
-            // });
 
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
@@ -230,7 +249,6 @@ _________________
                             : (accountName = 'Account for order scenarios');
                         transactionUUID = await pricingService.startNewSalesOrderTransaction(accountName);
                         console.info('transactionUUID:', transactionUUID);
-                        await orderPage.changeOrderCenterPageView('Line View');
                     });
 
                     it(`PERFORMANCE: making sure Sales Order Loading Duration is acceptable`, async function () {
@@ -251,15 +269,7 @@ _________________
                         expect(duration_num).to.be.below(limit);
                     });
 
-                    describe(`${
-                        account == 'Acc01'
-                            ? 'UDT "PPM_AccountValues"'
-                            : account == 'Acc02'
-                            ? 'UDC "PricingTest1"'
-                            : account == 'Acc03'
-                            ? 'UDC "PricingTest2"'
-                            : 'UDT "PPM_Values"'
-                    }`, function () {
+                    describe(`Pharmacy Packages`, function () {
                         it('Navigating to "Pharmacy" at Sidebar', async function () {
                             await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
                             await driver.click(orderPage.getSelectorOfSidebarSectionInOrderCenterByName('Pharmacy'));
@@ -267,16 +277,101 @@ _________________
                         });
 
                         mainPackagesTestItems.forEach((mainPackagesTestItem) => {
+                            it(`switching to 'Lines View'`, async function () {
+                                await orderPage.changeOrderCenterPageView('Line View');
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `After "Lines View" was selected`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                            });
                             it(`Looking for "${mainPackagesTestItem}" using the search box`, async function () {
                                 await pricingService.searchInOrderCenter.bind(this)(mainPackagesTestItem, driver);
                                 driver.sleep(1 * 1000);
                             });
                             it(`Clicking ${mainPackagesTestItem}'s "Order" button`, async function () {
+                                await pricingService.pickPackageItem.bind(this)(mainPackagesTestItem, driver);
+                                driver.sleep(1 * 1000);
+                            });
+                            it(`Validating Package transaction is loaded`, async function () {
+                                await driver.untilIsVisible(orderPage.OrderCenter_SideMenu_BeautyMakeUp);
+                                await driver.untilIsVisible(orderPage.ChangeViewButton);
+                                await driver.untilIsVisible(orderPage.TransactionUUID);
+                                await driver.untilIsVisible(orderPage.TransactionTypeName);
+                                const transactionTypeName_element = await driver.findElement(
+                                    orderPage.TransactionTypeName,
+                                );
+                                const transactionTypeName_text = await transactionTypeName_element.getAttribute(
+                                    'title',
+                                );
+                                driver.sleep(1 * 1000);
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `After "${mainPackagesTestItem}" Order Button was clicked`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                                expect(transactionTypeName_text).equals('PPI_PackagePromotion (336841)');
+                            });
+                            it(`switching to 'Lines' View`, async function () {
+                                await orderPage.changeOrderCenterPageView('Lines');
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `After "Lines" View was selected`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                            });
+                            it(`Looking for "${mainPackagesTestItem}" using the search box`, async function () {
                                 await pricingService.searchInOrderCenter.bind(this)(mainPackagesTestItem, driver);
                                 driver.sleep(1 * 1000);
                             });
+                            it(`Checking "${mainPackagesTestItem}" at baseline state`, async function () {
+                                const priceTSAs = await pricingService.getItemTSAs('OrderCenter', mainPackagesTestItem);
+                                console.info(`${mainPackagesTestItem} baseline priceTSAs:`, priceTSAs);
+                                expect(typeof priceTSAs).equals('object');
+                                expect(Object.keys(priceTSAs)).to.eql([
+                                    'PriceBaseUnitPriceAfter1',
+                                    'PriceDiscountUnitPriceAfter1',
+                                    'PriceGroupDiscountUnitPriceAfter1',
+                                    'PriceManualLineUnitPriceAfter1',
+                                    'PriceTaxUnitPriceAfter1',
+                                    'NPMCalcMessage',
+                                ]);
+                                const UI_NPMCalcMessage = priceTSAs['NPMCalcMessage'];
+                                const data_NPMCalcMessage =
+                                    pricingData.testItemsValues.Packages[mainPackagesTestItem]['NPMCalcMessage'][
+                                        account
+                                    ]['baseline'];
+                                addContext(this, {
+                                    title: `State Args`,
+                                    value: `NPMCalcMessage from UI: ${JSON.stringify(
+                                        UI_NPMCalcMessage,
+                                        null,
+                                        2,
+                                    )}, \nNPMCalcMessage (at baseline) from Data: ${JSON.stringify(
+                                        data_NPMCalcMessage,
+                                        null,
+                                        2,
+                                    )}`,
+                                });
+                                expect(UI_NPMCalcMessage.length).equals(data_NPMCalcMessage.length);
+                                expect(UI_NPMCalcMessage).to.deep.equal(data_NPMCalcMessage);
 
-                            packagesTestItems.forEach((packagesTestItem) => {
+                                priceFields.forEach((priceField) => {
+                                    const fieldValue = priceTSAs[priceField];
+                                    const expectedFieldValue =
+                                        pricingData.testItemsValues.Packages[mainPackagesTestItem][priceField][account][
+                                            'baseline'
+                                        ];
+                                    addContext(this, {
+                                        title: `${priceField}`,
+                                        value: `Field Value from UI: ${fieldValue}, Expected Field Value from Data: ${expectedFieldValue}`,
+                                    });
+                                    expect(fieldValue).equals(expectedFieldValue);
+                                });
+                                driver.sleep(0.2 * 1000);
+                            });
+
+                            Object.keys(packagesTestItems).forEach((packagesTestItem) => {
                                 describe(`Item: ***${packagesTestItem}`, function () {
                                     describe('ORDER CENTER', function () {
                                         it(`Looking for "${packagesTestItem}" using the search box`, async function () {
@@ -286,8 +381,17 @@ _________________
                                             );
                                             driver.sleep(1 * 1000);
                                         });
+                                        it(`switching to 'Lines' View`, async function () {
+                                            await orderPage.changeOrderCenterPageView('Lines');
+                                            driver.sleep(1 * 1000);
+                                            screenShot = await driver.saveScreenshots();
+                                            addContext(this, {
+                                                title: `After "Lines" View was selected`,
+                                                value: 'data:image/png;base64,' + screenShot,
+                                            });
+                                        });
 
-                                        packagesTestStates.forEach((packagesTestState) => {
+                                        packagesTestItems[packagesTestItem].states.forEach((packagesTestState) => {
                                             it(`Checking "${packagesTestState}"`, async function () {
                                                 if (packagesTestState != 'baseline') {
                                                     const splitedStateArgs = packagesTestState.split(' ');
@@ -356,102 +460,172 @@ _________________
                                     });
                                 });
                             });
-
-                            describe(`CART`, function () {
-                                it('entering and verifying being in cart', async function () {
-                                    await driver.click(orderPage.Cart_Button);
+                            describe('Concluding package items pick', function () {
+                                it('clicking "Done" button', async function () {
+                                    driver.sleep(1 * 1000);
+                                    await driver.click(orderPage.Package_Done_Button);
                                     await orderPage.isSpinnerDone();
                                     driver.sleep(1 * 1000);
+                                    screenShot = await driver.saveScreenshots();
+                                    addContext(this, {
+                                        title: `After "Done" button clicked`,
+                                        value: 'data:image/png;base64,' + screenShot,
+                                    });
                                     try {
-                                        await driver.untilIsVisible(orderPage.Cart_List_container);
+                                        await driver.untilIsVisible(orderPage.Cart_Button);
                                     } catch (error) {
                                         console.error(error);
                                         try {
                                             await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
                                         } catch (error) {
                                             console.error(error);
-                                            throw new Error('Problem in Cart validation');
+                                            throw new Error('Problem in Order Center validation');
                                         }
                                     }
                                 });
+                            });
+                        });
 
-                                it('verify that the sum total of items in the cart is correct', async function () {
-                                    screenShot = await driver.saveScreenshots();
-                                    addContext(this, {
-                                        title: `At Cart`,
-                                        value: 'data:image/png;base64,' + screenShot,
-                                    });
-                                    const itemsInCart = await (
-                                        await driver.findElement(orderPage.Cart_Headline_Results_Number)
-                                    ).getText();
-                                    driver.sleep(0.2 * 1000);
-                                    expect(Number(itemsInCart)).to.equal(packagesTestItems.length);
-                                    driver.sleep(1 * 1000);
+                        describe(`CART`, function () {
+                            it('entering and verifying being in cart', async function () {
+                                await driver.click(orderPage.Cart_Button);
+                                await orderPage.isSpinnerDone();
+                                driver.sleep(1 * 1000);
+                                try {
+                                    await driver.untilIsVisible(orderPage.Cart_List_container);
+                                } catch (error) {
+                                    console.error(error);
+                                    try {
+                                        await driver.untilIsVisible(orderPage.Cart_ContinueOrdering_Button);
+                                    } catch (error) {
+                                        console.error(error);
+                                        throw new Error('Problem in Cart validation');
+                                    }
+                                }
+                            });
+
+                            it('verify that the sum total of items in the cart is correct', async function () {
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `At Cart`,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
+                                const itemsInCart = await (
+                                    await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                ).getText();
+                                driver.sleep(0.2 * 1000);
+                                expect(Number(itemsInCart)).to.equal(
+                                    mainPackagesTestItems.length + Object.keys(packagesTestItems).length,
+                                );
+                                driver.sleep(1 * 1000);
+                            });
 
-                                it(`switch to 'Lines View'`, async function () {
-                                    await orderPage.changeCartView('Lines');
-                                    screenShot = await driver.saveScreenshots();
-                                    addContext(this, {
-                                        title: `After "Lines" View was selected`,
-                                        value: 'data:image/png;base64,' + screenShot,
-                                    });
+                            it(`switch to 'Lines View'`, async function () {
+                                await orderPage.changeCartView('Lines');
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `After "Lines" View was selected`,
+                                    value: 'data:image/png;base64,' + screenShot,
                                 });
+                            });
 
-                                packagesTestItems.forEach(async (item) => {
-                                    packagesTestCartStates.forEach((packagesTestState) => {
-                                        describe(`Checking "${packagesTestState}"`, function () {
-                                            it(`change ${item} quantity to ${packagesTestState}`, async function () {
-                                                const splitedStateArgs = packagesTestState.split(' ');
-                                                const amount = Number(splitedStateArgs[0]);
-                                                const uom = splitedStateArgs[1];
-                                                await pricingService.changeSelectedQuantityOfSpecificItemInCart.bind(
-                                                    this,
-                                                )(uom, item, amount, driver, 'LinesView');
-                                                driver.sleep(0.2 * 1000);
-                                            });
-
-                                            it(`Checking TSAs`, async function () {
-                                                const totalUnitsAmount = await pricingService.getItemTotalAmount(
-                                                    'Cart',
-                                                    item,
-                                                    undefined,
-                                                    undefined,
-                                                    'LinesView',
-                                                );
-                                                const priceTSAs = await pricingService.getItemTSAs(
-                                                    'Cart',
-                                                    item,
-                                                    undefined,
-                                                    undefined,
-                                                    'LinesView',
-                                                );
-                                                console.info(`Cart ${item} totalUnitsAmount:`, totalUnitsAmount);
-                                                console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
-                                                const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
-                                                    'Cart',
-                                                    item,
-                                                    undefined,
-                                                    undefined,
-                                                    'LinesView',
-                                                );
-                                                console.info(
-                                                    `CART ${item} ${packagesTestState} priceTSA_Discount2:`,
-                                                    JSON.stringify(priceTSA_Discount2, null, 2),
-                                                );
-                                                const expectedAmount = packagesTestState.split(' ')[0];
-                                                addContext(this, {
-                                                    title: `Total Units Amount`,
-                                                    value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
-                                                });
-                                                priceFields.forEach((priceField) => {
-                                                    const expectedValue =
-                                                        pricingData.testItemsValues.Packages[item][priceField][account]
-                                                            .cart[packagesTestState];
-                                                    expect(priceTSAs[priceField]).equals(expectedValue);
-                                                });
-                                            });
+                            Object.keys(packagesTestItems).forEach(async (item) => {
+                                describe(`Checking "${item}"`, function () {
+                                    it(`filtering cart using smart filter Item External ID`, async function () {
+                                        await driver.click(orderPage.Cart_SmartFilter_ItemExternalID);
+                                        driver.sleep(0.3 * 1000);
+                                        await driver.click(
+                                            orderPage.getSelectorOfCheckboxOfSmartFilterItemExternalIdAtCartByText(
+                                                item,
+                                            ),
+                                        );
+                                        driver.sleep(0.3 * 1000);
+                                        await driver.untilIsVisible(orderPage.Cart_SmartFilter_ApplyButton);
+                                        await driver.click(orderPage.Cart_SmartFilter_ApplyButton);
+                                        await orderPage.isSpinnerDone();
+                                        driver.sleep(2 * 1000);
+                                        const itemsInCart = await (
+                                            await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                        ).getText();
+                                        driver.sleep(0.2 * 1000);
+                                        screenShot = await driver.saveScreenshots();
+                                        addContext(this, {
+                                            title: `After Smart Filter Activated`,
+                                            value: 'data:image/png;base64,' + screenShot,
                                         });
+                                        addContext(this, {
+                                            title: `After Smart Filter - Number of Items in Cart`,
+                                            value: `form UI: ${itemsInCart} , expected: 1`,
+                                        });
+                                        expect(Number(itemsInCart)).to.equal(1);
+                                    });
+
+                                    it(`Checking TSAs`, async function () {
+                                        const totalUnitsAmount = await pricingService.getItemTotalAmount(
+                                            'Cart',
+                                            item,
+                                            undefined,
+                                            undefined,
+                                            'LinesView',
+                                        );
+                                        const priceTSAs = await pricingService.getItemTSAs(
+                                            'Cart',
+                                            item,
+                                            undefined,
+                                            undefined,
+                                            'LinesView',
+                                        );
+                                        console.info(`Cart ${item} totalUnitsAmount:`, totalUnitsAmount);
+                                        console.info(`priceTSAs:`, JSON.stringify(priceTSAs, null, 2));
+                                        const priceTSA_Discount2 = await pricingService.getItemTSAs_Discount2(
+                                            'Cart',
+                                            item,
+                                            undefined,
+                                            undefined,
+                                            'LinesView',
+                                        );
+                                        console.info(
+                                            `CART ${item} '${packagesTestItems[item].cartState}' priceTSA_Discount2:`,
+                                            JSON.stringify(priceTSA_Discount2, null, 2),
+                                        );
+                                        const expectedAmount = 1;
+                                        addContext(this, {
+                                            title: `Total Units Amount`,
+                                            value: `From UI: ${totalUnitsAmount}, expected: ${expectedAmount}`,
+                                        });
+                                        priceFields.forEach((priceField) => {
+                                            const expectedValue =
+                                                pricingData.testItemsValues.Packages[item][priceField][account].cart[
+                                                    packagesTestItems[item].cartState
+                                                ];
+                                            expect(priceTSAs[priceField]).equals(expectedValue);
+                                        });
+                                    });
+
+                                    it(`clearing smart filter`, async function () {
+                                        await driver.click(orderPage.Cart_SmartFilter_ClearButton);
+                                        await orderPage.isSpinnerDone();
+                                        driver.sleep(0.8 * 1000);
+                                        await driver.click(orderPage.Cart_SmartFilter_ItemExternalID);
+                                        driver.sleep(0.5 * 1000);
+                                        const itemsInCart = await (
+                                            await driver.findElement(orderPage.Cart_Headline_Results_Number)
+                                        ).getText();
+                                        driver.sleep(0.2 * 1000);
+                                        screenShot = await driver.saveScreenshots();
+                                        addContext(this, {
+                                            title: `After Smart Filter Cleared`,
+                                            value: 'data:image/png;base64,' + screenShot,
+                                        });
+                                        addContext(this, {
+                                            title: `After Smart Filter Cleared - Number of Items in Cart`,
+                                            value: `form UI: ${itemsInCart} , expected: ${
+                                                mainPackagesTestItems.length + Object.keys(packagesTestItems).length
+                                            }`,
+                                        });
+                                        expect(Number(itemsInCart)).to.equal(
+                                            mainPackagesTestItems.length + Object.keys(packagesTestItems).length,
+                                        );
                                     });
                                 });
                             });
