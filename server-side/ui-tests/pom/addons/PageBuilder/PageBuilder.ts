@@ -98,9 +98,12 @@ export class PageBuilder extends AddonPage {
         await this.waitTillVisible(this.EditSideBar_AddSection_Button, 5000);
         const pageNameElement = await this.browser.findElement(this.EditPage_SideBar_PageName_TextInput);
         pageNameElement.clear();
+        this.pause(500);
         pageNameElement.sendKeys(pageName);
+        this.pause(500);
         const pageDescriptionElement = await this.browser.findElement(this.EditPage_SideBar_PageDescription_Textarea);
         pageDescriptionElement.clear();
+        this.pause(500);
         pageDescriptionElement.sendKeys(pageDescription);
         this.pause(1500);
         if (extraSection) {
