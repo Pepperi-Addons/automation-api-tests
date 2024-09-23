@@ -36,7 +36,7 @@ export async function ResourceListTests(email: string, password: string, client:
     const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
     const testUniqueString = generalService.generateRandomString(5);
-    const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
+    const baseUrl = `https://app${client.BaseURL.includes('staging') ? '.sandbox' : ''}.pepperi.com`;
     // const papi_resources = ['accounts', 'items', 'users', 'catalogs', 'account_users', 'contacts'];
 
     let driver: Browser;
