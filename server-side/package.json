@@ -28,8 +28,8 @@
         "ui-show-report": "ts-mocha --delay --reporter mochawesome --reporter-options reportDir=mochawesome-report,reportFilename=UI_Test,timestamp=yyyy.mm.dd'T'HH_MM_ss,autoOpen --timeout 4200000 ./ui-tests/tests/test.index.ts --server='' --chrome_headless='' --user_email='' --user_pass='' --var_pass=''"
     },
     "devDependencies": {
-        "@rollup/plugin-commonjs": "^12.0.0",
-        "@rollup/plugin-node-resolve": "^8.0.0",
+        "@rollup/plugin-commonjs": "^28.0.0",
+        "@rollup/plugin-node-resolve": "^15.3.0",
         "@types/chai": "^4.2.21",
         "@types/chai-as-promised": "^7.1.2",
         "@types/node": "^10.17.24",
@@ -44,8 +44,8 @@
         "eslint-plugin-prettier": "^3.1.4",
         "nodemon": "^2.0.4",
         "prettier": "^2.0.5",
-        "rollup": "^2.10.9",
-        "rollup-plugin-typescript2": "^0.27.1",
+        "rollup": "^4.22.4",
+        "rollup-plugin-typescript2": "^0.36.0",
         "selenium-webdriver": "^4.11.1",
         "ts-node": "^8.10.2",
         "typescript": "~3.8.0"
@@ -53,7 +53,7 @@
     "dependencies": {
         "@pepperi-addons/debug-server": "^0.0.36",
         "@pepperi-addons/papi-sdk": "^1.45.3",
-        "@rollup/plugin-json": "^4.1.0",
+        "@rollup/plugin-json": "^6.1.0",
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",
         "lorem-ipsum": "^2.0.4",
