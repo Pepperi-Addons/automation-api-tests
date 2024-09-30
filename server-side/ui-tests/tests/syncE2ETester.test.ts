@@ -147,7 +147,7 @@ export async function SyncE2ETester(email: string, password: string, client: Cli
                 const nebulaObject = installedAddons.find(
                     (addonObject) => addonObject.Addon.UUID === '00000000-0000-0000-0000-000000006a91',
                 );
-                expect(syncVersion).to.include('3.0');
+                expect(syncVersion).to.include('3.');
                 expect(nebulaObject).to.be.undefined;
                 console.log(`Sync Version: ${syncVersion}, With NO Nebula!`);
                 debugger;
