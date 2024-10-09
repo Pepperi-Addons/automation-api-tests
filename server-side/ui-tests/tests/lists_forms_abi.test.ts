@@ -21,6 +21,7 @@ import GeneralService from '../../services/general.service';
 import { ObjectsService } from '../../services/objects.service';
 import { OpenCatalogService } from '../../services/open-catalog.service';
 import { UDCService } from '../../services/user-defined-collections.service';
+import E2EUtils from '../utilities/e2e_utils';
 // import { ListAbiTestData } from '../pom/addons/ListAbiTestData';
 // import addContext from 'mochawesome/addContext';
 
@@ -149,6 +150,7 @@ export async function ListsFormsAbiTests(email: string, password: string, client
     let webAppHomePage: WebAppHomePage;
     let webAppHeader: WebAppHeader;
     // let webAppList: WebAppList;
+    let e2eUtils: E2EUtils;
     let listsABI: ListsABI;
     // let enteredAbiSlug = true;
 
@@ -204,6 +206,7 @@ export async function ListsFormsAbiTests(email: string, password: string, client
                 webAppHomePage = new WebAppHomePage(driver);
                 webAppHeader = new WebAppHeader(driver);
                 // webAppList = new WebAppList(driver);
+                e2eUtils = new E2EUtils(driver);
                 listsABI = new ListsABI(driver);
             });
 
@@ -215,8 +218,8 @@ export async function ListsFormsAbiTests(email: string, password: string, client
                 await webAppLoginPage.login(email, password);
             });
 
-            it('Manual Sync', async () => {
-                await webAppHomePage.manualResync(client);
+            it('Perform Manual Sync', async function () {
+                await e2eUtils.performManualSync(client);
             });
 
             it('Entering Lists ABI tests Addon', async () => {

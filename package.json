@@ -17,6 +17,6 @@
   "dependencies": {
     "@pepperi-addons/papi-sdk": "^1.45.3",
     "@pepperi-addons/scripts": "^2.0.16",
-    "chromedriver": "^127.0.2"
+    "chromedriver": "^129.0.0"
   }
 }

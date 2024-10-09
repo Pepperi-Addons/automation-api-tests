@@ -1,5 +1,5 @@
 import { Browser } from '../utilities/browser';
-import { describe, it, beforeEach, afterEach } from 'mocha';
+import { describe, it, before, after } from 'mocha';
 import chai, { expect } from 'chai';
 import promised from 'chai-as-promised';
 import GeneralService, { ConsoleColors, TesterFunctions } from '../../services/general.service';
@@ -49,13 +49,13 @@ export async function CreateDistributorTests(
         describe('Initiation Steps', async function () {
             this.retries(0);
 
-            beforeEach(async function () {
+            before(async function () {
                 driver = await Browser.initiateChrome();
             });
 
-            afterEach(async function () {
-                const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.collectEndTestData(this);
+            after(async function () {
+                // const webAppHomePage = new WebAppHomePage(driver);
+                // await webAppHomePage.collectEndTestData(this);
                 await driver.quit();
             });
 
@@ -233,13 +233,13 @@ export async function CreateDistributorTests(
         describe('Scenarios', async function () {
             this.retries(1);
 
-            beforeEach(async function () {
+            before(async function () {
                 driver = await Browser.initiateChrome();
             });
 
-            afterEach(async function () {
-                const webAppHomePage = new WebAppHomePage(driver);
-                await webAppHomePage.collectEndTestData(this);
+            after(async function () {
+                // const webAppHomePage = new WebAppHomePage(driver);
+                // await webAppHomePage.collectEndTestData(this);
                 await driver.close();
                 await driver.quit();
             });
