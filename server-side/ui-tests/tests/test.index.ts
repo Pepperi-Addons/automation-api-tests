@@ -85,6 +85,7 @@ import {
     NeltPerformanceTests,
     ListsFormsAbiTests,
     CustomCollectionsUpsert,
+    SyncResyncPerformanceTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -514,7 +515,7 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
     }
 
     if (tests === 'Create') {
-        debugger;
+        // debugger;
         if (userNameCreate && passCreate) {
             await CreateDistributorTests(generalService, varPass, varPassEU, userNameCreate, passCreate);
             await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
@@ -612,6 +613,13 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
     if (tests === 'VisitFlow') {
         // await VFdataPrep(varPass, client);
         await VisitFlowTests(varPass, client, email, pass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'SyncPerformance') {
+        await SyncResyncPerformanceTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;

@@ -1,0 +1,139 @@
+export interface ActiveDateRange {
+    From: string;
+    To: string;
+}
+
+export interface ShowIf { }
+
+export interface Question {
+    Key: string;
+    Title: string;
+    Description: string;
+    Type: string;
+    Mandatory: boolean;
+    ShowIf: ShowIf;
+    Value: string;
+    ShowIfResult: boolean,
+    Hide: boolean;
+    AdditionalFields: any;
+}
+
+export interface Section {
+    Key: string;
+    Title: string;
+    Description: string;
+    Questions: Question[];
+}
+
+export interface SurveyView {
+    Key: string;
+    SurveyKey: string;
+    Name: string;
+    Description: string;
+    Active: boolean;
+    ActiveDateRange: ActiveDateRange;
+    Sections: Section[];
+    Status: string;
+}
+
+export interface ChangedFields {
+    FieldID: string; // The survey property name
+    NewValue: string; // The changed value
+    OldValue: string; // The old value
+}
+
+export interface Data {
+    SurveyView: SurveyView; // The survey property name
+    ChangedFields: ChangedFields;
+}
+
+export async function main(data: Data) {
+    // await client.alert("Hello", "World");
+
+    // console.log(JSON.stringify(data));
+    let surveyView: SurveyView = data.surveyView;
+    // let changedFields: ChangedFields = data.ChangedFields;
+
+    // await client.alert("Data", JSON.stringify(data));
+
+    // get the survey object so we'll have the account uuid
+    const surveyResource = "MySurveys";
+    const survey = (await getSurvey(surveyResource, surveyView.SurveyKey)).Objects[0];
+    // now we have survey.Account for the account UUID
+    // await client.alert("survey", JSON.stringify(survey));
+    const accountUUID = survey.Account;
+
+    // get the TTOT Listing from the TTOTListing UDC
+    let listingCode: string | undefined = undefined;
+
+    // go over the sections->questions and compare the store format to the one we got earlier
+    // if the questions additional fields contains a value for the account format, compare it,
+    // if does not contain the value we have in the UDC remove the question
+    // the question will remain visible if no value for the account format aditional field
+
+    for (const section of surveyView.Sections) {
+        for (const question of section.Questions) {
+
+            if (question.ShowIfResult) {
+                if (question.AdditionalFields?.StoreFormat && question.AdditionalFields?.StoreFormat != '') {
+
+                    // adjusting performance by getting the listing code only once
+                    // and only if the question has a store format
+                    if (listingCode == undefined) {
+                        listingCode = '';
+                        let userUUID = survey.Creator;
+                        if (!userUUID) {
+                            console.log('Survey - no creator');
+                            const user = await pepperi.environment.user();
+                            userUUID = user.uuid;
+                        }
+                        listingCode = await getStoreFormat(userUUID, accountUUID);
+                    }
+
+                    if (listingCode != '' && listingCode != undefined) {
+                        question.Hide = !question.AdditionalFields?.StoreFormat.includes(listingCode);
+                    } else question.Hide = true;
+
+                    // question.ShowIfResult = !question.Hide;
+                }
+            }
+        }
+    }
+    //console.log(JSON.stringify(surveyView.Sections));
+
+    // await client.alert("Result", JSON.stringify(surveyView.Sections));
+
+    return {
+        SurveyView: surveyView,
+    };
+}
+
+async function getSurvey(resource: string, key: string) {
+    const res = await pepperi.resources.resource(resource).search({
+        Fields: ["Key", "StatusName", "Account", "Creator"],
+        Where: `Key='${key}'`,
+    });
+    return res as any;
+}
+
+async function getTTOTList(resource: string, accountUUID: string) {
+    const res = await pepperi.resources.resource(resource).search({
+        Fields: ["listingCode"],
+        Where: `accountRef='${accountUUID}'`,
+    });
+
+    return res as any;
+}
+
+async function getStoreFormat(userUUID: string, accountUUID: string) {
+    try {
+        const userInfo = await pepperi.resources.resource('UserInfo').key(userUUID).get();
+        const key = `${userInfo.company}@${userInfo.division}@${accountUUID}`;
+        const res = await pepperi.resources.resource('DivisionAccount').key(key).get();
+        //await client.alert('test', JSON.stringify(res));
+        return res.format as string;
+    } catch (e) {
+        console.log(e.toString());
+        return '';
+    }
+}

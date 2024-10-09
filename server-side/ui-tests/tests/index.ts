@@ -67,6 +67,7 @@ import { StorybookSmartFiltersTests } from './storybook/storybook_smart_filters.
 import { NeltPerformanceTests } from './Nelt_performance/nelt_performance.test';
 import { ListsFormsAbiTests } from './lists_forms_abi.test';
 import { CustomCollectionsUpsert } from './custom_collections_upsert.test';
+import { SyncResyncPerformanceTests } from './sync_resync_performance.test';
 
 export {
     LoginTests,
@@ -138,4 +139,5 @@ export {
     StorybookSmartFiltersTests,
     NeltPerformanceTests,
     CustomCollectionsUpsert,
+    SyncResyncPerformanceTests,
 };
