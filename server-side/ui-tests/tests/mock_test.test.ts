@@ -1229,7 +1229,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                 );
                 driver.sleep(0.5 * 1000);
                 await brandedApp.addAdminHomePageButtons(referenceAccountSlugDisplayName);
-                await e2eUiService.performManualSync(client);
+                await e2eUiService.performManualSync.bind(this)(client, driver);
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(referenceAccountSlugDisplayName);
             });
             it('4. Click On "Account Filter" Button at Homepage', async function () {
@@ -1435,7 +1435,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                 );
                 driver.sleep(0.5 * 1000);
                 await brandedApp.addAdminHomePageButtons(nameAgeSlugDisplayName);
-                await e2eUiService.performManualSync(client);
+                await e2eUiService.performManualSync.bind(this)(client, driver);
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(nameAgeSlugDisplayName);
             });
             it('8. Click On "NameAge" Button at Homepage', async function () {
@@ -1522,7 +1522,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                 );
                 driver.sleep(0.5 * 1000);
                 await brandedApp.addAdminHomePageButtons(indexedNameAgeSlugDisplayName);
-                await e2eUiService.performManualSync(client);
+                await e2eUiService.performManualSync.bind(this)(client, driver);
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(indexedNameAgeSlugDisplayName);
             });
             it('12. Click On "Indexed NameAge" Button at Homepage', async function () {
@@ -1623,7 +1623,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                 );
                 driver.sleep(0.5 * 1000);
                 await brandedApp.addAdminHomePageButtons(indexedFieldsSlugDisplayName);
-                await e2eUiService.performManualSync(client);
+                await e2eUiService.performManualSync.bind(this)(client, driver);
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(indexedFieldsSlugDisplayName);
             });
             it('16. Click On "Indexed Fields" Button at Homepage', async function () {
@@ -1638,7 +1638,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                 const resourceName = 'ArraysOfPrimitivesAuto';
                 const slugDisplay = 'Arrays Auto';
                 const slugPath = 'arrays_auto';
-                await e2eUiService.configureResourceE2E(client, {
+                await e2eUiService.configureResourceE2E.bind(this)(client, driver, {
                     collection: {
                         createUDC: {
                             nameOfCollection: resourceName,
@@ -1789,7 +1789,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                 const acc01UUID = '5737a507-fa00-4c32-a26a-8bc32572e24d';
                 const acc02UUID = '56363496-f8ce-42e8-9305-de5d28737e66';
                 const acc03UUID = '7fa13cfa-39a5-4901-b8f4-6bbb9ef870cb';
-                await e2eUiService.configureResourceE2E(client, {
+                await e2eUiService.configureResourceE2E.bind(this)(client, driver, {
                     collection: {
                         createUDC: {
                             nameOfCollection: resourceName,
@@ -1963,7 +1963,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                 const resourceName = 'IndexedFieldsAuto';
                 const slugDisplay = 'Indexed Fields Auto';
                 const slugPath = 'indexed_fields_auto';
-                await e2eUiService.configureResourceE2E(client, {
+                await e2eUiService.configureResourceE2E.bind(this)(client, driver, {
                     collection: {
                         createUDC: {
                             nameOfCollection: resourceName,
@@ -2084,7 +2084,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                 const resourceName = 'NameAgeAuto';
                 const slugDisplay = 'NameAge Auto';
                 const slugPath = 'name_age_auto';
-                await e2eUiService.configureResourceE2E(client, {
+                await e2eUiService.configureResourceE2E.bind(this)(client, driver, {
                     collection: {
                         createUDC: {
                             nameOfCollection: resourceName,
@@ -2193,7 +2193,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                 const resourceName = 'IndexedNameAgeAuto';
                 const slugDisplay = 'Indexed NameAge Auto';
                 const slugPath = 'indexed_name_age_auto';
-                await e2eUiService.configureResourceE2E(client, {
+                await e2eUiService.configureResourceE2E.bind(this)(client, driver, {
                     collection: {
                         createUDC: {
                             nameOfCollection: resourceName,

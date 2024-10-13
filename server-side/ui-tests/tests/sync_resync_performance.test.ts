@@ -1,4 +1,5 @@
 import promised from 'chai-as-promised';
+import addContext from 'mochawesome/addContext';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { Browser } from '../utilities/browser';
 import {
@@ -87,8 +88,14 @@ export async function SyncResyncPerformanceTests(email: string, password: string
         }
     });
 
-    const installedListsVersion = (await generalService.getInstalledAddons()).find(
-        (addon) => addon.Addon.Name == 'lists',
+    const installedSyncVersion = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'Sync',
+    )?.Version;
+    const installedNebulaVersion = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'Nebula',
+    )?.Version;
+    const installedNebulusVersion = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'Nebulus',
     )?.Version;
 
     let driver: Browser;
@@ -98,7 +105,7 @@ export async function SyncResyncPerformanceTests(email: string, password: string
     // let webAppList: WebAppList;
     let e2eUtils: E2EUtils;
 
-    describe(`Nebulus Performance Test Suite | Ver: ${installedListsVersion}`, async () => {
+    describe(`Sync Resync Performance Test Suite |  Sync Ver: ${installedSyncVersion}, Nebulus Ver: ${installedNebulusVersion}, Nebula Ver: ${installedNebulaVersion}`, async () => {
         describe('Lists ABI UI tests', async () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
@@ -116,8 +123,22 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 await webAppLoginPage.login(email, password);
             });
 
-            it('Perform Manual Sync', async function () {
-                await e2eUtils.performManualSync(client);
+            it('Perform Manual Sync With Time Measurement', async function () {
+                const syncTime = await e2eUtils.performManualSyncWithTimeMeasurement.bind(this)(client, driver);
+                addContext(this, {
+                    title: `Sync Time Interval`,
+                    value: syncTime.toString(),
+                });
+                expect(syncTime).to.be('number').and.greaterThan(0);
+            });
+
+            it('Perform Manual Resync With Time Measurement', async function () {
+                const resyncTime = await e2eUtils.performManualResyncWithTimeMeasurement.bind(this)(client, driver);
+                addContext(this, {
+                    title: `Resync Time Interval`,
+                    value: resyncTime.toString(),
+                });
+                expect(resyncTime).to.be('number').and.greaterThan(0);
             });
         });
     });

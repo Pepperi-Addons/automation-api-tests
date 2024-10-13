@@ -976,7 +976,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it('Perform Manual Sync', async function () {
-                    await resourceListUtils.performManualSync(client);
+                    await resourceListUtils.performManualSync.bind(this)(client, driver);
                 });
             });
 
@@ -1098,7 +1098,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`Manual Sync`, async () => {
-                    await resourceListUtils.performManualSync(client);
+                    await resourceListUtils.performManualSync.bind(this)(client, driver);
                 });
 
                 it('Create Page', async function () {
@@ -1159,7 +1159,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`Manual Sync`, async () => {
-                    await resourceListUtils.performManualSync(client);
+                    await resourceListUtils.performManualSync.bind(this)(client, driver);
                 });
 
                 it('Create & Map Slug', async function () {
@@ -1180,7 +1180,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     await webAppHeader.isSpinnerDone();
                     driver.sleep(0.1 * 1000);
                     await resourceListUtils.addHomePageButtonByProfile(slugDisplayName, 'Rep');
-                    await resourceListUtils.performManualSync(client);
+                    await resourceListUtils.performManualSync.bind(this)(client, driver);
                     await webAppHomePage.validateATDIsApearingOnHomeScreen(slugDisplayName);
                     addContext(this, {
                         title: `${slugDisplayName}`,
@@ -1295,7 +1295,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     await webAppHomePage.isSpinnerDone();
                     driver.sleep(0.5 * 1000);
                     await resourceListUtils.removeHomePageButtonByProfile(slugDisplayName, 'Rep');
-                    await resourceListUtils.performManualSync(client);
+                    await resourceListUtils.performManualSync.bind(this)(client, driver);
                     const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slugDisplayName);
                     const screenShot = await driver.saveScreenshots();
                     addContext(this, {
@@ -1362,7 +1362,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`Manual Sync`, async () => {
-                    await resourceListUtils.performManualSync(client);
+                    await resourceListUtils.performManualSync.bind(this)(client, driver);
                 });
 
                 it('Create Page', async function () {
@@ -1428,7 +1428,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`Manual Sync`, async () => {
-                    await resourceListUtils.performManualSync(client);
+                    await resourceListUtils.performManualSync.bind(this)(client, driver);
                 });
 
                 it('Create & Map Slug', async function () {
@@ -1454,7 +1454,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 });
 
                 it(`Manual Sync & Logout Login`, async () => {
-                    await resourceListUtils.performManualSync(client);
+                    await resourceListUtils.performManualSync.bind(this)(client, driver);
                     await resourceListUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
                 });
@@ -1597,7 +1597,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 it(`Manual ${syncStatusOfReferenceAccount ? 'Resync' : 'Sync'}`, async function () {
                     syncStatusOfReferenceAccount
                         ? await resourceListUtils.performManualResync.bind(this)(client, driver)
-                        : await resourceListUtils.performManualSync(client);
+                        : await resourceListUtils.performManualSync.bind(this)(client, driver);
                 });
 
                 syncStatusOfReferenceAccount &&
@@ -1868,7 +1868,7 @@ export async function ResourceListTests(email: string, password: string, client:
                 it(`Manual ${syncStatusOfReferenceAccount ? 'Sync' : 'Resync'}`, async function () {
                     syncStatusOfReferenceAccount
                         ? await resourceListUtils.performManualResync.bind(this)(client, driver)
-                        : await resourceListUtils.performManualSync(client);
+                        : await resourceListUtils.performManualSync.bind(this)(client, driver);
                 });
 
                 syncStatusOfReferenceAccount &&
@@ -2081,7 +2081,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
 
                     it('Perform Manual Sync', async function () {
-                        await resourceListUtils.performManualSync(client);
+                        await resourceListUtils.performManualSync.bind(this)(client, driver);
                     });
 
                     it('Create Page', async function () {
@@ -2130,7 +2130,7 @@ export async function ResourceListTests(email: string, password: string, client:
                     });
 
                     it('Perform Manual Sync', async function () {
-                        await resourceListUtils.performManualSync(client);
+                        await resourceListUtils.performManualSync.bind(this)(client, driver);
                     });
 
                     it('Map the Slug with the Page', async function () {
@@ -2365,7 +2365,7 @@ export async function ResourceListTests(email: string, password: string, client:
                         `${resource_name_pipeline} `,
                         'Rep',
                     );
-                    await resourceListUtils.performManualSync(client);
+                    await resourceListUtils.performManualSync.bind(this)(client, driver);
                     const leftoversButtonsOnHomeScreen =
                         await webAppHomePage.buttonsApearingOnHomeScreenByPartialText.bind(this)(
                             driver,

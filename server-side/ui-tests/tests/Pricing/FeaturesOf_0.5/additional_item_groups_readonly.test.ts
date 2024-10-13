@@ -286,7 +286,7 @@ _________________
         });
 
         it('Manual Sync', async () => {
-            await e2eutils.performManualSync(client);
+            await e2eutils.performManualSync.bind(this)(client, driver);
         });
 
         it('get UDT Values (PPM_Values)', async function () {
@@ -2404,7 +2404,7 @@ _________________
                             await webAppHeader.goHome();
                             driver.sleep(0.2 * 1000);
                             await webAppHomePage.isSpinnerDone();
-                            await e2eutils.performManualSync(client);
+                            await e2eutils.performManualSync.bind(this)(client, driver);
                         });
 
                         it('validating "PPM_Values" UDT values via API', async () => {
@@ -2772,7 +2772,7 @@ _________________
                             await webAppHeader.goHome();
                             driver.sleep(0.2 * 1000);
                             await webAppHomePage.isSpinnerDone();
-                            await e2eutils.performManualSync(client);
+                            await e2eutils.performManualSync.bind(this)(client, driver);
                         });
 
                         it('validating "PPM_Values" UDT values via API', async () => {

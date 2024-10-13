@@ -254,7 +254,7 @@ ________________________________________________________________________________
             });
 
             it('Manual Sync', async () => {
-                await e2eUtils.performManualSync(client);
+                await e2eUtils.performManualSync.bind(this)(client, driver);
             });
 
             it('If Error popup appear - close it', async function () {
