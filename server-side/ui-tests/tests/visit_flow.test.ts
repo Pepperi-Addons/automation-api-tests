@@ -562,7 +562,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                 it('Performing Manual Sync', async function () {
                     await e2eUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
-                    await e2eUtils.performManualSync(client);
+                    await e2eUtils.performManualSync.bind(this)(client, driver);
                 });
             });
 
@@ -860,13 +860,13 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                 });
 
                 it('Performing Manual Sync', async function () {
-                    await e2eUtils.performManualSync(client);
+                    await e2eUtils.performManualSync.bind(this)(client, driver);
                 });
 
                 it('Loging Out and Loging In as Rep', async function () {
                     await e2eUtils.logOutLogIn(repEmail, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
-                    await e2eUtils.performManualSync(client);
+                    await e2eUtils.performManualSync.bind(this)(client, driver);
                 });
 
                 it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async function () {

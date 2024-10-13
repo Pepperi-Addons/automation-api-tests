@@ -381,13 +381,21 @@ export default class E2EUtils extends BasePomObject {
         return fields;
     }
 
-    public async performManualSync(client: Client) {
-        const webAppHeader: WebAppHeader = new WebAppHeader(this.browser);
-        const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
-        const webAppList: WebAppList = new WebAppList(this.browser);
+    public async performManualSync(this: Context, client: Client, driver: Browser): Promise<void> {
+        const webAppHeader: WebAppHeader = new WebAppHeader(driver);
+        const webAppHomePage: WebAppHomePage = new WebAppHomePage(driver);
+        const webAppList: WebAppList = new WebAppList(driver);
         await webAppHeader.goHome();
         await webAppHomePage.manualResync(client);
         await webAppList.isSpinnerDone(); // just for the use of webAppList so that fix-lint won't get angry
+    }
+
+    public async performManualSyncWithTimeMeasurement(this: Context, client: Client, driver: Browser): Promise<number> {
+        const e2eUtils: E2EUtils = new E2EUtils(driver);
+        const startTime = new Date().getTime();
+        await e2eUtils.performManualSync.bind(this)(client, driver);
+        const endTime = new Date().getTime();
+        return endTime - startTime;
     }
 
     public async performManualResync(this: Context, client: Client, driver: Browser) {
@@ -429,6 +437,18 @@ export default class E2EUtils extends BasePomObject {
             await driver.navigate(homePageURL);
         }
         await webAppAPI.pollForResyncResponse(accessToken);
+    }
+
+    public async performManualResyncWithTimeMeasurement(
+        this: Context,
+        client: Client,
+        driver: Browser,
+    ): Promise<number> {
+        const e2eUtils: E2EUtils = new E2EUtils(driver);
+        const startTime = new Date().getTime();
+        await e2eUtils.performManualResync.bind(this)(client, driver);
+        const endTime = new Date().getTime();
+        return endTime - startTime;
     }
 
     public async closeErrorPopupPostResync(client: Client) {
@@ -544,7 +564,9 @@ export default class E2EUtils extends BasePomObject {
     }
 
     public async configureResourceE2E(
+        this: Context,
         client: Client,
+        driver: Browser,
         resourceData: {
             collection?: {
                 createUDC?: CollectionDefinition;
@@ -572,15 +594,16 @@ export default class E2EUtils extends BasePomObject {
             homePageButton?: { toAdd: boolean; slugDisplayName: string };
         },
     ) {
+        const e2eUtils: E2EUtils = new E2EUtils(driver);
         const generalService = new GeneralService(client);
         const udcService = new UDCService(generalService);
         // const dataViewsService = new DataViewsService(generalService.papiClient);
-        const resourceViews = new ResourceViews(this.browser);
-        const resourceEditors = new ResourceEditors(this.browser);
-        const webAppHomePage = new WebAppHomePage(this.browser);
-        const webAppHeader = new WebAppHeader(this.browser);
-        const pageBuilder = new PageBuilder(this.browser);
-        const brandedApp = new BrandedApp(this.browser);
+        const resourceViews = new ResourceViews(driver);
+        const resourceEditors = new ResourceEditors(driver);
+        const webAppHomePage = new WebAppHomePage(driver);
+        const webAppHeader = new WebAppHeader(driver);
+        const pageBuilder = new PageBuilder(driver);
+        const brandedApp = new BrandedApp(driver);
         let editorUUID = '';
         let viewUUID = '';
         let pageUUID = '';
@@ -592,7 +615,7 @@ export default class E2EUtils extends BasePomObject {
                 console.info(`UDC upsert Response: ${JSON.stringify(upsertResponse, null, 2)}`);
             }
             if (resourceData.collection.addValuesToCollection) {
-                this.browser.sleep(5 * 1000);
+                driver.sleep(5 * 1000);
                 resourceData.collection.addValuesToCollection.values.forEach(async (listing) => {
                     const upsertingValues_Response = await udcService.upsertValuesToCollection(
                         listing,
@@ -606,8 +629,8 @@ export default class E2EUtils extends BasePomObject {
             }
         }
         if (resourceData.editor) {
-            await this.addEditor(resourceData.editor.editorDetails);
-            editorUUID = await this.getUUIDfromURL();
+            await e2eUtils.addEditor(resourceData.editor.editorDetails);
+            editorUUID = await e2eUtils.getUUIDfromURL();
             if (resourceData.editor.editorConfiguration) {
                 await resourceEditors.customEditorConfig(
                     generalService,
@@ -620,8 +643,8 @@ export default class E2EUtils extends BasePomObject {
             }
         }
         if (resourceData.view) {
-            await this.addView(resourceData.view.viewDetails);
-            viewUUID = await this.getUUIDfromURL();
+            await e2eUtils.addView(resourceData.view.viewDetails);
+            viewUUID = await e2eUtils.getUUIDfromURL();
             if (resourceData.view.viewConfiguration) {
                 await resourceViews.customViewConfig(client, {
                     matchingEditorName: '',
@@ -639,7 +662,7 @@ export default class E2EUtils extends BasePomObject {
             await webAppHeader.goHome();
         }
         if (resourceData.page) {
-            pageUUID = await this.addPage(
+            pageUUID = await e2eUtils.addPage(
                 resourceData.page.pageDetails.nameOfPage,
                 resourceData.page.pageDetails.descriptionOfPage,
                 resourceData.page.pageDetails.extraSection,
@@ -683,7 +706,7 @@ export default class E2EUtils extends BasePomObject {
             await webAppHeader.goHome();
         }
         if (resourceData.slug) {
-            await this.createAndMapSlug(
+            await e2eUtils.createAndMapSlug(
                 resourceData.slug.slugDisplayName,
                 resourceData.slug.slug_path,
                 resourceData.slug.keyOfMappedPage || pageUUID,
@@ -691,12 +714,12 @@ export default class E2EUtils extends BasePomObject {
                 resourceData.slug.password,
                 client,
             );
-            this.browser.sleep(0.5 * 1000);
+            driver.sleep(0.5 * 1000);
         }
         if (resourceData.homePageButton && resourceData.homePageButton.toAdd === true) {
             await webAppHeader.openSettings();
             await brandedApp.addAdminHomePageButtons(resourceData.homePageButton.slugDisplayName);
-            await this.performManualSync(client);
+            await e2eUtils.performManualSync.bind(this)(client, driver);
             await webAppHomePage.validateATDIsApearingOnHomeScreen(resourceData.homePageButton.slugDisplayName);
         }
     }

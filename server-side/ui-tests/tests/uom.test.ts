@@ -185,7 +185,7 @@ export async function UomTests(email: string, password: string, varPass: string,
                 await webAppHomePage.isSpinnerDone();
                 driver.sleep(0.5 * 1000);
                 await e2eUtils.removeHomePageButtonsLeftoversByProfile(`UOM_`, 'Admin');
-                await e2eUtils.performManualSync(client);
+                await e2eUtils.performManualSync.bind(this)(client, driver);
                 const leftoversButtonsOnHomeScreen = await webAppHomePage.buttonsApearingOnHomeScreenByPartialText.bind(
                     this,
                 )(driver, `UOM_`);

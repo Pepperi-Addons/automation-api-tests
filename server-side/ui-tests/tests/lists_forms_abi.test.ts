@@ -219,7 +219,7 @@ export async function ListsFormsAbiTests(email: string, password: string, client
             });
 
             it('Perform Manual Sync', async function () {
-                await e2eUtils.performManualSync(client);
+                await e2eUtils.performManualSync.bind(this)(client, driver);
             });
 
             it('Entering Lists ABI tests Addon', async () => {
