@@ -127,18 +127,18 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 const syncTime = await e2eUtils.performManualSyncWithTimeMeasurement.bind(this)(client, driver);
                 addContext(this, {
                     title: `Sync Time Interval`,
-                    value: syncTime.toString(),
+                    value: `milisec: ${syncTime} , ${(syncTime / 1000).toFixed(1)} S`,
                 });
-                expect(syncTime).to.be('number').and.greaterThan(0);
+                expect(syncTime).to.be.a('number').and.greaterThan(0);
             });
 
             it('Perform Manual Resync With Time Measurement', async function () {
                 const resyncTime = await e2eUtils.performManualResyncWithTimeMeasurement.bind(this)(client, driver);
                 addContext(this, {
                     title: `Resync Time Interval`,
-                    value: resyncTime.toString(),
+                    value: `milisec: ${resyncTime} , ${(resyncTime / 1000).toFixed(1)} S`,
                 });
-                expect(resyncTime).to.be('number').and.greaterThan(0);
+                expect(resyncTime).to.be.a('number').and.greaterThan(0);
             });
         });
     });
