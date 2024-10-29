@@ -24,16 +24,17 @@ export interface UdcField {
     ApplySystemFilter?: boolean;
 }
 
+export interface FieldDefinition {
+    classType: 'Primitive' | 'Array' | 'Resource' | 'ContainedArray';
+    fieldName: string;
+    fieldTitle: string;
+    field: CollectionField;
+    dataViewType?: DataViewFieldType;
+    readonly?: boolean;
+}
 export interface CollectionDefinition {
     nameOfCollection: string;
-    fieldsOfCollection: {
-        classType: 'Primitive' | 'Array' | 'Resource' | 'ContainedArray';
-        fieldName: string;
-        fieldTitle: string;
-        field: CollectionField;
-        dataViewType?: DataViewFieldType;
-        readonly?: boolean;
-    }[];
+    fieldsOfCollection: FieldDefinition[];
     descriptionOfCollection?: string;
     syncDefinitionOfCollection?: { Sync: boolean; SyncFieldLevel?: boolean };
     typeOfCollection?:

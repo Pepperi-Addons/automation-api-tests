@@ -273,6 +273,10 @@ export class ObjectsService {
         return this.papiClient.metaData.userDefinedTables.get(id);
     }
 
+    getUDTMetaDataList(): Promise<UserDefinedTableMetaData> {
+        return this.papiClient.get('/meta_data/user_defined_tables');
+    }
+
     postUDT(body: UserDefinedTableRow): Promise<UserDefinedTableRow> {
         return this.papiClient.userDefinedTables.upsert(body);
     }
