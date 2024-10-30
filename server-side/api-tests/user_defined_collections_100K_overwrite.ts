@@ -263,7 +263,7 @@ export async function UDC100KOverwrite(generalService: GeneralService, request, 
     });
 }
 
-async function createInitalData(howManyDataRows: number) {
+export async function createInitalData(howManyDataRows: number) {
     const headers = 'code,value';
     const runningDataCode = 'data_index';
     const runningDataValue = 'old_value_index';
@@ -276,7 +276,7 @@ async function createInitalData(howManyDataRows: number) {
     return await genrateFile('Data', strData);
 }
 
-async function createUpdatedData(howManyOldRows: number, howManyUpdatedRows: number, howManyNewRows: number) {
+export async function createUpdatedData(howManyOldRows: number, howManyUpdatedRows: number, howManyNewRows: number) {
     const headers = 'code,value';
     const runningDataCode = 'data_index';
     const runningNewDataCode = 'new_data_index';
@@ -303,7 +303,7 @@ async function createUpdatedData(howManyOldRows: number, howManyUpdatedRows: num
     return await genrateFile('UpdatedData', strData);
 }
 
-async function genrateFile(tempFileName, data) {
+export async function genrateFile(tempFileName, data) {
     let filePath;
     try {
         const localPath = __dirname;

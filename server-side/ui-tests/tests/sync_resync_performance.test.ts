@@ -61,6 +61,8 @@ export async function SyncResyncPerformanceTests(email: string, password: string
         'Name',
         'AddonUUID',
     ];
+    const tableName = `SyncPerformanceUDT_Test`;
+    const collectionName = 'SyncPerformanceUDCTest';
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -118,15 +120,15 @@ export async function SyncResyncPerformanceTests(email: string, password: string
     let driver: Browser;
     let webAppLoginPage: WebAppLoginPage;
     let e2eUtils: E2EUtils;
-    // let allUDTs;
+    let allUDTs;
     let allUDCs: Collection[];
-    // let udtsDeleteResponses;
+    let udtsDeleteResponses;
     let udtsDeleteResponse;
-    // let udcsDeleteResponses;
+    let udcsDeleteResponses;
     let createdUDT;
     let bulkUpdateUDT;
 
-    describe(`Sync Resync Performance Test Suite |  Sync Ver: ${installedSyncVersion}, Nebulus Ver: ${installedNebulusVersion}, Nebula Ver: ${installedNebulaVersion}`, async () => {
+    describe(`Sync Resync Performance Test Suite |  Sync Ver: ${installedSyncVersion}, Nebulus Ver: ${installedNebulusVersion}, Nebula Ver: ${installedNebulaVersion} |  ${dateTime}`, async () => {
         describe('Performance Measurement tests', async () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
@@ -138,42 +140,55 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 await driver.quit();
             });
 
-            // it('UDTs Pre-clean via API', async () => {
-            //     allUDTs = await objectsService.getUDTMetaDataList();
-            //     addContext(this, {
-            //         title: `All UDTs`,
-            //         value: JSON.stringify(allUDTs, null, 2),
-            //     });
-            //     udtsDeleteResponses = await Promise.all(
-            //         allUDTs.map(async (udt) => {
-            //             return udt.InternalID ? await objectsService.deleteUDT(udt.InternalID) : undefined;
-            //         }),
-            //     );
-            // });
+            it('UDTs Pre-clean via API', async function () {
+                allUDTs = await objectsService.getUDTMetaDataList();
+                addContext(this, {
+                    title: `All UDTs`,
+                    value: JSON.stringify(allUDTs, null, 2),
+                });
+                console.info(JSON.stringify(allUDTs, null, 2));
+                const testUDTs = allUDTs.filter((table) => {
+                    if (table['TableID'].startsWith(tableName)) return table;
+                });
+                console.info(JSON.stringify(testUDTs, null, 2));
+                udtsDeleteResponses = await Promise.all(
+                    testUDTs.map(async (udt) => {
+                        return await objectsService.deleteUDTMetaData(udt.TableID as number);
+                    }),
+                );
+                udtsDeleteResponses.forEach((deleteResponse) => {
+                    expect(deleteResponse).to.be.true;
+                });
+            });
 
-            // it('Validate UDTs were deleted', async () => {
-            //     allUDTs = await objectsService.getUDT();
-            //     udtsDeleteResponses.forEach(deleteResponse => {
-            //         expect(deleteResponse).to.be.oneOf([true, undefined]);
-            //     });
-            //     expect(allUDTs).to.be.an('array').with.lengthOf(0);
-            // });
+            it('Validate UDTs were deleted', async function () {
+                allUDTs = await objectsService.getUDTMetaDataList();
+                expect(allUDTs).to.be.an('array').with.lengthOf(1);
+                expect(allUDTs[0]['TableID']).to.equal('ADDON_CPI_SIDE_DATA');
+            });
 
-            // it('UDCs Pre-clean via API', async () => {
-            //     allUDCs = await udcService.getSchemes();
-            //     udcsDeleteResponses = await Promise.all(
-            //         allUDCs.map(async (udc) => {
-            //             return await udcService.truncateScheme(udc.Name);
-            //         }),
-            //     );
-            // });
+            it('UDCs Pre-clean via API', async function () {
+                allUDCs = await udcService.getSchemes();
+                udcsDeleteResponses = await Promise.all(
+                    allUDCs.map(async (udc) => {
+                        return await udcService.purgeScheme(udc.Name);
+                    }),
+                );
+                udcsDeleteResponses.forEach((deleteResponse) => {
+                    expect(deleteResponse.Ok).to.be.true;
+                    expect(deleteResponse.Status).to.equal(200);
+                    expect(deleteResponse.Error).to.eql({});
+                    expect(Object.keys(deleteResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
+                    expect(deleteResponse.Body.Done).to.be.true;
+                });
+            });
 
-            it('Validate UDCs were deleted', async () => {
+            it('Validate UDCs were deleted', async function () {
                 allUDCs = await udcService.getSchemes();
                 expect(allUDCs).to.be.an('array').with.lengthOf(0);
             });
 
-            it('Login', async () => {
+            it('Login', async function () {
                 await webAppLoginPage.login(email, password);
             });
 
@@ -207,7 +222,7 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 it('Create UDT', async function () {
                     createdUDT = await objectsService.postUDTMetaData({
                         // InternalID: Math.floor(Math.random() * 1000000),
-                        TableID: `SyncPerformanceUDT_Test`,
+                        TableID: tableName,
                         MainKeyType: {
                             ID: 54,
                             Name: 'Catalog Name',
@@ -221,14 +236,57 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                         title: `createdUDT`,
                         value: JSON.stringify(createdUDT, null, 2),
                     });
-                    // const getCreatedUDT = createdUDT.InternalID ? await objectsService.getUDTMetaData(createdUDT.InternalID) : undefined;
-                    // expect(getCreatedUDT).to.not.be.undefined;
-                    // expect(getCreatedUDT).to.haveOwnProperty('InternalID');
-                    // expect(getCreatedUDT).to.haveOwnProperty('TableID');
-                    // expect(getCreatedUDT).to.haveOwnProperty('MainKeyType');
-                    // expect(getCreatedUDT).to.haveOwnProperty('SecondaryKeyType');
-                    // expect(getCreatedUDT?.InternalID).to.equal(createdUDT.InternalID);
-                    // expect(getCreatedUDT?.TableID).to.equal(createdUDT.TableID);
+                    const getCreatedUDT = await objectsService.getUDTMetaData(createdUDT.TableID as number);
+                    expect(getCreatedUDT).to.not.be.undefined;
+                    expect(getCreatedUDT).to.haveOwnProperty('InternalID');
+                    expect(getCreatedUDT).to.haveOwnProperty('TableID');
+                    expect(getCreatedUDT).to.haveOwnProperty('MainKeyType');
+                    expect(getCreatedUDT).to.haveOwnProperty('SecondaryKeyType');
+                    expect(getCreatedUDT?.InternalID).to.equal(createdUDT.InternalID);
+                    expect(getCreatedUDT?.TableID).to.equal(createdUDT.TableID);
+                });
+
+                // it('Truncate UDT before inserting new values', async function () {
+                //     // let getCreatedUDTdocuments = await objectsService.getUDT({ where: `MapDataExternalID = "SyncPerformanceUDT_Test_btrry"`, page_size: -1});
+                //     // udtsDeleteResponses = await Promise.all(
+                //     //     getCreatedUDTdocuments.map(async (udt) => {
+                //     //         return await objectsService.deleteUDT(udt.InternalID as number);
+                //     //     }),
+                //     // );
+                //     // udtsDeleteResponses.forEach(deleteResponse => {
+                //     //     expect(deleteResponse).to.be.true;
+                //     // });
+                //     // getCreatedUDTdocuments = await objectsService.getUDT({ where: `MapDataExternalID = "SyncPerformanceUDT_Test_btrry"`, page_size: -1});
+                //     // expect(getCreatedUDTdocuments).to.be.an('array').with.lengthOf(0);
+                //     let getCreatedUDTdocuments = await objectsService.getUDT({ where: "MapDataExternalID like 'SyncPerformanceUDT_Test%'", page_size: -1});
+                //     addContext(this, {
+                //         title: `All MapDataExternalID like 'SyncPerformanceUDT_Test' documents`,
+                //         value: `${getCreatedUDTdocuments.length}`,
+                //     });
+                //     udtsDeleteResponses = await Promise.all(
+                //         getCreatedUDTdocuments.map(async (udtDoc) => {
+                //             udtDoc.Hidden = true;
+                //             return await objectsService.postUDT(udtDoc);
+                //             // return await objectsService.deleteUDT(udtDoc.InternalID as number);
+                //         }),
+                //     );
+                //     udtsDeleteResponses.forEach(deleteResponse => {
+                //         expect(deleteResponse).to.be.true;
+                //     });
+                //     getCreatedUDTdocuments = await objectsService.getUDT({ where: "MapDataExternalID like 'SyncPerformanceUDT_Test%'", page_size: -1});
+                //     expect(getCreatedUDTdocuments).to.be.an('array').with.lengthOf(0);
+                // });
+
+                it('Validate UDT Values were Truncated', async function () {
+                    const getAllUDTdocuments = await objectsService.getUDT({ page_size: -1 });
+                    const allNotAddonCpidocuments = getAllUDTdocuments.filter((doc) => {
+                        if (doc.MapDataExternalID != 'ADDON_CPI_SIDE_DATA') return doc;
+                    });
+                    addContext(this, {
+                        title: `All MapDataExternalID != "ADDON_CPI_SIDE_DATA" documents`,
+                        value: `${allNotAddonCpidocuments.length}`,
+                    });
+                    expect(allNotAddonCpidocuments).to.be.an('array').with.lengthOf(0);
                 });
 
                 it('Bulk update UDT with 10K Rows', async function () {
@@ -455,20 +513,33 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 });
 
                 it('Delete Test UDT via API', async function () {
-                    udtsDeleteResponse = await objectsService.deleteUDTMetaData(createdUDT.InternalID);
-                    expect(udtsDeleteResponse).to.be.true;
+                    createdUDT.Hidden = true;
+                    udtsDeleteResponse = await objectsService.postUDTMetaData(createdUDT);
+                    // udtsDeleteResponse = await objectsService.deleteUDTMetaData(createdUDT.InternalID);
+                    expect(udtsDeleteResponse.Hidden).to.be.true;
                 });
 
                 it('Validate UDTs deletedtion was successful', async function () {
-                    const getTestUDT = await objectsService.getUDTMetaData(createdUDT.InternalID);
-                    expect(getTestUDT).to.haveOwnProperty('Hidden');
-                    expect(getTestUDT.Hidden).to.be.true;
+                    allUDTs = await objectsService.getUDTMetaDataList();
+                    addContext(this, {
+                        title: `All UDTs`,
+                        value: JSON.stringify(allUDTs, null, 2),
+                    });
+                    console.info(JSON.stringify(allUDTs, null, 2));
+                    const testUDTs = allUDTs.filter((table) => {
+                        if (table['TableID'].startsWith(tableName)) return table;
+                    });
+                    console.info(JSON.stringify(testUDTs, null, 2));
+                    addContext(this, {
+                        title: `Test UDTs`,
+                        value: JSON.stringify(testUDTs, null, 2),
+                    });
+                    expect(testUDTs).to.be.an('array').with.lengthOf(0);
                 });
             });
 
             describe('UDC', async () => {
                 it('Create UDC', async function () {
-                    const udcName = 'SyncPerformanceUDCTest';
                     const fields: FieldDefinition[] = [
                         {
                             classType: 'Primitive',
@@ -484,7 +555,7 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                         },
                     ];
                     const bodyOfCollection: BodyToUpsertUdcWithFields = udcService.prepareDataForUdcCreation({
-                        nameOfCollection: udcName,
+                        nameOfCollection: collectionName,
                         descriptionOfCollection: 'Created with Automation',
                         typeOfCollection: 'data',
                         syncDefinitionOfCollection: { Sync: false },
@@ -496,12 +567,12 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                     Object.keys(upsertResponse).forEach((collectionProperty) => {
                         expect(collectionProperty).to.be.oneOf(collectionProperties);
                     });
-                    expect(upsertResponse.Name).to.equal(udcName);
+                    expect(upsertResponse.Name).to.equal(collectionName);
                     expect(upsertResponse.Fields).to.be.an('object');
                     if (upsertResponse.Fields) expect(Object.keys(upsertResponse.Fields)).to.eql(['str', 'int']);
 
                     addContext(this, {
-                        title: `Collection data for "${udcName}" (CollectionFields): `,
+                        title: `Collection data for "${collectionName}" (CollectionFields): `,
                         value: fields,
                     });
                     addContext(this, {
@@ -626,9 +697,24 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                     expect(resyncTime).to.be.a('number').and.greaterThan(0);
                 });
 
-                // it('Delete Test UDC via API', async function () {});
+                it('Delete Test UDC via API', async function () {
+                    const purgeResponse = await udcService.purgeScheme(collectionName);
+                    console.info(`${collectionName} Truncate Response: ${JSON.stringify(purgeResponse, null, 2)}`);
+                    addContext(this, {
+                        title: `Truncate Response: `,
+                        value: JSON.stringify(purgeResponse, null, 2),
+                    });
+                    expect(purgeResponse.Ok).to.be.true;
+                    expect(purgeResponse.Status).to.equal(200);
+                    expect(purgeResponse.Error).to.eql({});
+                    expect(Object.keys(purgeResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
+                    expect(purgeResponse.Body.Done).to.be.true;
+                });
 
-                // it('Validate UDCs deletedtion was successful', async function () {});
+                it('Validate UDCs deletedtion was successful', async function () {
+                    allUDCs = await udcService.getSchemes();
+                    expect(allUDCs).to.be.an('array').with.lengthOf(0);
+                });
             });
 
             describe('Conclusion', async () => {
