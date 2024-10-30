@@ -68,6 +68,7 @@ import { NeltPerformanceTests } from './Nelt_performance/nelt_performance.test';
 import { ListsFormsAbiTests } from './lists_forms_abi.test';
 import { CustomCollectionsUpsert } from './custom_collections_upsert.test';
 import { SyncResyncPerformanceTests } from './sync_resync_performance.test';
+import { AuditDataLogAbiTests } from './audit_data_log_abi.test';
 
 export {
     LoginTests,
@@ -140,4 +141,5 @@ export {
     NeltPerformanceTests,
     CustomCollectionsUpsert,
     SyncResyncPerformanceTests,
+    AuditDataLogAbiTests,
 };

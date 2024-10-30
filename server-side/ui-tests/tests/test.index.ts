@@ -86,6 +86,7 @@ import {
     ListsFormsAbiTests,
     CustomCollectionsUpsert,
     SyncResyncPerformanceTests,
+    AuditDataLogAbiTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -620,6 +621,13 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
 
     if (tests === 'SyncPerformance') {
         await SyncResyncPerformanceTests(email, pass, client, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'AuditLog') {
+        await AuditDataLogAbiTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;
