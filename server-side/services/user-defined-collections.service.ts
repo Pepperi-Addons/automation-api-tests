@@ -756,6 +756,7 @@ export class UDCService {
 
     prepareDataForUdcCreation(collectionData: CollectionDefinition) {
         if (collectionData.inherits) {
+            // this section creates a collection that inherits from a scheme - then the variable "collectionData.inherits" has to hold valid value
             return new BodyToUpsertExtendedUdc(
                 collectionData.nameOfCollection,
                 collectionData.descriptionOfCollection,
@@ -763,6 +764,7 @@ export class UDCService {
                 'pricing_table', // collectionData.inherits
             );
         } else {
+            // this section creates a custom collection (which do not abide to a known scheme)
             const collectionFields = {};
             const udcListViewFields = collectionData.fieldsOfCollection.map((scheme) => {
                 switch (scheme.classType) {
