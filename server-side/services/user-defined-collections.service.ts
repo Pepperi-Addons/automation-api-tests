@@ -9,6 +9,8 @@ import {
     ResourceUdcField,
 } from '../ui-tests/blueprints/UdcBlueprints';
 import GeneralService from './general.service';
+import * as path from 'path';
+import fs from 'fs';
 
 export interface UdcField {
     Name: string;
@@ -853,5 +855,31 @@ export class UDCService {
 
             return bodyOfCollectionWithFields;
         }
+    }
+
+    async genrateFilePFS(tempFileName, data, localPath: string) {
+        let filePath;
+        try {
+            // const localPath = __dirname;
+            filePath = `./test-data/${tempFileName}.csv`;
+            const xx = path.join(localPath, filePath);
+            fs.writeFileSync(xx, data, 'utf-8');
+        } catch (error) {
+            throw new Error(`Error: ${(error as any).message}`);
+        }
+        return filePath;
+    }
+
+    async createInitalDataToPFS(howManyDataRows: number, headers: string, dataValues: string[], localPath: string) {
+        let strData = '';
+        strData += headers + '\n';
+        const numOfColumns = headers.split(',').length;
+        for (let index = 0; index < howManyDataRows; index++) {
+            for (let j = 0; j < numOfColumns; j++) {
+                strData += `${dataValues[j].replace('index', index.toString())}`;
+                strData += j == numOfColumns - 1 ? '\n' : ',';
+            }
+        }
+        return await this.genrateFilePFS('Data', strData, localPath);
     }
 }
