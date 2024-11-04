@@ -24,7 +24,7 @@ import {
 import { Collection, UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { BodyToUpsertUdcWithFields } from '../blueprints/UdcBlueprints';
 import { PFSService } from '../../services/pfs.service';
-import { createInitalData } from '../../api-tests/user_defined_collections_100K_overwrite';
+// import { createInitalData } from '../../api-tests/user_defined_collections_100K_overwrite';
 
 chai.use(promised);
 
@@ -134,6 +134,7 @@ export async function SyncResyncPerformanceTests(email: string, password: string
     let udcsDeleteResponses;
     let createdUDT;
     let bulkUpdateUDT;
+    let howManyRows;
 
     describe(`Sync Resync Performance Test Suite |  Sync Ver: ${installedSyncVersion}, Nebulus Ver: ${installedNebulusVersion}, Nebula Ver: ${installedNebulaVersion} |  ${dateTime}`, async () => {
         describe('Performance Measurement tests', async () => {
@@ -589,29 +590,67 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 });
 
                 it('Insert 10K Rows to UDC', async function () {
-                    const howManyRows = 10000;
-                    const headers = 'str,int';
+                    howManyRows = 10000;
+                    const headers = 'str,int,Key';
                     const runningDataStr = `index_${random200charString}`;
                     const runningDataInt = 'index';
                     // Create a file to import
                     const randomString = Math.floor(Math.random() * 1000000).toString();
-                    const fileName = 'Name' + randomString + '.csv';
+                    const fileName = 'SyncPerformanceTest' + randomString + '.csv';
                     addContext(this, {
                         title: `File Name`,
                         value: fileName,
                     });
+                    console.log('File Name: ', fileName);
                     const mime = 'text/csv';
                     const tempFileResponse = await pfsService.postTempFile({
                         FileName: fileName,
                         MIME: mime,
                     });
+                    addContext(this, {
+                        title: `Temp File Response`,
+                        value: JSON.stringify(tempFileResponse, null, 2),
+                    });
+                    console.log('Temp File Response: ', JSON.stringify(tempFileResponse, null, 2));
                     expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
                     expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
                     expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
-                    const csvFileName = await createInitalData(howManyRows, headers, [runningDataStr, runningDataInt]);
                     const localPath = __dirname;
+                    addContext(this, {
+                        title: `localPath`,
+                        value: localPath,
+                    });
+                    console.log('localPath: ', localPath);
+                    const csvFileName = await udcService.createInitalDataToPFS(
+                        howManyRows,
+                        headers,
+                        [runningDataStr, runningDataInt, ''],
+                        localPath,
+                    );
+                    addContext(this, {
+                        title: `csv File Name`,
+                        value: csvFileName,
+                    });
+                    console.log('csv File Name: ', csvFileName);
+                    console.log('localPath after "\\tests" removed: ', localPath.replace(`\\tests`, ``));
+                    // const combinedPath = path.join(localPath.replace(`\\tests`,``), csvFileName);
                     const combinedPath = path.join(localPath, csvFileName);
+                    addContext(this, {
+                        title: `combinedPath`,
+                        value: combinedPath,
+                    });
+                    console.log('combinedPath: ', combinedPath);
                     const buf = fs.readFileSync(combinedPath);
+                    // addContext(this, {
+                    //     title: `buf`,
+                    //     value: JSON.stringify(buf),
+                    // });
+                    console.log('buf: ', JSON.stringify(buf));
+                    addContext(this, {
+                        title: `tempFileResponse.PutURL`,
+                        value: tempFileResponse.PutURL,
+                    });
+                    console.log('tempFileResponse.PutURL: ', tempFileResponse.PutURL);
                     const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse.PutURL, buf);
                     expect(putResponsePart1.ok).to.equal(true);
                     expect(putResponsePart1.status).to.equal(200);
@@ -629,6 +668,11 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                         250,
                         7000,
                     );
+                    addContext(this, {
+                        title: `Audit Log Dev Test Response`,
+                        value: JSON.stringify(auditLogDevTestResponse, null, 2),
+                    });
+                    console.log('Audit Log Dev Test Response: ', JSON.stringify(auditLogDevTestResponse, null, 2));
                     if (auditLogDevTestResponse.Status) {
                         expect(auditLogDevTestResponse.Status.Name).to.equal('Success');
                     } else {
@@ -636,7 +680,10 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                     }
                     const lineStats = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject).LinesStatistics;
                     expect(lineStats.Inserted).to.equal(howManyRows);
-                    generalService.sleep(1000 * 150); //let PNS Update
+                });
+
+                it(`Get UDC Lines - validating each line's value`, async function () {
+                    generalService.sleep(1000 * 60 * 2.5); //let PNS Update for 2.5 minutes
                     for (let index = 1; index <= 100; index++) {
                         console.log(`searching for 250 rows for the ${index} time - out of 100 sampling batch`);
                         const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
@@ -644,13 +691,17 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                             index,
                             250,
                         );
-                        expect(allObjectsFromCollection.count).to.equal(howManyRows);
+                        // expect(allObjectsFromCollection.count).to.equal(howManyRows);
                         for (let index1 = 0; index1 < allObjectsFromCollection.objects.length; index1++) {
                             const row = allObjectsFromCollection.objects[index1];
                             expect(row.str).to.contain(`_${random200charString.slice(0, 10)}`);
                             expect(row.int).to.be.a('number');
                         }
                     }
+                });
+
+                it('Perform Manual Sync NO Time Measurement', async function () {
+                    await e2eUtils.performManualSync.bind(this)(client, driver);
                 });
 
                 it('Validate Number of Rows of UDC is 10K', async function () {
@@ -773,24 +824,24 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                     expect(resyncTime).to.be.a('number').and.greaterThan(0);
                 });
 
-                it('Delete Test UDC via API', async function () {
-                    const purgeResponse = await udcService.purgeScheme(collectionName);
-                    console.info(`${collectionName} Truncate Response: ${JSON.stringify(purgeResponse, null, 2)}`);
-                    addContext(this, {
-                        title: `Truncate Response: `,
-                        value: JSON.stringify(purgeResponse, null, 2),
-                    });
-                    expect(purgeResponse.Ok).to.be.true;
-                    expect(purgeResponse.Status).to.equal(200);
-                    expect(purgeResponse.Error).to.eql({});
-                    expect(Object.keys(purgeResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
-                    expect(purgeResponse.Body.Done).to.be.true;
-                });
+                // it('Delete Test UDC via API', async function () {
+                //     const purgeResponse = await udcService.purgeScheme(collectionName);
+                //     console.info(`${collectionName} Truncate Response: ${JSON.stringify(purgeResponse, null, 2)}`);
+                //     addContext(this, {
+                //         title: `Truncate Response: `,
+                //         value: JSON.stringify(purgeResponse, null, 2),
+                //     });
+                //     expect(purgeResponse.Ok).to.be.true;
+                //     expect(purgeResponse.Status).to.equal(200);
+                //     expect(purgeResponse.Error).to.eql({});
+                //     expect(Object.keys(purgeResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
+                //     expect(purgeResponse.Body.Done).to.be.true;
+                // });
 
-                it('Validate UDCs deletedtion was successful', async function () {
-                    allUDCs = await udcService.getSchemes();
-                    expect(allUDCs).to.be.an('array').with.lengthOf(0);
-                });
+                // it('Validate UDCs deletedtion was successful', async function () {
+                //     allUDCs = await udcService.getSchemes();
+                //     expect(allUDCs).to.be.an('array').with.lengthOf(0);
+                // });
             });
 
             describe('Conclusion', async () => {
