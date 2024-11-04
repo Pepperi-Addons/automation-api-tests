@@ -1,5 +1,7 @@
 import promised from 'chai-as-promised';
 import addContext from 'mochawesome/addContext';
+import * as path from 'path';
+import fs from 'fs';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { Browser } from '../utilities/browser';
 import { WebAppLoginPage } from '../pom';
@@ -21,6 +23,8 @@ import {
 } from '../../services/user-defined-collections.service';
 import { Collection, UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { BodyToUpsertUdcWithFields } from '../blueprints/UdcBlueprints';
+import { PFSService } from '../../services/pfs.service';
+import { createInitalData } from '../../api-tests/user_defined_collections_100K_overwrite';
 
 chai.use(promised);
 
@@ -38,6 +42,7 @@ export async function SyncResyncPerformanceTests(email: string, password: string
     */
 
     const generalService = new GeneralService(client);
+    const pfsService = new PFSService(generalService);
     const udcService = new UDCService(generalService);
     const objectsService = new ObjectsService(generalService);
     // const testUniqueString = generalService.generateRandomString(5);
@@ -63,6 +68,8 @@ export async function SyncResyncPerformanceTests(email: string, password: string
     ];
     const tableName = `SyncPerformanceUDT_Test`;
     const collectionName = 'SyncPerformanceUDCTest';
+    const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
+    const random200charString = generalService.generateRandomString(200);
 
     await generalService.baseAddonVersionsInstallation(varPass);
 
@@ -581,9 +588,78 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                     });
                 });
 
-                // it('Insert 10K Rows to UDC', async function () {});
+                it('Insert 10K Rows to UDC', async function () {
+                    const howManyRows = 10000;
+                    const headers = 'str,int';
+                    const runningDataStr = `index_${random200charString}`;
+                    const runningDataInt = 'index';
+                    // Create a file to import
+                    const randomString = Math.floor(Math.random() * 1000000).toString();
+                    const fileName = 'Name' + randomString + '.csv';
+                    addContext(this, {
+                        title: `File Name`,
+                        value: fileName,
+                    });
+                    const mime = 'text/csv';
+                    const tempFileResponse = await pfsService.postTempFile({
+                        FileName: fileName,
+                        MIME: mime,
+                    });
+                    expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
+                    expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
+                    expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
+                    const csvFileName = await createInitalData(howManyRows, headers, [runningDataStr, runningDataInt]);
+                    const localPath = __dirname;
+                    const combinedPath = path.join(localPath, csvFileName);
+                    const buf = fs.readFileSync(combinedPath);
+                    const putResponsePart1 = await pfsService.putPresignedURL(tempFileResponse.PutURL, buf);
+                    expect(putResponsePart1.ok).to.equal(true);
+                    expect(putResponsePart1.status).to.equal(200);
+                    // Import file to UDC
+                    const bodyToImport = {
+                        URI: tempFileResponse.TemporaryFileURL,
+                    };
+                    const importResponse = await generalService.fetchStatus(
+                        `/addons/data/import/file/${UserDefinedCollectionsUUID}/${collectionName}`,
+                        { method: 'POST', body: JSON.stringify(bodyToImport) },
+                    );
+                    const executionURI = importResponse.Body.URI;
+                    const auditLogDevTestResponse = await generalService.getAuditLogResultObjectIfValid(
+                        executionURI as string,
+                        250,
+                        7000,
+                    );
+                    if (auditLogDevTestResponse.Status) {
+                        expect(auditLogDevTestResponse.Status.Name).to.equal('Success');
+                    } else {
+                        expect(auditLogDevTestResponse.Status).to.not.be.undefined;
+                    }
+                    const lineStats = JSON.parse(auditLogDevTestResponse.AuditInfo.ResultObject).LinesStatistics;
+                    expect(lineStats.Inserted).to.equal(howManyRows);
+                    generalService.sleep(1000 * 150); //let PNS Update
+                    for (let index = 1; index <= 100; index++) {
+                        console.log(`searching for 250 rows for the ${index} time - out of 100 sampling batch`);
+                        const allObjectsFromCollection = await udcService.getAllObjectFromCollectionCount(
+                            collectionName,
+                            index,
+                            250,
+                        );
+                        expect(allObjectsFromCollection.count).to.equal(howManyRows);
+                        for (let index1 = 0; index1 < allObjectsFromCollection.objects.length; index1++) {
+                            const row = allObjectsFromCollection.objects[index1];
+                            expect(row.str).to.contain(`_${random200charString.slice(0, 10)}`);
+                            expect(row.int).to.be.a('number');
+                        }
+                    }
+                });
 
-                // it('Validate Number of Rows of UDC is 10K', async function () {});
+                it('Validate Number of Rows of UDC is 10K', async function () {
+                    const getSchemesResponse = await udcService.getSchemes({
+                        where: `Name=${collectionName}`,
+                        page_size: -1,
+                    });
+                    expect(getSchemesResponse).to.be.an('array').with.lengthOf(10000);
+                });
 
                 it('Perform Manual Sync (10K Rows UDC) With Time Measurement', async function () {
                     const syncTime = await e2eUtils.performManualSyncWithTimeMeasurement.bind(this)(client, driver);

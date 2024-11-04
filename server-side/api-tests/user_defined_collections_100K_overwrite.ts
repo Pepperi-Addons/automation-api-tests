@@ -99,7 +99,10 @@ export async function UDC100KOverwrite(generalService: GeneralService, request, 
                 expect(tempFileResponse).to.have.property('PutURL').that.is.a('string').and.is.not.empty;
                 expect(tempFileResponse).to.have.property('TemporaryFileURL').that.is.a('string').and.is.not.empty;
                 expect(tempFileResponse.TemporaryFileURL).to.include('pfs.');
-                const csvFileName = await createInitalData(howManyRows);
+                const headers = 'code,value';
+                const runningDataCode = 'data_index';
+                const runningDataValue = 'old_value_index';
+                const csvFileName = await createInitalData(howManyRows, headers, [runningDataCode, runningDataValue]);
                 const localPath = __dirname;
                 const combinedPath = path.join(localPath, csvFileName);
                 const buf = fs.readFileSync(combinedPath);
@@ -263,15 +266,15 @@ export async function UDC100KOverwrite(generalService: GeneralService, request, 
     });
 }
 
-export async function createInitalData(howManyDataRows: number) {
-    const headers = 'code,value';
-    const runningDataCode = 'data_index';
-    const runningDataValue = 'old_value_index';
+export async function createInitalData(howManyDataRows: number, headers: string, dataValues: string[]) {
     let strData = '';
     strData += headers + '\n';
+    const numOfColumns = headers.split(',').length;
     for (let index = 0; index < howManyDataRows; index++) {
-        strData += `${runningDataCode.replace('index', index.toString())},`;
-        strData += `${runningDataValue.replace('index', index.toString())}\n`;
+        for (let j = 0; j < numOfColumns; j++) {
+            strData += `${dataValues[j].replace('index', index.toString())}`;
+            strData += j == numOfColumns - 1 ? '\n' : ',';
+        }
     }
     return await genrateFile('Data', strData);
 }
