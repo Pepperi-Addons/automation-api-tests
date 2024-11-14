@@ -45,6 +45,7 @@ export class WebAppAPI extends Page {
     async pollForResyncResponse(accessToken: string, loopsAmount = 30) {
         // Hagit, 14/4/24
         const generalService = new GeneralService(this._CLIENT);
+        let numOfRetry = loopsAmount;
         let resyncReposnse;
         const URL = `${await this.getBaseURL()}/Service1.svc/v1/GetSyncStatus`;
         do {
@@ -59,16 +60,18 @@ export class WebAppAPI extends Page {
             resyncReposnse = resyncReposnse.Body;
             if (resyncReposnse === null) {
                 this.browser.sleep(5000);
-                console.log(`Resync response not found (returned 'null'), Retry For ${loopsAmount} Times.`);
+                console.log(
+                    `Resync response not found (returned 'null'), Retry For ${loopsAmount - numOfRetry + 1} Times.`,
+                );
             }
             //This case will only retry the get call again as many times as the "loopsAmount"
             else if (resyncReposnse.Status == 'Processing') {
                 await this.browser.sleep(5000);
-                console.log(`Resync response is 'Processing': Retry ${loopsAmount} Times.`);
+                console.log(`Resync response is 'Processing': Retry ${loopsAmount - numOfRetry + 1} Times.`);
             }
-            console.info('Resync status response: ', resyncReposnse, ' Index: ', loopsAmount);
-            loopsAmount--;
-        } while ((!resyncReposnse.Success || resyncReposnse.Status != 'UpToDate') && loopsAmount > 0);
+            console.info('Resync status response: ', resyncReposnse, ' Index: ', loopsAmount - numOfRetry + 1);
+            numOfRetry--;
+        } while ((!resyncReposnse.Success || resyncReposnse.Status != 'UpToDate') && numOfRetry > 0);
         return resyncReposnse;
     }
 
