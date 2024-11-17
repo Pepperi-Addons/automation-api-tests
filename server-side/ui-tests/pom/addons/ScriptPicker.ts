@@ -392,7 +392,7 @@ export class ScriptEditor extends AddonPage {
         await this.browser.sendKeysNoClear(scriptEditor.CodeTextArea, actualScriptCode);
         this.browser.sleep(4500);
         //4. save
-        debugger; //delete default script code if youre on MAC (run as is on windows)
+        // debugger; //delete default script code if youre on MAC (run as is on windows)
         await this.browser.click(scriptEditor.SaveBtn);
         this.browser.sleep(10000);
         await this.browser.untilIsVisible(scriptEditor.ModalCloseBtn, 6000);

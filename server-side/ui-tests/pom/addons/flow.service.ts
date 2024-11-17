@@ -659,7 +659,7 @@ export class FlowService extends AddonPage {
     async validateStepScript(stepIndex: number, step: FlowStep, service) {
         const stepByIndex: string = this.StepBlockElement.valueOf()['value'].replace('|PLACEHOLDER|', stepIndex);
         //script
-        const editButtonOfStepBlock = stepByIndex + "//pep-button[@title='Edit']";
+        const editButtonOfStepBlock = stepByIndex + "//pep-button[@title='FlowSteps.EDIT']";
         await this.browser.click(By.xpath(editButtonOfStepBlock));
         this.browser.sleep(6000);
         await this.browser.untilIsVisible(this.scriptPickerTitle, 10000);
