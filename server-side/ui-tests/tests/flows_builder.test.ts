@@ -284,7 +284,7 @@ export async function FlowTests(email: string, password: string, client: Client,
                 expect(newFlow.Body.Steps).to.deep.equal(positiveFlow.Steps);
             });
             it('6. Run Flow And See Result', async function () {
-                debugger;
+                // debugger;
                 const isRunFlowPresentedCorrectly = await flowService.getToRunPageOfFlowByKeyUsingNav(
                     flowKey,
                     positiveFlow,
