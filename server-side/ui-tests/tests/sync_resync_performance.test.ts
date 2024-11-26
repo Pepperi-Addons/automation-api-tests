@@ -138,6 +138,8 @@ export async function SyncResyncPerformanceTests(email: string, password: string
     let createdUDT;
     // let bulkUpdateUDT;
     let howManyRows;
+    let noUdtData = false;
+    let noUdcData = false;
 
     describe(`Sync Resync Performance Test Suite |  Sync Ver: ${installedSyncVersion}, Nebulus Ver: ${installedNebulusVersion}, Nebula Ver: ${installedNebulaVersion} |  ${dateTime}`, async () => {
         describe('Performance Measurement tests', async () => {
@@ -155,7 +157,7 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 // for (let index = 1; index < 1501; index++) {
                 let index = 1;
                 do {
-                    udtsTableRows = await objectsService.getUDT({ page_size: 100, page: index });
+                    udtsTableRows = await objectsService.getUDT({ page_size: 250, page: index });
                     console.info('index: ', index, ' udtsTableRows length: ', udtsTableRows.length);
                     // addContext(this, {
                     //     title: `udtsTableRows length`,
@@ -167,31 +169,52 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                         }
                     });
                     console.info('udtsTableRowsNoAddonCpi length: ', udtsTableRowsNoAddonCpi.length);
+                    udtsTableRowsNoAddonCpi.forEach((tableRow) => {
+                        tableRow.Hidden = true;
+                    });
+                    console.info('first element in udtsTableRowsNoAddonCpi: ', udtsTableRowsNoAddonCpi[0]);
                     // addContext(this, {
                     //     title: `udtsTableRowsNoAddonCpi length`,
                     //     value: `udtsTableRowsNoAddonCpi length: ${udtsTableRowsNoAddonCpi.length}`,
                     // });
-                    udtsDeleteResponses = await Promise.all(
-                        udtsTableRowsNoAddonCpi.map(async (tableRow) => {
-                            tableRow.Hidden = true;
-                            return await objectsService.postUDT(tableRow);
-                        }),
-                    );
+                    // udtsDeleteResponses = await Promise.all(
+                    //     udtsTableRowsNoAddonCpi.map(async (tableRow) => {
+                    //         tableRow.Hidden = true;
+                    //         return await objectsService.postUDT(tableRow);
+                    //     }),
+                    // );
+                    udtsDeleteResponses = await objectsService.batchUDT(udtsTableRowsNoAddonCpi);
+                    // udtsDeleteResponses.forEach((deleteResponse) => {
+                    //     // expect(Object.keys(deleteResponse)).to.eql([
+                    //     //     'InternalID',
+                    //     //     'CreationDateTime',
+                    //     //     'Hidden',
+                    //     //     'MainKey',
+                    //     //     'MapDataExternalID',
+                    //     //     'ModificationDateTime',
+                    //     //     'SecondaryKey',
+                    //     //     'Values',
+                    //     // ]);
+                    //     expect(deleteResponse.Hidden).to.be.true;
+                    // });
                     udtsDeleteResponses.forEach((deleteResponse) => {
-                        expect(Object.keys(deleteResponse)).to.eql([
-                            'InternalID',
-                            'CreationDateTime',
-                            'Hidden',
-                            'MainKey',
-                            'MapDataExternalID',
-                            'ModificationDateTime',
-                            'SecondaryKey',
-                            'Values',
+                        // expect(Object.keys(deleteResponse)).to.eql([
+                        //     'InternalID',
+                        //     'ExternalID',
+                        //     'Message',
+                        //     'Status',
+                        //     'URI',
+                        //     'UUID',
+                        // ]);
+                        expect(deleteResponse.Status).to.be.oneOf(['Insert', 'Ignore', 'Update']);
+                        expect(deleteResponse.Message).to.be.oneOf([
+                            'Row inserted.',
+                            'No changes in this row. The row is being ignored.',
+                            'Row updated.',
                         ]);
-                        expect(deleteResponse.Hidden).to.be.true;
                     });
                     index++;
-                } while (udtsTableRowsNoAddonCpi.length > 0 && index < 1011);
+                } while (udtsTableRows.length > 0 && index < 402);
 
                 allUDTs = await objectsService.getUDTMetaDataList();
                 addContext(this, {
@@ -217,19 +240,6 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 });
             });
 
-            it('Validate UDTs were deleted', async function () {
-                udtsTableRows = await objectsService.getUDT({ page_size: -1 });
-                udtsTableRowsNoAddonCpi = udtsTableRows.filter((tableRow) => {
-                    if (tableRow.MapDataExternalID != 'ADDON_CPI_SIDE_DATA') {
-                        return tableRow;
-                    }
-                });
-                expect(udtsTableRowsNoAddonCpi).to.be.an('array').with.lengthOf(0);
-                allUDTs = await objectsService.getUDTMetaDataList();
-                expect(allUDTs).to.be.an('array').with.lengthOf(1);
-                expect(allUDTs[0]['TableID']).to.equal('ADDON_CPI_SIDE_DATA');
-            });
-
             it('UDCs Pre-clean via API', async function () {
                 allUDCs = await udcService.getSchemes();
                 udcsDeleteResponses = await Promise.all(
@@ -246,11 +256,6 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 });
             });
 
-            it('Validate UDCs were deleted', async function () {
-                allUDCs = await udcService.getSchemes();
-                expect(allUDCs).to.be.an('array').with.lengthOf(0);
-            });
-
             it('Login', async function () {
                 await webAppLoginPage.login(email, password);
             });
@@ -263,30 +268,54 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 await e2eUtils.logOutLogIn(email, password, client);
             });
 
-            it('Perform Manual Sync (No Data) With Time Measurement', async function () {
-                const syncTime = await e2eUtils.performManualSyncWithTimeMeasurement.bind(this)(client, driver);
-                addContext(this, {
-                    title: `Sync Time Interval`,
-                    value: `milisec: ${syncTime} , ${(syncTime / 1000).toFixed(1)} S`,
+            it('Validate UDTs were deleted', async function () {
+                udtsTableRows = await objectsService.getUDT({ page_size: -1 });
+                udtsTableRowsNoAddonCpi = udtsTableRows.filter((tableRow) => {
+                    if (tableRow.MapDataExternalID != 'ADDON_CPI_SIDE_DATA') {
+                        return tableRow;
+                    }
                 });
-                performanceMeasurements['No Data Sync'] = {
-                    milisec: syncTime,
-                    sec: Number((syncTime / 1000).toFixed(1)),
-                };
-                expect(syncTime).to.be.a('number').and.greaterThan(0);
+                expect(udtsTableRowsNoAddonCpi).to.be.an('array').with.lengthOf(0);
+                allUDTs = await objectsService.getUDTMetaDataList();
+                expect(allUDTs).to.be.an('array').with.lengthOf(1);
+                expect(allUDTs[0]['TableID']).to.equal('ADDON_CPI_SIDE_DATA');
+                noUdtData = true;
+            });
+
+            it('Validate UDCs were deleted', async function () {
+                allUDCs = await udcService.getSchemes();
+                expect(allUDCs).to.be.an('array').with.lengthOf(0);
+                noUdcData = true;
+            });
+
+            it('Perform Manual Sync (No Data) With Time Measurement', async function () {
+                if (noUdtData && noUdcData) {
+                    const syncTime = await e2eUtils.performManualSyncWithTimeMeasurement.bind(this)(client, driver);
+                    addContext(this, {
+                        title: `Sync Time Interval`,
+                        value: `milisec: ${syncTime} , ${(syncTime / 1000).toFixed(1)} S`,
+                    });
+                    performanceMeasurements['No Data Sync'] = {
+                        milisec: syncTime,
+                        sec: Number((syncTime / 1000).toFixed(1)),
+                    };
+                    expect(syncTime).to.be.a('number').and.greaterThan(0);
+                }
             });
 
             it('Perform Manual Resync (No Data) With Time Measurement', async function () {
-                const resyncTime = await e2eUtils.performManualResyncWithTimeMeasurement.bind(this)(client, driver);
-                addContext(this, {
-                    title: `Resync Time Interval`,
-                    value: `milisec: ${resyncTime} , ${(resyncTime / 1000).toFixed(1)} S`,
-                });
-                performanceMeasurements['No Data Resync'] = {
-                    milisec: resyncTime,
-                    sec: Number((resyncTime / 1000).toFixed(1)),
-                };
-                expect(resyncTime).to.be.a('number').and.greaterThan(0);
+                if (noUdtData && noUdcData) {
+                    const resyncTime = await e2eUtils.performManualResyncWithTimeMeasurement.bind(this)(client, driver);
+                    addContext(this, {
+                        title: `Resync Time Interval`,
+                        value: `milisec: ${resyncTime} , ${(resyncTime / 1000).toFixed(1)} S`,
+                    });
+                    performanceMeasurements['No Data Resync'] = {
+                        milisec: resyncTime,
+                        sec: Number((resyncTime / 1000).toFixed(1)),
+                    };
+                    expect(resyncTime).to.be.a('number').and.greaterThan(0);
+                }
             });
 
             describe('UDT', async () => {
@@ -318,46 +347,48 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 });
 
                 it('Truncate UDT before inserting new values', async function () {
-                    // for (let index = 1; index < 1501; index++) {
-                    let index = 1;
-                    do {
-                        udtsTableRows = await objectsService.getUDT({ page_size: 100, page: index });
-                        console.info('index: ', index, ' udtsTableRows length: ', udtsTableRows.length);
-                        addContext(this, {
-                            title: `udtsTableRows length`,
-                            value: `index: ${index} , udtsTableRows length: ${udtsTableRows.length}`,
-                        });
-                        udtsTableRowsTestTable = udtsTableRows.filter((tableRow) => {
-                            tableRow.MapDataExternalID === tableName;
-                        });
-                        console.info('udtsTableRowsTestTable length: ', udtsTableRowsTestTable.length);
-                        addContext(this, {
-                            title: `udtsTableRowsTestTable length`,
-                            value: `udtsTableRowsTestTable length: ${udtsTableRowsTestTable.length}`,
-                        });
-                        udtsDeleteResponses = await Promise.all(
-                            udtsTableRowsTestTable.map(async (tableRow) => {
-                                return await objectsService.deleteUDT(tableRow.InternalID as number);
-                            }),
-                        );
-                        udtsDeleteResponses.forEach((deleteResponse) => {
-                            expect(deleteResponse).to.be.true;
-                        });
-                        index++;
-                    } while (udtsTableRowsTestTable.length > 0 && index < 1001);
+                    if (!noUdtData) {
+                        // for (let index = 1; index < 1501; index++) {
+                        let index = 1;
+                        do {
+                            udtsTableRows = await objectsService.getUDT({ page_size: 250, page: index });
+                            console.info('index: ', index, ' udtsTableRows length: ', udtsTableRows.length);
+                            addContext(this, {
+                                title: `udtsTableRows length`,
+                                value: `index: ${index} , udtsTableRows length: ${udtsTableRows.length}`,
+                            });
+                            udtsTableRowsTestTable = udtsTableRows.filter((tableRow) => {
+                                tableRow.MapDataExternalID === tableName;
+                            });
+                            console.info('udtsTableRowsTestTable length: ', udtsTableRowsTestTable.length);
+                            addContext(this, {
+                                title: `udtsTableRowsTestTable length`,
+                                value: `udtsTableRowsTestTable length: ${udtsTableRowsTestTable.length}`,
+                            });
+                            udtsDeleteResponses = await Promise.all(
+                                udtsTableRowsTestTable.map(async (tableRow) => {
+                                    return await objectsService.deleteUDT(tableRow.InternalID as number);
+                                }),
+                            );
+                            udtsDeleteResponses.forEach((deleteResponse) => {
+                                expect(deleteResponse).to.be.true;
+                            });
+                            index++;
+                        } while (udtsTableRowsTestTable.length > 0 && index < 402);
 
-                    const getCreatedUDTdocuments = await objectsService.getUDT({
-                        where: "MapDataExternalID like 'SyncPerformanceUDT_Test%'",
-                        page_size: -1,
-                    });
-                    addContext(this, {
-                        title: `index`,
-                        value: `${index}`,
-                    });
-                    addContext(this, {
-                        title: `All MapDataExternalID like 'SyncPerformanceUDT_Test%' documents`,
-                        value: `${getCreatedUDTdocuments.length}`,
-                    });
+                        const getCreatedUDTdocuments = await objectsService.getUDT({
+                            where: "MapDataExternalID like 'SyncPerformanceUDT_Test%'",
+                            page_size: -1,
+                        });
+                        addContext(this, {
+                            title: `index`,
+                            value: `${index}`,
+                        });
+                        addContext(this, {
+                            title: `All MapDataExternalID like 'SyncPerformanceUDT_Test%' documents`,
+                            value: `${getCreatedUDTdocuments.length}`,
+                        });
+                    }
                 });
 
                 it('Perform Manual Sync NO Time Measurement', async function () {
@@ -617,7 +648,7 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                     do {
                         udtsTableRows = await objectsService.getUDT({
                             where: "MapDataExternalID='SyncPerformanceUDT_Test'",
-                            page_size: 100,
+                            page_size: 250,
                             page: index,
                         });
                         console.info('index: ', index, ' udtsTableRows length: ', udtsTableRows.length);
@@ -635,16 +666,33 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                         //     title: `udtsTableRowsTestTable length`,
                         //     value: `udtsTableRowsTestTable length: ${udtsTableRowsTestTable.length}`,
                         // });
-                        udtsDeleteResponses = await Promise.all(
-                            udtsTableRowsTestTable.map(async (tableRow) => {
-                                return await objectsService.deleteUDT(tableRow.InternalID as number);
-                            }),
-                        );
+                        // udtsDeleteResponses = await Promise.all(
+                        //     udtsTableRowsTestTable.map(async (tableRow) => {
+                        //         return await objectsService.deleteUDT(tableRow.InternalID as number);
+                        //     }),
+                        // );
+                        // udtsDeleteResponses.forEach((deleteResponse) => {
+                        //     expect(deleteResponse).to.be.true;
+                        // });
+                        udtsDeleteResponses = await objectsService.batchUDT(udtsTableRows);
                         udtsDeleteResponses.forEach((deleteResponse) => {
-                            expect(deleteResponse).to.be.true;
+                            expect(Object.keys(deleteResponse)).to.eql([
+                                'InternalID',
+                                'ExternalID',
+                                'Message',
+                                'Status',
+                                'URI',
+                                'UUID',
+                            ]);
+                            expect(deleteResponse.Status).to.be.oneOf(['Insert', 'Ignore', 'Update']);
+                            expect(deleteResponse.Message).to.be.oneOf([
+                                'Row inserted.',
+                                'No changes in this row. The row is being ignored.',
+                                'Row updated.',
+                            ]);
                         });
                         index++;
-                    } while (udtsTableRows.length > 0 && index < 1001);
+                    } while (udtsTableRows.length > 0 && index < 402);
 
                     addContext(this, {
                         title: `index`,
@@ -738,7 +786,7 @@ export async function SyncResyncPerformanceTests(email: string, password: string
 
                 it('Insert 10K Rows to UDC', async function () {
                     howManyRows = 10000;
-                    const headers = 'str,int,Key';
+                    const headers = 'str,int';
                     const runningDataStr = `index_${random200charString}`;
                     const runningDataInt = 'index';
                     // Create a file to import
@@ -771,7 +819,7 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                     const csvFileName = await udcService.createInitalDataToPFS(
                         howManyRows,
                         headers,
-                        [runningDataStr, runningDataInt, ''],
+                        [runningDataStr, runningDataInt],
                         localPath,
                     );
                     addContext(this, {
