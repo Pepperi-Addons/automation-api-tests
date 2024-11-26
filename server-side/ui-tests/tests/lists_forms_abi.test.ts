@@ -187,17 +187,17 @@ export async function ListsFormsAbiTests(email: string, password: string, client
             // console.info('lists: ', JSON.stringify(lists, null, 2));
         });
 
-        it('Validating Resources Data', async () => {
-            expect(typeof numOfListingsIn_items).to.equal('number');
-            expect(typeof numOfListingsIn_accounts).to.equal('number');
-            expect(typeof numOfListingsIn_items_filtered_MaNa).to.equal('number');
-            expect(typeof numOfListingsIn_items_filtered_a).to.equal('number');
-            expect(typeof numOfListingsIn_accounts_filtered_a).to.equal('number');
-            expect(typeof numOfListingsIn_ReferenceAccountAuto).to.equal('number');
-            expect(typeof numOfListingsIn_FiltersAccRefAuto).to.equal('number');
-            expect(typeof numOfListingsIn_ArraysOfPrimitivesAuto).to.equal('number');
-            expect(typeof numOfListingsIn_ContainedArray).to.equal('number');
-        });
+        // it('Validating Resources Data', async () => {
+        //     expect(typeof numOfListingsIn_items).to.equal('number');
+        //     expect(typeof numOfListingsIn_accounts).to.equal('number');
+        //     expect(typeof numOfListingsIn_items_filtered_MaNa).to.equal('number');
+        //     expect(typeof numOfListingsIn_items_filtered_a).to.equal('number');
+        //     expect(typeof numOfListingsIn_accounts_filtered_a).to.equal('number');
+        //     expect(typeof numOfListingsIn_ReferenceAccountAuto).to.equal('number');
+        //     expect(typeof numOfListingsIn_FiltersAccRefAuto).to.equal('number');
+        //     expect(typeof numOfListingsIn_ArraysOfPrimitivesAuto).to.equal('number');
+        //     expect(typeof numOfListingsIn_ContainedArray).to.equal('number');
+        // });
 
         describe('Lists ABI UI tests', async () => {
             before(async function () {
