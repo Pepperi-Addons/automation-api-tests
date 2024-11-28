@@ -198,6 +198,11 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                     driver.sleep(1 * 1000);
                     await driver.untilIsVisible(auditDataLog.dialogContainer);
                     await driver.untilIsVisible(auditDataLog.auditDataFieldLogBlock_element);
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Field validations starts`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
                     await driver.untilIsVisible(auditDataLog.ceationDateTime_field);
                     await driver.untilIsVisible(auditDataLog.email_field);
                     await driver.untilIsVisible(auditDataLog.name_field);
@@ -205,11 +210,6 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                     await driver.untilIsVisible(auditDataLog.externalID_field);
                     await driver.untilIsVisible(auditDataLog.userID_field);
                     await driver.untilIsVisible(auditDataLog.actionUUID_field);
-                    screenShot = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `Field validations completed`,
-                        value: 'data:image/png;base64,' + screenShot,
-                    });
                 });
 
                 it('Changing query params to invalid values (nighther ObjectKey, Resource nor AddonUUID are provided)', async function () {
@@ -219,7 +219,7 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                         value: invalidQueyParams,
                     });
                     await driver.navigate(auditDataLogURL + invalidQueyParams);
-                    driver.sleep(1 * 1000);
+                    driver.sleep(10 * 1000);
                     await driver.untilIsVisible(auditDataLog.openFieldLogABI_button);
                     screenShot = await driver.saveScreenshots();
                     addContext(this, {
@@ -228,7 +228,7 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                     });
                     driver.sleep(1 * 1000);
                     await driver.click(auditDataLog.openFieldLogABI_button);
-                    driver.sleep(1 * 1000);
+                    driver.sleep(2 * 1000);
                     await driver.untilIsVisible(auditDataLog.dialogContainer);
                     await driver.untilIsVisible(auditDataLog.auditDataFieldLogBlock_element);
                 });
@@ -254,7 +254,7 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                         value: invalidQueyParams,
                     });
                     await driver.navigate(auditDataLogURL + invalidQueyParams);
-                    driver.sleep(1 * 1000);
+                    driver.sleep(10 * 1000);
                     await driver.untilIsVisible(auditDataLog.openFieldLogABI_button);
                     screenShot = await driver.saveScreenshots();
                     addContext(this, {
@@ -263,7 +263,7 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                     });
                     driver.sleep(1 * 1000);
                     await driver.click(auditDataLog.openFieldLogABI_button);
-                    driver.sleep(1 * 1000);
+                    driver.sleep(2 * 1000);
                     await driver.untilIsVisible(auditDataLog.dialogContainer);
                     await driver.untilIsVisible(auditDataLog.auditDataFieldLogBlock_element);
                 });
@@ -303,7 +303,7 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                     });
                     console.info('Navigate to URL: ', auditDataLogURL + validQueyParams);
                     await driver.navigate(auditDataLogURL + validQueyParams);
-                    driver.sleep(1 * 1000);
+                    driver.sleep(10 * 1000);
                 });
 
                 it('Checking that the relevant button appears (for async job)', async function () {
@@ -318,19 +318,19 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                 it('clicking button (async job) and checking that dialog with data appears', async function () {
                     driver.sleep(1 * 1000);
                     await driver.click(auditDataLog.openAsyncJob_button);
-                    driver.sleep(1 * 1000);
+                    driver.sleep(2 * 1000);
                     await driver.untilIsVisible(auditDataLog.dialogContainer);
                     await driver.untilIsVisible(auditDataLog.asyncJobBlock_element);
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Field validations starts`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
                     await driver.untilIsVisible(auditDataLog.executionUUID_link);
                     await driver.untilIsVisible(auditDataLog.status_field);
                     await driver.untilIsVisible(auditDataLog.numberOfTries_field);
                     await driver.untilIsVisible(auditDataLog.startTime_field);
                     await driver.untilIsVisible(auditDataLog.endTime_field);
-                    screenShot = await driver.saveScreenshots();
-                    addContext(this, {
-                        title: `Field validations completed`,
-                        value: 'data:image/png;base64,' + screenShot,
-                    });
                 });
 
                 it('Changing query params to invalid values (CodeJobUUID is not provided)', async function () {
@@ -340,7 +340,7 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                         value: invalidQueyParams,
                     });
                     await driver.navigate(auditDataLogURL + invalidQueyParams);
-                    driver.sleep(1 * 1000);
+                    driver.sleep(10 * 1000);
                     await driver.untilIsVisible(auditDataLog.openAsyncJob_button);
                     screenShot = await driver.saveScreenshots();
                     addContext(this, {
@@ -349,7 +349,7 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                     });
                     driver.sleep(1 * 1000);
                     await driver.click(auditDataLog.openAsyncJob_button);
-                    driver.sleep(1 * 1000);
+                    driver.sleep(2 * 1000);
                     await driver.untilIsVisible(auditDataLog.dialogContainer);
                     await driver.untilIsVisible(auditDataLog.asyncJobBlock_element);
                 });
