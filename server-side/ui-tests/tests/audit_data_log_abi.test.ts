@@ -180,7 +180,7 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                         value: validQueyParams,
                     });
                     await driver.navigate(auditDataLogURL + validQueyParams);
-                    driver.sleep(1 * 1000);
+                    driver.sleep(10 * 1000);
                 });
 
                 it('Checking that the relevant button appears (for data log)', async function () {
