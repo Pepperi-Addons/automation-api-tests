@@ -39,12 +39,12 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
         Nebulus: ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', ''], // dependency of UDC
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], // UDC current phased version 0.8.29 | dependency > 0.8.11
-        // 'Pepperitest (Jenkins Special Addon) - Code Jobs': [
-        //     client.BaseURL.includes('staging')
-        //         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
-        //         : '78696fc6-a04f-4f82-aadf-8f823776473f',
-        //     '0.0.1',
-        // ],
+        'Pepperitest (Jenkins Special Addon) - Code Jobs': [
+            client.BaseURL.includes('staging')
+                ? '48d20f0b-369a-4b34-b48a-ffe245088513'
+                : '78696fc6-a04f-4f82-aadf-8f823776473f',
+            '0.0.1',
+        ],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
