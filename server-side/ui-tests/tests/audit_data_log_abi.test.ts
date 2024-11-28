@@ -39,11 +39,17 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
         Nebulus: ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', ''], // dependency of UDC
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], // UDC current phased version 0.8.29 | dependency > 0.8.11
+        // 'Pepperitest (Jenkins Special Addon) - Code Jobs': [
+        //     client.BaseURL.includes('staging')
+        //         ? '48d20f0b-369a-4b34-b48a-ffe245088513'
+        //         : '78696fc6-a04f-4f82-aadf-8f823776473f',
+        //     '0.0.1',
+        // ],
     };
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
 
-    describe(`Prerequisites Addons for Lists Tests - ${
+    describe(`Prerequisites Addons for Audit Data Log ABI Tests - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
     } | Tested user: ${email} | Date Time: ${dateTime}`, () => {
         for (const addonName in testData) {
@@ -86,6 +92,7 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
     let dataLog_resource: string;
     let dataLog_fieldId: string;
     let dataLog_addonUUID: string;
+    let codeJob_UUID: string;
 
     describe(`Audit Data Log ABI Test Suite`, async () => {
         describe('UI Tests', async () => {
@@ -147,127 +154,220 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                     title: `At Settings->System Monitor->Audit Data Log`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
-            });
-
-            it('Adding query params with valid values (for data log) to current URL', async function () {
-                const allAuditLogData = await generalService.fetchStatus(
-                    '/addons/api/00000000-0000-0000-0000-00000da1a109/api/get_audit_log_data?search_string_fields=ActionUUID.keyword,ObjectKey.keyword,UpdatedFields.FieldID,UpdatedFields.NewValue,UpdatedFields.OldValue&order_by=ObjectModificationDateTime%20desc&page_size=200',
-                    {
-                        method: 'GET',
-                    },
-                );
-                console.info('allAuditLogData: ', JSON.stringify(allAuditLogData, null, 2));
-                const firstListingOfDataLog = allAuditLogData.Body.AuditLogs[1];
-                console.info('first listing from AuditLogData: ', JSON.stringify(firstListingOfDataLog, null, 2));
-                dataLog_objectKey = firstListingOfDataLog.ObjectKey;
-                dataLog_resource = firstListingOfDataLog.Resource;
-                dataLog_fieldId = firstListingOfDataLog.UpdatedFields[1].FieldID;
-                dataLog_addonUUID = firstListingOfDataLog.AddonUUID;
-                const validQueyParams = `?showAuditDataFieldLogButton=true&ObjectKey=${dataLog_objectKey}&Resource=${dataLog_resource}&FieldID=${dataLog_fieldId}&Title=Valid Test&AddonUUID=${dataLog_addonUUID}`;
-                console.info('validQueyParams: ', validQueyParams);
-                addContext(this, {
-                    title: `The provided valid query params`,
-                    value: validQueyParams,
-                });
                 auditDataLogURL = await driver.getCurrentUrl();
                 console.info('auditDataLogURL: ', auditDataLogURL);
-                await driver.navigate(auditDataLogURL + validQueyParams);
             });
 
-            it('Checking that the relevant button appears (for data log)', async function () {
-                await driver.untilIsVisible(auditDataLog.openFieldLogABI_button);
-                screenShot = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Open Audit Data Log Button should appear`,
-                    value: 'data:image/png;base64,' + screenShot,
+            describe('Data Log', async () => {
+                it('Adding query params with valid values (for data log) to current URL', async function () {
+                    const allAuditLogData = await generalService.fetchStatus(
+                        '/addons/api/00000000-0000-0000-0000-00000da1a109/api/get_audit_log_data?search_string_fields=ActionUUID.keyword,ObjectKey.keyword,UpdatedFields.FieldID,UpdatedFields.NewValue,UpdatedFields.OldValue&order_by=ObjectModificationDateTime%20desc&page_size=200',
+                        {
+                            method: 'GET',
+                        },
+                    );
+                    console.info('allAuditLogData: ', JSON.stringify(allAuditLogData, null, 2));
+                    const firstListingOfDataLog = allAuditLogData.Body.AuditLogs[1];
+                    console.info('first listing from AuditLogData: ', JSON.stringify(firstListingOfDataLog, null, 2));
+                    dataLog_objectKey = firstListingOfDataLog.ObjectKey;
+                    dataLog_resource = firstListingOfDataLog.Resource;
+                    dataLog_fieldId = firstListingOfDataLog.UpdatedFields[1].FieldID;
+                    dataLog_addonUUID = firstListingOfDataLog.AddonUUID;
+                    const validQueyParams = `?showAuditDataFieldLogButton=true&ObjectKey=${dataLog_objectKey}&Resource=${dataLog_resource}&FieldID=${dataLog_fieldId}&Title=Valid Test&AddonUUID=${dataLog_addonUUID}`;
+                    console.info('validQueyParams: ', validQueyParams);
+                    addContext(this, {
+                        title: `The provided valid query params`,
+                        value: validQueyParams,
+                    });
+                    await driver.navigate(auditDataLogURL + validQueyParams);
+                    driver.sleep(1 * 1000);
+                });
+
+                it('Checking that the relevant button appears (for data log)', async function () {
+                    await driver.untilIsVisible(auditDataLog.openFieldLogABI_button);
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `"Open Audit Data Log" Button should appear`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
+                });
+
+                it('clicking button (data log) and checking that dialog with data appears', async function () {
+                    driver.sleep(1 * 1000);
+                    await driver.click(auditDataLog.openFieldLogABI_button);
+                    driver.sleep(1 * 1000);
+                    await driver.untilIsVisible(auditDataLog.dialogContainer);
+                    await driver.untilIsVisible(auditDataLog.auditDataFieldLogBlock_element);
+                    await driver.untilIsVisible(auditDataLog.ceationDateTime_field);
+                    await driver.untilIsVisible(auditDataLog.email_field);
+                    await driver.untilIsVisible(auditDataLog.name_field);
+                    await driver.untilIsVisible(auditDataLog.updatedFields_field);
+                    await driver.untilIsVisible(auditDataLog.externalID_field);
+                    await driver.untilIsVisible(auditDataLog.userID_field);
+                    await driver.untilIsVisible(auditDataLog.actionUUID_field);
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Field validations completed`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
+                });
+
+                it('Changing query params to invalid values (nighther ObjectKey, Resource nor AddonUUID are provided)', async function () {
+                    const invalidQueyParams = `?showAuditDataFieldLogButton=true&ObjectKey=&Resource=&FieldID=SystemData&Title=Invalid Test&AddonUUID=`;
+                    addContext(this, {
+                        title: `The provided invalid query params`,
+                        value: invalidQueyParams,
+                    });
+                    await driver.navigate(auditDataLogURL + invalidQueyParams);
+                    driver.sleep(1 * 1000);
+                    await driver.untilIsVisible(auditDataLog.openFieldLogABI_button);
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `"Open Audit Data Log" Button should appear`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
+                    driver.sleep(1 * 1000);
+                    await driver.click(auditDataLog.openFieldLogABI_button);
+                    driver.sleep(1 * 1000);
+                    await driver.untilIsVisible(auditDataLog.dialogContainer);
+                    await driver.untilIsVisible(auditDataLog.auditDataFieldLogBlock_element);
+                });
+
+                it('Checking that the correct error message shows ("In where query, ObjectKey or Resource or AddonUUID is required")', async function () {
+                    const emptyListTitle = await (await driver.findElement(auditDataLog.emptyListTitle_div)).getText();
+                    expect(emptyListTitle).to.equal('No results were found');
+                    const emptyListDescription = await (
+                        await driver.findElement(auditDataLog.emptyListDescription_div)
+                    ).getText();
+                    expect(emptyListDescription).to.contain('ObjectKey or Resource or AddonUUID is required');
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Error message with "ObjectKey or Resource or AddonUUID is required"`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
+                });
+
+                it('Changing query params to invalid values (FieldID is not provided)', async function () {
+                    const invalidQueyParams = `?showAuditDataFieldLogButton=true&ObjectKey=${dataLog_objectKey}&Resource=${dataLog_resource}&FieldID=&Title=Valid Test&AddonUUID=${dataLog_addonUUID}`;
+                    addContext(this, {
+                        title: `The provided invalid query params`,
+                        value: invalidQueyParams,
+                    });
+                    await driver.navigate(auditDataLogURL + invalidQueyParams);
+                    driver.sleep(1 * 1000);
+                    await driver.untilIsVisible(auditDataLog.openFieldLogABI_button);
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `"Open Audit Data Log" Button should appear`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
+                    driver.sleep(1 * 1000);
+                    await driver.click(auditDataLog.openFieldLogABI_button);
+                    driver.sleep(1 * 1000);
+                    await driver.untilIsVisible(auditDataLog.dialogContainer);
+                    await driver.untilIsVisible(auditDataLog.auditDataFieldLogBlock_element);
+                });
+
+                it('Checking that the correct error message shows ("FieldID is required")', async function () {
+                    const emptyListTitle = await (await driver.findElement(auditDataLog.emptyListTitle_div)).getText();
+                    expect(emptyListTitle).to.equal('No results were found');
+                    const emptyListDescription = await (
+                        await driver.findElement(auditDataLog.emptyListDescription_div)
+                    ).getText();
+                    expect(emptyListDescription).to.contain('FieldID is required');
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Error message with "FieldID is required"`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
                 });
             });
 
-            it('clicking button and checking that dialog with data appears', async function () {
-                await driver.click(auditDataLog.openFieldLogABI_button);
-                await driver.untilIsVisible(auditDataLog.dialogContainer);
-                await driver.untilIsVisible(auditDataLog.auditDataFieldLogBlock_element);
-                await driver.untilIsVisible(auditDataLog.ceationDateTime_field);
-                await driver.untilIsVisible(auditDataLog.email_field);
-                await driver.untilIsVisible(auditDataLog.name_field);
-                await driver.untilIsVisible(auditDataLog.updatedFields_field);
-                await driver.untilIsVisible(auditDataLog.externalID_field);
-                await driver.untilIsVisible(auditDataLog.userID_field);
-                await driver.untilIsVisible(auditDataLog.actionUUID_field);
-                screenShot = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Field validations completed`,
-                    value: 'data:image/png;base64,' + screenShot,
+            describe('Async Job', async () => {
+                it('Adding query params with valid values (for async job) to current URL', async function () {
+                    const allCodeJobsData = await generalService.fetchStatus('/code_jobs', {
+                        method: 'GET',
+                    });
+                    console.info('allCodeJobsData: ', JSON.stringify(allCodeJobsData, null, 2));
+                    const firstListingOfCodeJobs = allCodeJobsData.Body[0];
+                    console.info(
+                        'first listing from allCodeJobsData: ',
+                        JSON.stringify(firstListingOfCodeJobs, null, 2),
+                    );
+                    codeJob_UUID = firstListingOfCodeJobs.UUID;
+                    const validQueyParams = `?showAsyncJobButton=true&where=AuditInfo.JobMessageData.CodeJobUUID='${codeJob_UUID}'`;
+                    console.info('validQueyParams: ', validQueyParams);
+                    addContext(this, {
+                        title: `The provided valid query params`,
+                        value: validQueyParams,
+                    });
+                    console.info('Navigate to URL: ', auditDataLogURL + validQueyParams);
+                    await driver.navigate(auditDataLogURL + validQueyParams);
+                    driver.sleep(1 * 1000);
+                });
+
+                it('Checking that the relevant button appears (for async job)', async function () {
+                    await driver.untilIsVisible(auditDataLog.openAsyncJob_button);
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `"Open Async Job" Button should appear`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
+                });
+
+                it('clicking button (async job) and checking that dialog with data appears', async function () {
+                    driver.sleep(1 * 1000);
+                    await driver.click(auditDataLog.openAsyncJob_button);
+                    driver.sleep(1 * 1000);
+                    await driver.untilIsVisible(auditDataLog.dialogContainer);
+                    await driver.untilIsVisible(auditDataLog.asyncJobBlock_element);
+                    await driver.untilIsVisible(auditDataLog.executionUUID_link);
+                    await driver.untilIsVisible(auditDataLog.status_field);
+                    await driver.untilIsVisible(auditDataLog.numberOfTries_field);
+                    await driver.untilIsVisible(auditDataLog.startTime_field);
+                    await driver.untilIsVisible(auditDataLog.endTime_field);
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Field validations completed`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
+                });
+
+                it('Changing query params to invalid values (CodeJobUUID is not provided)', async function () {
+                    const invalidQueyParams = `?showAsyncJobButton=true&where=AuditInfo.JobMessageData.CodeJobUUID=''`;
+                    addContext(this, {
+                        title: `The provided invalid query params`,
+                        value: invalidQueyParams,
+                    });
+                    await driver.navigate(auditDataLogURL + invalidQueyParams);
+                    driver.sleep(1 * 1000);
+                    await driver.untilIsVisible(auditDataLog.openAsyncJob_button);
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `"Open Async Job" Button should appear`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
+                    driver.sleep(1 * 1000);
+                    await driver.click(auditDataLog.openAsyncJob_button);
+                    driver.sleep(1 * 1000);
+                    await driver.untilIsVisible(auditDataLog.dialogContainer);
+                    await driver.untilIsVisible(auditDataLog.asyncJobBlock_element);
+                });
+
+                it('Checking that the correct error message shows ("There are no async jobs available")', async function () {
+                    const emptyListTitle = await (await driver.findElement(auditDataLog.emptyListTitle_div)).getText();
+                    expect(emptyListTitle).to.equal('No async jobs available');
+                    const emptyListDescription = await (
+                        await driver.findElement(auditDataLog.emptyListDescription_div)
+                    ).getText();
+                    expect(emptyListDescription).to.contain('no async jobs available');
+                    screenShot = await driver.saveScreenshots();
+                    addContext(this, {
+                        title: `Error message with "There are no async jobs available"`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
                 });
             });
-
-            it('Changing query params to invalid values (nighther ObjectKey, Resource nor AddonUUID are provided)', async function () {
-                const invalidQueyParams = `?showAuditDataFieldLogButton=true&ObjectKey=&Resource=&FieldID=SystemData&Title=Invalid Test&AddonUUID=`;
-                addContext(this, {
-                    title: `The provided invalid query params`,
-                    value: invalidQueyParams,
-                });
-                await driver.navigate(auditDataLogURL + invalidQueyParams);
-                await driver.untilIsVisible(auditDataLog.openFieldLogABI_button);
-                screenShot = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Open Audit Data Log Button should appear`,
-                    value: 'data:image/png;base64,' + screenShot,
-                });
-                await driver.click(auditDataLog.openFieldLogABI_button);
-                await driver.untilIsVisible(auditDataLog.dialogContainer);
-                await driver.untilIsVisible(auditDataLog.auditDataFieldLogBlock_element);
-            });
-
-            it('Checking that the correct error message shows ("In where query, ObjectKey or Resource or AddonUUID is required")', async function () {
-                const emptyListTitle = await (await driver.findElement(auditDataLog.emptyListTitle_div)).getText();
-                expect(emptyListTitle).to.equal('No results were found');
-                const emptyListDescription = await (
-                    await driver.findElement(auditDataLog.emptyListDescription_div)
-                ).getText();
-                expect(emptyListDescription).to.contain('ObjectKey or Resource or AddonUUID is required');
-                screenShot = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Error message with "ObjectKey or Resource or AddonUUID is required"`,
-                    value: 'data:image/png;base64,' + screenShot,
-                });
-            });
-
-            it('Changing query params to invalid values (FieldID is not provided)', async function () {
-                const invalidQueyParams = `?showAuditDataFieldLogButton=true&ObjectKey=${dataLog_objectKey}&Resource=${dataLog_resource}&FieldID=&Title=Valid Test&AddonUUID=${dataLog_addonUUID}`;
-                addContext(this, {
-                    title: `The provided invalid query params`,
-                    value: invalidQueyParams,
-                });
-                await driver.navigate(auditDataLogURL + invalidQueyParams);
-                await driver.untilIsVisible(auditDataLog.openFieldLogABI_button);
-                screenShot = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Open Audit Data Log Button should appear`,
-                    value: 'data:image/png;base64,' + screenShot,
-                });
-                await driver.click(auditDataLog.openFieldLogABI_button);
-                await driver.untilIsVisible(auditDataLog.dialogContainer);
-                await driver.untilIsVisible(auditDataLog.auditDataFieldLogBlock_element);
-            });
-
-            it('Checking that the correct error message shows ("FieldID is required")', async function () {
-                const emptyListTitle = await (await driver.findElement(auditDataLog.emptyListTitle_div)).getText();
-                expect(emptyListTitle).to.equal('No results were found');
-                const emptyListDescription = await (
-                    await driver.findElement(auditDataLog.emptyListDescription_div)
-                ).getText();
-                expect(emptyListDescription).to.contain('FieldID is required');
-                screenShot = await driver.saveScreenshots();
-                addContext(this, {
-                    title: `Error message with "FieldID is required"`,
-                    value: 'data:image/png;base64,' + screenShot,
-                });
-            });
-
-            // it('Adding query params with valid values (for async job) to current URL', async function () {});
-
-            // it('Checking that the relevant button appears (for async job)', async function () {});
         });
     });
 }
