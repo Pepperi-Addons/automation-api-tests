@@ -262,7 +262,7 @@ export class ScriptEditor extends AddonPage {
         const selectAll = Key.chord(Key.CONTROL, 'a'); //
         await this.browser.sendKeys(scriptEditor.CodeTextArea, selectAll);
         await this.browser.sendKeys(scriptEditor.CodeTextArea, Key.DELETE);
-        debugger;
+        // debugger;
         await this.browser.sendKeys(scriptEditor.CodeTextArea, sciptText);
         this.browser.sleep(4500);
         //4. save

@@ -16,7 +16,7 @@ import E2EUtils from '../utilities/e2e_utils';
 import { MenuDataViewField } from '@pepperi-addons/papi-sdk';
 import { ResourceViews } from '../pom/addons/ResourceList';
 import { DataViewsService } from '../../services/data-views.service';
-import GeneralService from '../../services/general.service';
+import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
@@ -69,6 +69,7 @@ const surveySpesificTestData = {
 };
 
 export async function SurveyTests(email: string, password: string, client: Client, varPass) {
+    const date = new Date();
     const generalService = new GeneralService(client);
     let driver: Browser;
     let surveyBlockPageName;
@@ -231,39 +232,18 @@ export async function SurveyTests(email: string, password: string, client: Clien
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
     const isInstalledArr = await generalService.areAddonsInstalled(testData);
 
+    const installedSurveyBuilderVersion = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'Survey Builder',
+    )?.Version;
+    const installedSurveyVersion = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'survey',
+    )?.Version;
+
     // #endregion Upgrade survey dependencies
 
-    describe('Survey Builder Tests Suit', async function () {
-        describe('Prerequisites Addons for Survey Builder Tests', () => {
-            //Test Data
-            isInstalledArr.forEach((isInstalled, index) => {
-                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
-                    expect(isInstalled).to.be.true;
-                });
-            });
-            for (const addonName in testData) {
-                const addonUUID = testData[addonName][0];
-                const version = testData[addonName][1];
-                const varLatestVersion = chnageVersionResponseArr[addonName][2];
-                const changeType = chnageVersionResponseArr[addonName][3];
-                describe(`Test Data: ${addonName}`, () => {
-                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
-                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
-                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
-                        } else {
-                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
-                        }
-                    });
-                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
-                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
-                            .eventually.to.have.property('Version')
-                            .a('string')
-                            .that.is.equal(varLatestVersion);
-                    });
-                });
-            }
-        });
-
+    describe(`Survey Builder Tests Suit - ${
+        client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
+    } || Survey Ver. ${installedSurveyVersion} || Survey Builder Ver. ${installedSurveyBuilderVersion} || ${date}`, async function () {
         describe('Configuring Survey', () => {
             this.retries(0);
 
@@ -273,7 +253,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
 
             after(async function () {
                 await driver.close();
-                await driver.quit();
             });
 
             afterEach(async function () {
@@ -281,7 +260,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
             it(`1. Create A UDC Which Extends 'surveys' Scheme Before Creating A Survey`, async function () {
-                debugger;
+                // debugger;
                 if (!generalService.papiClient['options'].baseURL.includes('staging')) {
                     //PNS SB issue
                     const udcService = new UDCService(generalService);
@@ -427,10 +406,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     matchingEditorName: '',
                     viewKey: accountViewUUID,
                     fieldsToConfigureInView: [
-                        { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                        { fieldName: 'InternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                        { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                        { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                        { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'InternalID', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'ExternalID', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: true },
                     ],
                 });
                 await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
@@ -446,10 +425,10 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     matchingEditorName: '',
                     viewKey: surveyViewUUID,
                     fieldsToConfigureInView: [
-                        { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                        { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                        { fieldName: 'Description', dataViewType: 'TextBox', mandatory: false, readonly: false },
-                        { fieldName: 'Sections', dataViewType: 'TextBox', mandatory: false, readonly: false },
+                        { fieldName: 'Key', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'Name', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'Description', dataViewType: 'TextBox', mandatory: false, readonly: true },
+                        { fieldName: 'Sections', dataViewType: 'TextBox', mandatory: false, readonly: true },
                     ],
                 });
                 await resourceViews.clickUpdateHandleUpdatePopUpGoBack();
@@ -518,7 +497,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             it('9. ADMIN Set Up: Create A Slug For The Slideshow Page And Set It To Show On Homepage', async function () {
                 slideshowSlugDisplayName = `slideshow_slug_${generalService.generateRandomString(4)}`;
                 const slugPath = slideshowSlugDisplayName;
-                debugger;
+                // debugger;
                 await CreateSlug_Web18(
                     email,
                     password,
@@ -539,7 +518,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     await webAppHomePage.manualResync(client);
                 }
                 await webAppHomePage.validateATDIsApearingOnHomeScreen(slideshowSlugDisplayName);
-                debugger;
+                // debugger;
             });
         });
         describe('UI Test Configured Survey: Admin, Rep, Buyer', () => {
@@ -551,7 +530,6 @@ export async function SurveyTests(email: string, password: string, client: Clien
 
             after(async function () {
                 await driver.close();
-                await driver.quit();
             });
 
             afterEach(async function () {
@@ -606,7 +584,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                     title: `SURVEY KEY => ${surveyUUID}`,
                     value: 'NONE',
                 });
-                debugger;
+                // debugger;
                 for (let index = 0; index < allQuestionNames.length; index++) {
                     const currentQuestionName = allQuestionNames[index];
                     const currentQuestionType = allQuestionTypes[index];
@@ -628,7 +606,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
                     method: 'GET',
                 });
-                debugger;
+                // debugger;
                 const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
                 expect(filteredSurveyResponse.length).to.equal(1);
                 const currentSurvey = filteredSurveyResponse[0];
@@ -742,7 +720,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
                     method: 'GET',
                 });
-                debugger;
+                // debugger;
                 const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
                 expect(filteredSurveyResponse.length).to.equal(1);
                 const currentSurvey = filteredSurveyResponse[0];
@@ -856,7 +834,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const surveyResponse = await generalService.fetchStatus(`/resources/MySurveys?page_size=-1`, {
                     method: 'GET',
                 });
-                debugger;
+                // debugger;
                 const filteredSurveyResponse = surveyResponse.Body.filter((survey) => survey.Key === surveyKey);
                 expect(filteredSurveyResponse.length).to.equal(1);
                 const currentSurvey = filteredSurveyResponse[0];
@@ -901,7 +879,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
             });
             it('API Data Cleansing: 1. survey template', async function () {
                 //1. delete survey template
-                debugger;
+                // debugger;
                 const body = { Key: surveyUUID, Hidden: true };
                 const deleteSurveyTemplateResponse = await generalService.fetchStatus(`/resources/MySurveyTemplates`, {
                     method: 'POST',
@@ -1030,6 +1008,230 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 const isNotFound = await webAppHomePage.validateATDIsNOTApearingOnHomeScreen(slideshowSlugDisplayName);
                 expect(isNotFound).to.equal(true);
             });
+
+            it('Pages Leftovers Cleanup (containing "surveyBlockPage")', async () => {
+                const pageBuilder = new PageBuilder(driver);
+                const allPages = await pageBuilder.getAllPages(client);
+                const pagesOfAutoTest = allPages?.Body.filter((page) => {
+                    if (page.Name.includes('surveyBlockPage')) {
+                        return page.Key;
+                    }
+                });
+                console.info(`allPages: ${JSON.stringify(allPages.Body, null, 4)}`);
+                console.info(`pagesOfAutoTest: ${JSON.stringify(pagesOfAutoTest, null, 4)}`);
+                const deleteAutoPagesResponse: FetchStatusResponse[] = await Promise.all(
+                    pagesOfAutoTest.map(async (autoPage) => {
+                        const deleteAutoPageResponse = await pageBuilder.removePageByUUID(autoPage.Key, client);
+                        console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                        return deleteAutoPageResponse;
+                    }),
+                );
+                console.info(`deleteAutoPagesResponse: ${JSON.stringify(deleteAutoPagesResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allPagesAfterCleanup = await pageBuilder.getAllPages(client);
+                const findAutoPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) =>
+                    page.Name.includes('surveyBlockPage'),
+                );
+                console.info(`findAutoPageAfterCleanup: ${JSON.stringify(findAutoPageAfterCleanup, null, 4)}`);
+                expect(findAutoPageAfterCleanup).to.be.undefined;
+            });
+
+            it('Pages Leftovers Cleanup (containing "surveySlideShow")', async () => {
+                const pageBuilder = new PageBuilder(driver);
+                const allPages = await pageBuilder.getAllPages(client);
+                const pagesOfAutoTest = allPages?.Body.filter((page) => {
+                    if (page.Name.includes('surveySlideShow')) {
+                        return page.Key;
+                    }
+                });
+                console.info(`allPages: ${JSON.stringify(allPages.Body, null, 4)}`);
+                console.info(`pagesOfAutoTest: ${JSON.stringify(pagesOfAutoTest, null, 4)}`);
+                const deleteAutoPagesResponse: FetchStatusResponse[] = await Promise.all(
+                    pagesOfAutoTest.map(async (autoPage) => {
+                        const deleteAutoPageResponse = await pageBuilder.removePageByUUID(autoPage.Key, client);
+                        console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                        return deleteAutoPageResponse;
+                    }),
+                );
+                console.info(`deleteAutoPagesResponse: ${JSON.stringify(deleteAutoPagesResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allPagesAfterCleanup = await pageBuilder.getAllPages(client);
+                const findAutoPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) =>
+                    page.Name.includes('surveySlideShow'),
+                );
+                console.info(`findAutoPageAfterCleanup: ${JSON.stringify(findAutoPageAfterCleanup, null, 4)}`);
+                expect(findAutoPageAfterCleanup).to.be.undefined;
+            });
+
+            it('Pages Leftovers Cleanup (starting with "Blank Page")', async () => {
+                const pageBuilder = new PageBuilder(driver);
+                const allPages = await pageBuilder.getDraftPages(client);
+                console.info(
+                    `allPages.Body.length (looking for Blank Page): ${JSON.stringify(allPages.Body.length, null, 4)}`,
+                );
+                const blankPages = allPages?.Body.filter((page) => {
+                    if (page.Name.includes('Blank Page ')) {
+                        return page.Key;
+                    }
+                });
+                console.info(`allPages: ${JSON.stringify(allPages.Body, null, 4)}`);
+                console.info(`blankPages: ${JSON.stringify(blankPages, null, 4)}`);
+                const deleteBlankPagesResponse: FetchStatusResponse[] = await Promise.all(
+                    blankPages.map(async (blankPage) => {
+                        const deleteAutoPageResponse = await pageBuilder.removePageByUUID(blankPage.Key, client);
+                        console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                        return deleteAutoPageResponse;
+                    }),
+                );
+                console.info(`deleteBlankPagesResponse: ${JSON.stringify(deleteBlankPagesResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allPagesAfterCleanup = await pageBuilder.getDraftPages(client);
+                const findBlankPageAfterCleanup = allPagesAfterCleanup?.Body.find((page) =>
+                    page.Name.includes('Blank Page'),
+                );
+                console.info(`findBlankPageAfterCleanup: ${JSON.stringify(findBlankPageAfterCleanup, null, 4)}`);
+                expect(findBlankPageAfterCleanup).to.be.undefined;
+            });
+
+            it('Pages Leftovers Cleanup (name equal empty string "")', async () => {
+                const pageBuilder = new PageBuilder(driver);
+                const allPages = await pageBuilder.getDraftPages(client);
+                console.info(
+                    `allPages.Body.length (looking for Blank Page): ${JSON.stringify(allPages.Body.length, null, 4)}`,
+                );
+                const noNamePages = allPages?.Body.filter((page) => {
+                    if (page.Name === '') {
+                        return page.Key;
+                    }
+                });
+                console.info(`allPages: ${JSON.stringify(allPages.Body, null, 4)}`);
+                console.info(`noNamePages: ${JSON.stringify(noNamePages, null, 4)}`);
+                const deleteBlankPagesResponse: FetchStatusResponse[] = await Promise.all(
+                    noNamePages.map(async (noNamePage) => {
+                        const deleteAutoPageResponse = await pageBuilder.removePageByUUID(noNamePage.Key, client);
+                        console.info(`deleteAutoPageResponse: ${JSON.stringify(deleteAutoPageResponse, null, 4)}`);
+                        return deleteAutoPageResponse;
+                    }),
+                );
+                console.info(`deleteBlankPagesResponse: ${JSON.stringify(deleteBlankPagesResponse, null, 4)}`);
+                generalService.sleep(5 * 1000);
+                const allPagesAfterCleanup = await pageBuilder.getDraftPages(client);
+                const findNoNamePageAfterCleanup = allPagesAfterCleanup?.Body.find((page) => page.Name === '');
+                console.info(`findNoNamePageAfterCleanup: ${JSON.stringify(findNoNamePageAfterCleanup, null, 4)}`);
+                expect(findNoNamePageAfterCleanup).to.be.undefined;
+            });
+
+            it('Remove Leftovers Buttons from home screen (Rep profile)', async function () {
+                const e2eUiService = new E2EUtils(driver);
+                const webAppHomePage = new WebAppHomePage(driver);
+                const webAppHeader = new WebAppHeader(driver);
+                await webAppHeader.goHome();
+                await webAppHeader.openSettings();
+                await webAppHomePage.isSpinnerDone();
+                driver.sleep(0.5 * 1000);
+                await e2eUiService.removeHomePageButtonsLeftoversByProfile(`slidshow_slug_`, 'Rep');
+                await e2eUiService.performManualSync.bind(this)(client, driver);
+                const leftoversButtonsOnHomeScreen = await webAppHomePage.buttonsApearingOnHomeScreenByPartialText.bind(
+                    this,
+                )(driver, `slidshow_slug_`);
+                expect(leftoversButtonsOnHomeScreen).to.equal(false);
+            });
+
+            // it('Remove Leftovers Buttons from home screen (Admin profile)', async function () {
+            //     const e2eUiService = new E2EUtils(driver);
+            //     const webAppHomePage = new WebAppHomePage(driver);
+            //     const webAppHeader = new WebAppHeader(driver);
+            //     await webAppHeader.goHome();
+            //     await webAppHeader.openSettings();
+            //     await webAppHomePage.isSpinnerDone();
+            //     driver.sleep(0.5 * 1000);
+            //     await e2eUiService.removeHomePageButtonsLeftoversByProfile(`slidshow_slug_`, 'Admin');
+            //     await e2eUiService.performManualSync.bind(this)(client, driver);
+            //     const leftoversButtonsOnHomeScreen = await webAppHomePage.buttonsApearingOnHomeScreenByPartialText.bind(
+            //         this,
+            //     )(driver, `slidshow_slug_`);
+            //     expect(leftoversButtonsOnHomeScreen).to.equal(false);
+            // });
+
+            // it('Remove Leftovers Buttons from home screen (Buyer profile)', async function () {
+            //     const e2eUiService = new E2EUtils(driver);
+            //     const webAppHomePage = new WebAppHomePage(driver);
+            //     const webAppHeader = new WebAppHeader(driver);
+            //     await webAppHeader.goHome();
+            //     await webAppHeader.openSettings();
+            //     await webAppHomePage.isSpinnerDone();
+            //     driver.sleep(0.5 * 1000);
+            //     await e2eUiService.removeHomePageButtonsLeftoversByProfile(`slidshow_slug_`, 'Buyer');
+            //     await e2eUiService.performManualSync.bind(this)(client, driver);
+            //     const leftoversButtonsOnHomeScreen = await webAppHomePage.buttonsApearingOnHomeScreenByPartialText.bind(
+            //         this,
+            //     )(driver, `slidshow_slug_`);
+            //     expect(leftoversButtonsOnHomeScreen).to.equal(false);
+            // });
+
+            it('Remove Leftovers Slugs (containing "survey_slug_") via API', async function () {
+                const slugs = new Slugs(driver);
+                const deleteResponses = await slugs.deleteSlugsByPartialName('survey_slug_', client);
+                deleteResponses.forEach((res) => {
+                    expect(res).to.have.property('Ok').that.is.true;
+                    expect(res).to.have.property('Status').that.is.equal(200);
+                    expect(res).to.have.property('Error').that.is.eql({});
+                    expect(res).to.have.property('Body').that.haveOwnProperty('success').that.is.true;
+                });
+                expect(await (await slugs.getSlugs(client)).Body.find((item) => item.Slug.includes('survey_slug_'))).to
+                    .be.undefined;
+            });
+
+            it('Remove Leftovers Slugs (containing "slideshow_slug_") via API', async function () {
+                const slugs = new Slugs(driver);
+                const deleteResponses = await slugs.deleteSlugsByPartialName('slideshow_slug_', client);
+                deleteResponses.forEach((res) => {
+                    expect(res).to.have.property('Ok').that.is.true;
+                    expect(res).to.have.property('Status').that.is.equal(200);
+                    expect(res).to.have.property('Error').that.is.eql({});
+                    expect(res).to.have.property('Body').that.haveOwnProperty('success').that.is.true;
+                });
+                expect(await (await slugs.getSlugs(client)).Body.find((item) => item.Slug.includes('slideshow_slug_')))
+                    .to.be.undefined;
+            });
+
+            it('Print Screen', async function () {
+                driver.sleep(0.5 * 1000);
+                const base64ImageComponent = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After Buttons Removal`,
+                    value: 'data:image/png;base64,' + base64ImageComponent,
+                });
+            });
+        });
+        describe('Prerequisites Addons for Survey Builder Tests', () => {
+            //Test Data
+            isInstalledArr.forEach((isInstalled, index) => {
+                it(`Validate That Needed Addon Is Installed: ${Object.keys(testData)[index]}`, () => {
+                    expect(isInstalled).to.be.true;
+                });
+            });
+            for (const addonName in testData) {
+                const addonUUID = testData[addonName][0];
+                const version = testData[addonName][1];
+                const varLatestVersion = chnageVersionResponseArr[addonName][2];
+                const changeType = chnageVersionResponseArr[addonName][3];
+                describe(`Test Data: ${addonName}`, () => {
+                    it(`${changeType} To Latest Version That Start With: ${version ? version : 'any'}`, () => {
+                        if (chnageVersionResponseArr[addonName][4] == 'Failure') {
+                            expect(chnageVersionResponseArr[addonName][5]).to.include('is already working on version');
+                        } else {
+                            expect(chnageVersionResponseArr[addonName][4]).to.include('Success');
+                        }
+                    });
+                    it(`Latest Version Is Installed ${varLatestVersion}`, async () => {
+                        await expect(generalService.papiClient.addons.installedAddons.addonUUID(`${addonUUID}`).get())
+                            .eventually.to.have.property('Version')
+                            .a('string')
+                            .that.is.equal(varLatestVersion);
+                    });
+                });
+            }
         });
     });
 }
