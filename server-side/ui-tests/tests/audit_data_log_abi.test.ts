@@ -16,7 +16,7 @@ import {
     after,
 } from 'mocha';
 import chai, { expect } from 'chai';
-import GeneralService from '../../services/general.service';
+import GeneralService, { FetchStatusResponse } from '../../services/general.service';
 import E2EUtils from '../utilities/e2e_utils';
 import { AuditDataLog } from '../pom/addons/AuditDataLog';
 
@@ -33,12 +33,14 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
     await generalService.baseAddonVersionsInstallation(varPass);
 
     const testData = {
+        'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // open-sync 2.0.% or 3.%
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
         'Core Resources': ['fc5a5974-3b30-4430-8feb-7d5b9699bc9f', ''],
         'Cross Platform Engine Data': ['d6b06ad0-a2c1-4f15-bebb-83ecc4dca74b', ''],
         Nebulus: ['e8b5bb3a-d2df-4828-90f4-32cc3d49f207', ''], // dependency of UDC
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''], // UDC current phased version 0.8.29 | dependency > 0.8.11
+        'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.3.3'],
         'Pepperitest (Jenkins Special Addon) - Code Jobs': [
             client.BaseURL.includes('staging')
                 ? '48d20f0b-369a-4b34-b48a-ffe245088513'
@@ -49,9 +51,13 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
 
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
 
+    const installedAuditLogVersion = (await generalService.getInstalledAddons()).find(
+        (addon) => addon.Addon.Name == 'Audit Log',
+    )?.Version;
+
     describe(`Prerequisites Addons for Audit Data Log ABI Tests - ${
         client.BaseURL.includes('staging') ? 'STAGE' : client.BaseURL.includes('eu') ? 'EU' : 'PROD'
-    } | Tested user: ${email} | Date Time: ${dateTime}`, () => {
+    } | Ver. ${installedAuditLogVersion} | Tested user: ${email} | ${dateTime}`, () => {
         for (const addonName in testData) {
             const addonUUID = testData[addonName][0];
             const version = testData[addonName][1];
@@ -93,6 +99,8 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
     let dataLog_fieldId: string;
     let dataLog_addonUUID: string;
     let codeJob_UUID: string;
+    let executionUUID: string;
+    let dataLogOfExecute: FetchStatusResponse;
 
     describe(`Audit Data Log ABI Test Suite`, async () => {
         describe('UI Tests', async () => {
@@ -284,17 +292,73 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
             });
 
             describe('Async Job', async () => {
-                it('Adding query params with valid values (for async job) to current URL', async function () {
-                    const allCodeJobsData = await generalService.fetchStatus('/code_jobs', {
+                it('Creating Async Job', async function () {
+                    const bodyOfAsyncJob = {
+                        CodeJobName: 'AddonJob with values',
+                        Description: 'Audit Data Log ABI auto test',
+                        Type: 'AddonJob',
+                        IsScheduled: false,
+                        CodeJobIsHidden: false,
+                        ExecutionMemoryLevel: 1,
+                        NumberOfTries: 1,
+                        AddonPath: 'test.js',
+                        AddonUUID: client.BaseURL.includes('staging')
+                            ? '48d20f0b-369a-4b34-b48a-ffe245088513'
+                            : '78696fc6-a04f-4f82-aadf-8f823776473f',
+                        FunctionName: 'getTransactions',
+                    };
+                    const createdAsyncJob = await generalService.fetchStatus('/code_jobs', {
+                        method: 'POST',
+                        body: JSON.stringify(bodyOfAsyncJob),
+                    });
+                    console.info('createdAsyncJob: ', JSON.stringify(createdAsyncJob, null, 2));
+                    const createdCodeJobBody = createdAsyncJob.Body;
+                    console.info('first listing from createdAsyncJob: ', JSON.stringify(createdCodeJobBody, null, 2));
+                    codeJob_UUID = createdCodeJobBody.UUID;
+                    console.info('createdCodeJob_UUID: ', codeJob_UUID);
+                    addContext(this, {
+                        title: `createdCodeJob_UUID`,
+                        value: codeJob_UUID,
+                    });
+                    const executedAsyncJob = await generalService.fetchStatus(
+                        `/code_jobs/async/${codeJob_UUID}/execute`,
+                        {
+                            method: 'POST',
+                        },
+                    );
+                    console.info('executedAsyncJob: ', JSON.stringify(executedAsyncJob, null, 2));
+                    addContext(this, {
+                        title: `executedAsyncJob`,
+                        value: JSON.stringify(executedAsyncJob, null, 2),
+                    });
+                    executionUUID = executedAsyncJob.Body.ExecutionUUID;
+                    driver.sleep(2 * 1000);
+                    dataLogOfExecute = await generalService.fetchStatus(`/audit_logs/${executionUUID}`, {
                         method: 'GET',
                     });
-                    console.info('allCodeJobsData: ', JSON.stringify(allCodeJobsData, null, 2));
-                    const firstListingOfCodeJobs = allCodeJobsData.Body[0];
-                    console.info(
-                        'first listing from allCodeJobsData: ',
-                        JSON.stringify(firstListingOfCodeJobs, null, 2),
-                    );
-                    codeJob_UUID = firstListingOfCodeJobs.UUID;
+                    console.info('dataLogOfExecute: ', JSON.stringify(dataLogOfExecute, null, 2));
+                    addContext(this, {
+                        title: `dataLogOfExecute`,
+                        value: JSON.stringify(dataLogOfExecute, null, 2),
+                    });
+                    driver.sleep(10 * 1000);
+                });
+
+                it('Adding query params with valid values (for async job) to current URL', async function () {
+                    // the following section counts on existing data:
+
+                    // const allCodeJobsData = await generalService.fetchStatus('/code_jobs', {
+                    //     method: 'GET',
+                    // });
+                    // console.info('allCodeJobsData: ', JSON.stringify(allCodeJobsData, null, 2));
+                    // const firstListingOfCodeJobs = allCodeJobsData.Body[0];
+                    // console.info(
+                    //     'first listing from allCodeJobsData: ',
+                    //     JSON.stringify(firstListingOfCodeJobs, null, 2),
+                    // );
+                    // codeJob_UUID = firstListingOfCodeJobs.UUID;
+
+                    // since we are creating our own async job data - we do not need to GET the existing data.   Hagit Dec. 2024
                     const validQueyParams = `?showAsyncJobButton=true&where=AuditInfo.JobMessageData.CodeJobUUID='${codeJob_UUID}'`;
                     console.info('validQueyParams: ', validQueyParams);
                     addContext(this, {
@@ -331,6 +395,38 @@ export async function AuditDataLogAbiTests(email: string, password: string, clie
                     await driver.untilIsVisible(auditDataLog.numberOfTries_field);
                     await driver.untilIsVisible(auditDataLog.startTime_field);
                     await driver.untilIsVisible(auditDataLog.endTime_field);
+                });
+
+                it('Comparing UI fetched data to API', async function () {
+                    const executionUUID_element = await driver.findElement(auditDataLog.executionUUID_a);
+                    const executionUUID_element_value = await executionUUID_element.getText();
+                    const statusContent_element = await driver.findElement(auditDataLog.status_field_content);
+                    const statusContent_element_value = await statusContent_element.getText();
+                    screenShot = await driver.saveScreenshots();
+                    console.info('executionUUID from API: ', executionUUID);
+                    addContext(this, {
+                        title: `Execution UUID from the API request`,
+                        value: executionUUID,
+                    });
+                    console.info('executionUUID from UI: ', executionUUID_element_value);
+                    addContext(this, {
+                        title: `Execution UUID from the UI`,
+                        value: executionUUID_element_value,
+                    });
+                    addContext(this, {
+                        title: `"Async Job" display`,
+                        value: 'data:image/png;base64,' + screenShot,
+                    });
+                    expect(executionUUID_element_value).equals(executionUUID);
+                    expect(dataLogOfExecute)
+                        .to.haveOwnProperty('Body')
+                        .that.haveOwnProperty('UUID')
+                        .that.is.equal(executionUUID);
+                    expect(statusContent_element_value).equals('Success');
+                    expect(dataLogOfExecute.Body)
+                        .to.haveOwnProperty('Status')
+                        .that.haveOwnProperty('Name')
+                        .that.is.equal('Success');
                 });
 
                 it('Changing query params to invalid values (CodeJobUUID is not provided)', async function () {

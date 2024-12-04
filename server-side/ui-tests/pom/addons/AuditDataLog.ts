@@ -18,7 +18,9 @@ export class AuditDataLog extends AddonPage {
     public userID_field: By = By.xpath('//pep-textbox[@data-qa="InternalID"]');
     public actionUUID_field: By = By.xpath('//pep-textbox[@data-qa="ActionUUID"]');
     public executionUUID_link: By = By.xpath('//pep-link[@data-qa="UUID"]');
+    public executionUUID_a: By = By.xpath(`${this.executionUUID_link.value}/a`);
     public status_field: By = By.xpath('//pep-textbox[@data-qa="Status"]');
+    public status_field_content: By = By.xpath(`${this.status_field.value}/span`);
     public numberOfTries_field: By = By.xpath('//pep-textbox[@data-qa="NumberOfTriesFraction"]');
     public startTime_field: By = By.xpath('//pep-date/span[@id="StartTime"]');
     public endTime_field: By = By.xpath('//pep-date/span[@id="EndTime"]');
