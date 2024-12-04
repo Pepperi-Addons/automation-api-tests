@@ -219,7 +219,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         'User Defined Collections': ['122c0e9d-c240-4865-b446-f37ece866c22', ''],
         'Resource List': ['0e2ae61b-a26a-4c26-81fe-13bdd2e4aaa3', ''],
         'Abstract Activity': ['92b9bd68-1660-4998-91bc-3b745b4bab11', ''],
-        survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', ''],
+        Survey: ['dd0a85ea-7ef0-4bc1-b14f-959e0372877a', ''],
         Slugs: ['4ba5d6f9-6642-4817-af67-c79b68c96977', '1.3.7'], //slugs above 1.3.7 (1.3.8 and so on) require config  >=1.0.18 but we cant upgrade as its for open sync
         'User Defined Events': ['cbbc42ca-0f20-4ac8-b4c6-8f87ba7c16ad', ''],
         Scripts: ['9f3b727c-e88c-4311-8ec4-3857bc8621f3', ''],
@@ -236,7 +236,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         (addon) => addon.Addon.Name == 'Survey Builder',
     )?.Version;
     const installedSurveyVersion = (await generalService.getInstalledAddons()).find(
-        (addon) => addon.Addon.Name == 'survey',
+        (addon) => addon.Addon.Name == 'Survey',
     )?.Version;
 
     // #endregion Upgrade survey dependencies
