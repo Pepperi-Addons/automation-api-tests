@@ -46,7 +46,7 @@ export const systemAddons: any = {
     'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.%.%'],
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.3.%'], // waiting for a fix to https://dev.azure.com/advantive-devops/Advantive/_workitems/edit/746033
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', ''],
