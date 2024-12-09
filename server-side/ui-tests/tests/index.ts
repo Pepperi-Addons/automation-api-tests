@@ -69,6 +69,7 @@ import { ListsFormsAbiTests } from './lists_forms_abi.test';
 import { CustomCollectionsUpsert } from './custom_collections_upsert.test';
 import { SyncResyncPerformanceTests } from './sync_resync_performance.test';
 import { AuditDataLogAbiTests } from './audit_data_log_abi.test';
+import { ExampleTemplateToCopyTests } from './example_template.test';
 
 export {
     LoginTests,
@@ -142,4 +143,5 @@ export {
     CustomCollectionsUpsert,
     SyncResyncPerformanceTests,
     AuditDataLogAbiTests,
+    ExampleTemplateToCopyTests,
 };
