@@ -38,7 +38,7 @@ export const systemAddons: any = {
     Logs: ['7eb366b8-ce3b-4417-aec6-ea128c660b8a', ''],
     'Async Task Execution': ['00000000-0000-0000-0000-0000000a594c', ''],
     'Export and Import Framework (DIMX)': ['44c97115-6d14-4626-91dc-83f176e9a0fc', ''],
-    Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', '2.%.%'],
+    Pages: ['50062e0c-9967-4ed4-9102-f2bc50602d41', ''], // was 2.%.% - changed on Dec. 2024 by Hagit
     'Usage Monitor': ['00000000-0000-0000-0000-000000005a9e', ''],
     'Relations Framework': ['5ac7d8c3-0249-4805-8ce9-af4aecd77794', ''],
     'Audit Log': ['00000000-0000-0000-0000-00000da1a109', ''],
@@ -46,7 +46,8 @@ export const systemAddons: any = {
     'Notification Service': ['00000000-0000-0000-0000-000000040fa9', ''],
     ADAL: ['00000000-0000-0000-0000-00000000ada1', ''],
     'ATD Export / Import': ['e9029d7f-af32-4b0e-a513-8d9ced6f8186', ''],
-    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', '18.%.%'],
+    'Application Header': ['9bc8af38-dd67-4d33-beb0-7d6b39a6e98d', ''], // added on Dec. 2024 by Hagit
+    'WebApp Platform': ['00000000-0000-0000-1234-000000000b2b', ''], // was 18.%.% - changed on Dec. 2024 by Hagit
     'Cross Platforms API': ['00000000-0000-0000-0000-000000abcdef', '9.6.%'], //cpapi
     'Data Views API': ['484e7f22-796a-45f8-9082-12a734bac4e8', ''],
     'Addons Manager': ['bd629d5f-a7b4-4d03-9e7c-67865a6d82a9', ''],

@@ -1,7 +1,7 @@
 import { Client } from '@pepperi-addons/debug-server/dist';
 import { expect } from 'chai';
 import { By } from 'selenium-webdriver';
-import GeneralService from '../../../services/general.service';
+import GeneralService, { FetchStatusResponse } from '../../../services/general.service';
 import { AddonPage } from './base/AddonPage';
 import { PageBuilder } from './PageBuilder/PageBuilder';
 import { Browser } from '../../utilities/browser';
@@ -305,6 +305,16 @@ export class Slugs extends AddonPage {
         return findSlugBySlugName.Key;
     }
 
+    public async getSlugsUUIDbyPartialName(slugPartialName: string, client: Client) {
+        const allSlugs = await this.getSlugs(client);
+        const findSlugsBySlugPartialName: any[] = allSlugs.Body.filter((slugObj) => {
+            if (slugObj.Slug.includes(slugPartialName)) {
+                return slugObj.Key;
+            }
+        });
+        return findSlugsBySlugPartialName;
+    }
+
     public async upsertSlugByUUID(slugUUID: string, slugObj, client: Client) {
         const generalService = new GeneralService(client);
         return await generalService.fetchStatus(
@@ -333,9 +343,19 @@ export class Slugs extends AddonPage {
         });
     }
 
-    public async deleteSlugByName(slugName: string, client: Client) {
+    public async deleteSlugByName(slugName: string, client: Client): Promise<FetchStatusResponse> {
         // expected response body: { "success": true }
         const slugUUID = await this.getSlugUUIDbySlugName(slugName, client);
         return await this.deleteSlugByUUID(slugUUID, client);
+    }
+
+    public async deleteSlugsByPartialName(slugPartialName: string, client: Client): Promise<FetchStatusResponse[]> {
+        const slugs = await this.getSlugsUUIDbyPartialName(slugPartialName, client);
+        const deleteResponses = await Promise.all(
+            slugs.map(async (slug) => {
+                return await this.deleteSlugByUUID(slug.Key, client);
+            }),
+        );
+        return deleteResponses;
     }
 }
