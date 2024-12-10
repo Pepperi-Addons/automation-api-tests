@@ -403,7 +403,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                     },
                 },
                 TSAAttachmentAPI: {
-                    URL: 'https://file-examples.com/wp-content/storage/2017/10/file-sample_150kB.pdf', //https://file-examples.com/wp-content/storage/2017/10/file-sample_150kB.pdf -- http://www.africau.edu/images/default/sample.pdf
+                    URL: 'https://pdfobject.com/pdf/sample.pdf', //https://pdfobject.com/pdf/sample.pdf -- http://www.africau.edu/images/default/sample.pdf
                     Content: '',
                 },
                 TSACheckboxAPI: true,
@@ -461,7 +461,7 @@ export async function ContactsTests(generalService: GeneralService, tester: Test
                 // expect(getCreatedContact[0].TSAImageAPI.URL).to.include('cdn'),
                 expect(getCreatedContact[0].TSASignatureAPI.URL).to.include('43448bb5e0a24a448246b7bf9bc75075.png'),
                 // expect(getCreatedContact[0].TSASignatureAPI.URL).to.include('cdn'),
-                expect(getCreatedContact[0].TSAAttachmentAPI.URL).to.include('file-sample_150kb.pdf'),
+                expect(getCreatedContact[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
                 // expect(getCreatedContact[0].TSAAttachmentAPI.URL).to.include('cdn'),
                 expect(JSON.stringify(getCreatedContact[0].Account)).equals(
                     JSON.stringify({
