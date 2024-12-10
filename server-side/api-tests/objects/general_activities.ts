@@ -402,7 +402,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                     },
                 },
                 TSAAttachmentAPI: {
-                    URL: 'https://file-examples.com/wp-content/storage/2017/10/file-sample_150kB.pdf ',
+                    URL: 'https://pdfobject.com/pdf/sample.pdf ',
                     Content: '',
                 },
                 TSACheckboxAPI: true,
@@ -460,7 +460,7 @@ export async function GeneralActivitiesTests(generalService: GeneralService, tes
                 // expect(getCreatedActivity[0].TSAImageAPI.URL).to.include('cdn'),
                 expect(getCreatedActivity[0].TSASignatureAPI.URL).to.include('43448bb5e0a24a448246b7bf9bc75075.png'),
                 // expect(getCreatedActivity[0].TSASignatureAPI.URL).to.include('cdn'),
-                expect(getCreatedActivity[0].TSAAttachmentAPI.URL).to.include('file-sample_150kb.pdf'),
+                expect(getCreatedActivity[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
                 // expect(getCreatedActivity[0].TSAAttachmentAPI.URL).to.include('cdn'),
                 expect(JSON.stringify(getCreatedActivity[0].Account)).equals(
                     JSON.stringify({
