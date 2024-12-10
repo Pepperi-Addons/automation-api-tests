@@ -8,20 +8,20 @@ import {
     after,
 } from 'mocha';
 import addContext from 'mochawesome/addContext';
-import { Browser } from '../utilities/browser';
-import { Client } from '@pepperi-addons/debug-server/dist';
 import GeneralService, { FetchStatusResponse } from '../../services/general.service';
-import { ObjectsService } from '../../services';
-import { UDCService } from '../../services/user-defined-collections.service';
 import E2EUtils from '../utilities/e2e_utils';
+import { Browser } from '../utilities/browser';
+import { UDCService } from '../../services/user-defined-collections.service';
+import { ObjectsService } from '../../services';
+import { Client } from '@pepperi-addons/debug-server/dist';
+import { v4 as uuidv4 } from 'uuid';
+import { BaseFormDataViewField, DataViewFieldType, UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
 import { WebAppAPI, WebAppHeader, WebAppHomePage, WebAppLoginPage, WebAppSettingsSidePanel } from '../pom';
 import { ResourceEditors, ResourceList, ResourceViews } from '../pom/addons/ResourceList';
 import { PageBuilder } from '../pom/addons/PageBuilder/PageBuilder';
 import { Slugs } from '../pom/addons/Slugs';
 import { AccountDashboardLayout } from '../pom/AccountDashboardLayout';
 import { ResourceListBlock } from '../pom/ResourceList.block';
-import { BaseFormDataViewField, DataViewFieldType, UserDefinedTableRow } from '@pepperi-addons/papi-sdk';
-import { v4 as uuidv4 } from 'uuid';
 import { BasePageLayoutSectionColumn, ResourceViewEditorBlock } from '../blueprints/PageBlocksBlueprints';
 
 chai.use(promised);
@@ -58,7 +58,43 @@ npm run ui-show-report --server=eu --chrome_headless=false --user_email='test.us
 
     ** Than switch to DEBUG CONSOLE tab at the Terminal for nicer colorful view of the console 
 */
+
+/*  This file contains the following steps (you can search by the number or text):
+    1. Login
+    2. Manual Resync
+    3. Perform Manual Resync With Time Measurement // commented out
+    4. If after Resync an Error popup appear - close it
+    5. Logout Login
+    6. Perform Manual Sync
+    7. Perform Manual Sync With Time Measurement // commented out
+    8. Navigate to Settings->System Monitor->Audit Data Log
+    9. Adding query params with valid values (for data log) to current URL
+    10. Add & Configure Editor (Resource List)
+    11. Add & Configure View (Resource List)
+    12. Create Page
+    13. Create & Map Slug
+    14. Create A Button On Homepage
+    15. Go to Block (open the created slug & page) and perform checks
+    16. Return to Home Page
+    17. Adding Slug to Account Dashboard Menu (Admin Profile): Navigating to Account Dashboard Layout -> Menu (Pencil) -> Admin (Pencil) -> Adding Slug
+    18. Manual Sync & Logout Login
+    19. Navigating to a specific Account & Entering Resource View slug from Menu
+    20. Unconfiguring Slug from Account Dashboard Menu (Admin profile)
+    21. Delete Page
+    22. Delete Slug
+    23. Delete Editor (Resource List) Via API
+    24. Delete View (Resource List) Via API
+    25. Validating Deletion of Page
+    26. UDTs Pre-clean via API
+    27. Remove Leftovers Collections that starts with "
+    28. Editors Leftovers Cleanup (containing " Editor _(")
+    29. Views Leftovers Cleanup (containing " View _(")
+    30. Pages Leftovers Cleanup (starting with "Blank Page")
+    31. Remove Leftovers Buttons from home screen
+    32. Print Screen
+ */
 export async function ExampleTemplateToCopyTests(email: string, password: string, client: Client, varPass: string) {
+    // The following global variables can be used before a browser instance is initiated:
     const generalService = new GeneralService(client);
     const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
@@ -116,6 +152,8 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
         }
     });
 
+    // The following global variables are used for the UI section - can be recognaized by each of the it statements
+    // (and names can appear in the headline at the report, if value is assigned globaly - like: const example = `Example` )
     const example = `Example`;
     const test_name = `Example_${testUniqueString}`;
     let driver: Browser;
@@ -172,15 +210,15 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 await driver.quit();
             });
 
-            it('Login', async () => {
+            it('1. Login', async () => {
                 await webAppLoginPage.login(email, password);
             });
 
-            it('Manual Resync', async function () {
+            it('2. Manual Resync', async function () {
                 await e2eUtils.performManualResync.bind(this)(client, driver);
             });
 
-            // it('Perform Manual Resync With Time Measurement', async function () {
+            // it('3. Perform Manual Resync With Time Measurement', async function () {
             //     const resyncTime = await e2eUtils.performManualResyncWithTimeMeasurement.bind(this)(client, driver);
             //     addContext(this, {
             //         title: `Resync Time Interval`,
@@ -193,7 +231,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
             //     expect(resyncTime).to.be.a('number').and.greaterThan(0);
             // });
 
-            it('If after Resync an Error popup appear - close it', async function () {
+            it('4. If after Resync an Error popup appear - close it', async function () {
                 await driver.refresh();
                 const accessToken = await webAppAPI.getAccessToken();
                 let errorDialogAppear = true;
@@ -210,7 +248,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 } while (errorDialogAppear);
             });
 
-            it(`Logout Login`, async function () {
+            it(`5. Logout Login`, async function () {
                 const screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `At Home Page`,
@@ -221,11 +259,11 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
             });
 
-            it('Perform Manual Sync', async function () {
+            it('6. Perform Manual Sync', async function () {
                 await e2eUtils.performManualSync.bind(this)(client, driver);
             });
 
-            // it('Perform Manual Sync With Time Measurement', async function () {
+            // it('7. Perform Manual Sync With Time Measurement', async function () {
             //     const syncTime = await e2eUtils.performManualSyncWithTimeMeasurement.bind(this)(client, driver);
             //     addContext(this, {
             //         title: `Sync Time Interval`,
@@ -238,7 +276,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
             //     expect(syncTime).to.be.a('number').and.greaterThan(0);
             // });
 
-            it('Navigate to Settings->System Monitor->Audit Data Log', async function () {
+            it('8. Navigate to Settings->System Monitor->Audit Data Log', async function () {
                 await webAppHeader.goHome();
                 await webAppHeader.isSpinnerDone();
                 await webAppHeader.openSettings();
@@ -267,7 +305,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 });
             });
 
-            it('Adding query params with valid values (for data log) to current URL', async function () {
+            it('9. Adding query params with valid values (for data log) to current URL', async function () {
                 const allAuditLogData: FetchStatusResponse = await generalService.fetchStatus(
                     '/addons/api/00000000-0000-0000-0000-00000da1a109/api/get_audit_log_data?search_string_fields=ActionUUID.keyword,ObjectKey.keyword,UpdatedFields.FieldID,UpdatedFields.NewValue,UpdatedFields.OldValue&order_by=ObjectModificationDateTime%20desc&page_size=200',
                     {
@@ -292,7 +330,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
             });
 
             // Resource List Example:
-            it('Add & Configure Editor', async function () {
+            it('10. Add & Configure Editor (Resource List)', async function () {
                 // Add Editor
                 editorName = `${example} Editor _(${test_name})`;
                 editor_decsription = `Editor of resource: ${example}`;
@@ -335,7 +373,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 resourceEditors.pause(0.5 * 1000);
             });
 
-            it('Add & Configure View', async function () {
+            it('11. Add & Configure View (Resource List)', async function () {
                 // Add View
                 viewName = `${example} View _(${test_name})`;
                 view_decsription = `View of resource: ${example}`;
@@ -384,7 +422,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 await e2eUtils.performManualSync.bind(this)(client, driver);
             });
 
-            it('Create Page', async function () {
+            it('12. Create Page', async function () {
                 await e2eUtils.navigateTo('Page Builder');
                 // debugger
                 await pageBuilder.validatePageBuilderIsLoaded();
@@ -442,13 +480,13 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 await e2eUtils.performManualSync.bind(this)(client, driver);
             });
 
-            it('Create & Map Slug', async function () {
+            it('13. Create & Map Slug', async function () {
                 slugDisplayName = `${example} ${test_name}`;
                 slug_path = `${example.toLowerCase()}_${test_name}`;
                 await e2eUtils.createAndMapSlug(slugDisplayName, slug_path, pageKey, email, password, client);
             });
 
-            it(`Create A Button On Homepage`, async function () {
+            it(`14. Create A Button On Homepage`, async function () {
                 await webAppHeader.openSettings();
                 await webAppHeader.isSpinnerDone();
                 driver.sleep(0.1 * 1000);
@@ -466,7 +504,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 });
             });
 
-            it('Go to Block and perform checks', async function () {
+            it('15. Go to Block (open the created slug & page) and perform checks', async function () {
                 resourceListBlock = new ResourceListBlock(driver, `https://app.pepperi.com/${slug_path}`);
                 await webAppHomePage.isSpinnerDone();
                 await webAppHomePage.clickOnBtn(slugDisplayName);
@@ -497,13 +535,13 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 });
             });
 
-            it('Return to Home Page', async function () {
+            it('16. Return to Home Page', async function () {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
             });
 
             // Adding Slug to Account Dashboard Menu
-            it('Admin: Navigating to Account Dashboard Layout -> Menu (Pencil) -> Admin (Pencil) -> Adding Slug', async function () {
+            it('17. Adding Slug to Account Dashboard Menu (Admin Profile): Navigating to Account Dashboard Layout -> Menu (Pencil) -> Admin (Pencil) -> Adding Slug', async function () {
                 await accountDashboardLayout.configureToAccountSelectedSectionByProfile.bind(this)(
                     driver,
                     slugDisplayName,
@@ -512,13 +550,13 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 );
             });
 
-            it(`Manual Sync & Logout Login`, async () => {
+            it(`18. Manual Sync & Logout Login`, async () => {
                 await e2eUtils.performManualSync.bind(this)(client, driver);
                 await e2eUtils.logOutLogIn(email, password, client);
                 await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
             });
 
-            it(`Navigating to a specific Account & Entering Resource View slug from Menu`, async function () {
+            it(`19. Navigating to a specific Account & Entering Resource View slug from Menu`, async function () {
                 await webAppHeader.goHome();
                 await webAppHomePage.isSpinnerDone();
                 await webAppHomePage.clickOnBtn('Accounts');
@@ -561,7 +599,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 });
             });
 
-            it('Unconfiguring Slug from Account Dashboard (Admin profile)', async function () {
+            it('20. Unconfiguring Slug from Account Dashboard Menu (Admin profile)', async function () {
                 await accountDashboardLayout.unconfigureFromAccountSelectedSectionByProfile.bind(this)(
                     driver,
                     slugDisplayName,
@@ -573,18 +611,30 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
 
             // DELETIONS:
 
-            it('Delete Page', async function () {
+            it('21. Delete Page', async function () {
                 deletePageResponse = await pageBuilder.removePageByUUID(pageKey, client);
             });
 
-            it('Delete Slug', async function () {
+            it('22. Delete Slug', async function () {
                 const deleteSlugResponse = await slugs.deleteSlugByName(slug_path, client);
                 expect(deleteSlugResponse.Ok).to.equal(true);
                 expect(deleteSlugResponse.Status).to.equal(200);
                 expect(deleteSlugResponse.Body.success).to.equal(true);
             });
 
-            it('Delete View Via API', async function () {
+            it('23. Delete Editor (Resource List) Via API', async function () {
+                const deleteEditorResponse = await resourceEditors.deleteEditorViaAPI(editorKey, client);
+                addContext(this, {
+                    title: `Delete Response:`,
+                    value: deleteEditorResponse,
+                });
+                expect(deleteEditorResponse.Ok).to.equal(true);
+                expect(deleteEditorResponse.Status).to.equal(200);
+                expect(deleteEditorResponse.Body.Name).to.equal(editorName);
+                expect(deleteEditorResponse.Body.Hidden).to.equal(true);
+            });
+
+            it('24. Delete View (Resource List) Via API', async function () {
                 const deleteViewResponse = await resourceViews.deleteViewViaApiByUUID(viewKey, client);
                 expect(deleteViewResponse.Ok).to.equal(true);
                 expect(deleteViewResponse.Status).to.equal(200);
@@ -592,7 +642,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 expect(deleteViewResponse.Body.Hidden).to.equal(true);
             });
 
-            it('Validating Deletion of Page', async function () {
+            it('25. Validating Deletion of Page', async function () {
                 console.info(`deletePageResponse: ${JSON.stringify(deletePageResponse, null, 2)}`);
                 driver.sleep(0.5 * 1000);
                 expect(deletePageResponse.Ok).to.equal(true);
@@ -604,7 +654,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
             // TO BE USED AS PRE-CLEAN:
             describe('Cleaning of failed test garbage', async () => {
                 // UDT
-                it('UDTs Pre-clean via API', async function () {
+                it('26. UDTs Pre-clean via API', async function () {
                     let index = 1;
                     do {
                         udtsTableRows = await objectsService.getUDT({ page_size: 250, page: index });
@@ -659,7 +709,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 });
 
                 // UDC
-                it(`Remove Leftovers Collections that starts with "${example}_"`, async function () {
+                it(`27. Remove Leftovers Collections that starts with "${example}_"`, async function () {
                     const allUdcs = await udcService.getSchemes();
                     const leftoversUdcs = allUdcs.filter((collection) => {
                         if (collection.Name.startsWith(`${example}_`)) {
@@ -686,7 +736,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 });
 
                 // EDITORS
-                it('Editors Leftovers Cleanup (containing " Editor _(")', async () => {
+                it('28. Editors Leftovers Cleanup (containing " Editor _(")', async () => {
                     const allEditors = await resourceEditors.getAllEditors(client);
                     const editorsOfAutoTest = allEditors?.Body.filter((editor) => {
                         if (editor.Name.includes(' Editor _(')) {
@@ -716,7 +766,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 });
 
                 // VIEWS
-                it('Views Leftovers Cleanup (containing " View _(")', async () => {
+                it('29. Views Leftovers Cleanup (containing " View _(")', async () => {
                     const allViews = await resourceViews.getAllViews(client);
                     const viewsOfAutoTest = allViews?.Body.filter((view) => {
                         if (view.Name.includes(' View _(')) {
@@ -746,7 +796,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 });
 
                 // PAGES
-                it('Pages Leftovers Cleanup (starting with "Blank Page")', async () => {
+                it('30. Pages Leftovers Cleanup (starting with "Blank Page")', async () => {
                     const allPages = await pageBuilder.getDraftPages(client);
                     console.info(
                         `allPages.Body.length (looking for Blank Page): ${JSON.stringify(
@@ -780,7 +830,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                 });
 
                 // HOME PAGE BUTTONS
-                it('Remove Leftovers Buttons from home screen', async function () {
+                it('31. Remove Leftovers Buttons from home screen', async function () {
                     await webAppHeader.goHome();
                     await webAppHeader.openSettings();
                     await webAppHomePage.isSpinnerDone();
@@ -792,7 +842,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                     expect(leftoversButtonsOnHomeScreen).to.equal(false);
                 });
 
-                it('Print Screen', async function () {
+                it('32. Print Screen', async function () {
                     driver.sleep(0.5 * 1000);
                     const base64ImageComponent = await driver.saveScreenshots();
                     addContext(this, {
