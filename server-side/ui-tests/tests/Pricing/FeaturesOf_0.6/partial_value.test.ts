@@ -474,6 +474,15 @@ _________________
                                 driver.sleep(1 * 1000);
                             });
 
+                            it(`open side-bar menu to see smart filters`, async function () {
+                                await orderPage.openSmartFilterMenu();
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `After Side Bar that displays Smart Filters was opened`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                            });
+
                             partialValueCartTestItemsSets.forEach((partialValueCartTestItems, index) => {
                                 it(`filtering cart using smart filter Item External ID - Group ${
                                     index + 1

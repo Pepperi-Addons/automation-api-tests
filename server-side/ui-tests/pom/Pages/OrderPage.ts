@@ -1,6 +1,7 @@
 import { By } from 'selenium-webdriver';
 import { WebAppList } from '..';
 import { Browser } from '../../utilities/browser';
+import { expect } from 'chai';
 
 export class OrderPage extends WebAppList {
     constructor(protected browser: Browser) {
@@ -133,6 +134,13 @@ export class OrderPage extends WebAppList {
     );
     public Cart_Headline_Results: By = By.xpath('//list-total');
     public Cart_Headline_Results_Number: By = By.xpath('//pep-list-total//span[contains(@class,"bold number")]');
+    public Cart_SideBar: By = By.xpath('//app-cart//pep-side-bar');
+    public Cart_SideBar_ToggleButton: By = By.xpath(
+        `${this.Cart_SideBar.value}//button[contains(@class,"toggle-button")]`,
+    );
+    public Cart_SideBar_Container_div: By = By.xpath(
+        `${this.Cart_SideBar.value}//div[contains(@class,"toggle-side-bar-container")]`,
+    );
     public OrderCenter_Headline_Results_Number: By = By.xpath('//list-total//span[contains(@class,"bold number")]');
     public OrderCenter_SideMenu_BeautyMakeUp: By = By.xpath(
         '//mat-tree//span[text()="Beauty Make Up"]/parent::li/parent::mat-tree-node',
@@ -337,6 +345,20 @@ export class OrderPage extends WebAppList {
         await this.browser.click(this.Search_X_Button);
         this.browser.sleep(0.1 * 1000);
         await this.isSpinnerDone();
+    }
+
+    public async openSmartFilterMenu(): Promise<void> {
+        await this.isSpinnerDone();
+        let sidebarContainerDiv = await this.browser.findElement(this.Cart_SideBar_Container_div);
+        let sidebarContainerDiv_classes = await sidebarContainerDiv.getAttribute('class');
+        if (!sidebarContainerDiv_classes.includes('is-open-state')) {
+            await this.browser.click(this.Cart_SideBar_ToggleButton);
+            this.browser.sleep(0.1 * 1000);
+            await this.isSpinnerDone();
+            sidebarContainerDiv = await this.browser.findElement(this.Cart_SideBar_Container_div);
+            sidebarContainerDiv_classes = await sidebarContainerDiv.getAttribute('class');
+        }
+        expect(sidebarContainerDiv_classes).to.contain('is-open-state');
     }
 }
 
