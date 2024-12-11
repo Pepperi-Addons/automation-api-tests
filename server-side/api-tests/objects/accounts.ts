@@ -410,7 +410,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 Type: 'Customer',
                 ZipCode: '12345',
                 TSAAttachmentAPI: {
-                    URL: 'https://file-examples.com/wp-content/storage/2017/10/file-sample_150kB.pdf',
+                    URL: 'https://pdfobject.com/pdf/sample.pdf',
                     Content: '',
                 },
                 TSACheckboxAPI: true,
@@ -487,7 +487,7 @@ export async function AccountsTests(generalService: GeneralService, tester: Test
                 // expect(getCreatedAccount[0].TSAImageAPI.URL).to.include('cdn'),
                 expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('43448bb5e0a24a448246b7bf9bc75075.png'),
                 // expect(getCreatedAccount[0].TSASignatureAPI.URL).to.include('cdn'),
-                expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('file-sample_150kb.pdf'),
+                expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('sample.pdf'),
                 // expect(getCreatedAccount[0].TSAAttachmentAPI.URL).to.include('cdn'),
             ]);
         });
