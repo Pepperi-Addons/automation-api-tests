@@ -1,7 +1,7 @@
 {
   "name": "typescript",
   "version": "1.0.4",
-  "description": "",
+  "description": "The Automation Framwork is Pepperi's main testing tool, contaning API & E2E tests and the CI/CD component responsible for running the tests once a development release branch is merged, developed & maintained by the QA team.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,5 +18,6 @@
     "@pepperi-addons/papi-sdk": "^1.45.3",
     "@pepperi-addons/scripts": "^2.0.16",
     "chromedriver": "^129.0.0"
-  }
+  },
+  "devDependencies": {}
 }
