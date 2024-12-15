@@ -529,6 +529,15 @@ _________________
                                 });
                             });
 
+                            it(`open side-bar menu to see smart filters`, async function () {
+                                await orderPage.openSmartFilterMenu();
+                                screenShot = await driver.saveScreenshots();
+                                addContext(this, {
+                                    title: `After Side Bar that displays Smart Filters was opened`,
+                                    value: 'data:image/png;base64,' + screenShot,
+                                });
+                            });
+
                             Object.keys(packagesTestItems).forEach(async (item) => {
                                 describe(`Checking "${item}"`, function () {
                                     it(`filtering cart using smart filter Item External ID`, async function () {
