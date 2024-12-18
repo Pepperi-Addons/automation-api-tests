@@ -59,7 +59,7 @@ export async function CreateDistributorTests(
                 await driver.quit();
             });
 
-            it(`Login To New Distributor`, async function () {
+            it(`Create New Distributor & Login To It`, async function () {
                 let password = varPass;
                 if (varPassEU) {
                     password = varPassEU;
@@ -285,7 +285,8 @@ export async function CreateDistributorTests(
 
                 const webAppSettingsSidePanel = new WebAppSettingsSidePanel(driver);
                 await webAppSettingsSidePanel.selectSettingsByID('Branded App');
-                await driver.click(webAppSettingsSidePanel.BrandedAppBranding);
+                // await driver.click(webAppSettingsSidePanel.BrandedAppBranding); // branding?view=company_branding
+                await webAppSettingsSidePanel.clickSettingsSubCategory('branding?view=company_branding', 'Branded App');
 
                 const addonPage = new AddonPage(driver);
                 await driver.switchTo(addonPage.AddonContainerIframe);
