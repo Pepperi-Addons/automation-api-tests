@@ -124,7 +124,15 @@ export async function TestDataTests(
         if (options.IsUUID) {
             it(`UserUUID: ${service.getClientData('UserUUID')} DistributorUUID: ${service.getClientData(
                 'DistributorUUID',
-            )}`, () => {
+            )}`, function () {
+                addContext(this, {
+                    title: `Test User Details`,
+                    value: `Tested UserUUID: ${service.getClientData(
+                        'UserUUID',
+                    )} DistributorUUID: ${service.getClientData(
+                        'DistributorUUID',
+                    )} DistributorID: ${service.getClientData('DistributorID')}`,
+                });
                 expect(service.getClientData('DistributorUUID')).to.contain('-');
             });
         }

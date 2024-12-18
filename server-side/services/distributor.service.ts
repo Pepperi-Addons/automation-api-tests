@@ -31,8 +31,12 @@ export class DistributorService {
     async createDistributor(Distributor: DistributorObject) {
         let newDistributor;
         let maxLoopsCounter = 16;
-        console.log("NOTICE: 'var/distributors/create' API call started - Expected up to 8 minutes wait time");
+        let startTime;
+        let endTime;
+        // console.log("NOTICE: 'var/distributors/create' API call started - Expect up to 15 minutes wait time");
+        console.log("NOTICE: 'var/distributors/create' API call started");
         do {
+            startTime = new Date().getTime();
             newDistributor = await this.generalService.fetchStatus(
                 this.generalService['client'].BaseURL + `/var/distributors/create`,
                 {
@@ -47,8 +51,16 @@ export class DistributorService {
                         Company: Distributor.Company,
                         Password: Distributor.Password,
                     }),
-                    timeout: 1000 * 60 * 9, //Limit this api call to 9 minutes
+                    // timeout: 1000 * 60 * 2, // THIS DOESN'T LIMIT THE API CALL - BUT PROLONGS IT!!!!
                 },
+            );
+            endTime = new Date().getTime();
+            console.log(
+                `NOTICE: 'var/distributors/create' API call finished - Took ${(
+                    (endTime - startTime) /
+                    1000 /
+                    60
+                ).toFixed(1)} Minutes`,
             );
             maxLoopsCounter--;
             if (newDistributor.Status == 200) {
