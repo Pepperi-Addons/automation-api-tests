@@ -14,7 +14,7 @@ export async function PricingAddonsUpsert(varPass: string, client: Client, prcVe
     //#region Upgrade script dependencies
 
     const testData = {
-        pricing: ['adb3c829-110c-4706-9168-40fba9c0eb52', prcVer === '' ? '0.11.%' : prcVer], //
+        pricing: ['adb3c829-110c-4706-9168-40fba9c0eb52', prcVer], //
         Nebula: ['00000000-0000-0000-0000-000000006a91', ''], // dependency > 1.1.105 | Nelt: 1.1.115
         sync: ['5122dc6d-745b-4f46-bb8e-bd25225d350a', ''], // dependency > 1.0.42 | Nelt: 0.7.79 | has to evoid open sync which is 2.% | sync 3.% is available
         configurations: ['84c999c3-84b7-454e-9a86-71b7abc96554', ''],
