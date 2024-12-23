@@ -83,7 +83,7 @@ export async function UomTests(email: string, password: string, varPass: string,
     const chnageVersionResponseArr = await generalService.changeVersion(varPass, testData, false);
 
     const installedUomVersion = (await generalService.getInstalledAddons()).find(
-        (addon) => addon.Addon.Name == 'uom',
+        (addon) => addon.Addon.Name == 'UOM',
     )?.Version;
 
     describe(`UOM Tests Suite - ${
