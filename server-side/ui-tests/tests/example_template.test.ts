@@ -672,7 +672,7 @@ export async function ExampleTemplateToCopyTests(email: string, password: string
                         });
                         console.info('first element in udtsTableRowsNoAddonCpi: ', udtsTableRowsNoAddonCpi[0]);
 
-                        udtsDeleteResponses = await objectsService.batchUDT(udtsTableRowsNoAddonCpi);
+                        udtsDeleteResponses = await objectsService.postBatchUDT(udtsTableRowsNoAddonCpi);
                         udtsDeleteResponses.forEach((deleteResponse) => {
                             expect(deleteResponse.Status).to.be.oneOf(['Insert', 'Ignore', 'Update']);
                             expect(deleteResponse.Message).to.be.oneOf([

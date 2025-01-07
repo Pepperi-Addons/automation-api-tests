@@ -440,6 +440,7 @@ export class UDCService {
         if (Extends && Object.keys(Extends).length !== 0) {
             bodyToSendCollection['Extends'] = Extends;
         }
+        console.info(JSON.stringify(bodyToSendCollection, null, 2));
         //1. create scheme with all required data
         const udcCreateResponse = await this.generalService.fetchStatus('/user_defined_collections/schemes', {
             method: 'POST',
