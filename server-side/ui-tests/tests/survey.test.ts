@@ -88,6 +88,25 @@ export async function SurveyTests(email: string, password: string, client: Clien
     let surveyTemplateName: string;
     let surveyTemplateDesc: string;
 
+    const collectionProperties = [
+        'GenericResource',
+        'ModificationDateTime',
+        'SyncData',
+        'SyncDataDirty', // DI-28156
+        'CreationDateTime',
+        'UserDefined',
+        'Fields',
+        'Description',
+        'DataSourceData',
+        'DocumentKey',
+        'Type',
+        'Lock',
+        'ListView',
+        'Hidden',
+        'Name',
+        'AddonUUID',
+    ];
+
     const surveyTemplateToCreate: SurveySection[] = [
         {
             Title: 'my survey',
@@ -289,35 +308,109 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 await webAppHomePage.collectEndTestData(this);
             });
 
-            it(`Purge "MySurveys" Collection`, async function () {
-                const purgeResponse = await udcService.purgeScheme('MySurveys');
-                console.info(`MySurveys purgeResponse: ${JSON.stringify(purgeResponse, null, 2)}`);
-                addContext(this, {
-                    title: `Purge Response: `,
-                    value: JSON.stringify(purgeResponse, null, 2),
+            it(`"MySurveys" Collection Upsert`, async function () {
+                const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                    nameOfCollection: 'MySurveys',
+                    descriptionOfCollection: 'Created with Automation',
+                    inherits: 'surveys',
+                    fieldsOfCollection: [],
+                    syncDefinitionOfCollection: { Sync: true },
                 });
-                expect(purgeResponse.Ok).to.be.true;
-                expect(purgeResponse.Status).to.equal(200);
-                expect(purgeResponse.Error).to.eql({});
-                expect(Object.keys(purgeResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
-                expect(purgeResponse.Body.Done).to.be.true;
+                const pipelineUpsertResponse = await udcService.postScheme(bodyOfCollection);
+                console.info(`MySurveys pipelineUpsertResponse: ${JSON.stringify(pipelineUpsertResponse, null, 2)}`);
+                expect(pipelineUpsertResponse).to.be.an('object');
+                Object.keys(pipelineUpsertResponse).forEach((collectionProperty) => {
+                    expect(collectionProperty).to.be.oneOf(collectionProperties);
+                });
+                expect(pipelineUpsertResponse.Name).to.equal('MySurveys');
+                expect(pipelineUpsertResponse.Fields).to.be.an('object');
+                if (pipelineUpsertResponse.Fields)
+                    expect(Object.keys(pipelineUpsertResponse.Fields)).to.eql([
+                        'Account',
+                        'Agent',
+                        'Answers',
+                        'ExternalID',
+                        'StatusName',
+                        'Creator',
+                        'ActionDateTime',
+                        'Template',
+                    ]);
+
+                // addContext(this, {
+                //     title: `Collection data for "MySurveys" (CollectionFields): `,
+                //     value: fields,
+                // });
+                addContext(this, {
+                    title: `Upsert Response: `,
+                    value: JSON.stringify(pipelineUpsertResponse, null, 2),
+                });
+            });
+
+            it(`"MySurveyTemplates" Collection Upsert`, async function () {
+                const bodyOfCollection = udcService.prepareDataForUdcCreation({
+                    nameOfCollection: 'MySurveyTemplates',
+                    descriptionOfCollection: 'Created with Automation',
+                    inherits: 'survey_templates',
+                    fieldsOfCollection: [],
+                    syncDefinitionOfCollection: { Sync: true },
+                });
+                const pipelineUpsertResponse = await udcService.postScheme(bodyOfCollection);
+                console.info(
+                    `MySurveyTemplates pipelineUpsertResponse: ${JSON.stringify(pipelineUpsertResponse, null, 2)}`,
+                );
+                expect(pipelineUpsertResponse).to.be.an('object');
+                Object.keys(pipelineUpsertResponse).forEach((collectionProperty) => {
+                    expect(collectionProperty).to.be.oneOf(collectionProperties);
+                });
+                expect(pipelineUpsertResponse.Name).to.equal('MySurveyTemplates');
+                expect(pipelineUpsertResponse.Fields).to.be.an('object');
+                if (pipelineUpsertResponse.Fields)
+                    expect(Object.keys(pipelineUpsertResponse.Fields)).to.eql([
+                        'Active',
+                        'Description',
+                        'Sections',
+                        'Name',
+                    ]);
+
+                // addContext(this, {
+                //     title: `Collection data for "MySurveyTemplates" (CollectionFields): `,
+                //     value: fields,
+                // });
+                addContext(this, {
+                    title: `Upsert Response: `,
+                    value: JSON.stringify(pipelineUpsertResponse, null, 2),
+                });
+            });
+
+            it(`Truncate "MySurveys" Collection`, async function () {
+                const truncateResponse = await udcService.truncateScheme('MySurveys');
+                console.info(`MySurveys truncateResponse: ${JSON.stringify(truncateResponse, null, 2)}`);
+                addContext(this, {
+                    title: `Truncate Response: `,
+                    value: JSON.stringify(truncateResponse, null, 2),
+                });
+                expect(truncateResponse.Ok).to.be.true;
+                expect(truncateResponse.Status).to.equal(200);
+                expect(truncateResponse.Error).to.eql({});
+                expect(Object.keys(truncateResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
+                expect(truncateResponse.Body.Done).to.be.true;
 
                 const mySurveysDocs = await udcService.getDocuments('MySurveys');
                 expect(mySurveysDocs).to.be.an('array').with.lengthOf(0);
             });
 
-            it(`Purge "MySurveyTemplates" Collection`, async function () {
-                const purgeResponse = await udcService.purgeScheme('MySurveyTemplates');
-                console.info(`MySurveyTemplates purgeResponse: ${JSON.stringify(purgeResponse, null, 2)}`);
+            it(`Truncate "MySurveyTemplates" Collection`, async function () {
+                const truncateResponse = await udcService.truncateScheme('MySurveyTemplates');
+                console.info(`MySurveyTemplates truncateResponse: ${JSON.stringify(truncateResponse, null, 2)}`);
                 addContext(this, {
-                    title: `Purge Response: `,
-                    value: JSON.stringify(purgeResponse, null, 2),
+                    title: `Truncate Response: `,
+                    value: JSON.stringify(truncateResponse, null, 2),
                 });
-                expect(purgeResponse.Ok).to.be.true;
-                expect(purgeResponse.Status).to.equal(200);
-                expect(purgeResponse.Error).to.eql({});
-                expect(Object.keys(purgeResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
-                expect(purgeResponse.Body.Done).to.be.true;
+                expect(truncateResponse.Ok).to.be.true;
+                expect(truncateResponse.Status).to.equal(200);
+                expect(truncateResponse.Error).to.eql({});
+                expect(Object.keys(truncateResponse.Body)).to.eql(['Done', 'ProcessedCounter']);
+                expect(truncateResponse.Body.Done).to.be.true;
 
                 const mySurveyTemplatesDocs = await udcService.getDocuments('MySurveyTemplates');
                 expect(mySurveyTemplatesDocs).to.be.an('array').with.lengthOf(0);
