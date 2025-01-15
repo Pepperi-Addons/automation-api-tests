@@ -71,7 +71,7 @@ export class BodyToUpsertExtendedUdc implements Collection {
         collectionName: string,
         collectionDescription?: string,
         syncData?: { Sync: boolean; SyncFieldLevel?: boolean },
-        inherits?: 'pricing_table' | '', // TOBE expended upon need
+        inherits?: 'pricing_table' | 'survey_templates' | 'surveys' | '', // TOBE expended upon need
     ) {
         this.Name = collectionName;
         this.Description = collectionDescription ? collectionDescription : '';

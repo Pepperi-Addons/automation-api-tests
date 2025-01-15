@@ -991,7 +991,7 @@ export async function MockTest(email: string, password: string, client: Client) 
                 webAppHeader = new WebAppHeader(driver);
                 pageBuilder = new PageBuilder(driver);
                 brandedApp = new BrandedApp(driver);
-                // slugs = new Slugs(driver);
+                slugs = new Slugs(driver);
             });
 
             after(async function () {
