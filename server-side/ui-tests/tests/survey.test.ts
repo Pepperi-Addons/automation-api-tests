@@ -293,6 +293,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
                 surveyService = new SurveyTemplateBuilder(driver);
                 webAppHeader = new WebAppHeader(driver);
                 e2eUtils = new E2EUtils(driver);
+                slugs = new Slugs(driver);
                 resourceViews = new ResourceViews(driver);
                 pageBuilder = new PageBuilder(driver);
                 scriptEditor = new ScriptEditor(driver);
