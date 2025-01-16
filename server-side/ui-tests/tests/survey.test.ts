@@ -105,6 +105,7 @@ export async function SurveyTests(email: string, password: string, client: Clien
         'Hidden',
         'Name',
         'AddonUUID',
+        'SuperTypes',
     ];
 
     const surveyTemplateToCreate: SurveySection[] = [
