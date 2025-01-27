@@ -1,7 +1,6 @@
 import { Browser } from '../../utilities/browser';
 import { By } from 'selenium-webdriver';
 import { Page } from './base/Page';
-// import { expect } from 'chai';
 
 export class IpaasLoginPage extends Page {
     constructor(browser: Browser) {
