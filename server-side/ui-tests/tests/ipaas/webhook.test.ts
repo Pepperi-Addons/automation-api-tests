@@ -17,16 +17,16 @@ chai.use(promised);
 /** Description **/
 /* The Basic UI Test Flow for iPass 
     to run the test on PROD:
-    npm run ui-show-report --server=prod --chrome_headless=false --user_email='webapp.qa@pepperitest.com' --user_pass='Aa123456' --var_pass='VarQA@pepperitest.com:8n@V5X' --tests='IpaasUI' --ipaas_email='ipaas.automation@qatest.com' --ipaas_pass='3V=xin:J1J@7'
+    npm run ui-show-report --server=prod --chrome_headless=false --user_email='webapp.qa@pepperitest.com' --user_pass='Aa123456' --var_pass='VarQA@pepperitest.com:8n@V5X' --tests='IpaasWebhook' --ipaas_email='ipaas.automation@qatest.com' --ipaas_pass='3V=xin:J1J@7'
 */
-export async function IPaasBasicUITests(email: string, password: string) {
+export async function IPaasWebhookTests(email: string, password: string) {
     const dateTime = new Date();
 
     let driver: Browser;
     let iPaasLoginPage: IpaasLoginPage;
     let iPaasPage: IpaasPage;
 
-    describe(`iPaaS BASIC UI Test Suite | ${dateTime}`, async () => {
+    describe(`iPaaS WEBHOOK Test Suite | ${dateTime}`, async () => {
         describe('UI Tests', async () => {
             before(async function () {
                 driver = await Browser.initiateChrome();
@@ -56,15 +56,20 @@ export async function IPaasBasicUITests(email: string, password: string) {
                 });
             });
 
-            it('Click "UI Logs" at Top Menu', async function () {
-                await iPaasPage.clickButtonAtTopMenuByText('UI Logs');
+            it('Click "Transaction Logs" at Top Menu', async function () {
+                await iPaasPage.clickButtonAtTopMenuByText('Transaction Logs');
                 driver.sleep(1 * 1000);
                 const screenShot = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `After "UI Logs" button clicked`,
+                    title: `After "Transaction Logs" button clicked`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
             });
+
+            // it('', async function () {});
+            // it('', async function () {});
+            // it('', async function () {});
+            // it('', async function () {});
         });
     });
 }

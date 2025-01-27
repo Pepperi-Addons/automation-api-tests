@@ -89,6 +89,8 @@ import {
     AuditDataLogAbiTests,
     ExampleTemplateToCopyTests,
     IPaasBasicUITests,
+    IPaasDataflowTests,
+    IPaasWebhookTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -148,6 +150,8 @@ chai.use(promised);
 const tests = process.env.npm_config_tests as string;
 const email = process.env.npm_config_user_email as string;
 const pass = process.env.npm_config_user_pass as string;
+const ipaasEmail = process.env.npm_config_ipaas_email as string;
+const ipaasPassword = process.env.npm_config_ipaas_pass as string;
 const prcVer = process.env.npm_config_pricing_version as string;
 const varPass = process.env.npm_config_var_pass as string;
 const varPassEU = process.env.npm_config_var_pass_eu as string;
@@ -1137,7 +1141,19 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
     }
 
     if (tests === 'IpaasUI') {
-        await IPaasBasicUITests(email, pass);
+        await IPaasBasicUITests(ipaasEmail, ipaasPassword);
+        run();
+        return;
+    }
+
+    if (tests === 'IpaasDataflow') {
+        await IPaasDataflowTests(ipaasEmail, ipaasPassword);
+        run();
+        return;
+    }
+
+    if (tests === 'IpaasWebhook') {
+        await IPaasWebhookTests(ipaasEmail, ipaasPassword);
         run();
         return;
     }
