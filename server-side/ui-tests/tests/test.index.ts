@@ -2360,15 +2360,12 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
             case 'GENERIC-RESOURCE': {
                 addonUUID = 'df90dba6-e7cc-477b-95cf-2c70114e44e0';
                 const buildToken = 'CPIDATAApprovmentTests';
-                const jobPathPROD =
-                    'API%20Testing%20Framework/job/Test%20-%20B4.7%20Production%20-%20Permissions';
-                    // 'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Production%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
-                const jobPathEU =
-                    'API%20Testing%20Framework/job/Test%20-%20B4.7%20EU%20-%20Permissions';
-                    // 'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20EU%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
-                const jobPathSB =
-                    'API%20Testing%20Framework/job/Test%20-%20B4.7%20Stage%20-%20Permissions';
-                    // 'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Staging%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
+                const jobPathPROD = 'API%20Testing%20Framework/job/Test%20-%20B4.7%20Production%20-%20Permissions';
+                // 'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Production%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
+                const jobPathEU = 'API%20Testing%20Framework/job/Test%20-%20B4.7%20EU%20-%20Permissions';
+                // 'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20EU%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
+                const jobPathSB = 'API%20Testing%20Framework/job/Test%20-%20B4.7%20Stage%20-%20Permissions';
+                // 'API%20Testing%20Framework/job/Addon%20Approvement%20Tests/job/Test%20-%20J1%20Staging%20-%20CPI%20DATA%20+%20GENERIC%20RESOURCE';
                 const {
                     JenkinsBuildResultsAllEnvs,
                     latestRunProd,
