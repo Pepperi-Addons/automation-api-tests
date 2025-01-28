@@ -1,4 +1,5 @@
 import GeneralService, { TesterFunctions } from '../../services/general.service';
+import addContext from 'mochawesome/addContext';
 
 const installedAddons = {
     'API Testing Framework': '' as any,
@@ -113,14 +114,26 @@ export async function TestDataTestsNewSync(
 
         it(`Tested User: ${service.getClientData('UserEmail')} UserID: ${service.getClientData(
             'UserID',
-        )} DistributorID: ${service.getClientData('DistributorID')}`, () => {
+        )} DistributorID: ${service.getClientData('DistributorID')}`, function () {
+            addContext(this, {
+                title: `Test User Details`,
+                value: `Tested User: ${service.getClientData('UserEmail')} UserID: ${service.getClientData(
+                    'UserID',
+                )} DistributorID: ${service.getClientData('DistributorID')}`,
+            });
             expect(service.getClientData('UserEmail')).to.contain('@');
         });
 
         if (options.IsUUID) {
             it(`UserUUID: ${service.getClientData('UserUUID')} DistributorUUID: ${service.getClientData(
                 'DistributorUUID',
-            )}`, () => {
+            )}`, function () {
+                addContext(this, {
+                    title: `Test User Details`,
+                    value: `Tested User: ${service.getClientData('UserEmail')} UserID: ${service.getClientData(
+                        'UserID',
+                    )} DistributorID: ${service.getClientData('DistributorID')}`,
+                });
                 expect(service.getClientData('DistributorUUID')).to.contain('-');
             });
         }

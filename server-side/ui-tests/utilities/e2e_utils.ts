@@ -116,13 +116,13 @@ export default class E2EUtils extends BasePomObject {
         await rlViews.verifyViewEditPageOpen(viewData.nameOfView); // IS DIFFERENT than: Editor Edit Page !  DO NOT CHANGE (Hagit, Dec2022)
     }
 
-    public async addView_Web18(viewData: { nameOfView: string; descriptionOfView: string; nameOfResource: string }) {
-        const rlViews: ResourceViews = new ResourceViews(this.browser);
-        await this.navigateTo('Resource Views');
-        await rlViews.validateViewsListPageIsLoaded();
-        await rlViews.addToResourceList(viewData.nameOfView, viewData.descriptionOfView, viewData.nameOfResource);
-        await rlViews.verifyViewEditPageOpen(viewData.nameOfView); // IS DIFFERENT than: Editor Edit Page !  DO NOT CHANGE (Hagit, Dec2022)
-    }
+    // public async addView_Web18(viewData: { nameOfView: string; descriptionOfView: string; nameOfResource: string }) {
+    //     const rlViews: ResourceViews = new ResourceViews(this.browser);
+    //     await this.navigateTo('Resource Views');
+    //     await rlViews.validateViewsListPageIsLoaded();
+    //     await rlViews.addToResourceList(viewData.nameOfView, viewData.descriptionOfView, viewData.nameOfResource);
+    //     await rlViews.verifyViewEditPageOpen(viewData.nameOfView); // IS DIFFERENT than: Editor Edit Page !  DO NOT CHANGE (Hagit, Dec2022)
+    // }
 
     public async addPage(nameOfPage: string, descriptionOfPage: string, extraSection = false) {
         // debugger;

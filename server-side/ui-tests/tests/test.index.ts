@@ -88,6 +88,7 @@ import {
     SyncResyncPerformanceTests,
     AuditDataLogAbiTests,
     ExampleTemplateToCopyTests,
+    IPaasBasicUITests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -1131,6 +1132,12 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
         await PricingConfigUpload(client, email, pass, 'packages');
         await PricingPackagesTests(email, pass, client);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'IpaasUI') {
+        await IPaasBasicUITests(email, pass);
         run();
         return;
     }

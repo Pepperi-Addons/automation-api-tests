@@ -49,7 +49,7 @@ export interface CollectionDefinition {
         | 'contained'
         | 'papi'
         | 'abstract';
-    inherits?: 'pricing_table' | '';
+    inherits?: 'pricing_table' | 'survey_templates' | 'surveys' | '';
 }
 
 const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
@@ -440,6 +440,7 @@ export class UDCService {
         if (Extends && Object.keys(Extends).length !== 0) {
             bodyToSendCollection['Extends'] = Extends;
         }
+        console.info(JSON.stringify(bodyToSendCollection, null, 2));
         //1. create scheme with all required data
         const udcCreateResponse = await this.generalService.fetchStatus('/user_defined_collections/schemes', {
             method: 'POST',
@@ -763,7 +764,7 @@ export class UDCService {
                 collectionData.nameOfCollection,
                 collectionData.descriptionOfCollection,
                 collectionData.syncDefinitionOfCollection,
-                'pricing_table', // collectionData.inherits
+                collectionData.inherits, // 'pricing_table' | 'survey_templates' | 'surveys' | ''
             );
         } else {
             // this section creates a custom collection (which do not abide to a known scheme)
