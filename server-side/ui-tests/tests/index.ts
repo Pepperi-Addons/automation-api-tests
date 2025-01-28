@@ -71,6 +71,8 @@ import { SyncResyncPerformanceTests } from './sync_resync_performance.test';
 import { AuditDataLogAbiTests } from './audit_data_log_abi.test';
 import { ExampleTemplateToCopyTests } from './example_template.test';
 import { IPaasBasicUITests } from './ipaas/ui_basic.test';
+import { IPaasDataflowTests } from './ipaas/dataflow.test';
+import { IPaasWebhookTests } from './ipaas/webhook.test';
 
 export {
     LoginTests,
@@ -146,4 +148,6 @@ export {
     AuditDataLogAbiTests,
     ExampleTemplateToCopyTests,
     IPaasBasicUITests,
+    IPaasDataflowTests,
+    IPaasWebhookTests,
 };
