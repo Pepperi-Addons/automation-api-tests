@@ -24,7 +24,6 @@ export class IpaasLoginPage extends Page {
     }
 
     public async performLogin(email: string, pass: string) {
-        // try {
         await this.browser.untilIsVisible(this.PepperiBrandImg);
         await this.browser.untilIsVisible(this.MainHeadline);
         const emailInput = await this.browser.findElement(this.EmailInput);
@@ -33,19 +32,11 @@ export class IpaasLoginPage extends Page {
         this.browser.sleep(0.1 * 1000);
         await emailInput.sendKeys(email + '\n');
         this.browser.sleep(0.5 * 1000);
-        // await this.browser.click(this.NeutralElement);
-        // this.browser.sleep(0.1 * 1000);
         await passwordInput.clear();
         this.browser.sleep(0.1 * 1000);
         await passwordInput.sendKeys(pass);
         this.browser.sleep(0.5 * 1000);
-        // await this.browser.click(this.NeutralElement);
-        // this.browser.sleep(0.1 * 1000);
         await this.browser.click(this.LoginButton);
         this.browser.sleep(0.1 * 1000);
-        // } catch (error) {
-        //     const theError = error as Error;
-        //     expect(theError.message).to.contain('After wait time of: 15000, for selector');
-        // }
     }
 }
