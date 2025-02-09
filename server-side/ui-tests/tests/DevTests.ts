@@ -1329,8 +1329,10 @@ export class DevTest {
                 return ['neo4JSyncEU@pepperitest.com', 'Neo4JSyncProd@pepperitest.com', 'Neo4JSyncSB@pepperitest.com']; //
             case 'FEBULA':
                 return ['febulaEU@pepperitest.com', 'febulaProd@pepperitest.com', 'febulaSB@pepperitest.com']; //
+            //case 'NEBULUS':
+            //return ['NebulusEU@pepperitest.com', 'NebulusPROD@pepperitest.com', 'NebulusSB@pepperitest.com'];
             case 'NEBULUS':
-                return ['NebulusEU@pepperitest.com', 'NebulusPROD@pepperitest.com', 'NebulusSB@pepperitest.com'];
+                return ['NebulusSB@pepperitest.com'];
             case 'KMS':
                 return ['KmsTesterEU@pepperitest.com', 'KmsTesterProd@pepperitest.com', 'KmsTesterSB@pepperitest.com']; //
             case 'ADAL':
