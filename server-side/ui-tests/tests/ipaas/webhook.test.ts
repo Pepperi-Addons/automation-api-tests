@@ -66,6 +66,20 @@ export async function IPaasWebhookTests(email: string, password: string) {
                 });
             });
 
+            it('Click "Search" at Top Menu', async function () {
+                await iPaasPage.clickButtonAtTopMenuByText('Search');
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Search" button clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
+
+            it('Click "Client Tasks" on SearchBy List', async function () {
+                await driver.click(await iPaasPage.getSelectorOfSearchByDropListItemByText('Client Tasks'));
+            });
+
             // it('', async function () {});
             // it('', async function () {});
             // it('', async function () {});
