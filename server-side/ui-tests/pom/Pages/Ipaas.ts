@@ -11,6 +11,13 @@ export class IpaasPage extends Page {
     public MainMenu_buttonList: By = By.xpath(`//ul[@data-role="menu"]`);
     public MainMenu_buttonItem: By = By.xpath(`//li[@role="menuitem"]`);
     public MainHeader_afterMenuItemClick: By = By.xpath(`//div[@id="k-block"]//div[contains(@class,"k-header")]/div`);
+    //
+    public SearchBy_DropList_Item: By = By.xpath(`//ul[@id="Search_kendoPanel"]/li/span`);
+    public SearchBy_DropList_SubProperty: By = By.xpath(`//*[@id="Search_ClientTask_kendoPanel"]/li[1]/span/span`);
+
+    public async getSelectorOfSearchByDropListItemByText(text: string): Promise<By> {
+        return By.xpath(`${this.SearchBy_DropList_Item.value}[contains(text(),"${text}")]`);
+    }
 
     public async getSelectorOfMainMenuButtonItemByText(text: string): Promise<By> {
         return By.xpath(`${this.MainMenu_buttonList.value}${this.MainMenu_buttonItem.value}/a[contains(.,"${text}")]`);
