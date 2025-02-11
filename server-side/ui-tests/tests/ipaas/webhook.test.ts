@@ -78,9 +78,54 @@ export async function IPaasWebhookTests(email: string, password: string) {
 
             it('Click "Client Tasks" on SearchBy List', async function () {
                 await driver.click(await iPaasPage.getSelectorOfSearchByDropListItemByText('Client Tasks'));
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Client Task" button clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
             });
 
-            // it('', async function () {});
+            it('Click "Task Details" on SearchBy Client Task lst', async function () {
+                await driver.click(await iPaasPage.getSearchByDropListSubPropertyByText('Task Details'));
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Task Details" choosed from drop down`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
+
+            it('Enter "DO NOT TOUCH" to TaskName field', async function () {
+                await driver.sendKeys(iPaasPage.TaskName_textField, 'DO NOT TOUCH');
+                driver.sleep(1 * 1000);
+                //await driver.sendKeys(Key.RETURN);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Task Name" field filled`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
+
+            it('Click "Select Task Type.."', async function () {
+                await driver.click(iPaasPage.TaskType_dropList);
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Select Task Type" list button clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
+
+            it('Choose "Webhook" from drop menu', async function () {
+                await driver.click(iPaasPage.Choose_webook_from_dropList);
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Webhook" choosed from Task Type drop down`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
             // it('', async function () {});
             // it('', async function () {});
             // it('', async function () {});
