@@ -97,7 +97,7 @@ export async function IPaasWebhookTests(email: string, password: string) {
             });
 
             it('Enter "DO NOT TOUCH" to TaskName field', async function () {
-                await driver.sendKeys(iPaasPage.TaskName_textField, 'DO NOT TOUCH');
+                await driver.sendKeys(iPaasPage.TaskName_textField, 'DO NOT TOUCH' + '\n');
                 driver.sleep(1 * 1000);
                 //await driver.sendKeys(Key.RETURN);
                 const screenShot = await driver.saveScreenshots();
@@ -117,9 +117,10 @@ export async function IPaasWebhookTests(email: string, password: string) {
                 });
             });
 
-            it('Choose "Webhook" from drop menu', async function () {
-                await driver.click(iPaasPage.Choose_webook_from_dropList);
+            it('Enter "Webhook" to Task Type field', async function () {
+                await driver.sendKeys(iPaasPage.TaskType_webook_from_dropList, 'Webhook' + '\n');
                 driver.sleep(1 * 1000);
+                //await driver.sendKeys(Key.RETURN);
                 const screenShot = await driver.saveScreenshots();
                 addContext(this, {
                     title: `After "Webhook" choosed from Task Type drop down`,

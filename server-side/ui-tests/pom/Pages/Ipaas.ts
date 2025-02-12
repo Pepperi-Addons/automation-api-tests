@@ -15,8 +15,11 @@ export class IpaasPage extends Page {
     public SearchBy_DropList_Item: By = By.xpath(`//ul[@id="Search_kendoPanel"]/li/span`);
     public SearchBy_DropList_SubProperty: By = By.xpath(`//ul[@id="Search_ClientTask_kendoPanel"]/li/span`);
     public TaskName_textField: By = By.xpath(`//*[@id="Search_TaskName"]`);
-    public TaskType_dropList: By = By.xpath(`//*[@id="ea64fd31-8179-45f1-acc1-315d1c54d7f9"]`);
-    public Choose_webook_from_dropList: By = By.xpath(`//*[@id="b98d8885-d2ca-44c4-bbfd-a69966f76d30"]`);
+    public TaskType_dropList: By = By.xpath(
+        `//ul[@id="Search_ClientTask_kendoPanel"]/li[contains(@class,"k-state-highlight k-state-active")]//span[contains(text(),"Select Task Type")]/following-sibling::span[@role="button"]`,
+    );
+    public TaskType_webook_from_dropList: By = By.xpath(`//*[@id="Search_MappingActionTypeId-list"]/span/input`);
+    // //*[@id="Search_MappingActionTypeId-list"]/span/input
 
     public async getSelectorOfSearchByDropListItemByText(text: string): Promise<By> {
         return By.xpath(`${this.SearchBy_DropList_Item.value}[contains(text(),"${text}")]`);
