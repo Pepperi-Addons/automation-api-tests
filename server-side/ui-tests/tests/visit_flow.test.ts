@@ -78,6 +78,7 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
     const objectsService = new ObjectsService(generalService);
     const udcService = new UDCService(generalService);
     const repEmail = email.split('@')[0] + '.rep@pepperitest.com';
+    const buyerEmail = email.split('@')[0] + '.buyer@pepperitest.com';
     const baseUrl = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'}`;
 
     const testData = {
@@ -869,6 +870,10 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     await e2eUtils.performManualSync.bind(this)(client, driver);
                 });
 
+                it('Negative - Verifying settings button not available on rep', async function () {
+                    await e2eUtils.verifySettingsButtonNotAvailable();
+                });
+
                 it('Navigating to a specific Account & Entering Visit Flow slug from Menu', async function () {
                     await webAppHeader.goHome();
                     await webAppHomePage.isSpinnerDone();
@@ -1037,6 +1042,24 @@ export async function VisitFlowTests(varPass: string, client: Client, email: str
                     await visitFlow.waitTillVisible(visitFlow.AccountHomePage_List_EmptyList_Message, 15000);
                     driver.sleep(2.5 * 1000);
                 });
+                // moved to decribe below (line 1063)
+                //  it('Sign back in as Admin', async function () {
+                //     await e2eUtils.logOutLogIn(email, password, client);
+                //     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+                // });
+            });
+
+            describe('Verifying no settings button with buyer', () => {
+                it('Loging Out and Loging In as Buyer', async function () {
+                    await e2eUtils.logOutLogIn(buyerEmail, password, client);
+                    await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);
+                    await e2eUtils.performManualSync.bind(this)(client, driver);
+                });
+
+                it('Negative - Verifying settings button not available on buyer', async function () {
+                    await e2eUtils.verifySettingsButtonNotAvailable();
+                });
+
                 it('Sign back in as Admin', async function () {
                     await e2eUtils.logOutLogIn(email, password, client);
                     await webAppHomePage.untilIsVisible(webAppHomePage.MainHomePageBtn);

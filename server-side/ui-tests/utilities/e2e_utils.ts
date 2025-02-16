@@ -884,4 +884,14 @@ export default class E2EUtils extends BasePomObject {
         await driver.untilIsVisible(accountDashboardLayout.AccountDashboard_HamburgerMenu_Button);
         await driver.untilIsVisible(accountDashboardLayout.AccountDetails_component);
     }
+
+    public async verifySettingsButtonNotAvailable(): Promise<void> {
+        const webAppHeader = new WebAppHeader(this.browser);
+        try {
+            await this.browser.findElement(webAppHeader.Settings);
+        } catch (error) {
+            const theError = error as Error;
+            expect(theError.message).contains(`After wait time of: 15000, for selector of`);
+        }
+    }
 }
