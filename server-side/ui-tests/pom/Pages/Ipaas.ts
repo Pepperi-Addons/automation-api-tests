@@ -11,6 +11,23 @@ export class IpaasPage extends Page {
     public MainMenu_buttonList: By = By.xpath(`//ul[@data-role="menu"]`);
     public MainMenu_buttonItem: By = By.xpath(`//li[@role="menuitem"]`);
     public MainHeader_afterMenuItemClick: By = By.xpath(`//div[@id="k-block"]//div[contains(@class,"k-header")]/div`);
+    //
+    public SearchBy_DropList_Item: By = By.xpath(`//ul[@id="Search_kendoPanel"]/li/span`);
+    public SearchBy_DropList_SubProperty: By = By.xpath(`//ul[@id="Search_ClientTask_kendoPanel"]/li/span`);
+    public TaskName_textField: By = By.xpath(`//*[@id="Search_TaskName"]`);
+    public TaskType_dropList: By = By.xpath(
+        `//ul[@id="Search_ClientTask_kendoPanel"]/li[contains(@class,"k-state-highlight k-state-active")]//span[contains(text(),"Select Task Type")]/following-sibling::span[@role="button"]`,
+    );
+    public TaskType_webook_from_dropList: By = By.xpath(`//*[@id="Search_MappingActionTypeId-list"]/span/input`);
+    // //*[@id="Search_MappingActionTypeId-list"]/span/input
+
+    public async getSelectorOfSearchByDropListItemByText(text: string): Promise<By> {
+        return By.xpath(`${this.SearchBy_DropList_Item.value}[contains(text(),"${text}")]`);
+    }
+
+    public async getSearchByDropListSubPropertyByText(text: string): Promise<By> {
+        return By.xpath(`${this.SearchBy_DropList_SubProperty.value}[contains(text(),"${text}")]`);
+    }
 
     public async getSelectorOfMainMenuButtonItemByText(text: string): Promise<By> {
         return By.xpath(`${this.MainMenu_buttonList.value}${this.MainMenu_buttonItem.value}/a[contains(.,"${text}")]`);
