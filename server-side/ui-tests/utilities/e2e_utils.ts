@@ -477,8 +477,9 @@ export default class E2EUtils extends BasePomObject {
         const webAppHomePage: WebAppHomePage = new WebAppHomePage(this.browser);
         const webAppAPI: WebAppAPI = new WebAppAPI(this.browser, client);
         const accessToken = await webAppAPI.getAccessToken();
-        const homePageURL = `https://${client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'
-            }/HomePage`;
+        const homePageURL = `https://${
+            client.BaseURL.includes('staging') ? 'app.sandbox.pepperi.com' : 'app.pepperi.com'
+        }/HomePage`;
         await webAppAPI.pollForResyncResponse(accessToken, 100);
         try {
             await webAppHomePage.isDialogOnHomePAge(this);
@@ -870,8 +871,8 @@ export default class E2EUtils extends BasePomObject {
             accountID === ''
                 ? accountDashboardLayout.FirstAccountInList
                 : searchBy === 'name'
-                    ? accountDashboardLayout.getSelectorOfAccountHyperlinkByName(accountID)
-                    : accountDashboardLayout.getSelectorOfAccountHyperlinkByID(Number(accountID));
+                ? accountDashboardLayout.getSelectorOfAccountHyperlinkByName(accountID)
+                : accountDashboardLayout.getSelectorOfAccountHyperlinkByID(Number(accountID));
         await driver.click(selector);
         await accountDashboardLayout.isSpinnerDone();
         base64Image = await driver.saveScreenshots();
@@ -890,9 +891,7 @@ export default class E2EUtils extends BasePomObject {
             await this.browser.findElement(webAppHeader.Settings);
         } catch (error) {
             const theError = error as Error;
-            expect(theError.message).contains(
-                `After wait time of: 15000, for selector of`,
-            );
+            expect(theError.message).contains(`After wait time of: 15000, for selector of`);
         }
     }
 }
