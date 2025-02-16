@@ -127,6 +127,26 @@ export async function IPaasWebhookTests(email: string, password: string) {
                     value: 'data:image/png;base64,' + screenShot,
                 });
             });
+
+            it('Click "Search" button on Task Details', async function () {
+                await driver.click(iPaasPage.TaskDetails_search_button);
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Search" button on TaskDetails clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
+
+            it('Click "Open" button on DataFlows test', async function () {
+                await driver.click(iPaasPage.TaskDetails_open_button_triger_job_test);
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Open" button on TaskDetails derche results (Trigger Job - Test Dataflows) clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
             // it('', async function () {});
             // it('', async function () {});
             // it('', async function () {});
