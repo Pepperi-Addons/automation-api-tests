@@ -20,7 +20,9 @@ export class IpaasPage extends Page {
     );
     public TaskType_webook_from_dropList: By = By.xpath(`//*[@id="Search_MappingActionTypeId-list"]/span/input`);
     public TaskDetails_search_button: By = By.xpath(`//*[@id="Search_RightUpperContainer"]/div[1]`);
-    public TaskDetails_open_button_triger_job_test: By = By.xpath(`//*[@id="mainKendoGrid"]/div[2]/table/tbody/tr[3]/td[7]/a`);
+    public TaskDetails_open_button_triger_job_test: By = By.xpath(
+        `//*[@id="mainKendoGrid"]/div[2]/table/tbody/tr[3]/td[7]/a`,
+    );
 
     public async getSelectorOfSearchByDropListItemByText(text: string): Promise<By> {
         return By.xpath(`${this.SearchBy_DropList_Item.value}[contains(text(),"${text}")]`);
