@@ -11,6 +11,7 @@ import addContext from 'mochawesome/addContext';
 import { Browser } from '../../utilities/browser';
 import { IpaasLoginPage } from '../../pom/Pages/IpaasLogin';
 import { IpaasPage } from '../../pom/Pages/Ipaas';
+import { IpaasClientTaskPage } from '../../pom/Pages/IpaasClientTask';
 
 chai.use(promised);
 
@@ -25,6 +26,7 @@ export async function IPaasWebhookTests(email: string, password: string) {
     let driver: Browser;
     let iPaasLoginPage: IpaasLoginPage;
     let iPaasPage: IpaasPage;
+    let iPaasClientTaskPage: IpaasClientTaskPage;
 
     describe(`iPaaS WEBHOOK Test Suite | ${dateTime}`, async () => {
         describe('UI Tests', async () => {
@@ -32,6 +34,7 @@ export async function IPaasWebhookTests(email: string, password: string) {
                 driver = await Browser.initiateChrome();
                 iPaasLoginPage = new IpaasLoginPage(driver);
                 iPaasPage = new IpaasPage(driver);
+                iPaasClientTaskPage = new IpaasClientTaskPage(driver);
             });
 
             after(async function () {
