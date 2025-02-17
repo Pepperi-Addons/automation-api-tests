@@ -226,6 +226,7 @@ export async function IPaasWebhookTests(email: string, password: string) {
                         });
 
                         it('Click "Run Task Button"', async function () {
+                            driver.sleep(2 * 1000);
                             await driver.click(await iPaasClientTaskPage.Run_Task_Button);
                             driver.sleep(1 * 1000);
                             await driver.switchToOtherTab(4);
