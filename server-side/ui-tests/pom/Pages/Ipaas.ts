@@ -19,9 +19,11 @@ export class IpaasPage extends Page {
         `//ul[@id="Search_ClientTask_kendoPanel"]/li[contains(@class,"k-state-highlight k-state-active")]//span[contains(text(),"Select Task Type")]/following-sibling::span[@role="button"]`,
     );
     public TaskType_webook_from_dropList: By = By.xpath(`//*[@id="Search_MappingActionTypeId-list"]/span/input`);
-    public TaskDetails_search_button: By = By.xpath(`//*[@id="Search_RightUpperContainer"]/div[1]`);
+    public TaskDetails_search_button: By = By.xpath(
+        `//div[@id="Search_RightUpperContainer"]//span[contains(text(), "Search")]/parent::div`,
+    );
     public TaskDetails_open_button_triger_job_test: By = By.xpath(
-        `//*[@id="mainKendoGrid"]/div[2]/table/tbody/tr[3]/td[7]/a`,
+        `//div[@id="mainKendoGrid"]//table/tbody//td[contains(text(),"Trigger Job - Test Dataflows")]/following-sibling::td[@class="k-command-cell k-command-cell"]/child::*[1]`, //press on open button on table with Trigger Job - Test Dataflows DO NOT TOUCH
     );
 
     public async getSelectorOfSearchByDropListItemByText(text: string): Promise<By> {
