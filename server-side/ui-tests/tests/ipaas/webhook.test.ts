@@ -11,7 +11,7 @@ import addContext from 'mochawesome/addContext';
 import { Browser } from '../../utilities/browser';
 import { IpaasLoginPage } from '../../pom/Pages/IpaasLogin';
 import { IpaasPage } from '../../pom/Pages/Ipaas';
-import { IpaasClientTaskPage } from '../../pom/Pages/IpaasClientTask';
+import { IpaasClientTaskPage } from '../../pom/Pages/iPaasClientTask';
 
 chai.use(promised);
 
@@ -142,14 +142,138 @@ export async function IPaasWebhookTests(email: string, password: string) {
             });
 
             it('Click "Open" button on DataFlows test', async function () {
+                //debugger;
                 await driver.click(iPaasPage.TaskDetails_open_button_triger_job_test);
+                driver.sleep(1 * 1000);
+                await driver.switchToOtherTab(1);
                 driver.sleep(1 * 1000);
                 const screenShot = await driver.saveScreenshots();
                 addContext(this, {
-                    title: `After "Open" button on TaskDetails derche results (Trigger Job - Test Dataflows) clicked`,
+                    title: `After "Open" button on TaskDetails search results (Trigger Job - Test Dataflows) clicked`,
                     value: 'data:image/png;base64,' + screenShot,
                 });
             });
+
+            it('Click "Webhook Tasks" on TopBar List', async function () {
+                await driver.click(await iPaasClientTaskPage.getSelectorOfTopBarListElementByText('Webhook Tasks'));
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Webhook Tasks" TopBar element clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
+
+            it('Click "Trigger Job - Test Dataflows" on TopBar List', async function () {
+                //debugger;
+                await driver.click(
+                    await iPaasClientTaskPage.getSelectorOfWebhookDropdownElementByText('Trigger Job - Test Dataflows'),
+                );
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Trigger Job - Test Dataflows" Whebook dropdown element selected`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
+
+            it('Click "Settings" on Trigger Job Tab List', async function () {
+                await driver.click(await iPaasClientTaskPage.getSelectorOfTabListElementByText('Settings'));
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Settings" TabList element clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
+
+            it('Click "DO NOT TOUCH" button that opens script in a new tab', async function () {
+                //debugger;
+                await driver.click(iPaasClientTaskPage.OpenNewTab_TestScript_DoNotTouch);
+                driver.sleep(1 * 1000);
+                await driver.switchToOtherTab(2);
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "DO NOT TOUCH" button clicked a new tab opened`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
+
+            it('Click "Tasks" on Scheduled Jobs Tab List', async function () {
+                await driver.click(await iPaasClientTaskPage.getSelectorOfScheduledJobsTabListElementByText('Tasks'));
+                driver.sleep(1 * 1000);
+                const screenShot = await driver.saveScreenshots();
+                addContext(this, {
+                    title: `After "Tasks" TabList element clicked`,
+                    value: 'data:image/png;base64,' + screenShot,
+                });
+            });
+
+            ['Test ASYNC Task', 'Test SQL task', 'Test JS Task', 'Test LISTENER Task', 'Trigger Test Webhook'].forEach(
+                (task) => {
+                    describe(`Run "${task}"`, async () => {
+                        it(`Click "${task}" on Scheduled Jobs table`, async function () {
+                            await driver.click(await iPaasClientTaskPage.getSelectorOfOpenNewTabButtonByTaskName(task));
+                            driver.sleep(1 * 1000);
+                            await driver.switchToOtherTab(3);
+                            driver.sleep(1 * 1000);
+                            const screenShot = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After table element clicked`,
+                                value: 'data:image/png;base64,' + screenShot,
+                            });
+                        });
+
+                        it('Click "Run Task Button"', async function () {
+                            await driver.click(await iPaasClientTaskPage.Run_Task_Button);
+                            driver.sleep(1 * 1000);
+                            await driver.switchToOtherTab(4);
+                            const screenShot = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After "Run Task Button" element clicked`,
+                                value: 'data:image/png;base64,' + screenShot,
+                            });
+                        });
+
+                        it('Verify "Task completed successfully" message is displayed', async function () {
+                            await driver.findElement(
+                                await iPaasClientTaskPage.getSelectorOfSuccessfullyComplitedByTaskName(task),
+                            );
+                            driver.sleep(1 * 1000);
+                            await driver.switchToOtherTab(4);
+                            const screenShot = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `Verify "Task completed successfully"`,
+                                value: 'data:image/png;base64,' + screenShot,
+                            });
+                        });
+
+                        it('Close Tab', async function () {
+                            await driver.close(); // closes new tab
+                            driver.sleep(1 * 1000);
+                            await driver.switchToOtherTab(3);
+                            const screenShot = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After new TAB closed`,
+                                value: 'data:image/png;base64,' + screenShot,
+                            });
+                        });
+
+                        it('Close Tab', async function () {
+                            await driver.close(); // closes new tab
+                            driver.sleep(1 * 1000);
+                            await driver.switchToOtherTab(2);
+                            const screenShot = await driver.saveScreenshots();
+                            addContext(this, {
+                                title: `After new TAB closed`,
+                                value: 'data:image/png;base64,' + screenShot,
+                            });
+                        });
+                    });
+                },
+            );
+
             // it('', async function () {});
             // it('', async function () {});
             // it('', async function () {});
