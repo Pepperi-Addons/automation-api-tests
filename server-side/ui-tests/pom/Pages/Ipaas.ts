@@ -11,7 +11,6 @@ export class IpaasPage extends Page {
     public MainMenu_buttonList: By = By.xpath(`//ul[@data-role="menu"]`);
     public MainMenu_buttonItem: By = By.xpath(`//li[@role="menuitem"]`);
     public MainHeader_afterMenuItemClick: By = By.xpath(`//div[@id="k-block"]//div[contains(@class,"k-header")]/div`);
-    ////
     public SearchBy_DropList_Item: By = By.xpath(`//ul[@id="Search_kendoPanel"]/li/span`);
     public SearchBy_DropList_SubProperty: By = By.xpath(`//ul[@id="Search_ClientTask_kendoPanel"]/li/span`);
     public TaskName_textField: By = By.xpath(`//*[@id="Search_TaskName"]`);
