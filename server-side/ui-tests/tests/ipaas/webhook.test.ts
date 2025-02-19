@@ -11,7 +11,7 @@ import addContext from 'mochawesome/addContext';
 import { Browser } from '../../utilities/browser';
 import { IpaasLoginPage } from '../../pom/Pages/IpaasLogin';
 import { IpaasPage } from '../../pom/Pages/Ipaas';
-import { IpaasClientTaskPage } from '../../pom/Pages/iPaasClientTask';
+import { IpaasClientTaskPage } from '../../pom/Pages/IpaasClientTask';
 
 chai.use(promised);
 
