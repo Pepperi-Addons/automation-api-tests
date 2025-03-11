@@ -73,6 +73,7 @@ import { ExampleTemplateToCopyTests } from './example_template.test';
 import { IPaasBasicUITests } from './ipaas/ui_basic.test';
 import { IPaasDataflowTests } from './ipaas/dataflow.test';
 import { IPaasWebhookTests } from './ipaas/webhook.test';
+import { HomepageTests } from './home_page.test';
 
 export {
     LoginTests,
@@ -150,4 +151,5 @@ export {
     IPaasBasicUITests,
     IPaasDataflowTests,
     IPaasWebhookTests,
+    HomepageTests,
 };
