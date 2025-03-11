@@ -45,7 +45,7 @@ export async function SyncResyncPerformanceTests(email: string, password: string
     const pfsService = new PFSService(generalService);
     const udcService = new UDCService(generalService);
     const objectsService = new ObjectsService(generalService);
-    const testUniqueString = generalService.generateRandomString(5);
+    // const testUniqueString = generalService.generateRandomString(5);
     const dateTime = new Date();
     const performanceMeasurements = {};
     const collectionProperties = [
@@ -66,7 +66,8 @@ export async function SyncResyncPerformanceTests(email: string, password: string
         'Name',
         'AddonUUID',
     ];
-    const tableName = `SyncPerformanceUDT_Test_${testUniqueString}`;
+    // const tableName = `SyncPerformanceUDT_Test_${testUniqueString}`;
+    const tableName = `SyncPerformanceUDT_Test`;
     const collectionName = 'SyncPerformanceUDCTest';
     const UserDefinedCollectionsUUID = '122c0e9d-c240-4865-b446-f37ece866c22';
     const random200charString = generalService.generateRandomString(200);
@@ -118,6 +119,7 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                 driver = await Browser.initiateChrome();
                 webAppLoginPage = new WebAppLoginPage(driver);
                 e2eUtils = new E2EUtils(driver);
+                udtsTableRows = [];
             });
 
             after(async function () {
@@ -253,8 +255,12 @@ export async function SyncResyncPerformanceTests(email: string, password: string
                     title: `All MapDataExternalID != "ADDON_CPI_SIDE_DATA" documents`,
                     value: `${udtsTableRowsNoAddonCpi.length}`,
                 });
-                expect(udtsTableRowsNoAddonCpi).to.be.an('array').with.lengthOf(0);
                 allUDTs = await objectsService.getUDTMetaDataList();
+                addContext(this, {
+                    title: `All UDT active tables`,
+                    value: JSON.stringify(allUDTs, null, 2),
+                });
+                expect(udtsTableRowsNoAddonCpi).to.be.an('array').with.lengthOf(0);
                 expect(allUDTs).to.be.an('array').with.lengthOf(1);
                 expect(allUDTs[0]['TableID']).to.equal('ADDON_CPI_SIDE_DATA');
                 noUdtData = true;
