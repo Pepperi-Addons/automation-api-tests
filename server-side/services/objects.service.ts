@@ -399,9 +399,9 @@ export class ObjectsService {
         return this.papiClient.userDefinedTables.delete(id);
     }
 
-    // batchUDT(udtRows: UserDefinedTableRow[]): Promise<BatchApiResponse[]> {
-    //     return this.papiClient.userDefinedTables.batch(udtRows);
-    // }
+    batchHardDeleteUDT(udtRowsKeyList: number[]): Promise<BatchApiResponse[]> {
+        return this.papiClient.post('/user_defined_tables/hard_delete', { InternalIDList: udtRowsKeyList });
+    }
 
     deleteUDTMetaData(id: number): Promise<boolean> {
         return this.papiClient.metaData.userDefinedTables.delete(id);

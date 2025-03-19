@@ -92,6 +92,7 @@ import {
     IPaasDataflowTests,
     IPaasWebhookTests,
     HomepageTests,
+    BuyerManagementTests,
 } from './index';
 import { ObjectsService } from '../../services/objects.service';
 import { Client } from '@pepperi-addons/debug-server';
@@ -635,6 +636,13 @@ const udcContainedArray = process.env.npm_config_udc_contained_array as string;
 
     if (tests === 'AuditLog') {
         await AuditDataLogAbiTests(email, pass, client, varPass);
+        await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
+        run();
+        return;
+    }
+
+    if (tests === 'BuyerManagement') {
+        await BuyerManagementTests(email, pass, client, varPass);
         await TestDataTests(generalService, { describe, expect, it } as TesterFunctions);
         run();
         return;

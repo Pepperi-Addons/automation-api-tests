@@ -74,6 +74,7 @@ import { IPaasBasicUITests } from './ipaas/ui_basic.test';
 import { IPaasDataflowTests } from './ipaas/dataflow.test';
 import { IPaasWebhookTests } from './ipaas/webhook.test';
 import { HomepageTests } from './home_page.test';
+import { BuyerManagementTests } from './buyer_management.test';
 
 export {
     LoginTests,
@@ -152,4 +153,5 @@ export {
     IPaasDataflowTests,
     IPaasWebhookTests,
     HomepageTests,
+    BuyerManagementTests,
 };
