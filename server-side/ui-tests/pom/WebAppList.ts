@@ -29,6 +29,7 @@ export class WebAppList extends Page {
     );
     public ListCardViewElement: By = By.xpath('//pep-list//virtual-scroller//pep-form//fieldset//mat-grid-list');
     public ListRowElements: By = By.css('pep-list .table-row-fieldset');
+    public EmptyListElement: By = By.xpath('//pep-list//p[contains(text(),"No accounts found")]');
     public RowElementCheckBox: By = By.css('pep-list .table-row-fieldset > mat-checkbox');
     public GeneralCheckBoxValue: By = By.xpath(
         '//fieldset[contains(@class,"table-header-fieldset")]//mat-checkbox//..//input',
@@ -104,6 +105,11 @@ export class WebAppList extends Page {
     public async validateListRowElements(ms?: number): Promise<void> {
         await this.isSpinnerDone();
         return await this.validateElements(this.ListRowElements, ms);
+    }
+
+    public async validateEmptyList(ms?: number): Promise<void> {
+        await this.isSpinnerDone();
+        return await this.validateElements(this.EmptyListElement, ms);
     }
 
     public async validateCardListElements(ms?: number): Promise<void> {

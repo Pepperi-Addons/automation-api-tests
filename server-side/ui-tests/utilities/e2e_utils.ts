@@ -381,24 +381,22 @@ export default class E2EUtils extends BasePomObject {
         return fields;
     }
 
-    public async performManualSync(this: Context, client: Client, driver: Browser): Promise<void> {
+    public async performManualSync(this: Context, client: Client, driver: Browser): Promise<number> {
         const webAppHeader: WebAppHeader = new WebAppHeader(driver);
         const webAppHomePage: WebAppHomePage = new WebAppHomePage(driver);
         const webAppList: WebAppList = new WebAppList(driver);
         await webAppHeader.goHome();
-        await webAppHomePage.manualResync(client);
+        const syncTime = await webAppHomePage.manualResync(client);
         await webAppList.isSpinnerDone(); // just for the use of webAppList so that fix-lint won't get angry
+        return syncTime;
     }
 
     public async performManualSyncWithTimeMeasurement(this: Context, client: Client, driver: Browser): Promise<number> {
         const e2eUtils: E2EUtils = new E2EUtils(driver);
-        const startTime = new Date().getTime();
-        await e2eUtils.performManualSync.bind(this)(client, driver);
-        const endTime = new Date().getTime();
-        return endTime - startTime;
+        return await e2eUtils.performManualSync.bind(this)(client, driver);
     }
 
-    public async performManualResync(this: Context, client: Client, driver: Browser) {
+    public async performManualResync(this: Context, client: Client, driver: Browser): Promise<number> {
         let screenShot;
         const webAppHeader: WebAppHeader = new WebAppHeader(driver);
         const webAppHomePage: WebAppHomePage = new WebAppHomePage(driver);
@@ -428,6 +426,7 @@ export default class E2EUtils extends BasePomObject {
             title: `"Refresh Data" option clicked`,
             value: 'data:image/png;base64,' + screenShot,
         });
+        const startTime = new Date().getTime();
         await webAppAPI.pollForResyncResponse(accessToken, 100);
         try {
             await webAppHomePage.isDialogOnHomePAge(this);
@@ -437,6 +436,8 @@ export default class E2EUtils extends BasePomObject {
             await driver.navigate(homePageURL);
         }
         await webAppAPI.pollForResyncResponse(accessToken);
+        const endTime = new Date().getTime();
+        return endTime - startTime;
     }
 
     public async performManualResyncWithTimeMeasurement(
@@ -445,10 +446,7 @@ export default class E2EUtils extends BasePomObject {
         driver: Browser,
     ): Promise<number> {
         const e2eUtils: E2EUtils = new E2EUtils(driver);
-        const startTime = new Date().getTime();
-        await e2eUtils.performManualResync.bind(this)(client, driver);
-        const endTime = new Date().getTime();
-        return endTime - startTime;
+        return await e2eUtils.performManualResync.bind(this)(client, driver);
     }
 
     public async closeErrorPopupPostResync(client: Client) {

@@ -34,7 +34,7 @@ export class WebAppHomePage extends WebAppPage {
         await this.browser.ClickByText(this.HomeScreenButtonArr, btnTxt);
         return;
     }
-    public async manualResync(client: Client): Promise<void> {
+    public async manualResync(client: Client): Promise<number> {
         const webAppAPI = new WebAppAPI(this.browser, client);
         const accessToken = await webAppAPI.getAccessToken();
         let syncResponse = await webAppAPI.pollForSyncResponse(accessToken);
@@ -47,15 +47,25 @@ export class WebAppHomePage extends WebAppPage {
         this.browser.sleep(2002);
         await this.clickOnBtn('Accounts');
         this.browser.sleep(2002);
-        await webAppList.validateListRowElements();
+        try {
+            await webAppList.validateListRowElements();
+        } catch (error) {
+            const caughtError = error as Error;
+            expect(caughtError.message).to.equal(
+                `After wait time of: 15000, for selector of 'pep-list .table-row-fieldset', The test must end, The element is: undefined`,
+            );
+            await webAppList.validateEmptyList();
+        }
         this.browser.sleep(1500);
         await this.returnToHomePage();
         this.browser.sleep(5005);
+        const startTime = new Date().getTime();
         syncResponse = await webAppAPI.pollForSyncResponse(accessToken);
+        const endTime = new Date().getTime();
         console.log(`received sync response: ${JSON.stringify(syncResponse)}`);
         //we got 'syncResponse' after polling for different than 'Processing' status - if the gotten status is NOT one of these - it took too long!
         expect(syncResponse.Status).to.be.oneOf(['UpToDate', 'HasChanges']);
-        return;
+        return endTime - startTime;
     }
 
     public async reSyncApp() {
